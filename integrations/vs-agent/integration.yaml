@@ -1,0 +1,12 @@
+# Verana Playground integration descriptor — see the cloud-wallet guideline:
+# https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/cloud-wallet-integration.md
+name: VS Agent
+organization: Verana Labs
+kind: cloud-wallet
+repo: https://github.com/verana-labs/vs-agent
+license: Apache-2.0
+track: native # the reference Verifiable Service runtime (also the sidecar for other stacks)
+scenarios: [iso-certification-loop]
+download: https://github.com/verana-labs/vs-agent
+badge_loop: live
+notes: Reference cloud wallet — the runtime behind the ACME demo services (verana-demos).

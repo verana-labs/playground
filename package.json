@@ -1,0 +1,29 @@
+{
+  "name": "verana-playground",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The Verana Playground - try the open trust layer, live on testnet: the Verana Explained story and per-wallet playgrounds. https://playground.testnet.verana.network",
+  "license": "Apache-2.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "next": "^15.3.4",
+    "react": "19.0.0",
+    "react-dom": "19.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.13.5",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.11",
+    "typescript": "^5.7.3"
+  }
+}

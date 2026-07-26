@@ -1,0 +1,13 @@
+# Verana Playground integration descriptor — see the user-wallet guideline:
+# https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/user-wallet-integration.md
+name: Hologram Messaging
+organization: "2060"
+kind: user-wallet
+repo: https://github.com/2060-io/hologram-app
+license: Apache-2.0
+track: native # DIDComm-native (full Verifiable Trust integration)
+scenarios: [iso-certification-loop]
+# TODO: replace with a direct APK download link; store pages complement it.
+download: https://hologram.zone
+badge_loop: live # AnonCreds/DIDComm badge loop — the first wallet to complete it
+notes: Reference user wallet. Badge issuance and credential login run over AnonCreds/DIDComm.

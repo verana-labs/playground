@@ -22,6 +22,7 @@ export const ECS_ECOSYSTEM_DID =
   "did:webvh:QmPXNqN9qj5eeFviA7d1ToPUPiN8KZcn2QwSWFjZXx4dZS:organization-vs.main.demos.testnet.verana.network";
 
 export const NETWORK_NAME = "TESTNET";
+export const NETWORK_PRODUCTION = false;
 
 export const LINKS = {
   veranaIo: "https://verana.io",

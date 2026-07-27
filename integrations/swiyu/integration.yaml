@@ -1,0 +1,10 @@
+name: swiyu Wallet
+organization: Swiss Confederation (swiyu open source)
+kind: user-wallet
+repo: https://github.com/swiyu-admin-ch/eidch-android-wallet
+license: MIT
+track: bridge
+scenarios: [iso-certification-loop]
+download: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-07-26/swiyu-verana-fabrice-arm64-debug.apk
+badge_loop: coming
+notes: Strict Q1+Q2 before acceptance, device-verified, with a full evidence dossier. Q1+Q3 disclosure gating implemented in source; the presentation flow is pending an ES256-signing verifier.

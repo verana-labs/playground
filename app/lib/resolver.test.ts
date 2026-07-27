@@ -22,6 +22,11 @@ describe("resolveTrust", () => {
     expect((await resolveTrust(DID)).state).toBe("UNTRUSTED");
   });
 
+  it("maps an unknown trustStatus to UNVERIFIED, not a false negative", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => ok({ did: DID, trustStatus: "PENDING" })));
+    expect((await resolveTrust(DID)).state).toBe("UNVERIFIED");
+  });
+
   it("404 triggers refresh then one re-poll, then UNVERIFIED", async () => {
     const fetchMock = vi.fn()
       .mockResolvedValueOnce(new Response("{}", { status: 404 }))

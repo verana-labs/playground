@@ -23,6 +23,12 @@ async function fetchResolve(did: string, timeoutMs: number): Promise<Response> {
   );
 }
 
+function trustState(status: string): TrustState {
+  if (status === "TRUSTED") return "TRUSTED";
+  if (status === "UNTRUSTED" || status === "PARTIAL") return "UNTRUSTED";
+  return "UNVERIFIED";
+}
+
 function mapBody(did: string, body: unknown): PotResolution {
   if (typeof body !== "object" || body === null) return unverified(did);
   const b = body as Record<string, unknown>;
@@ -34,7 +40,7 @@ function mapBody(did: string, body: unknown): PotResolution {
     ? (b.failedCredentials as PotResolution["failedCredentials"])
     : [];
   return {
-    state: b.trustStatus === "TRUSTED" ? "TRUSTED" : "UNTRUSTED",
+    state: trustState(b.trustStatus),
     did,
     trustStatus: b.trustStatus,
     evaluatedAt: typeof b.evaluatedAt === "string" ? b.evaluatedAt : undefined,

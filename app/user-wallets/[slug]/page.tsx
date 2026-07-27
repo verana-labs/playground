@@ -7,6 +7,8 @@ import {
   Breadcrumb,
   Placeholder,
 } from "../../components/ui";
+import { ExpectedRendering } from "../../components/ExpectedRendering";
+import { ProofOfTrust } from "../../components/ProofOfTrust";
 import { userWallets, getIntegration } from "../../lib/integrations";
 import { LINKS } from "../../lib/site";
 
@@ -155,31 +157,82 @@ export default async function UserWalletPlayground({
             </div>
           </div>
 
-          {/* 4 · Service 1 — receive the badge */}
-          {w.badge_loop === "live" ? (
-            <Placeholder title="2 · Receive your ECS-Badge (ACME badge issuer)">
-              Wiring in progress: the QR / deep link to the ACME badge issuer
-              (demo) will appear here, next to the expected Proof-of-Trust and
-              the issuer verdict.
-            </Placeholder>
-          ) : (
-            <Placeholder title="2 · Receive your ECS-Badge">
-              The badge loop for {w.name} activates when the wallet supports the
-              current AnonCreds/DIDComm flow or when OpenID4VC issuance lands.
-            </Placeholder>
-          )}
+          {/* 4 · Receive your ECS-Badge */}
+          <div>
+            <h2 className="mb-4 text-lg font-bold text-gray-900">
+              2 · Receive your ECS-Badge
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              {w.badge_loop === "live" ? (
+                <Placeholder title="Scan to receive your badge">
+                  Scan from the ACME badge issuer — QR wiring lands with the
+                  badge service
+                </Placeholder>
+              ) : (
+                <Placeholder title="Scan to receive your badge">
+                  The AnonCreds/DIDComm badge flow reaches this wallet soon —
+                  resolve & connect already work
+                </Placeholder>
+              )}
+              <div className="space-y-4">
+                <ExpectedRendering kind="issue" />
+                <ProofOfTrust
+                  serviceId="issuer-web-vs"
+                  title="The issuer's live Proof-of-Trust"
+                />
+              </div>
+            </div>
+          </div>
 
-          {/* 5 · Service 2 — present the badge */}
-          <Placeholder title="3 · Log in with your badge (ACME login)">
-            The QR / deep link to the ACME login service (demo) will appear
-            here, next to the expected Proof-of-Trust and the verifier verdict.
-          </Placeholder>
+          {/* 5 · Log in with your badge */}
+          <div>
+            <h2 className="mb-4 text-lg font-bold text-gray-900">
+              3 · Log in with your badge
+            </h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              {w.badge_loop === "live" ? (
+                <Placeholder title="Scan to log in">
+                  Scan from the ACME login service — QR wiring lands with the
+                  login service
+                </Placeholder>
+              ) : (
+                <Placeholder title="Scan to log in">
+                  The AnonCreds/DIDComm login flow reaches this wallet soon —
+                  resolve & connect already work
+                </Placeholder>
+              )}
+              <div className="space-y-4">
+                <ExpectedRendering kind="present" />
+                <ProofOfTrust
+                  serviceId="verifier-web-vs"
+                  title="The verifier's live Proof-of-Trust"
+                />
+              </div>
+            </div>
+          </div>
 
           {/* 6 · Refusal paths */}
-          <Placeholder title="4 · Refusal paths — Umbra Corp (demo)">
-            The same two actions against unauthorized demo services, ending in
-            red verdicts — ships when the Umbra services are deployed.
-          </Placeholder>
+          <div>
+            <h2 className="mb-4 text-lg font-bold text-gray-900">
+              4 · Refusal paths — Umbra Corp (demo)
+            </h2>
+            <details className="rounded-2xl border border-gray-200 bg-white p-5">
+              <summary className="cursor-pointer select-none font-medium text-gray-700 transition-colors hover:text-violet-700">
+                See the refusal verdicts
+              </summary>
+              <div className="mt-4 space-y-4">
+                <p className="text-sm leading-relaxed text-gray-500">
+                  Umbra Corp (demo) holds no participant entries — every
+                  offer and request from it ends in the red verdict. Coming
+                  live with the Umbra services.
+                </p>
+                <div className="grid gap-6 md:grid-cols-2">
+                  <ExpectedRendering kind="issue-refused" />
+                  <ExpectedRendering kind="present-refused" />
+                </div>
+              </div>
+            </details>
+          </div>
 
           <p className="text-xs text-gray-400">
             This page follows the identical per-wallet template of the{" "}

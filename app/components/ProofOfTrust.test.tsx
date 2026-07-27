@@ -29,6 +29,14 @@ describe("PotCard", () => {
     expect(screen.queryByText("Untrusted")).toBeNull();
   });
 
+  it("guards non-string resolver fields instead of crashing", () => {
+    render(<PotCard label="Svc" did={base.did} pot={{ ...base, state: "TRUSTED", trustStatus: "TRUSTED",
+      credentials: [
+        { ecsType: 123 as unknown as string, result: { bad: true } as unknown as string, claims: {} },
+      ] }} />);
+    expect(screen.getByText("unknown")).toBeDefined();
+  });
+
   it("renders failed credentials as first-class content when UNTRUSTED", () => {
     render(<PotCard label="Svc" did={base.did} pot={{ ...base, state: "UNTRUSTED", trustStatus: "UNTRUSTED",
       failedCredentials: [{ id: "cred-1", error: "expired", errorCode: "expired" }] }} />);

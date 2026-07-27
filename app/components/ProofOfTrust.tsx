@@ -26,7 +26,8 @@ const middle = (did: string) =>
 
 const text = (v: unknown) => (typeof v === "string" && v.length > 0 ? v : undefined);
 
-const credentialName = (c: PotCredential) => text(c.claims.name) ?? c.ecsType ?? "Credential";
+const credentialName = (c: PotCredential) =>
+  text(c.claims.name) ?? text(c.ecsType) ?? "Credential";
 
 const chainRow = (entry: unknown) => {
   if (typeof entry === "string") return entry;
@@ -264,36 +265,39 @@ export function PotCard({
                 Other credentials
               </BlockLabel>
               <ul className="space-y-1.5">
-                {others.map((c, i) => (
-                  <li
-                    key={i}
-                    className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5"
-                  >
-                    <span className="text-xs font-medium text-gray-900">
-                      {credentialName(c)}
-                    </span>
-                    {c.issuedBy ? (
-                      <span
-                        className="min-w-0 truncate font-mono text-[11px] text-gray-400"
-                        title={c.issuedBy}
-                      >
-                        {middle(c.issuedBy)}
+                {others.map((c, i) => {
+                  const issuedBy = text(c.issuedBy);
+                  return (
+                    <li
+                      key={i}
+                      className="flex min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5"
+                    >
+                      <span className="text-xs font-medium text-gray-900">
+                        {credentialName(c)}
                       </span>
-                    ) : null}
-                    {c.result === "VALID" ? (
-                      <CircleCheck
-                        role="img"
-                        aria-label="Valid"
-                        className="ml-auto h-3.5 w-3.5 shrink-0 text-emerald-500"
-                      />
-                    ) : (
-                      <span className="ml-auto inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-amber-600">
-                        <TriangleAlert className="h-3.5 w-3.5" />
-                        {c.result ?? "unknown"}
-                      </span>
-                    )}
-                  </li>
-                ))}
+                      {issuedBy ? (
+                        <span
+                          className="min-w-0 truncate font-mono text-[11px] text-gray-400"
+                          title={issuedBy}
+                        >
+                          {middle(issuedBy)}
+                        </span>
+                      ) : null}
+                      {c.result === "VALID" ? (
+                        <CircleCheck
+                          role="img"
+                          aria-label="Valid"
+                          className="ml-auto h-3.5 w-3.5 shrink-0 text-emerald-500"
+                        />
+                      ) : (
+                        <span className="ml-auto inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-amber-600">
+                          <TriangleAlert className="h-3.5 w-3.5" />
+                          {text(c.result) ?? "unknown"}
+                        </span>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ) : null}
@@ -306,8 +310,8 @@ export function PotCard({
               <ul className="space-y-1">
                 {failed.map((f, i) => (
                   <li key={i} className="text-xs text-red-700">
-                    <span className="font-mono">{f.id ?? "credential"}</span> —{" "}
-                    {f.error ?? f.errorCode ?? "verification failed"}
+                    <span className="font-mono">{text(f.id) ?? "credential"}</span> —{" "}
+                    {text(f.error) ?? text(f.errorCode) ?? "verification failed"}
                   </li>
                 ))}
               </ul>
@@ -354,8 +358,8 @@ export function PotCard({
                       <ul className="mt-0.5 space-y-0.5">
                         {failed.map((f, i) => (
                           <li key={i} className="text-[11px] text-red-600">
-                            <span className="font-mono">{f.id ?? "credential"}</span> —{" "}
-                            {f.error ?? f.errorCode ?? "verification failed"}
+                            <span className="font-mono">{text(f.id) ?? "credential"}</span> —{" "}
+                            {text(f.error) ?? text(f.errorCode) ?? "verification failed"}
                           </li>
                         ))}
                       </ul>

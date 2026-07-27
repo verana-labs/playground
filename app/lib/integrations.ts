@@ -20,7 +20,6 @@ export type Integration = {
   /** user wallets: native | bridge · cloud wallets: native | sidecar | bridge */
   track: string;
   scenarios: string[];
-  logo?: string;
   demo_video?: string;
   logo?: string;
   /** Mobile user wallet: direct APK link (stores may complement). Web wallet

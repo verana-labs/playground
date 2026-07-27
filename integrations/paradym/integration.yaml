@@ -1,0 +1,11 @@
+name: Paradym Wallet
+organization: Animo Solutions
+kind: user-wallet
+repo: https://github.com/animo/paradym-wallet
+license: Apache-2.0
+track: bridge # OpenID4VC (Credo-TS); Verana trust resolution on OID4VP + OID4VCI
+scenarios: [iso-certification-loop]
+# TODO(maxime): direct APK release link (artifact exists, release pending)
+download: https://github.com/AirKyzzZ/paradym-wallet-verana
+badge_loop: coming
+notes: Verana trust integration on the Credo trust-mechanism hooks. Badge flow activates when OpenID4VC issuance lands for ECS-Badge.

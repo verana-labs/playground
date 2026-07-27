@@ -1,0 +1,10 @@
+name: swiyu Wallet
+organization: Swiss Confederation (swiyu open source)
+kind: user-wallet
+repo: https://github.com/swiyu-admin-ch/eidch-android-wallet
+license: MIT
+track: bridge
+scenarios: [iso-certification-loop]
+download: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/tag/verana-2026-07-26
+badge_loop: coming
+notes: Strict Q1+Q2 before acceptance and Q1+Q3 before disclosure, with a full evidence dossier.

@@ -23,12 +23,15 @@ export default function NetworkChip() {
   }, []);
 
   return (
-    <span className="chip" title="Everything on this site runs against the Verana testnet">
+    <span
+      className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600"
+      title="Everything on this site runs against the Verana testnet"
+    >
       TESTNET
       {resolver === null ? null : (
         <>
           <span aria-hidden>·</span>
-          <span className={resolver === "ok" ? "text-success-ink" : ""}>
+          <span className={resolver === "ok" ? "text-emerald-600" : "text-red-500"}>
             resolver {resolver === "ok" ? "OK" : "down"}
           </span>
         </>

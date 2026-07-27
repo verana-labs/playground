@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Download, Github, PlayCircle } from "lucide-react";
 import {
   Container,
   Section,
@@ -39,10 +40,11 @@ export default async function UserWalletPlayground({
 
   return (
     <>
-      <section className="border-b border-rule">
-        <Container className="py-10">
+      <header className="hero-gradient text-white">
+        <div className="mx-auto max-w-4xl px-6 py-10">
           {/* 1 · Breadcrumb */}
           <Breadcrumb
+            onDark
             items={[
               { label: "Playground", href: "/" },
               { label: "User wallets", href: "/#user-wallets" },
@@ -53,97 +55,145 @@ export default async function UserWalletPlayground({
           <div className="mt-6 flex flex-wrap items-center gap-4">
             <span
               aria-hidden
-              className="grid h-14 w-14 place-items-center rounded-xl border border-rule bg-surface font-mono text-xl text-muted"
+              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-xl font-bold text-white backdrop-blur"
             >
               {w.name.charAt(0)}
             </span>
             <div>
-              <h1 className="display text-3xl text-ink">{w.name}</h1>
-              <p className="text-muted">{w.organization}</p>
+              <h1 className="text-3xl font-bold">{w.name}</h1>
+              <p className="text-white/80">{w.organization}</p>
             </div>
             <div className="ml-auto flex flex-wrap items-center gap-2">
-              <Chip>{w.track}</Chip>
-              {w.license ? <Chip>{w.license}</Chip> : null}
-              {w.badge_loop === "live" ? (
-                <Chip tone="verified">badge loop ✓</Chip>
-              ) : (
-                <Chip tone="pending">badge loop coming</Chip>
-              )}
+              <span className="rounded-full bg-white/15 px-2.5 py-1 text-xs font-medium backdrop-blur">
+                {w.track}
+              </span>
+              {w.license ? (
+                <span className="rounded-full bg-white/15 px-2.5 py-1 text-xs font-medium backdrop-blur">
+                  {w.license}
+                </span>
+              ) : null}
             </div>
           </div>
-          <div className="mt-5 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap gap-3">
             {w.download ? (
-              <a href={w.download} target="_blank" rel="noopener noreferrer" className="btn btn-primary">
-                Download
+              <a
+                href={w.download}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-white px-5 py-2.5 font-medium text-violet-700 transition-colors hover:bg-violet-50"
+              >
+                <Download className="h-4 w-4" /> Get the wallet
               </a>
             ) : null}
             {w.repo ? (
-              <a href={w.repo} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
-                Source ↗
+              <a
+                href={w.repo}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 font-medium text-white backdrop-blur transition-colors hover:bg-white/25"
+              >
+                <Github className="h-4 w-4" /> Source
               </a>
             ) : null}
             {w.demo_video ? (
-              <a href={w.demo_video} target="_blank" rel="noopener noreferrer" className="btn btn-ghost">
-                Video ↗
+              <a
+                href={w.demo_video}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 font-medium text-white backdrop-blur transition-colors hover:bg-white/25"
+              >
+                <PlayCircle className="h-4 w-4" /> Video
               </a>
             ) : null}
           </div>
-        </Container>
-      </section>
+        </div>
+      </header>
 
       <Section>
-        <Container className="max-w-3xl space-y-8">
+        <Container className="space-y-8">
           {/* 3 · Get the wallet */}
-          <div className="card p-6">
-            <span className="eyebrow">Get the wallet</span>
-            <p className="mt-3 text-sm text-muted">
-              Install {w.name}
-              {w.download ? (
-                <>
-                  {" "}
-                  from{" "}
-                  <a className="text-accent underline" href={w.download} target="_blank" rel="noopener noreferrer">
-                    its download link
-                  </a>
-                </>
-              ) : null}
-              . {w.notes ?? ""}
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-2 flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+                1
+              </span>
+              <h2 className="text-lg font-bold text-gray-900">Get the wallet</h2>
+            </div>
+            <p className="ml-11 text-sm leading-relaxed text-gray-500">
+              {w.notes ?? `Install ${w.name} to take part in the demos.`}
             </p>
+            <div className="ml-11 mt-4 flex flex-wrap gap-3">
+              {w.appstore ? (
+                <a
+                  href={w.appstore}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+                >
+                  App Store
+                </a>
+              ) : null}
+              {w.playstore ? (
+                <a
+                  href={w.playstore}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+                >
+                  Google Play
+                </a>
+              ) : null}
+              {!w.appstore && !w.playstore && w.download ? (
+                <a
+                  href={w.download}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-800"
+                >
+                  Download
+                </a>
+              ) : null}
+            </div>
           </div>
 
           {/* 4 · Service 1 — receive the badge */}
           {w.badge_loop === "live" ? (
-            <Placeholder title="Service 1 — Receive your ECS-Badge (ACME badge issuer)">
+            <Placeholder title="2 · Receive your ECS-Badge (ACME badge issuer)">
               Wiring in progress: the QR / deep link to the ACME badge issuer
               (demo) will appear here, next to the expected Proof-of-Trust and
               the issuer verdict.
             </Placeholder>
           ) : (
-            <Placeholder title="Service 1 — Receive your ECS-Badge">
+            <Placeholder title="2 · Receive your ECS-Badge">
               The badge loop for {w.name} activates when the wallet supports the
               current AnonCreds/DIDComm flow or when OpenID4VC issuance lands.
             </Placeholder>
           )}
 
           {/* 5 · Service 2 — present the badge */}
-          <Placeholder title="Service 2 — Log in with your badge (ACME login)">
+          <Placeholder title="3 · Log in with your badge (ACME login)">
             The QR / deep link to the ACME login service (demo) will appear
             here, next to the expected Proof-of-Trust and the verifier verdict.
           </Placeholder>
 
           {/* 6 · Refusal paths */}
-          <Placeholder title="Refusal paths — Umbra Corp (demo)">
+          <Placeholder title="4 · Refusal paths — Umbra Corp (demo)">
             The same two actions against unauthorized demo services, ending in
             red verdicts — ships when the Umbra services are deployed.
           </Placeholder>
 
-          <p className="text-xs text-muted">
+          <p className="text-xs text-gray-400">
             This page follows the identical per-wallet template of the{" "}
-            <a className="text-accent underline" href={`${LINKS.spec}/spec.md`} target="_blank" rel="noopener noreferrer">
+            <a
+              className="text-violet-600 underline"
+              href={`${LINKS.spec}/spec.md`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               playground spec §4
             </a>
             , generated from{" "}
-            <code className="font-mono">integrations/{w.slug}/integration.yaml</code>.
+            <code>integrations/{w.slug}/integration.yaml</code>.
           </p>
         </Container>
       </Section>

@@ -1,6 +1,18 @@
 import Link from "next/link";
+import { Plus } from "lucide-react";
 import type { Integration } from "../lib/integrations";
 import { Chip } from "./ui";
+
+const AVATAR_TONES = [
+  "bg-violet-50 text-violet-700",
+  "bg-blue-50 text-blue-700",
+  "bg-amber-50 text-amber-700",
+  "bg-emerald-50 text-emerald-700",
+];
+
+function avatarTone(name: string) {
+  return AVATAR_TONES[name.charCodeAt(0) % AVATAR_TONES.length];
+}
 
 /** Uniform wallet tile (spec §3.3 / §3.4): logo · name · organization ·
  *  track chip · license chip · Get it · Open its playground. */
@@ -8,17 +20,17 @@ export default function WalletTile({ w }: { w: Integration }) {
   const playgroundHref =
     w.kind === "user-wallet" ? `/user-wallets/${w.slug}` : `/cloud-wallets/${w.slug}`;
   return (
-    <div className="card flex flex-col p-5">
+    <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex items-center gap-3">
         <span
           aria-hidden
-          className="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-rule bg-surface-2 font-mono text-sm text-muted"
+          className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-base font-bold ${avatarTone(w.name)}`}
         >
           {w.name.charAt(0)}
         </span>
         <div className="min-w-0">
-          <h3 className="truncate font-semibold text-ink">{w.name}</h3>
-          <p className="truncate text-sm text-muted">{w.organization}</p>
+          <h3 className="truncate font-semibold text-gray-900">{w.name}</h3>
+          <p className="truncate text-sm text-gray-500">{w.organization}</p>
         </div>
       </div>
       <div className="mt-3 flex flex-wrap gap-1.5">
@@ -30,18 +42,21 @@ export default function WalletTile({ w }: { w: Integration }) {
           <Chip tone="pending">badge loop coming</Chip>
         )}
       </div>
-      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-rule pt-4">
+      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-4">
         {w.download ? (
           <a
             href={w.download}
             target="_blank"
             rel="noopener noreferrer"
-            className="btn btn-ghost px-3 py-1.5 text-sm"
+            className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-violet-300 hover:text-violet-700"
           >
             Get it
           </a>
         ) : null}
-        <Link href={playgroundHref} className="btn btn-primary px-3 py-1.5 text-sm">
+        <Link
+          href={playgroundHref}
+          className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-violet-700"
+        >
           Open its playground
         </Link>
       </div>
@@ -54,16 +69,16 @@ export function AddYourWalletTile() {
   return (
     <Link
       href="/integrate"
-      className="card group flex flex-col items-start justify-center gap-2 border-dashed p-5 transition-colors hover:border-primary"
+      className="group flex flex-col items-start justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-white p-5 transition-colors hover:border-violet-400"
     >
-      <span className="grid h-10 w-10 place-items-center rounded-lg border border-rule bg-surface-2 font-mono text-lg text-muted">
-        +
+      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50 text-violet-700">
+        <Plus className="h-5 w-5" />
       </span>
-      <h3 className="font-semibold text-ink">Add your wallet</h3>
-      <p className="text-sm text-muted">
+      <h3 className="font-semibold text-gray-900">Add your wallet</h3>
+      <p className="text-sm text-gray-500">
         Open source? Integrate Verana and get your own playground page.
       </p>
-      <span className="text-sm text-accent group-hover:underline">
+      <span className="text-sm font-medium text-violet-600 group-hover:underline">
         How to integrate →
       </span>
     </Link>

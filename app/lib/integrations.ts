@@ -23,6 +23,8 @@ export type Integration = {
   /** Mobile user wallet: direct APK link (stores may complement). Web wallet
    *  or cloud wallet: URL. */
   download?: string;
+  appstore?: string;
+  playstore?: string;
   contact?: string;
   /** Which parts of the playground template are live for this wallet. */
   badge_loop?: "live" | "coming";
@@ -50,6 +52,8 @@ export function listIntegrations(): Integration[] {
       scenarios: raw.scenarios ?? [],
       demo_video: raw.demo_video,
       download: raw.download,
+      appstore: raw.appstore,
+      playstore: raw.playstore,
       contact: raw.contact,
       badge_loop: raw.badge_loop ?? "coming",
       notes: raw.notes,

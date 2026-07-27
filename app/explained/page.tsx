@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
-import { Container, Section, SectionHeading, Chip, Placeholder, Breadcrumb } from "../components/ui";
+import {
+  Container,
+  Section,
+  SectionHeading,
+  Placeholder,
+  Breadcrumb,
+} from "../components/ui";
 import { LINKS } from "../lib/site";
 
 export const metadata: Metadata = {
@@ -76,33 +82,59 @@ const STEPS: {
 export default function Explained() {
   return (
     <>
-      <section className="hero-glow border-b border-rule">
-        <Container className="py-14 sm:py-16">
-          <Breadcrumb items={[{ label: "Playground", href: "/" }, { label: "Verana Explained" }]} />
-          <h1 className="display mt-6 max-w-3xl text-4xl text-ink sm:text-5xl">
+      {/* Gradient header */}
+      <header className="hero-gradient text-white">
+        <div className="mx-auto max-w-4xl px-6 py-14 sm:py-16">
+          <Breadcrumb
+            onDark
+            items={[{ label: "Playground", href: "/" }, { label: "Verana Explained" }]}
+          />
+          <h1 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl">
             Verana, explained by ACME Corp
           </h1>
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
+          <p className="mt-5 max-w-2xl text-lg text-white/80">
             One continuous story, live on testnet. Organization-side steps are
             watch-only (with source links — nothing is closed); end-user steps
             are hands-on with your own wallet.
           </p>
-        </Container>
-      </section>
+        </div>
+      </header>
 
       {STEPS.map((s) => (
-        <Section key={s.n} id={`step-${s.n}`} className={s.n % 2 === 0 ? "border-t border-rule bg-surface" : "border-t border-rule"}>
+        <Section
+          key={s.n}
+          id={`step-${s.n}`}
+          className={
+            s.n % 2 === 0
+              ? "border-t border-gray-200 bg-white"
+              : "border-t border-gray-200"
+          }
+        >
           <Container>
             <SectionHeading
-              eyebrow={`Step ${s.n}${s.pending ? " · pending" : ""}`}
-              title={s.title}
-              intro={s.summary}
+              number={s.n}
+              title={
+                s.pending ? (
+                  <>
+                    {s.title}{" "}
+                    <span className="align-middle text-sm font-medium text-amber-600">
+                      (pending)
+                    </span>
+                  </>
+                ) : (
+                  s.title
+                )
+              }
+              subtitle={s.summary}
             />
             {s.substeps.length > 0 ? (
-              <ul className="reveal-stagger mt-6 grid max-w-3xl gap-2">
+              <ul className="reveal-stagger grid max-w-3xl gap-2">
                 {s.substeps.map((sub) => (
-                  <li key={sub} className="card flex items-center gap-3 px-4 py-3 text-sm text-muted">
-                    <span className="font-mono text-xs text-accent" aria-hidden>
+                  <li
+                    key={sub}
+                    className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600 shadow-sm"
+                  >
+                    <span className="text-violet-500" aria-hidden>
                       ▸
                     </span>
                     {sub}
@@ -118,16 +150,8 @@ export default function Explained() {
               ) : (
                 <Placeholder title="Full interactive step in production">
                   The three-layer walkthrough (story · what you see · under the
-                  hood) with live testnet artifacts is being built from{" "}
-                  <a
-                    className="text-accent underline"
-                    href={`${LINKS.spec}/verana-explained/spec.md`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    its spec
-                  </a>
-                  .
+                  hood) with live testnet artifacts is being built from its
+                  spec.
                 </Placeholder>
               )}
             </div>
@@ -135,17 +159,19 @@ export default function Explained() {
         </Section>
       ))}
 
-      <Section className="border-t border-rule">
-        <Container className="flex flex-wrap items-center gap-3">
-          <Chip>the full story spec</Chip>
-          <a
-            className="text-sm text-accent hover:underline"
-            href={`${LINKS.spec}/verana-explained/spec.md`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            verana-spec / playground / verana-explained ↗
-          </a>
+      <Section className="border-t border-gray-200">
+        <Container>
+          <p className="text-sm text-gray-500">
+            The full story specification:{" "}
+            <a
+              className="text-violet-600 underline hover:text-violet-700"
+              href={`${LINKS.spec}/verana-explained/spec.md`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              verana-spec / playground / verana-explained ↗
+            </a>
+          </p>
         </Container>
       </Section>
     </>

@@ -11,14 +11,14 @@ export const metadata: Metadata = {
 export default function About() {
   return (
     <>
-      <section className="border-b border-rule">
-        <Container className="py-14">
-          <Breadcrumb items={[{ label: "Playground", href: "/" }, { label: "About" }]} />
-          <h1 className="display mt-6 text-4xl text-ink sm:text-5xl">About this playground</h1>
-        </Container>
-      </section>
+      <header className="hero-gradient text-white">
+        <div className="mx-auto max-w-4xl px-6 py-14">
+          <Breadcrumb onDark items={[{ label: "Playground", href: "/" }, { label: "About" }]} />
+          <h1 className="mt-6 text-4xl font-bold md:text-5xl">About this playground</h1>
+        </div>
+      </header>
       <Section>
-        <Container className="prose-body max-w-3xl">
+        <Container className="prose-body">
           <h2>What is real</h2>
           <p>
             Everything runs against the public <strong>Verana testnet</strong>:
@@ -41,7 +41,7 @@ export default function About() {
             referring to ISO standards are &ldquo;ISO 9001-<em>style</em>{" "}
             (demo)&rdquo; and imply no real certification. The trusted ECS
             ecosystem anchor used by this site is{" "}
-            <code className="break-all font-mono text-xs">{ECS_ECOSYSTEM_DID}</code>.
+            <code className="break-all text-xs">{ECS_ECOSYSTEM_DID}</code>.
           </p>
           <h2>Protocol version</h2>
           <p>

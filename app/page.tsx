@@ -1,8 +1,19 @@
 import Link from "next/link";
-import { Container, Section, SectionHeading, Button, Chip } from "./components/ui";
+import {
+  ArrowDown,
+  ShieldCheck,
+  ScrollText,
+  Fingerprint,
+  Search,
+  BadgeCheck,
+  Building2,
+  Landmark,
+  Wallet,
+} from "lucide-react";
+import { Container, Section, SectionHeading, Chip } from "./components/ui";
 import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
 import { userWallets, cloudWallets } from "./lib/integrations";
-import { LINKS, ENDPOINTS, SITE_TAGLINE } from "./lib/site";
+import { LINKS, ENDPOINTS } from "./lib/site";
 
 // The five Verana Explained step cards (spec §3.2), linking into /explained.
 const STEPS: {
@@ -43,12 +54,43 @@ const STEPS: {
   },
 ];
 
-// What-you-can-do row (spec §3.1).
+// The concept cards of section 1 (verana-demos ConceptCard idiom).
+const CONCEPTS = [
+  {
+    icon: ScrollText,
+    tone: "bg-violet-50 text-violet-700",
+    title: "Ecosystems",
+    description:
+      "Define credential schemas, accredit who may issue and who may verify, and publish their governance on a public registry.",
+  },
+  {
+    icon: Fingerprint,
+    tone: "bg-blue-50 text-blue-700",
+    title: "Verifiable services & agents",
+    description:
+      "Services and AI agents identified by a DID, backed by credentials that prove what they are and who operates them.",
+  },
+  {
+    icon: ShieldCheck,
+    tone: "bg-emerald-50 text-emerald-700",
+    title: "Verify first, then connect",
+    description:
+      "Trust is resolved against the public registry and shown as a Proof-of-Trust before the first interaction — offers and requests are accepted only from authorized issuers and verifiers.",
+  },
+  {
+    icon: Search,
+    tone: "bg-amber-50 text-amber-700",
+    title: "Discovery",
+    description:
+      "Because trust is published, it becomes discoverable: find services by what they prove, not what they claim.",
+  },
+];
+
 const CAN_DO = [
-  "Make your services and agents verifiable",
-  "Issue and verify credentials under an ecosystem's governance",
-  "Build your own trust ecosystem",
-  "Integrate your wallet",
+  { icon: Fingerprint, text: "Make your services and agents verifiable" },
+  { icon: BadgeCheck, text: "Issue and verify credentials under an ecosystem's governance" },
+  { icon: Landmark, text: "Build your own trust ecosystem" },
+  { icon: Wallet, text: "Integrate your wallet" },
 ];
 
 export default function Home() {
@@ -57,100 +99,112 @@ export default function Home() {
 
   return (
     <>
-      {/* Hero */}
-      <section className="hero-glow border-b border-rule">
-        <Container className="py-20 sm:py-28">
-          <p className="eyebrow reveal">[ LIVE ON THE VERANA TESTNET ]</p>
-          <h1 className="display reveal mt-5 max-w-3xl text-4xl text-ink sm:text-6xl">
-            {SITE_TAGLINE}
+      {/* Hero — the verana-demos gradient */}
+      <header className="hero-gradient text-white">
+        <div className="mx-auto max-w-4xl px-6 py-16 text-center sm:py-20">
+          <p className="mb-3 text-sm font-medium uppercase tracking-wider text-white/70">
+            Live on the Verana testnet
+          </p>
+          <h1 className="mb-4 text-4xl font-bold md:text-5xl">
+            Try the open trust layer. Live.
           </h1>
-          <p className="reveal mt-6 max-w-2xl text-lg leading-relaxed text-muted">
+          <p className="mx-auto mb-8 max-w-2xl text-lg text-white/80">
             Follow a company&apos;s journey into the open trust layer, then try
             it yourself with a real wallet. Real registry entries, real trust
             resolution — nothing simulated.
           </p>
-          <div className="reveal mt-8 flex flex-wrap gap-3">
-            <Button href="/explained">Start the tour</Button>
-            <Button href="/integrate" variant="ghost">
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="#learn"
+              className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-6 py-3 font-medium text-white backdrop-blur transition-colors hover:bg-white/25"
+            >
+              Get started <ArrowDown className="h-4 w-4" />
+            </a>
+            <Link
+              href="/integrate"
+              className="inline-flex items-center gap-2 rounded-xl bg-white px-6 py-3 font-medium text-violet-700 transition-colors hover:bg-violet-50"
+            >
               Add your wallet
-            </Button>
+            </Link>
           </div>
-        </Container>
-      </section>
+        </div>
+      </header>
 
-      {/* 3.1 What is Verana */}
+      {/* 1 · What is Verana */}
       <Section id="what-is-verana">
         <Container>
           <SectionHeading
-            eyebrow="01 · What is Verana"
-            title="Open, public trust infrastructure"
-            intro="The trust layer of the verifiable internet."
+            number={1}
+            title="What is Verana?"
+            subtitle="Open, public trust infrastructure — the trust layer of the verifiable internet"
           />
-          <div className="reveal mt-6 max-w-3xl space-y-4 text-muted">
-            <p>
-              On Verana, <strong className="text-ink">ecosystems</strong> define
-              credential schemas, accredit who may{" "}
-              <strong className="text-ink">issue</strong> and who may{" "}
-              <strong className="text-ink">verify</strong>, and publish their
-              governance on a public registry.{" "}
-              <strong className="text-ink">Services and AI agents</strong>{" "}
-              become verifiable: identified by a DID, backed by credentials that
-              prove <em>what they are</em> and <em>who operates them</em>.
-            </p>
-            <p>
-              Anyone — a person&apos;s wallet, another service —{" "}
-              <strong className="text-ink">verifies first, then connects</strong>:
-              trust is resolved against the public registry and shown as a{" "}
-              <strong className="text-ink">Proof-of-Trust</strong> before the
-              first interaction. Credential offers and presentation requests are
-              accepted only from <strong className="text-ink">authorized</strong>{" "}
-              issuers and verifiers. And because trust is published, it becomes{" "}
-              <strong className="text-ink">discoverable</strong>: find services
-              by what they prove, not what they claim.
-            </p>
-          </div>
-          <div className="reveal-stagger mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            {CAN_DO.map((c) => (
-              <div key={c} className="card p-4 text-sm text-muted">
-                <span className="text-success-ink" aria-hidden>
-                  ✓
-                </span>{" "}
-                {c}
+          <div className="reveal-stagger grid gap-4 sm:grid-cols-2">
+            {CONCEPTS.map((c) => (
+              <div
+                key={c.title}
+                className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+              >
+                <div
+                  className={`mb-3 flex h-10 w-10 items-center justify-center rounded-lg ${c.tone}`}
+                >
+                  <c.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mb-1 font-semibold text-gray-900">{c.title}</h3>
+                <p className="text-sm leading-relaxed text-gray-500">
+                  {c.description}
+                </p>
               </div>
             ))}
           </div>
-          <p className="reveal mt-6 flex flex-wrap gap-x-5 gap-y-1 font-mono text-xs text-muted">
-            <a className="hover:text-accent" href={LINKS.veranaIo} target="_blank" rel="noopener noreferrer">verana.io ↗</a>
-            <a className="hover:text-accent" href={LINKS.docs} target="_blank" rel="noopener noreferrer">docs.verana.io ↗</a>
-            <a className="hover:text-accent" href={LINKS.vtSpecV3} target="_blank" rel="noopener noreferrer">Verifiable Trust spec ↗</a>
-            <a className="hover:text-accent" href={LINKS.vprSpecV3} target="_blank" rel="noopener noreferrer">VPR spec ↗</a>
-            <a className="hover:text-accent" href={ENDPOINTS.frontend} target="_blank" rel="noopener noreferrer">app.testnet.verana.network ↗</a>
-          </p>
+          <div className="reveal mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
+              What you can do with it
+            </h3>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+              {CAN_DO.map((c) => (
+                <div key={c.text} className="flex items-start gap-2.5 text-sm text-gray-600">
+                  <c.icon className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />
+                  {c.text}
+                </div>
+              ))}
+            </div>
+            <p className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-1 border-t border-gray-100 pt-4 text-center text-xs text-gray-500">
+              <a className="hover:text-violet-700 hover:underline" href={LINKS.veranaIo} target="_blank" rel="noopener noreferrer">verana.io ↗</a>
+              <a className="hover:text-violet-700 hover:underline" href={LINKS.docs} target="_blank" rel="noopener noreferrer">docs.verana.io ↗</a>
+              <a className="hover:text-violet-700 hover:underline" href={LINKS.vtSpecV3} target="_blank" rel="noopener noreferrer">Verifiable Trust spec ↗</a>
+              <a className="hover:text-violet-700 hover:underline" href={LINKS.vprSpecV3} target="_blank" rel="noopener noreferrer">VPR spec ↗</a>
+              <a className="hover:text-violet-700 hover:underline" href={ENDPOINTS.frontend} target="_blank" rel="noopener noreferrer">app.testnet ↗</a>
+            </p>
+          </div>
         </Container>
       </Section>
 
-      {/* 3.2 Learn step by step */}
-      <Section id="learn" className="border-t border-rule bg-surface">
+      {/* 2 · Learn step by step */}
+      <Section id="learn" className="border-t border-gray-200 bg-white">
         <Container>
           <SectionHeading
-            eyebrow="02 · Learn step by step"
-            title="Verana, explained by ACME Corp"
-            intro="One continuous story: a fictional corporation creates itself in Verana — and you take part with your own wallet."
+            number={2}
+            title="Learn step by step"
+            subtitle="Verana, explained by ACME Corp — one continuous story, and you take part with your own wallet"
           />
-          <div className="reveal-stagger mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="reveal-stagger grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {STEPS.map((s) => (
               <Link
                 key={s.n}
                 href={`/explained#step-${s.n}`}
-                className="card group flex flex-col p-6 transition-colors hover:border-primary"
+                className="group flex flex-col rounded-xl border border-gray-200 bg-gray-50 p-5 transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
-                  <span className="eyebrow">Step {s.n}</span>
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+                    {s.n}
+                  </span>
                   {s.pending ? <Chip tone="pending">pending</Chip> : null}
                 </div>
-                <h3 className="display mt-3 text-xl text-ink">{s.title}</h3>
-                <p className="mt-2 flex-1 text-sm text-muted">{s.oneLiner}</p>
-                <span className="mt-4 text-sm text-accent group-hover:underline">
+                <h3 className="mt-3 font-semibold text-gray-900">{s.title}</h3>
+                <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
+                  {s.oneLiner}
+                </p>
+                <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
                   Read the step →
                 </span>
               </Link>
@@ -159,15 +213,15 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 3.3 User wallets */}
-      <Section id="user-wallets" className="border-t border-rule">
-        <Container>
+      {/* 3 · User wallets */}
+      <Section id="user-wallets" className="border-t border-gray-200">
+        <Container wide>
           <SectionHeading
-            eyebrow="03 · User wallets"
-            title="Try it with a real wallet"
-            intro="Every integrated open-source user wallet gets an identical playground page: receive a badge from ACME, then log in with it."
+            number={3}
+            title="User wallets"
+            subtitle="Every integrated open-source user wallet gets an identical playground page: receive a badge from ACME, then log in with it"
           />
-          <div className="reveal-stagger mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {users.map((w) => (
               <WalletTile key={w.slug} w={w} />
             ))}
@@ -176,20 +230,25 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 3.4 Cloud wallets */}
-      <Section id="cloud-wallets" className="border-t border-rule bg-surface">
-        <Container>
+      {/* 4 · Cloud wallets */}
+      <Section id="cloud-wallets" className="border-t border-gray-200 bg-white">
+        <Container wide>
           <SectionHeading
-            eyebrow="04 · Cloud wallets"
-            title="Host verifiable services"
-            intro="Every integrated open-source cloud wallet gets an identical playground page: a hosted, Verana-verified demo service you can exercise end to end."
+            number={4}
+            title="Cloud wallets"
+            subtitle="Every integrated open-source cloud wallet gets an identical playground page: a hosted, Verana-verified demo service you can exercise end to end"
           />
-          <div className="reveal-stagger mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {clouds.map((w) => (
               <WalletTile key={w.slug} w={w} />
             ))}
             <AddYourWalletTile />
           </div>
+          <p className="reveal mt-8 flex items-center gap-2 text-sm text-gray-500">
+            <Building2 className="h-4 w-4 text-violet-600" />
+            Cloud wallets host organizations&apos; verifiable services — like the
+            ACME demo cast behind this playground.
+          </p>
         </Container>
       </Section>
     </>

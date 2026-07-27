@@ -49,12 +49,14 @@ const COLUMNS: {
 
 export default function Footer() {
   return (
-    <footer className="border-t border-rule bg-surface">
+    <footer className="border-t border-gray-200 bg-white">
       <div className="mx-auto max-w-6xl px-6 py-14">
         <div className="grid gap-10 sm:grid-cols-2 md:grid-cols-4">
           {COLUMNS.map((col) => (
             <div key={col.title}>
-              <h3 className="eyebrow mb-3">{col.title}</h3>
+              <h3 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+                {col.title}
+              </h3>
               <ul className="space-y-2">
                 {col.links.map((l) => (
                   <li key={l.label}>
@@ -63,12 +65,12 @@ export default function Footer() {
                         href={l.href}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sm text-muted hover:text-ink"
+                        className="text-sm text-gray-500 hover:text-gray-900"
                       >
                         {l.label}
                       </a>
                     ) : (
-                      <Link href={l.href} className="text-sm text-muted hover:text-ink">
+                      <Link href={l.href} className="text-sm text-gray-500 hover:text-gray-900">
                         {l.label}
                       </Link>
                     )}
@@ -78,10 +80,15 @@ export default function Footer() {
             </div>
           ))}
         </div>
-        <div className="mt-12 flex flex-col gap-3 border-t border-rule pt-6 text-xs text-muted sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-12 flex flex-col gap-3 border-t border-gray-200 pt-6 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © {new Date().getFullYear()}{" "}
-            <a href={LINKS.foundation} target="_blank" rel="noopener noreferrer" className="hover:text-ink">
+            <a
+              href={LINKS.foundation}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-gray-900"
+            >
               Verana Foundation
             </a>{" "}
             · Content CC BY-SA 4.0 · Code Apache-2.0

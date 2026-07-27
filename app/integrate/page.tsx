@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Container, Section, Button, Breadcrumb } from "../components/ui";
+import { ProofOfTrust } from "../components/ProofOfTrust";
 import { LINKS } from "../lib/site";
 
 export const metadata: Metadata = {
@@ -19,6 +20,10 @@ scenarios: [iso-certification-loop]
 demo_video: https://…
 download: https://…        # mobile: direct APK · web/cloud: URL
 contact: you@example.org`;
+
+const POT_USAGE_EXAMPLE = `<ProofOfTrust serviceId="…" />
+
+// GET /api/pot/:serviceId → { service, did, pot }`;
 
 export default function Integrate() {
   return (
@@ -107,6 +112,72 @@ export default function Integrate() {
             <Button href={LINKS.spec} variant="ghost" external>
               Full spec ↗
             </Button>
+          </div>
+        </Container>
+      </Section>
+
+      <Section className="border-t border-gray-200">
+        <Container className="space-y-8">
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h2 className="text-xl font-bold text-gray-900">Proof-of-Trust UI kit</h2>
+            <p className="mt-2 text-sm leading-relaxed text-gray-500">
+              Every wallet page on this playground renders the same
+              five-block card, live against the testnet. Reproduce it as-is.
+            </p>
+
+            <p className="mt-6 text-xs font-semibold uppercase tracking-wider text-gray-400">
+              Reference rendering
+            </p>
+            <div className="mt-2">
+              <ProofOfTrust serviceId="organization-vs" />
+            </div>
+            <p className="mt-2 text-xs text-gray-400">
+              This is the reference every wallet integration reproduces.
+            </p>
+
+            <ol className="mt-6 space-y-2 text-sm text-gray-600">
+              <li>
+                <strong className="text-gray-900">1 · Status band</strong> —
+                verdict pill, DID, evaluation time/block, TESTNET chip.
+              </li>
+              <li>
+                <strong className="text-gray-900">2 · Service</strong> —
+                ECS-Service claims.
+              </li>
+              <li>
+                <strong className="text-gray-900">3 · Operated by</strong> —
+                ECS-Organization/Persona claims.
+              </li>
+              <li>
+                <strong className="text-gray-900">4 · Other credentials</strong>{" "}
+                — per-entry valid/invalid marks.
+              </li>
+              <li>
+                <strong className="text-gray-900">5 · Trust chain &amp; failures</strong>{" "}
+                — expandable; failures are first-class content.
+              </li>
+            </ol>
+
+            <pre className="mt-5 overflow-x-auto rounded-xl bg-gray-900 p-4 font-mono text-xs leading-relaxed text-gray-100">
+              {POT_USAGE_EXAMPLE}
+            </pre>
+            <p className="mt-3 text-sm text-gray-500">
+              Component source:{" "}
+              <a
+                className="text-violet-600 underline"
+                href="https://github.com/verana-labs/playground/blob/main/app/components/ProofOfTrust.tsx"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                ProofOfTrust.tsx ↗
+              </a>
+            </p>
+            <p className="mt-4 text-sm text-gray-500">
+              The kit is self-contained: the component,{" "}
+              <code>app/lib/resolver.ts</code>,{" "}
+              <code>app/lib/demo-services.ts</code>, and the API route travel
+              together, so it drops into any site as-is.
+            </p>
           </div>
         </Container>
       </Section>

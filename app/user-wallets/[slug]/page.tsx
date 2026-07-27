@@ -4,7 +4,6 @@ import { Download, Github, PlayCircle } from "lucide-react";
 import {
   Container,
   Section,
-  Chip,
   Breadcrumb,
   Placeholder,
 } from "../../components/ui";

@@ -29,4 +29,20 @@ describe("demo services", () => {
     expect(getDemoService("keycloak-auth")?.label).toBe("Keycloak Auth (demo)");
     vi.unstubAllEnvs();
   });
+
+  it("drops malformed extras and survives garbage env", () => {
+    vi.stubEnv("DEMO_SERVICES_EXTRA", JSON.stringify([
+      { id: "good", label: "Good (demo)", host: "good.example", role: "issuer" },
+      { label: "no id", host: "x.example" },
+      { id: "no-host" },
+      null,
+      "string-entry",
+    ]));
+    expect(getDemoService("good")?.host).toBe("good.example");
+    expect(getDemoService("no-host")).toBeUndefined();
+    vi.stubEnv("DEMO_SERVICES_EXTRA", "{not json");
+    expect(getDemoService("organization-vs")).toBeDefined();
+    expect(getDemoService("good")).toBeUndefined();
+    vi.unstubAllEnvs();
+  });
 });

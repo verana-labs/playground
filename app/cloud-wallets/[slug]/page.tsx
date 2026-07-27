@@ -8,6 +8,7 @@ import {
   Breadcrumb,
   Placeholder,
 } from "../../components/ui";
+import { ProofOfTrust } from "../../components/ProofOfTrust";
 import {
   cloudWallets,
   userWallets,
@@ -18,6 +19,8 @@ import { LINKS } from "../../lib/site";
 // Per-cloud-wallet playground page — the identical template of spec §5:
 // breadcrumb · header · the hosted demo service · the use case to test ·
 // under the hood. Generated from integration.yaml.
+
+const CLOUD_SERVICE_IDS: Record<string, string> = { "vs-agent": "organization-vs" };
 
 export function generateStaticParams() {
   return cloudWallets().map((w) => ({ slug: w.slug }));
@@ -42,6 +45,7 @@ export default async function CloudWalletPlayground({
   const w = getIntegration(slug);
   if (!w || w.kind !== "cloud-wallet") notFound();
   const pickers = userWallets();
+  const liveServiceId = CLOUD_SERVICE_IDS[w.slug];
 
   return (
     <>
@@ -107,11 +111,32 @@ export default async function CloudWalletPlayground({
       <Section>
         <Container className="space-y-8">
           {/* 3 · The hosted demo service */}
-          <Placeholder title="1 · The hosted demo service">
-            A standing service run by {w.name}, Verana-verified: its DID and
-            live Proof-of-Trust card (TRUSTED · ECS-Org · ECS-Service · demo
-            credential) will render here, resolved on page load.
-          </Placeholder>
+          {liveServiceId ? (
+            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-2 flex items-center gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+                  1
+                </span>
+                <h2 className="text-lg font-bold text-gray-900">
+                  The hosted demo service
+                </h2>
+              </div>
+              <p className="ml-11 mb-4 text-sm text-gray-500">
+                A standing service run by {w.name}, Verana-verified — its DID
+                and live Proof-of-Trust, resolved against the testnet on page
+                load.
+              </p>
+              <div className="ml-11">
+                <ProofOfTrust serviceId={liveServiceId} />
+              </div>
+            </div>
+          ) : (
+            <Placeholder title="1 · The hosted demo service">
+              A standing service run by {w.name}, Verana-verified: its DID and
+              live Proof-of-Trust card (TRUSTED · ECS-Org · ECS-Service · demo
+              credential) will render here, resolved on page load.
+            </Placeholder>
+          )}
 
           {/* 4 · The use case to test */}
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">

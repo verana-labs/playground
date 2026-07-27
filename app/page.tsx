@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { Container, Section, SectionHeading, Chip } from "./components/ui";
 import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
+import { ProofOfTrust } from "./components/ProofOfTrust";
 import { userWallets, cloudWallets } from "./lib/integrations";
 import { LINKS, ENDPOINTS } from "./lib/site";
 
@@ -175,6 +176,12 @@ export default function Home() {
               <a className="hover:text-violet-700 hover:underline" href={LINKS.vprSpecV3} target="_blank" rel="noopener noreferrer">VPR spec ↗</a>
               <a className="hover:text-violet-700 hover:underline" href={ENDPOINTS.frontend} target="_blank" rel="noopener noreferrer">app.testnet ↗</a>
             </p>
+          </div>
+          <div className="reveal mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
+              Live from the testnet
+            </h3>
+            <ProofOfTrust serviceId="issuer-web-vs" title="Live from the testnet" />
           </div>
         </Container>
       </Section>

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { listIntegrations, userWallets } from "./integrations";
+import { parseIntegration } from "./integration-schema";
 
 describe("integration registry", () => {
   it("loads every descriptor directory", () => {
@@ -10,5 +11,29 @@ describe("integration registry", () => {
 
   it("classifies kinds", () => {
     for (const w of userWallets()) expect(w.kind).toBe("user-wallet");
+  });
+});
+
+describe("descriptor validation", () => {
+  it("rejects a descriptor missing kind", () => {
+    expect(() => parseIntegration({ name: "X" }, "x")).toThrow(/x/);
+  });
+
+  it("rejects an unknown kind", () => {
+    expect(() =>
+      parseIntegration({ name: "X", kind: "browser-extension" }, "x"),
+    ).toThrow(/kind/);
+  });
+
+  it("accepts the hologram descriptor shape", () => {
+    expect(() =>
+      parseIntegration(
+        { name: "H", organization: "2060", kind: "user-wallet", track: "native",
+          license: "Apache-2.0", repo: "https://github.com/2060-io/hologram-app",
+          download: "https://example.com", scenarios: ["iso-certification-loop"],
+          badge_loop: "live" },
+        "hologram",
+      ),
+    ).not.toThrow();
   });
 });

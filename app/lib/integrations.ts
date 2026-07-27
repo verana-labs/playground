@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
+import { parseIntegration } from "./integration-schema";
 
 export type IntegrationKind = "user-wallet" | "cloud-wallet";
 
@@ -33,32 +34,39 @@ export type Integration = {
 
 const REGISTRY_DIR = path.join(process.cwd(), "integrations");
 
+let cache: Integration[] | null = null;
+
 export function listIntegrations(): Integration[] {
-  if (!fs.existsSync(REGISTRY_DIR)) return [];
+  if (cache) return cache;
+  if (!fs.existsSync(REGISTRY_DIR)) {
+    cache = [];
+    return cache;
+  }
   const out: Integration[] = [];
   for (const slug of fs.readdirSync(REGISTRY_DIR).sort()) {
     const file = path.join(REGISTRY_DIR, slug, "integration.yaml");
     if (!fs.existsSync(file)) continue;
-    const raw = yaml.load(fs.readFileSync(file, "utf8")) as Partial<Integration>;
-    if (!raw || !raw.name || !raw.kind) continue;
+    const raw = yaml.load(fs.readFileSync(file, "utf8"));
+    const data = parseIntegration(raw, slug);
     out.push({
       slug,
-      name: raw.name,
-      organization: raw.organization ?? "",
-      kind: raw.kind,
-      repo: raw.repo ?? "",
-      license: raw.license ?? "",
-      track: raw.track ?? "",
-      scenarios: raw.scenarios ?? [],
-      demo_video: raw.demo_video,
-      download: raw.download,
-      appstore: raw.appstore,
-      playstore: raw.playstore,
-      contact: raw.contact,
-      badge_loop: raw.badge_loop ?? "coming",
-      notes: raw.notes,
+      name: data.name,
+      organization: data.organization ?? "",
+      kind: data.kind,
+      repo: data.repo ?? "",
+      license: data.license ?? "",
+      track: data.track ?? "",
+      scenarios: data.scenarios ?? [],
+      demo_video: data.demo_video,
+      download: data.download,
+      appstore: data.appstore,
+      playstore: data.playstore,
+      contact: typeof data.contact === "string" ? data.contact : undefined,
+      badge_loop: data.badge_loop ?? "coming",
+      notes: data.notes,
     });
   }
+  cache = out;
   return out;
 }
 

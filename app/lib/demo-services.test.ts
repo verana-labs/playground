@@ -18,6 +18,18 @@ describe("demo services", () => {
     expect(await serviceDid("x")).toBe("did:webvh:Qm:x");
   });
 
+  it("picks the string did:webvh candidate among junk entries", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(new Response(JSON.stringify({
+      id: { nope: true }, alsoKnownAs: [42, "did:webvh:ok"] }), { status: 200 }))));
+    expect(await serviceDid("x")).toBe("did:webvh:ok");
+  });
+
+  it("returns null when no did document field is a usable string", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(new Response(JSON.stringify({
+      id: { nope: true }, alsoKnownAs: [42] }), { status: 200 }))));
+    expect(await serviceDid("x")).toBeNull();
+  });
+
   it("returns null on failure", async () => {
     vi.stubGlobal("fetch", vi.fn(() => Promise.reject(new Error("down"))));
     expect(await serviceDid("x")).toBeNull();

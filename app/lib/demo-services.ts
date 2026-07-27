@@ -33,8 +33,13 @@ export async function serviceDid(host: string): Promise<string | null> {
     const res = await fetch(`https://${host}/.well-known/did.json`, {
       signal: AbortSignal.timeout(10_000), next: { revalidate: 600 } });
     if (!res.ok) return null;
-    const doc = (await res.json()) as { id?: string; alsoKnownAs?: string[] };
-    return doc.alsoKnownAs?.find((a) => a.startsWith("did:webvh:")) ?? doc.id ?? null;
+    const doc = (await res.json()) as { id?: unknown; alsoKnownAs?: unknown };
+    const aka = Array.isArray(doc.alsoKnownAs)
+      ? doc.alsoKnownAs.find(
+          (a): a is string => typeof a === "string" && a.startsWith("did:webvh:"),
+        )
+      : undefined;
+    return aka ?? (typeof doc.id === "string" ? doc.id : null);
   } catch {
     return null;
   }

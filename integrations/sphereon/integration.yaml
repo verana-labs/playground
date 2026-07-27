@@ -5,6 +5,7 @@ repo: https://github.com/Sphereon-Opensource/mobile-wallet
 license: Apache-2.0
 track: bridge
 scenarios: [iso-certification-loop]
+# TODO(maxime): direct APK release link (release pending)
 download: https://github.com/AirKyzzZ/sphereon-mobile-wallet-verana
 badge_loop: coming
 notes: Verana trust card on contact creation for did:webvh-identified verifiers.

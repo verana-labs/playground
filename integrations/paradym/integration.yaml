@@ -8,4 +8,4 @@ scenarios: [iso-certification-loop]
 # TODO(maxime): direct APK release link (artifact exists, release pending)
 download: https://github.com/AirKyzzZ/paradym-wallet-verana
 badge_loop: coming
-notes: Verana trust integration on the Credo trust-mechanism hooks. Badge flow activates when OpenID4VC issuance lands for ECS-Badge.
+notes: Verana trust integration in Paradym's SDK trust-mechanism registry (Credo-TS wallet). Badge flow activates when OpenID4VC issuance lands for ECS-Badge.

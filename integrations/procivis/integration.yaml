@@ -5,6 +5,6 @@ repo: https://github.com/procivis/one-wallet
 license: Apache-2.0
 track: bridge
 scenarios: [iso-certification-loop]
-download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/tag/verana-2026-07-26
+download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/download/verana-2026-07-26/procivis-one-wallet-verana-dev-debug.apk
 badge_loop: coming
 notes: Q1+Q2/Q3 in the Rust core with typed verdicts and a trust dossier in the wallet UI.

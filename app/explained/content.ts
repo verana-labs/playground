@@ -60,7 +60,7 @@ export const STEP_PAGES: StepPage[] = [
           `Query the trust resolver: ${resolver}/v1/trust/resolve?did=<your-did> — status UNTRUSTED. That's the starting line.`,
         ],
         links: [
-          { label: "vs-agent", href: "https://github.com/2060-io/vs-agent" },
+          { label: "vs-agent", href: "https://github.com/verana-labs/vs-agent" },
           { label: "verana-demos · organization-vs", href: LINKS.veranaDemos },
         ],
       },

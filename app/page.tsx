@@ -191,7 +191,7 @@ export default function Home() {
             {STEPS.map((s) => (
               <Link
                 key={s.n}
-                href={`/explained#step-${s.n}`}
+                href={`/explained/step-${s.n}`}
                 className="group flex flex-col rounded-xl border border-gray-200 bg-gray-50 p-5 transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">

@@ -6,6 +6,7 @@ import {
   Placeholder,
   Breadcrumb,
 } from "../components/ui";
+import ServiceTrustCard from "../components/ServiceTrustCard";
 import { LINKS } from "../lib/site";
 
 export const metadata: Metadata = {
@@ -141,6 +142,15 @@ export default function Explained() {
                   </li>
                 ))}
               </ul>
+            ) : null}
+            {s.n === 1 ? (
+              <div className="mt-6 max-w-3xl">
+                <p className="mb-3 text-sm font-medium text-gray-700">
+                  Live right now — the ACME anchor&apos;s trust card, resolved
+                  against the public registry:
+                </p>
+                <ServiceTrustCard serviceId="organization-vs" />
+              </div>
             ) : null}
             <div className="mt-6 max-w-3xl">
               {s.pending ? (

@@ -8,6 +8,7 @@ import {
   Breadcrumb,
   Placeholder,
 } from "../../components/ui";
+import ServiceTrustCard from "../../components/ServiceTrustCard";
 import {
   cloudWallets,
   userWallets,
@@ -107,11 +108,31 @@ export default async function CloudWalletPlayground({
       <Section>
         <Container className="space-y-8">
           {/* 3 · The hosted demo service */}
-          <Placeholder title="1 · The hosted demo service">
-            A standing service run by {w.name}, Verana-verified: its DID and
-            live Proof-of-Trust card (TRUSTED · ECS-Org · ECS-Service · demo
-            credential) will render here, resolved on page load.
-          </Placeholder>
+          {w.demo_service ? (
+            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+                  1
+                </span>
+                <h2 className="text-lg font-bold text-gray-900">
+                  The hosted demo service
+                </h2>
+              </div>
+              <p className="mb-4 ml-11 text-sm text-gray-500">
+                A standing service run by {w.name}, trust-resolved against the
+                public registry <em>right now</em>:
+              </p>
+              <div className="ml-11">
+                <ServiceTrustCard serviceId={w.demo_service} />
+              </div>
+            </div>
+          ) : (
+            <Placeholder title="1 · The hosted demo service">
+              A standing service run by {w.name}, Verana-verified: its DID and
+              live Proof-of-Trust card (TRUSTED · ECS-Org · ECS-Service · demo
+              credential) will render here, resolved on page load.
+            </Placeholder>
+          )}
 
           {/* 4 · The use case to test */}
           <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">

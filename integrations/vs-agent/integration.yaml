@@ -9,4 +9,5 @@ track: native # the reference Verifiable Service runtime (also the sidecar for o
 scenarios: [iso-certification-loop]
 download: https://github.com/verana-labs/vs-agent
 badge_loop: live
+demo_service: organization-vs # the ACME anchor it hosts (verana-demos)
 notes: Reference cloud wallet — the runtime behind the ACME demo services (verana-demos).

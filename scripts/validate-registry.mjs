@@ -1,10 +1,11 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import yaml from "js-yaml";
 
 const dir = join(process.cwd(), "integrations");
 let failed = false;
 for (const slug of readdirSync(dir)) {
+  if (!statSync(join(dir, slug)).isDirectory()) continue;
   try {
     const raw = yaml.load(readFileSync(join(dir, slug, "integration.yaml"), "utf8"), { schema: yaml.JSON_SCHEMA });
     if (!raw?.name || !["user-wallet", "cloud-wallet"].includes(raw.kind))

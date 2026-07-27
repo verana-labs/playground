@@ -51,7 +51,6 @@ export function listIntegrations(): Integration[] {
       license: raw.license ?? "",
       track: raw.track ?? "",
       scenarios: raw.scenarios ?? [],
-      logo: raw.logo,
       demo_video: raw.demo_video,
       download: raw.download,
       appstore: raw.appstore,

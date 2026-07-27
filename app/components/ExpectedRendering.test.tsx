@@ -3,22 +3,20 @@ import { describe, expect, it } from "vitest";
 import { ExpectedRendering } from "./ExpectedRendering";
 
 describe("ExpectedRendering", () => {
-  it("renders the issue verdict sentence", () => {
+  it("renders the issue verdict sentence in the emerald tone", () => {
     render(<ExpectedRendering kind="issue" />);
-    expect(
-      screen.getByText(
-        "✅ Example Issuer (demo) is an authorized issuer of ECS-Badge in the ECS Ecosystem.",
-      ),
-    ).toBeDefined();
+    const pill = screen.getByText(
+      "✅ Example Issuer (demo) is an authorized issuer of ECS-Badge in the ECS Ecosystem.",
+    );
+    expect(pill.closest("div")?.className).toMatch(/text-emerald-700/);
   });
 
-  it("renders the present verdict sentence", () => {
+  it("renders the present verdict sentence in the emerald tone", () => {
     render(<ExpectedRendering kind="present" />);
-    expect(
-      screen.getByText(
-        "✅ Example Web Verifier (demo) is an authorized verifier of ECS-Badge in the ECS Ecosystem.",
-      ),
-    ).toBeDefined();
+    const pill = screen.getByText(
+      "✅ Example Web Verifier (demo) is an authorized verifier of ECS-Badge in the ECS Ecosystem.",
+    );
+    expect(pill.closest("div")?.className).toMatch(/text-emerald-700/);
   });
 
   it("renders the issue-refused verdict sentence in the red tone", () => {

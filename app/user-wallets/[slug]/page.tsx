@@ -190,10 +190,17 @@ export default async function UserWalletPlayground({
               3 · Log in with your badge
             </h2>
             <div className="grid gap-6 md:grid-cols-2">
-              <Placeholder title="Scan to log in">
-                The AnonCreds/DIDComm login flow reaches this wallet soon —
-                resolve & connect already work
-              </Placeholder>
+              {w.badge_loop === "live" ? (
+                <Placeholder title="Scan to log in">
+                  Scan from the ACME login service — QR wiring lands with the
+                  login service
+                </Placeholder>
+              ) : (
+                <Placeholder title="Scan to log in">
+                  The AnonCreds/DIDComm login flow reaches this wallet soon —
+                  resolve & connect already work
+                </Placeholder>
+              )}
               <div className="space-y-4">
                 <ExpectedRendering kind="present" />
                 <ProofOfTrust

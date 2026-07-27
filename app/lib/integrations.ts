@@ -61,7 +61,7 @@ export function listIntegrations(): Integration[] {
       download: data.download,
       appstore: data.appstore,
       playstore: data.playstore,
-      contact: typeof data.contact === "string" ? data.contact : undefined,
+      contact: data.contact,
       badge_loop: data.badge_loop ?? "coming",
       notes: data.notes,
     });

@@ -36,4 +36,12 @@ describe("descriptor validation", () => {
       ),
     ).not.toThrow();
   });
+
+  it("requires a download link for a user-wallet", () => {
+    expect(() => parseIntegration({ name: "X", kind: "user-wallet" }, "x")).toThrow(/download/);
+  });
+
+  it("accepts a cloud-wallet without a download link", () => {
+    expect(() => parseIntegration({ name: "X", kind: "cloud-wallet" }, "x")).not.toThrow();
+  });
 });

@@ -16,8 +16,18 @@ export const IntegrationSchema = z
     logo: z.string().optional(),
     badge_loop: z.enum(["live", "coming"]).optional(),
     notes: z.string().optional(),
+    contact: z.string().optional(),
   })
-  .passthrough();
+  .passthrough()
+  .superRefine((d, ctx) => {
+    if (d.kind === "user-wallet" && !d.download) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["download"],
+        message: "user-wallet requires a download link",
+      });
+    }
+  });
 
 export type IntegrationData = z.infer<typeof IntegrationSchema>;
 

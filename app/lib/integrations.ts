@@ -19,6 +19,7 @@ export type Integration = {
   /** user wallets: native | bridge · cloud wallets: native | sidecar | bridge */
   track: string;
   scenarios: string[];
+  logo?: string;
   demo_video?: string;
   /** Mobile user wallet: direct APK link (stores may complement). Web wallet
    *  or cloud wallet: URL. */
@@ -27,7 +28,7 @@ export type Integration = {
   playstore?: string;
   contact?: string;
   /** Which parts of the playground template are live for this wallet. */
-  badge_loop?: "live" | "coming";
+  badge_loop?: string;
   notes?: string;
 };
 

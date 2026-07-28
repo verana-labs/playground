@@ -780,6 +780,11 @@ export default function Explained() {
                     <div className="text-sm font-medium text-gray-400">
                       {e.label}
                     </div>
+                    {"about" in e && e.about ? (
+                      <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                        {e.about}
+                      </p>
+                    ) : null}
                     <p className="mt-2 text-sm leading-relaxed text-gray-600">
                       <span className="font-semibold text-gray-800">
                         Why Vesta joins:

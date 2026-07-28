@@ -187,7 +187,7 @@ export const NODES: SceneNode[] = [
     icon: "landmark",
     tone: "violet",
     appears: "3.2",
-    label: "ECS Ecosystem",
+    label: "Verana ECS Ecosystem",
     sub: "identity credentials - the green check",
   },
   {

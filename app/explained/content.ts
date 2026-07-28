@@ -212,9 +212,11 @@ export const ECOSYSTEM_CHOICES = [
     icon: "landmark",
     tone: "violet",
     role: "HOLDER",
-    name: "ECS Ecosystem",
+    name: "Verana ECS Ecosystem",
     label: "the identity card",
-    why: "Governs the essential credentials: ECS-Organization (who you are, verified once by an accredited issuer) and ECS-Service (what each service is). This is what turns the check green; without it, nothing else can be proven.",
+    about:
+      "A trust ecosystem that governs the essential credential schemas. Its accredited issuers provide recognized KYB (Know-Your-Business) services: they verify an organization once, then issue it a certified ECS-Organization credential. Services carry ECS-Service credentials describing what they are and who operates them.",
+    why: "one KYB with a recognized issuer, and Vesta's identity becomes provable everywhere: this is what turns the check green, and the foundation everything else builds on.",
   },
   {
     icon: "award",
@@ -295,7 +297,7 @@ export const TECH_SECTIONS: TechSection[] = [
         title: "Joining ECS: proving who they are - once",
         kind: "watch",
         story:
-          "Vesta joins the ECS Ecosystem on the Organization schema and passes Know-Your-Business once, over DIDComm, with an accredited issuer. The issuer verifies the company and issues the ECS-Organization credential to Vesta's DID. The anchor finally has a name that is proven, not claimed.",
+          "Vesta joins the Verana ECS Ecosystem on the Organization schema and passes Know-Your-Business once, over DIDComm, with an accredited issuer. The issuer verifies the company and issues the ECS-Organization credential to Vesta's DID. The anchor finally has a name that is proven, not claimed.",
         underHood: [
           "Joining creates a HOLDER permission on the Organization schema via Start Permission VP - the validator is the issuer you joined under.",
           "After KYB, the issuer confirms with Set Permission VP to Validated; the permission becomes ACTIVE in the public tree.",

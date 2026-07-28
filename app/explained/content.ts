@@ -21,6 +21,7 @@ export const VESTA_ASSETS = {
   hero: "/images/factory.webp" as string | null,
   heroCaption: "Vesta's assembly line - forty years of machines built to be repaired, not replaced.",
   lineup: "/images/lineup.webp" as string | null,
+  cto: null as string | null, // e.g. "/images/cto.webp"
   lineupCaption: "The Vesta range: washer, oven, dryer - three product lines, one promise.",
   fakeVan: "/images/fake-van3.webp" as string | null,
 };
@@ -127,8 +128,11 @@ export const REPAIR_NETWORK = {
 
 export const SOLUTION = {
   title: "Elena's solution to Vesta's issues",
-  statement:
-    "Make Vesta and its partner network a network of verifiable organizations, providing verifiable services.",
+  ctoQuote: {
+    text: "Make Vesta and its partner network a network of verifiable organizations, providing verifiable services.",
+    name: "Marc Keller",
+    role: "CTO, Vesta Appliances",
+  },
   pillarsTitle: "Possible thanks to Verana",
   pillarsIntro:
     "Verana is a public infrastructure that generalizes the use of verifiable credentials, and provides out of the box:",

@@ -638,11 +638,42 @@ export default function Explained() {
       {/* §2 · Elena's solution: pillars + the ecosystems Vesta wants to join */}
       <Section id="section-2" className="border-t border-gray-200 bg-white">
         <Container className="max-w-4xl">
-          <SectionHeading
-            number={2}
-            title={SOLUTION.title}
-            subtitle={SOLUTION.statement}
-          />
+          <SectionHeading number={2} title={SOLUTION.title} />
+
+          {/* The CTO's line */}
+          <figure className="mb-12 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+            <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
+              <figcaption className="shrink-0 text-center">
+                {VESTA_ASSETS.cto ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={VESTA_ASSETS.cto}
+                    alt={SOLUTION.ctoQuote.name}
+                    className="mx-auto h-40 w-32 rounded-2xl object-cover object-top shadow-md"
+                  />
+                ) : (
+                  <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-violet-100 text-xl font-bold text-violet-700">
+                    {SOLUTION.ctoQuote.name
+                      .split(" ")
+                      .map((w) => w[0])
+                      .join("")}
+                  </span>
+                )}
+                <div className="mt-3 text-sm font-semibold text-gray-900">
+                  {SOLUTION.ctoQuote.name}
+                </div>
+                <div className="text-sm text-gray-500">
+                  {SOLUTION.ctoQuote.role}
+                </div>
+              </figcaption>
+              <div>
+                <Quote className="h-6 w-6 text-violet-400" aria-hidden />
+                <blockquote className="mt-3 text-xl font-medium leading-relaxed text-gray-800">
+                  “{SOLUTION.ctoQuote.text}”
+                </blockquote>
+              </div>
+            </div>
+          </figure>
 
           {/* Possible thanks to Verana */}
           <div>

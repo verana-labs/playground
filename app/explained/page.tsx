@@ -54,7 +54,7 @@ const PILLAR_TONES = {
   emerald: "border-emerald-200 bg-emerald-50/60 text-emerald-700",
 } as const;
 
-function VestaLogo({ className = "h-14 w-14" }: { className?: string }) {
+function VestaLogo({ className = "h-[84px] w-[84px]" }: { className?: string }) {
   if (VESTA_ASSETS.logo) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
@@ -354,7 +354,7 @@ export default function Explained() {
             </h3>
             <div className="mt-6 flex flex-col items-center">
               <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-3 shadow-sm">
-                <VestaLogo className="h-8 w-8" />
+                <VestaLogo className="h-12 w-12" />
                 <div>
                   <div className="text-sm font-bold text-gray-900">
                     {COMPANY.name}

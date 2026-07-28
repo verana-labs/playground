@@ -30,6 +30,9 @@ export type Integration = {
   contact?: string;
   /** Which parts of the playground template are live for this wallet. */
   badge_loop?: string;
+  /** Cloud wallets: id of the standing demo service it hosts (from the
+   *  verana-demos cast), rendered as a live Proof-of-Trust on its page. */
+  demo_service?: string;
   notes?: string;
 };
 
@@ -65,6 +68,7 @@ export function listIntegrations(): Integration[] {
       playstore: data.playstore,
       contact: data.contact,
       badge_loop: data.badge_loop ?? "coming",
+      demo_service: data.demo_service,
       notes: data.notes,
     });
   }

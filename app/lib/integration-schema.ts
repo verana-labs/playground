@@ -15,6 +15,7 @@ export const IntegrationSchema = z
     demo_video: z.string().url().optional(),
     logo: z.string().optional(),
     badge_loop: z.enum(["live", "coming"]).optional(),
+    demo_service: z.string().optional(),
     notes: z.string().optional(),
     contact: z.string().optional(),
   })

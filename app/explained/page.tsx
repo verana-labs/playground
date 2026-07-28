@@ -29,6 +29,7 @@ import {
   PILLARS,
   REPAIR_NETWORK,
   SECTIONS_NAV,
+  SOLUTION,
   TECH_SECTIONS,
   VESTA_ASSETS,
   type SubStep,
@@ -630,97 +631,102 @@ export default function Explained() {
         </Container>
       </Section>
 
-      {/* §2 · Why Verana - the three pillars */}
+      {/* §2 · Elena's solution: pillars + the ecosystems Vesta wants to join */}
       <Section id="section-2" className="border-t border-gray-200 bg-white">
         <Container className="max-w-4xl">
           <SectionHeading
             number={2}
-            title="Why Verana"
-            subtitle="The three pillars of the open trust layer - as on verana.io"
+            title={SOLUTION.title}
+            subtitle={SOLUTION.statement}
           />
-          <div className="reveal-stagger grid gap-4 sm:grid-cols-3">
-            {PILLARS.map((p) => (
-              <a
-                key={p.name}
-                href={p.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`group rounded-2xl border p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${PILLAR_TONES[p.tone]}`}
-              >
-                <div className="text-xs font-semibold uppercase tracking-wider opacity-70">
-                  {p.label}
-                </div>
-                <div className="mt-1 text-lg font-bold text-gray-900">
-                  {p.name}
-                </div>
-                <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                  {p.body}
-                </p>
-              </a>
-            ))}
-          </div>
-          <p className="reveal mt-6 rounded-2xl border border-violet-100 bg-violet-50/60 px-6 py-5 text-center text-base font-medium text-violet-900">
-            {FACTS}
-          </p>
-        </Container>
-      </Section>
 
-      {/* §3 · The ecosystems Vesta wants to join */}
-      <Section id="section-3" className="border-t border-gray-200">
-        <Container className="max-w-4xl">
-          <SectionHeading
-            number={3}
-            title="The ecosystems Vesta wants to join"
-            subtitle="Vesta picks the two it needs - and discovers a gap only it can fill"
-          />
-          <div className="reveal-stagger grid gap-4 sm:grid-cols-2">
-            {ECOSYSTEM_CHOICES.map((e) => {
-              const Icon = e.icon === "landmark" ? Landmark : Award;
-              const chipTone =
-                e.tone === "violet"
-                  ? "bg-violet-50 text-violet-700"
-                  : "bg-amber-50 text-amber-700";
-              return (
-                <div
-                  key={e.name}
-                  className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
+          {/* Possible thanks to Verana */}
+          <div>
+            <SubHeading>{SOLUTION.pillarsTitle}</SubHeading>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+              {SOLUTION.pillarsIntro}
+            </p>
+            <div className="reveal-stagger mt-6 grid gap-4 sm:grid-cols-3">
+              {PILLARS.map((p) => (
+                <a
+                  key={p.name}
+                  href={p.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`group rounded-2xl border p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md ${PILLAR_TONES[p.tone]}`}
                 >
-                  <span
-                    className={`flex h-11 w-11 items-center justify-center rounded-xl ${chipTone}`}
-                  >
-                    <Icon className="h-5 w-5" />
-                  </span>
-                  <div className="mt-3 text-lg font-bold text-gray-900">
-                    {e.name}
+                  <div className="text-xs font-semibold uppercase tracking-wider opacity-70">
+                    {p.label}
                   </div>
-                  <div className="text-sm font-medium text-gray-400">
-                    {e.label}
+                  <div className="mt-1 text-lg font-bold text-gray-900">
+                    {p.name}
                   </div>
                   <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                    <span className="font-semibold text-gray-800">
-                      Why Vesta joins:
-                    </span>{" "}
-                    {e.why}
+                    {p.body}
                   </p>
-                </div>
-              );
-            })}
+                </a>
+              ))}
+            </div>
+            <p className="reveal mt-6 rounded-2xl border border-violet-100 bg-violet-50/60 px-6 py-5 text-center text-base font-medium text-violet-900">
+              {FACTS}
+            </p>
           </div>
-          <p className="reveal mt-4 rounded-2xl border-2 border-dashed border-red-200 bg-red-50/40 px-6 py-4 text-center text-sm font-medium text-red-700">
-            {ECOSYSTEM_GAP}
-          </p>
+
+          {/* The ecosystems Vesta wants to join */}
+          <div className="mt-14">
+            <SubHeading>{SOLUTION.ecosystemsTitle}</SubHeading>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+              {SOLUTION.ecosystemsIntro}
+            </p>
+            <div className="reveal-stagger mt-6 grid gap-4 sm:grid-cols-2">
+              {ECOSYSTEM_CHOICES.map((e) => {
+                const Icon = e.icon === "landmark" ? Landmark : Award;
+                const chipTone =
+                  e.tone === "violet"
+                    ? "bg-violet-50 text-violet-700"
+                    : "bg-amber-50 text-amber-700";
+                return (
+                  <div
+                    key={e.name}
+                    className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
+                  >
+                    <span
+                      className={`flex h-11 w-11 items-center justify-center rounded-xl ${chipTone}`}
+                    >
+                      <Icon className="h-5 w-5" />
+                    </span>
+                    <div className="mt-3 text-lg font-bold text-gray-900">
+                      {e.name}
+                    </div>
+                    <div className="text-sm font-medium text-gray-400">
+                      {e.label}
+                    </div>
+                    <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                      <span className="font-semibold text-gray-800">
+                        Why Vesta joins:
+                      </span>{" "}
+                      {e.why}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+            <p className="reveal mt-4 rounded-2xl border-2 border-dashed border-red-200 bg-red-50/40 px-6 py-4 text-center text-sm font-medium text-red-700">
+              {ECOSYSTEM_GAP}
+            </p>
+          </div>
         </Container>
       </Section>
 
-      {/* §4–§6 · The technical build */}
+      {/* §3–§5 · The technical build */}
       {TECH_SECTIONS.map((sec, i) => (
         <Section
           key={sec.anchor}
           id={sec.anchor}
           className={
             i % 2 === 0
-              ? "border-t border-gray-200 bg-white"
-              : "border-t border-gray-200"
+              ? "border-t border-gray-200"
+              : "border-t border-gray-200 bg-white"
           }
         >
           <Container className="max-w-4xl">

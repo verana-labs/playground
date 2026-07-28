@@ -1,7 +1,7 @@
 // The full "Verana Explained" story content - one single page, six sections.
 // Source of truth: verana-spec → playground/verana-explained/spec.md (0.5).
 // §1 is a marketing-style company article (no protocol vocabulary);
-// §2–§3 are short card sections; §4–§6 are the technical build with the
+// §2 is Elena's solution (pillars + ecosystem choices); §3–§5 are the technical build with the
 // progressive scene graph. Protocol facts target v3; reproduce recipes
 // follow the current verana-frontend UX: ecosystem → credential schema →
 // Participants tree → Join from the branch you want to join under.
@@ -123,7 +123,19 @@ export const REPAIR_NETWORK = {
     "The badge is real: training, audits, contracts stand behind it. But it lives on van doors, letterheads, and PDF certificates: online, anyone can print one, and there is no way to tell a certified partner from an impostor.",
 };
 
-// --------------------------------- §2 · Why Verana (the three pillars)
+// --------------------------------- §2 · Elena's solution
+
+export const SOLUTION = {
+  title: "Elena's solution to Vesta's issues",
+  statement:
+    "Make Vesta and its partner network a network of verifiable organizations, providing verifiable services.",
+  pillarsTitle: "Possible thanks to Verana",
+  pillarsIntro:
+    "Verana is a public infrastructure that generalizes the use of verifiable credentials, and provides out of the box:",
+  ecosystemsTitle: "The ecosystems Vesta wants to join",
+  ecosystemsIntro:
+    "Vesta picks the two it needs, and discovers a gap only it can fill.",
+};
 
 export const PILLARS = [
   {
@@ -172,9 +184,9 @@ export const ECOSYSTEM_CHOICES = [
 ] as const;
 
 export const ECOSYSTEM_GAP =
-  "Authorized repairers? No ecosystem governs that; only Vesta can. That is Section 6.";
+  "Authorized repairers? No ecosystem governs that; only Vesta can. That is Section 5.";
 
-// ----------------- §4–§6 · The technical build (scene graph sections)
+// ----------------- §3–§5 · The technical build (scene graph sections)
 
 export type SubStep = {
   id: string;
@@ -205,8 +217,8 @@ const CAST_NOTE =
 
 export const TECH_SECTIONS: TechSection[] = [
   {
-    n: 4,
-    anchor: "section-4",
+    n: 3,
+    anchor: "section-3",
     title: "Joining the ecosystems",
     intro:
       "The plan in action. The picture below is the world you just met - Vesta, its gray services, the impostors, a customer who can't tell. Watch it transform.",
@@ -214,8 +226,8 @@ export const TECH_SECTIONS: TechSection[] = [
       "What Vesta now has: a digital identity with two proven credentials - who it is, and that it is certified. But its services are still gray.",
     substeps: [
       {
-        id: "4.1",
-        stage: "4.1",
+        id: "3.1",
+        stage: "3.1",
         title: "Vesta gets its digital identity",
         kind: "watch",
         story:
@@ -235,8 +247,8 @@ export const TECH_SECTIONS: TechSection[] = [
         ],
       },
       {
-        id: "4.2",
-        stage: "4.2",
+        id: "3.2",
+        stage: "3.2",
         title: "Joining ECS: proving who they are - once",
         kind: "watch",
         story:
@@ -258,8 +270,8 @@ export const TECH_SECTIONS: TechSection[] = [
         ],
       },
       {
-        id: "4.3",
-        stage: "4.3",
+        id: "3.3",
+        stage: "3.3",
         title: "Joining ISO Certification: no re-KYB",
         kind: "watch",
         story:
@@ -276,8 +288,8 @@ export const TECH_SECTIONS: TechSection[] = [
     ],
   },
   {
-    n: 5,
-    anchor: "section-5",
+    n: 4,
+    anchor: "section-4",
     title: "Making the services verifiable",
     intro:
       "Credentials on an identity are only half the story - now the services people actually touch turn verifiable, and you take part with your own wallet.",
@@ -285,8 +297,8 @@ export const TECH_SECTIONS: TechSection[] = [
       "What Vesta now has: three verifiable services with badge login; the certification travels everywhere. Fake support and password phishing are dead; the paperwork problem is dying. One villain remains.",
     substeps: [
       {
-        id: "5.1",
-        stage: "5.1",
+        id: "3.1",
+        stage: "4.1",
         title: "The anchor turns green",
         kind: "watch",
         story:
@@ -304,8 +316,8 @@ export const TECH_SECTIONS: TechSection[] = [
         liveNote: CAST_NOTE,
       },
       {
-        id: "5.2",
-        stage: "5.2",
+        id: "4.2",
+        stage: "4.2",
         title: "Rolling it out: support, badges, login",
         kind: "hands-on",
         story:
@@ -333,8 +345,8 @@ export const TECH_SECTIONS: TechSection[] = [
     ],
   },
   {
-    n: 6,
-    anchor: "section-6",
+    n: 5,
+    anchor: "section-5",
     title: "Vesta creates its own ecosystem",
     intro:
       "The roles reverse. Umbra Repairs is still ringing doorbells - and no existing ecosystem can say who a genuine Vesta repairer is. Only Vesta can. So Vesta becomes a governance authority.",
@@ -342,16 +354,16 @@ export const TECH_SECTIONS: TechSection[] = [
       "What Vesta now has - the full circle: proven identity · verifiable services · portable certification · its own governed trust ecosystem. What Vesta consumed, Vesta now provides.",
     substeps: [
       {
-        id: "6.1",
-        stage: "6.1",
+        id: "5.1",
+        stage: "5.1",
         title: "Why: the last problem standing",
         kind: "story",
         story:
           "Fake support died with the green check. Password phishing died with the badge. Paperwork is dying with reusable KYB. But Umbra Repairs is still out there, because “who is an authorized Vesta repairer” is a question only Vesta can answer. In Verana, any organization can create its own ecosystem - an organization that consumed trust can also produce it.",
       },
       {
-        id: "6.2",
-        stage: "6.2",
+        id: "5.2",
+        stage: "5.2",
         title: "The Vesta Repair Network",
         kind: "watch",
         story:
@@ -370,8 +382,8 @@ export const TECH_SECTIONS: TechSection[] = [
         links: [{ label: "Verana app", href: app }],
       },
       {
-        id: "6.3",
-        stage: "6.3",
+        id: "5.3",
+        stage: "5.3",
         title: "Full circle - anyone can tell",
         kind: "hands-on",
         story:
@@ -402,48 +414,41 @@ export const CLOSING = {
   body: "Everything Vesta published - the ECS credentials, the ISO 9001 certification, the Authorized Repairer credentials - is public, resolvable, and indexable. The Trust Graph turns that into discovery: only verified trust results are indexed, and people, search engines, and AI agents find services by what they prove, not what they claim: “ISO 9001-certified manufacturers”, “authorized Vesta repairers”. The full walkthrough ships later.",
 };
 
-/** The six sections, for home cards and in-page navigation. */
+/** The five sections, for home cards and in-page navigation. */
 export const SECTIONS_NAV = [
   {
     n: 1,
     anchor: "section-1",
     title: "Meet Vesta Appliances",
     oneLiner:
-      "A real business, real services - and impostors trading on its name. Nothing can be proven.",
+      "A real business, real services, and impostors trading on its name. Nothing can be proven.",
   },
   {
     n: 2,
     anchor: "section-2",
-    title: "Why Verana",
+    title: "Elena's solution to Vesta's issues",
     oneLiner:
-      "The three pillars: Trust Ecosystems, Verifiable Trust, The Trust Graph - public, decentralized, no gatekeeper.",
+      "Make Vesta and its partner network a network of verifiable organizations: Verana's three pillars, and the ecosystems Vesta picks.",
   },
   {
     n: 3,
     anchor: "section-3",
-    title: "The ecosystems Vesta wants to join",
+    title: "Joining the ecosystems",
     oneLiner:
-      "ECS (the identity card) and ISO Certification (demo) - and the gap only Vesta can fill.",
+      "A DID is born; KYB once, then ECS-Organization; ISO 9001 with no re-KYB.",
   },
   {
     n: 4,
     anchor: "section-4",
-    title: "Joining the ecosystems",
+    title: "Making the services verifiable",
     oneLiner:
-      "A DID is born; KYB once → ECS-Organization; ISO 9001 with no re-KYB.",
+      "The check turns green; Agentic Support, badges, passwordless login: hands-on with your wallet.",
   },
   {
     n: 5,
     anchor: "section-5",
-    title: "Making the services verifiable",
-    oneLiner:
-      "The check turns green; support chat, badges, passwordless login - hands-on with your wallet.",
-  },
-  {
-    n: 6,
-    anchor: "section-6",
     title: "Vesta creates its own ecosystem",
     oneLiner:
-      "The Vesta Repair Network: only Vesta issues Authorized Repairer, anyone verifies - Zenith ✓, Umbra ✗.",
+      "The Vesta Repair Network: only Vesta issues Authorized Repairer, anyone verifies. Zenith ✓, Umbra ✗.",
   },
 ] as const;

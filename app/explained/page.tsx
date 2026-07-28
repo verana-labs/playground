@@ -6,7 +6,7 @@ import {
   Placeholder,
   Breadcrumb,
 } from "../components/ui";
-import ServiceTrustCard from "../components/ServiceTrustCard";
+import { ProofOfTrust } from "../components/ProofOfTrust";
 import { LINKS } from "../lib/site";
 
 export const metadata: Metadata = {
@@ -149,7 +149,7 @@ export default function Explained() {
                   Live right now — the ACME anchor&apos;s trust card, resolved
                   against the public registry:
                 </p>
-                <ServiceTrustCard serviceId="organization-vs" />
+                <ProofOfTrust serviceId="organization-vs" />
               </div>
             ) : null}
             <div className="mt-6 max-w-3xl">

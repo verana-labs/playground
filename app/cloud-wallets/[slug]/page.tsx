@@ -14,7 +14,8 @@ import {
   userWallets,
   getIntegration,
 } from "../../lib/integrations";
-import { LINKS } from "../../lib/site";
+import { getDemoService } from "../../lib/demo-services";
+import { ECS_ECOSYSTEM_DID, ENDPOINTS, LINKS } from "../../lib/site";
 
 // Per-cloud-wallet playground page — the identical template of spec §5:
 // breadcrumb · header · the hosted demo service · the use case to test ·
@@ -46,6 +47,7 @@ export default async function CloudWalletPlayground({
   if (!w || w.kind !== "cloud-wallet") notFound();
   const pickers = userWallets();
   const liveServiceId = CLOUD_SERVICE_IDS[w.slug];
+  const demoService = liveServiceId ? getDemoService(liveServiceId) : undefined;
 
   return (
     <>
@@ -128,6 +130,29 @@ export default async function CloudWalletPlayground({
               </p>
               <div className="ml-11">
                 <ProofOfTrust serviceId={liveServiceId} />
+                {demoService ? (
+                  <p className="mt-2 text-xs text-gray-400">
+                    <code>{demoService.host}</code>
+                    {" — "}
+                    <a
+                      href={`https://${demoService.host}/.well-known/did.json`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-violet-600 hover:underline"
+                    >
+                      DID document
+                    </a>
+                    {" · "}
+                    <a
+                      href={`${ENDPOINTS.resolver}/docs`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-violet-600 hover:underline"
+                    >
+                      Resolver API
+                    </a>
+                  </p>
+                ) : null}
               </div>
             </div>
           ) : (
@@ -170,11 +195,76 @@ export default async function CloudWalletPlayground({
           </div>
 
           {/* 5 · Under the hood */}
-          <Placeholder title="3 · Under the hood">
-            Integration pattern ({w.track}), credential-acquisition path, and
-            registry links (ecosystem, schema, permissions) — ships with the
-            live wiring.
-          </Placeholder>
+          <div>
+            <div className="mb-2 flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+                3
+              </span>
+              <h2 className="text-lg font-bold text-gray-900">
+                Under the hood
+              </h2>
+            </div>
+            <details className="ml-11 rounded-2xl border border-gray-200 bg-white p-5">
+              <summary className="cursor-pointer select-none font-medium text-gray-700 transition-colors hover:text-violet-700">
+                See how this wallet is wired
+              </summary>
+              <div className="mt-4 space-y-4">
+                <p className="text-sm leading-relaxed text-gray-600">
+                  {w.track === "native"
+                    ? "Pattern A/B — the stack itself (or a vs-agent sidecar) owns the DID, DIDComm, Linked VPs and VPR operations."
+                    : "Pattern C — bridge: OID4VC stack + a resolvable DID with Linked VPs; trust checks via the public Trust Resolver."}
+                </p>
+                <p className="text-sm leading-relaxed text-gray-500">
+                  ECS credentials are obtained via the vs-agent Admin API or
+                  out-of-band, then published as Linked VPs on the
+                  service&apos;s DID document. The reference automation lives
+                  in{" "}
+                  <a
+                    href={LINKS.veranaDemos}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-violet-600 hover:underline"
+                  >
+                    verana-demos
+                  </a>
+                  &apos;s <code>common/common.sh</code>.
+                </p>
+                <div>
+                  <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                    Registry links
+                  </p>
+                  <ul className="space-y-1.5 text-sm">
+                    <li>
+                      <span className="text-gray-500">ECS Ecosystem: </span>
+                      <code className="break-all text-xs text-gray-600">
+                        {ECS_ECOSYSTEM_DID}
+                      </code>
+                    </li>
+                    <li>
+                      <a
+                        href={ENDPOINTS.frontend}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-violet-600 hover:underline"
+                      >
+                        Network frontend
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href={`${ENDPOINTS.resolver}/docs`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-violet-600 hover:underline"
+                      >
+                        Resolver API docs
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </details>
+          </div>
 
           <p className="text-xs text-gray-400">
             This page follows the identical per-wallet template of the{" "}

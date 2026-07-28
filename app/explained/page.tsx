@@ -147,11 +147,11 @@ function RepairNetworkDiagram() {
                   width={badgeW}
                   height={17}
                   rx={8.5}
-                  fill="#fffbeb"
-                  stroke="#d97706"
+                  fill="#ecfdf5"
+                  stroke="#059669"
                   strokeOpacity={0.5}
                 />
-                <text x={x} y={y + 75} textAnchor="middle" fontSize={9} fontWeight={600} fill="#b45309">
+                <text x={x} y={y + 75} textAnchor="middle" fontSize={9} fontWeight={600} fill="#047857">
                   {badgeText}
                 </text>
               </g>
@@ -504,7 +504,7 @@ export default function Explained() {
               {REPAIR_NETWORK.stats.map((s) => (
                 <Chip key={s}>{s}</Chip>
               ))}
-              <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">
+              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
                 ✓ {REPAIR_NETWORK.badgeFullName} badge
               </span>
             </div>

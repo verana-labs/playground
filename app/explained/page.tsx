@@ -95,59 +95,63 @@ function VestaLogo({ className = "h-[84px] w-[84px]" }: { className?: string }) 
  *  companies around it, each carrying the amber "Vesta Certified" paper
  *  badge. Business visual — no DIDs, no protocol. */
 function RepairNetworkDiagram() {
-  const cx = 420;
-  const cy = 225;
-  const R = 150;
+  const cx = 380;
+  const cy = 210;
+  const Rx = 270;
+  const Ry = 140;
   const n = REPAIR_NETWORK.partners.length;
   const badgeText = `✓ ${REPAIR_NETWORK.badgeLabel}`;
-  const badgeW = badgeText.length * 5.4 + 14;
+  const badgeW = badgeText.length * 5.8 + 16;
   return (
-    <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white p-3 shadow-sm sm:p-5">
+    <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white p-2 shadow-sm sm:p-3">
       <svg
-        viewBox="0 0 840 510"
+        viewBox="40 28 680 412"
         role="img"
         aria-label="The Vesta certified repair network: Vesta at the center, certified partner companies around it"
         className="min-w-[680px]"
       >
         {REPAIR_NETWORK.partners.map((p, i) => {
           const a = (i / n) * 2 * Math.PI - Math.PI / 2;
-          const x = cx + R * Math.cos(a);
-          const y = cy + R * Math.sin(a);
-          const ux = Math.cos(a);
-          const uy = Math.sin(a);
+          const x = cx + Rx * Math.cos(a);
+          const y = cy + Ry * Math.sin(a);
+          const dx = x - cx;
+          const dy = y - cy;
+          const len = Math.hypot(dx, dy) || 1;
+          const ux = dx / len;
+          const uy = dy / len;
           return (
             <g key={p.name}>
               <line
-                x1={cx + ux * 56}
-                y1={cy + uy * 56}
-                x2={x - ux * 26}
-                y2={y - uy * 26}
+                x1={cx + ux * 62}
+                y1={cy + uy * 62}
+                x2={x - ux * 32}
+                y2={y - uy * 32}
                 stroke="#d1d5db"
-                strokeWidth={1.4}
+                strokeWidth={1.5}
               />
-              <circle cx={x} cy={y} r={26} fill="#eff6ff" opacity={0.7} />
-              <circle cx={x} cy={y} r={20} fill="#ffffff" stroke="#2563eb" strokeWidth={1.6} />
-              <g transform={`translate(${x - 9}, ${y - 9})`} style={{ color: "#2563eb" }}>
-                <Wrench width={18} height={18} strokeWidth={1.8} />
+              <circle cx={x} cy={y} r={31} fill="#eff6ff" opacity={0.7} />
+              <circle cx={x} cy={y} r={24} fill="#ffffff" stroke="#2563eb" strokeWidth={1.7} />
+              <g transform={`translate(${x - 10}, ${y - 10})`} style={{ color: "#2563eb" }}>
+                <Wrench width={20} height={20} strokeWidth={1.8} />
               </g>
-              <text x={x} y={y + 38} textAnchor="middle" fontSize={11.5} fontWeight={700} fill="#111827">
+              <text x={x} y={y + 43} textAnchor="middle" fontSize={12.5} fontWeight={700} fill="#111827">
                 {p.name}
               </text>
-              <text x={x} y={y + 51} textAnchor="middle" fontSize={9.5} fill="#6b7280">
+              <text x={x} y={y + 57} textAnchor="middle" fontSize={10.5} fill="#6b7280">
                 {p.city}
               </text>
               <g>
                 <rect
                   x={x - badgeW / 2}
-                  y={y + 57}
+                  y={y + 63}
                   width={badgeW}
-                  height={16}
-                  rx={8}
+                  height={17}
+                  rx={8.5}
                   fill="#fffbeb"
                   stroke="#d97706"
                   strokeOpacity={0.5}
                 />
-                <text x={x} y={y + 68.5} textAnchor="middle" fontSize={8.5} fontWeight={600} fill="#b45309">
+                <text x={x} y={y + 75} textAnchor="middle" fontSize={9} fontWeight={600} fill="#b45309">
                   {badgeText}
                 </text>
               </g>
@@ -155,22 +159,22 @@ function RepairNetworkDiagram() {
           );
         })}
         {/* Hub — Vesta */}
-        <circle cx={cx} cy={cy} r={50} fill="#f5f3ff" opacity={0.8} />
-        <circle cx={cx} cy={cy} r={42} fill="#ffffff" stroke="#7c3aed" strokeWidth={1.8} />
+        <circle cx={cx} cy={cy} r={56} fill="#f5f3ff" opacity={0.8} />
+        <circle cx={cx} cy={cy} r={48} fill="#ffffff" stroke="#7c3aed" strokeWidth={2} />
         {VESTA_ASSETS.logo ? (
           <image
             href={VESTA_ASSETS.logo}
-            x={cx - 30}
-            y={cy - 30}
-            width={60}
-            height={60}
+            x={cx - 34}
+            y={cy - 34}
+            width={68}
+            height={68}
           />
         ) : null}
-        <rect x={cx - 72} y={cy + 52} width={144} height={28} fill="#ffffff" />
-        <text x={cx} y={cy + 62} textAnchor="middle" fontSize={12} fontWeight={700} fill="#111827">
+        <rect x={cx - 78} y={cy + 58} width={156} height={32} fill="#ffffff" />
+        <text x={cx} y={cy + 70} textAnchor="middle" fontSize={13} fontWeight={700} fill="#111827">
           {COMPANY.name}
         </text>
-        <text x={cx} y={cy + 75} textAnchor="middle" fontSize={9.5} fill="#6b7280">
+        <text x={cx} y={cy + 84} textAnchor="middle" fontSize={10} fill="#6b7280">
           trains · audits · certifies
         </text>
       </svg>

@@ -792,6 +792,22 @@ export default function Explained() {
                       </span>{" "}
                       {e.why}
                     </p>
+                    <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3">
+                      <code
+                        className="min-w-0 flex-1 truncate font-mono text-[11px] text-gray-400"
+                        title={e.did}
+                      >
+                        {e.did}
+                      </code>
+                      <a
+                        href={e.veranaUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="shrink-0 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                      >
+                        Open in Verana ↗
+                      </a>
+                    </div>
                   </div>
                 );
               })}
@@ -829,14 +845,30 @@ export default function Explained() {
                 </span>{" "}
                 {ECOSYSTEM_BUILD.card.why}
               </p>
-              <div className="mt-4 border-t border-gray-100 pt-3">
-                <a
-                  href={`#section-${ECOSYSTEM_BUILD.card.section}`}
-                  className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+              <div className="mt-4 space-y-2 border-t border-gray-100 pt-3">
+                <code
+                  className="block truncate font-mono text-[11px] text-gray-400"
+                  title={ECOSYSTEM_BUILD.card.did}
                 >
-                  → Section {ECOSYSTEM_BUILD.card.section} · Vesta creates its
-                  own ecosystem
-                </a>
+                  {ECOSYSTEM_BUILD.card.did}
+                </code>
+                <div className="flex flex-wrap items-center gap-2">
+                  <a
+                    href={`#section-${ECOSYSTEM_BUILD.card.section}`}
+                    className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                  >
+                    → Section {ECOSYSTEM_BUILD.card.section} · Vesta creates its
+                    own ecosystem
+                  </a>
+                  <a
+                    href={ECOSYSTEM_BUILD.card.veranaUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                  >
+                    Open in Verana ↗
+                  </a>
+                </div>
               </div>
             </div>
           </div>

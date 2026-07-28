@@ -216,6 +216,8 @@ export const ECOSYSTEM_CHOICES = [
     label: "the identity card",
     about:
       "A trust ecosystem that governs the essential credential schemas. Its accredited issuers provide recognized KYB (Know-Your-Business) services: they verify an organization once, then issue it a certified ECS-Organization credential. Services carry ECS-Service credentials describing what they are and who operates them.",
+    did: "did:webvh:QmPLACEHOLDER…:ecs-ecosystem.testnet.verana.network",
+    veranaUrl: app, // TODO: deep link to the trust-registry page
     why: "one KYB with a recognized issuer, and Vesta's identity becomes provable everywhere: this is what turns the check green, and the foundation everything else builds on.",
   },
   {
@@ -225,6 +227,8 @@ export const ECOSYSTEM_CHOICES = [
     name: "ISO Certification Ecosystem",
     label: "(demo) · the certificate becomes proof",
     why: "Today Vesta's ISO 9001 certificate is a PDF nobody can verify. As a credential on Vesta's verified identity, it becomes proof that customers and partners see on every Vesta service.",
+    did: "did:webvh:QmPLACEHOLDER…:iso-certification.testnet.verana.network",
+    veranaUrl: app, // TODO: deep link to the trust-registry page
   },
 ] as const;
 
@@ -240,6 +244,8 @@ export const ECOSYSTEM_BUILD = {
     about:
       "Vesta's own trust ecosystem, with a single credential schema: Authorized Repairer. Issuance is governed (only Vesta issues) and verification is open (anyone checks, no permission needed). The paper Vesta Certified Repair Company badge from Section 1 becomes verifiable, revocable proof.",
     why: "brand protection as a structural property. Real partners turn green, impostors turn red, and a partner that goes rogue can be revoked.",
+    did: "did:webvh:QmPLACEHOLDER…:repair-network.vesta.example (created in Section 5)",
+    veranaUrl: app, // TODO: deep link once created
   },
 };
 

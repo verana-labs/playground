@@ -13,52 +13,10 @@ import {
 import { Container, Section, SectionHeading, Chip } from "./components/ui";
 import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
 import { userWallets, cloudWallets } from "./lib/integrations";
+import { SECTIONS_NAV } from "./explained/content";
 import { LINKS, ENDPOINTS } from "./lib/site";
 
-// The six Verana Explained chapter cards (spec §3.2), linking into /explained.
-const STEPS: {
-  n: number;
-  title: string;
-  oneLiner: string;
-  pending?: boolean;
-}[] = [
-  {
-    n: 1,
-    title: "Meet Vesta Appliances",
-    oneLiner:
-      "A real business, real services — and impostors trading on its name: fake support lines, fake “authorized” repairers. Nothing can be proven.",
-  },
-  {
-    n: 2,
-    title: "Why Verana",
-    oneLiner:
-      "What if services could prove who runs them? Ecosystems, credentials, wallets — trust before contact.",
-  },
-  {
-    n: 3,
-    title: "Choosing ecosystems",
-    oneLiner:
-      "The ECS Ecosystem (the identity card) and the ISO Certification Ecosystem (demo) — and the gap only Vesta can fill.",
-  },
-  {
-    n: 4,
-    title: "Joining, in practice",
-    oneLiner:
-      "Anchor → KYB once → the check turns green; support chat, badges, passwordless login (hands-on); ISO 9001 with no re-KYB.",
-  },
-  {
-    n: 5,
-    title: "Vesta's own ecosystem",
-    oneLiner:
-      "The Vesta Repair Network: only Vesta issues Authorized Repairer, anyone verifies — Zenith ✓, Umbra ✗.",
-  },
-  {
-    n: 6,
-    title: "Being found",
-    oneLiner: "Find services by what they prove, not what they claim.",
-    pending: true,
-  },
-];
+// The six story sections (spec §3.2), deep-linking into /explained anchors.
 
 // The concept cards of section 1 (verana-demos ConceptCard idiom).
 const CONCEPTS = [
@@ -194,24 +152,23 @@ export default function Home() {
             subtitle="Verana, explained by Vesta Appliances — one continuous story, from business problem to full circle, and you take part with your own wallet"
           />
           <div className="reveal-stagger grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {STEPS.map((s) => (
+            {SECTIONS_NAV.map((s) => (
               <Link
                 key={s.n}
-                href={`/explained/chapter-${s.n}`}
+                href={`/explained#${s.anchor}`}
                 className="group flex flex-col rounded-xl border border-gray-200 bg-gray-50 p-5 transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
                     {s.n}
                   </span>
-                  {s.pending ? <Chip tone="pending">pending</Chip> : null}
                 </div>
                 <h3 className="mt-3 font-semibold text-gray-900">{s.title}</h3>
                 <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
                   {s.oneLiner}
                 </p>
                 <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
-                  Read the step →
+                  Read the section →
                 </span>
               </Link>
             ))}

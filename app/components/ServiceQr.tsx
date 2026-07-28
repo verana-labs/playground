@@ -26,14 +26,14 @@ function UnavailableCard({ onRetry }: { onRetry: () => void }) {
 
 export function ServiceQr({ serviceId, label }: { serviceId: string; label: string }) {
   const [appUrl, setAppUrl] = useState<string | null | undefined>(undefined);
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const [qrDataUrl, setQrDataUrl] = useState<string | undefined>(undefined);
+  const [qrFailed, setQrFailed] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
   useEffect(() => {
     let alive = true;
     setAppUrl(undefined);
-    setQrDataUrl(null);
     fetch(`/api/pot/${serviceId}`)
       .then((res) => (res.ok ? (res.json() as Promise<PotApiResponse>) : null))
       .then((body) => {
@@ -50,17 +50,19 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
   useEffect(() => {
     if (!appUrl) return;
     let alive = true;
+    setQrDataUrl(undefined);
+    setQrFailed(false);
     QRCode.toDataURL(appUrl, { width: 160, margin: 1 })
       .then((url) => {
         if (alive) setQrDataUrl(url);
       })
       .catch(() => {
-        if (alive) setQrDataUrl(null);
+        if (alive) setQrFailed(true);
       });
     return () => {
       alive = false;
     };
-  }, [appUrl]);
+  }, [appUrl, attempt]);
 
   if (appUrl === undefined) {
     return (
@@ -70,7 +72,7 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
     );
   }
 
-  if (!appUrl) {
+  if (!appUrl || qrFailed) {
     return <UnavailableCard onRetry={retry} />;
   }
 

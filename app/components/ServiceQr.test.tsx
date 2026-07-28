@@ -1,5 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import QRCode from "qrcode";
 import { ServiceQr } from "./ServiceQr";
 
 const ok = (body: unknown) =>
@@ -70,5 +71,31 @@ describe("ServiceQr", () => {
     expect(
       await screen.findByText("Live service link unavailable right now."),
     ).toBeDefined();
+  });
+
+  it("reaches the unavailable card, not a stuck pulse, when QR generation itself fails", async () => {
+    vi.mocked(QRCode.toDataURL).mockRejectedValueOnce(new Error("qr generation failed"));
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() =>
+        ok({
+          service: {
+            id: "issuer-web-vs",
+            label: "Example Issuer Web App (demo)",
+            appUrl: "https://app.issuer-web-vs.demos.testnet.verana.network",
+          },
+          did: "did:webvh:Qm:svc.example",
+          pot: null,
+        }),
+      ),
+    );
+
+    render(<ServiceQr serviceId="issuer-web-vs" label="ACME badge issuer (demo)" />);
+
+    expect(
+      await screen.findByText("Live service link unavailable right now."),
+    ).toBeDefined();
+    expect(screen.getByRole("button", { name: /retry/i })).toBeDefined();
+    expect(screen.queryByText("Resolving the live service link…")).toBeNull();
   });
 });

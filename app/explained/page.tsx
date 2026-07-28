@@ -593,7 +593,7 @@ export default function Explained() {
           {/* The word of the CEO */}
           <div className="mt-12">
             <SubHeading>The word of the CEO</SubHeading>
-            <figure className="mx-auto mt-6 max-w-3xl rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+            <figure className="mt-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm sm:p-10">
               <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
                 <figcaption className="shrink-0 text-center">
                   {VESTA_ASSETS.ceo ? (

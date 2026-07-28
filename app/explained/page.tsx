@@ -184,9 +184,12 @@ function RepairNetworkDiagram() {
 
 function SubHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
-      {children}
-    </h3>
+    <div className="text-center">
+      <h3 className="text-2xl font-bold tracking-tight text-gray-900">
+        {children}
+      </h3>
+      <div aria-hidden className="mx-auto mt-2 h-1 w-10 rounded-full bg-violet-600" />
+    </div>
   );
 }
 
@@ -516,7 +519,7 @@ export default function Explained() {
           <div className="mt-12">
             <SubHeading>The problems, and what they cost the brand</SubHeading>
 
-            <p className="mt-6 text-xs font-bold uppercase tracking-wider text-red-500">
+            <p className="mt-6 text-sm font-bold uppercase tracking-wider text-red-500">
               Online
             </p>
             <div className="reveal-stagger mt-3 grid gap-4 sm:grid-cols-3">
@@ -543,7 +546,7 @@ export default function Explained() {
               {COMPANY.onlineConsequence}
             </p>
 
-            <p className="mt-8 text-xs font-bold uppercase tracking-wider text-red-500">
+            <p className="mt-8 text-sm font-bold uppercase tracking-wider text-red-500">
               On-site
             </p>
             <div className="mt-3 grid gap-4 sm:grid-cols-2">

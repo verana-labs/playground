@@ -24,7 +24,7 @@ import {
   type SceneEdge,
   type Stage,
   type Tone,
-} from "../explained/scenes";
+} from "../usecases/vesta/scenes";
 
 // Renders the master Vesta scene graph at a given stage: everything visible
 // at that point of the story, with new or changed elements highlighted.

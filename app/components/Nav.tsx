@@ -1,14 +1,16 @@
 import Link from "next/link";
+import { ChevronDown } from "lucide-react";
 import NetworkChip from "./NetworkChip";
 
-// Persistent header (spec §2): logo · the four section anchors · network chip
-// · one CTA: "Add your wallet" → /integrate.
+// Persistent header (spec §2): logo · section links (Use Cases as a submenu)
+// · network chip · one CTA: "Add your wallet" → /integrate.
 const NAV = [
   { href: "/#what-is-verana", label: "What is Verana" },
-  { href: "/#learn", label: "Learn" },
   { href: "/#user-wallets", label: "User wallets" },
   { href: "/#cloud-wallets", label: "Cloud wallets" },
 ];
+
+const USECASES = [{ href: "/usecases/vesta", label: "Vesta Appliances" }];
 
 function Logo() {
   return (
@@ -37,7 +39,37 @@ export default function Nav() {
       <nav className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-6">
         <Logo />
         <ul className="ml-4 hidden items-center gap-5 lg:flex">
-          {NAV.map((item) => (
+          <li>
+            <Link
+              href={NAV[0].href}
+              className="text-sm text-gray-500 transition-colors hover:text-gray-900"
+            >
+              {NAV[0].label}
+            </Link>
+          </li>
+          <li className="group relative">
+            <button
+              type="button"
+              className="flex items-center gap-1 text-sm text-gray-500 transition-colors hover:text-gray-900"
+            >
+              Use Cases <ChevronDown className="h-3.5 w-3.5" aria-hidden />
+            </button>
+            <div className="invisible absolute left-0 top-full pt-2 opacity-0 transition-all duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+              <ul className="w-56 rounded-xl border border-gray-200 bg-white p-1.5 shadow-lg">
+                {USECASES.map((u) => (
+                  <li key={u.href}>
+                    <Link
+                      href={u.href}
+                      className="block rounded-lg px-3 py-2 text-sm text-gray-600 transition-colors hover:bg-violet-50 hover:text-violet-700"
+                    >
+                      {u.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </li>
+          {NAV.slice(1).map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}

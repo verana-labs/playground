@@ -13,7 +13,7 @@ import {
 import { Container, Section, SectionHeading, Chip } from "./components/ui";
 import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
 import { userWallets, cloudWallets } from "./lib/integrations";
-import { SECTIONS_NAV } from "./explained/content";
+import { SECTIONS_NAV } from "./usecases/vesta/content";
 import { LINKS, ENDPOINTS } from "./lib/site";
 
 // The six story sections (spec §3.2), deep-linking into /explained anchors.
@@ -155,7 +155,7 @@ export default function Home() {
             {SECTIONS_NAV.map((s) => (
               <Link
                 key={s.n}
-                href={`/explained#${s.anchor}`}
+                href={`/usecases/vesta#${s.anchor}`}
                 className="group flex flex-col rounded-xl border border-gray-200 bg-gray-50 p-5 transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">

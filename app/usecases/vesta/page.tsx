@@ -18,9 +18,9 @@ import {
   Truck,
   Wrench,
 } from "lucide-react";
-import { Container, Section, SectionHeading, Breadcrumb, Chip } from "../components/ui";
-import ServiceTrustCard from "../components/ServiceTrustCard";
-import StoryDiagram from "../components/StoryDiagram";
+import { Container, Section, SectionHeading, Breadcrumb, Chip } from "../../components/ui";
+import ServiceTrustCard from "../../components/ServiceTrustCard";
+import StoryDiagram from "../../components/StoryDiagram";
 import {
   CLOSING,
   COMPANY,
@@ -35,10 +35,10 @@ import {
   VESTA_ASSETS,
   type SubStep,
 } from "./content";
-import { LINKS } from "../lib/site";
+import { LINKS } from "../../lib/site";
 
 export const metadata: Metadata = {
-  title: "Verana Explained",
+  title: "Use case · Vesta Appliances",
   description:
     "Verana, explained through one continuous story: Vesta Appliances - a real business with an impostor problem - joins Verana, makes its services verifiable, and ends up governing trust for its own repair network.",
 };
@@ -347,7 +347,11 @@ export default function Explained() {
         <div className="mx-auto max-w-4xl px-6 py-14 sm:py-16">
           <Breadcrumb
             onDark
-            items={[{ label: "Playground", href: "/" }, { label: "Verana Explained" }]}
+            items={[
+              { label: "Playground", href: "/" },
+              { label: "Use Cases" },
+              { label: "Vesta Appliances" },
+            ]}
           />
           <h1 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl">
             Verana, explained by Vesta Appliances

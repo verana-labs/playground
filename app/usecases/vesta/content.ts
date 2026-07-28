@@ -6,7 +6,7 @@
 // follow the current verana-frontend UX: ecosystem → credential schema →
 // Participants tree → Join from the branch you want to join under.
 
-import { ENDPOINTS, LINKS } from "../lib/site";
+import { ENDPOINTS, LINKS } from "../../lib/site";
 import type { Stage } from "./scenes";
 
 const app = ENDPOINTS.frontend;

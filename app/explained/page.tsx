@@ -15,6 +15,7 @@ import {
   Quote,
   Terminal,
   Truck,
+  Wrench,
 } from "lucide-react";
 import { Container, Section, SectionHeading, Breadcrumb, Chip } from "../components/ui";
 import ServiceTrustCard from "../components/ServiceTrustCard";
@@ -26,6 +27,7 @@ import {
   ECOSYSTEM_GAP,
   FACTS,
   PILLARS,
+  REPAIR_NETWORK,
   SECTIONS_NAV,
   TECH_SECTIONS,
   VESTA_ASSETS,
@@ -86,6 +88,93 @@ function VestaLogo({ className = "h-[84px] w-[84px]" }: { className?: string }) 
       />
       <circle cx="32" cy="20" r="3.4" fill="#fbbf24" />
     </svg>
+  );
+}
+
+/** §1 — the real-world repair network: Vesta at the hub, certified partner
+ *  companies around it, each carrying the amber "Vesta Certified" paper
+ *  badge. Business visual — no DIDs, no protocol. */
+function RepairNetworkDiagram() {
+  const cx = 420;
+  const cy = 225;
+  const R = 150;
+  const n = REPAIR_NETWORK.partners.length;
+  const badgeText = `✓ ${REPAIR_NETWORK.badgeLabel}`;
+  const badgeW = badgeText.length * 5.4 + 14;
+  return (
+    <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white p-3 shadow-sm sm:p-5">
+      <svg
+        viewBox="0 0 840 510"
+        role="img"
+        aria-label="The Vesta certified repair network: Vesta at the center, certified partner companies around it"
+        className="min-w-[680px]"
+      >
+        {REPAIR_NETWORK.partners.map((p, i) => {
+          const a = (i / n) * 2 * Math.PI - Math.PI / 2;
+          const x = cx + R * Math.cos(a);
+          const y = cy + R * Math.sin(a);
+          const ux = Math.cos(a);
+          const uy = Math.sin(a);
+          return (
+            <g key={p.name}>
+              <line
+                x1={cx + ux * 56}
+                y1={cy + uy * 56}
+                x2={x - ux * 26}
+                y2={y - uy * 26}
+                stroke="#d1d5db"
+                strokeWidth={1.4}
+              />
+              <circle cx={x} cy={y} r={26} fill="#eff6ff" opacity={0.7} />
+              <circle cx={x} cy={y} r={20} fill="#ffffff" stroke="#2563eb" strokeWidth={1.6} />
+              <g transform={`translate(${x - 9}, ${y - 9})`} style={{ color: "#2563eb" }}>
+                <Wrench width={18} height={18} strokeWidth={1.8} />
+              </g>
+              <text x={x} y={y + 38} textAnchor="middle" fontSize={11.5} fontWeight={700} fill="#111827">
+                {p.name}
+              </text>
+              <text x={x} y={y + 51} textAnchor="middle" fontSize={9.5} fill="#6b7280">
+                {p.city}
+              </text>
+              <g>
+                <rect
+                  x={x - badgeW / 2}
+                  y={y + 57}
+                  width={badgeW}
+                  height={16}
+                  rx={8}
+                  fill="#fffbeb"
+                  stroke="#d97706"
+                  strokeOpacity={0.5}
+                />
+                <text x={x} y={y + 68.5} textAnchor="middle" fontSize={8.5} fontWeight={600} fill="#b45309">
+                  {badgeText}
+                </text>
+              </g>
+            </g>
+          );
+        })}
+        {/* Hub — Vesta */}
+        <circle cx={cx} cy={cy} r={50} fill="#f5f3ff" opacity={0.8} />
+        <circle cx={cx} cy={cy} r={42} fill="#ffffff" stroke="#7c3aed" strokeWidth={1.8} />
+        {VESTA_ASSETS.logo ? (
+          <image
+            href={VESTA_ASSETS.logo}
+            x={cx - 30}
+            y={cy - 30}
+            width={60}
+            height={60}
+          />
+        ) : null}
+        <rect x={cx - 72} y={cy + 52} width={144} height={28} fill="#ffffff" />
+        <text x={cx} y={cy + 62} textAnchor="middle" fontSize={12} fontWeight={700} fill="#111827">
+          {COMPANY.name}
+        </text>
+        <text x={cx} y={cy + 75} textAnchor="middle" fontSize={9.5} fill="#6b7280">
+          trains · audits · certifies
+        </text>
+      </svg>
+    </div>
   );
 }
 
@@ -394,6 +483,30 @@ export default function Explained() {
                 })}
               </div>
             </div>
+          </div>
+
+          {/* The certified repair network */}
+          <div className="mt-12">
+            <h3 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
+              {REPAIR_NETWORK.title}
+            </h3>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-gray-500">
+              {REPAIR_NETWORK.blurb}
+            </p>
+            <div className="mt-6">
+              <RepairNetworkDiagram />
+            </div>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {REPAIR_NETWORK.stats.map((s) => (
+                <Chip key={s}>{s}</Chip>
+              ))}
+              <span className="inline-flex items-center rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">
+                ✓ {REPAIR_NETWORK.badgeFullName} badge
+              </span>
+            </div>
+            <p className="mx-auto mt-5 max-w-2xl text-center text-sm italic leading-relaxed text-gray-500">
+              {REPAIR_NETWORK.closing}
+            </p>
           </div>
 
           {/* The problems */}

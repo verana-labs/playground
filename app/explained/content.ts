@@ -88,6 +88,30 @@ export const COMPANY = {
     "Online, Vesta's word looks exactly like the scammers' word. Nothing can be proven.",
 };
 
+/** §1 — the real-world certified repair network (business view: paper
+ *  certification through training + audits; nothing of it provable online).
+ *  Every partner carries the "Vesta Certified Repair Company" badge. */
+export const REPAIR_NETWORK = {
+  title: "The certified repair network",
+  blurb:
+    "120 independent repair companies, certified by Vesta through training, yearly audits, and a signed partner contract. Each carries the Vesta Certified Repair Company badge — when a certified technician rings your doorbell, Vesta's forty-year reputation rings with them.",
+  badgeLabel: "Vesta Certified",
+  badgeFullName: "Vesta Certified Repair Company",
+  stats: ["120 partner companies", "40+ countries", "Yearly audits"],
+  partners: [
+    { name: "Zenith Repairs", city: "Geneva" },
+    { name: "Alpine Fix", city: "Zürich" },
+    { name: "Nordlicht Repair", city: "Hamburg" },
+    { name: "Repair & Sons", city: "Manchester" },
+    { name: "Casa Rápida", city: "Madrid" },
+    { name: "Domus Service", city: "Milan" },
+    { name: "Atelier Volt", city: "Lyon" },
+    { name: "Bluewave Service", city: "Lisbon" },
+  ],
+  closing:
+    "The badge is real — training, audits, contracts stand behind it. But it lives on van doors, letterheads, and PDF certificates: online, anyone can print one, and there is no way to tell a certified partner from an impostor.",
+};
+
 // ————————————————————————————————— §2 · Why Verana (the three pillars)
 
 export const PILLARS = [

@@ -92,7 +92,18 @@ export default function Nav() {
       <nav className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:gap-4 sm:px-6">
         <Logo />
         <ul className="ml-4 hidden items-center gap-5 lg:flex">
-          {NAV.map((item) => (
+          <li>
+            <Link
+              href={NAV[0].href}
+              className="text-sm text-gray-500 transition-colors hover:text-gray-900"
+            >
+              {NAV[0].label}
+            </Link>
+          </li>
+          <li>
+            <UseCasesMenu />
+          </li>
+          {NAV.slice(1).map((item) => (
             <li key={item.href}>
               <Link
                 href={item.href}

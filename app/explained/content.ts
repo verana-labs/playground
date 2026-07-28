@@ -12,12 +12,15 @@ import type { Stage } from "./scenes";
 const app = ENDPOINTS.frontend;
 const resolver = ENDPOINTS.resolver;
 
-/** Generated brand assets land here (open item 8). Until then the page
- *  renders SVG placeholders (logo mark, initials avatar). */
+/** Generated brand assets (open item 8): web-optimized WebP in
+ *  public/images/ (PNG originals kept alongside). Set a path to null to fall
+ *  back to the SVG/initials placeholder. */
 export const VESTA_ASSETS = {
-  logo: null as string | null, // e.g. "/vesta/logo.png"
-  ceo: null as string | null, // e.g. "/vesta/ceo.jpg"
-  hero: null as string | null, // e.g. "/vesta/factory.jpg"
+  logo: "/images/logo.webp" as string | null,
+  ceo: "/images/ceo.webp" as string | null,
+  hero: "/images/factory.webp" as string | null,
+  heroCaption: "Vesta's assembly line — forty years of machines built to be repaired, not replaced.",
+  fakeVan: "/images/fake-van.webp" as string | null,
 };
 
 // ————————————————————————————————— §1 · Meet Vesta Appliances (marketing)
@@ -148,6 +151,7 @@ export type SubStep = {
   links?: { label: string; href: string }[];
   liveService?: string;
   liveNote?: string;
+  image?: { src: string; alt: string; caption?: string };
 };
 
 export type TechSection = {
@@ -335,6 +339,11 @@ export const TECH_SECTIONS: TechSection[] = [
         kind: "hands-on",
         story:
           "The Section 1 picture returns, with verdicts. Resolve Zenith's service with your wallet: green — ECS-Org, ECS-Service, Authorized Repairer, chain verified to the Vesta Repair Network. Then Umbra Repairs, which still claims to be authorized: red — no credential Vesta ever issued exists for its DID, and the claim cannot be forged. Brand impersonation fails structurally. And if a partner goes rogue, Vesta revokes — re-resolution drops the credential from every card.",
+        image: {
+          src: "/images/zenith.webp",
+          alt: "A Zenith Repairs technician at the door, showing a green trust check on their phone",
+          caption: "The technician at your door, proving they're from an authorized repairer — trust before you open.",
+        },
         underHood: [
           "Verification mode OPEN: any wallet checks a repairer claim without asking anyone's permission — only issuance is gated.",
           "Revocation: Revoke Permission + re-resolution removes the credential from every card and from future discovery results.",

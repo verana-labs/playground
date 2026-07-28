@@ -140,6 +140,22 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
 
       <StoryDiagram stage={sub.stage} />
 
+      {sub.image ? (
+        <figure className="mx-auto max-w-md">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={sub.image.src}
+            alt={sub.image.alt}
+            className="w-full rounded-2xl border border-gray-200 object-cover shadow-sm"
+          />
+          {sub.image.caption ? (
+            <figcaption className="mt-2 text-center text-xs text-gray-400">
+              {sub.image.caption}
+            </figcaption>
+          ) : null}
+        </figure>
+      ) : null}
+
       {sub.reproduce?.length ? (
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-900">
@@ -274,6 +290,19 @@ export default function Explained() {
                 <p key={i}>{p}</p>
               ))}
             </div>
+            {VESTA_ASSETS.hero ? (
+              <figure className="mt-6">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={VESTA_ASSETS.hero}
+                  alt="The Vesta Appliances assembly line"
+                  className="w-full rounded-2xl object-cover"
+                />
+                <figcaption className="mt-2 text-center text-xs text-gray-400">
+                  {VESTA_ASSETS.heroCaption}
+                </figcaption>
+              </figure>
+            ) : null}
             {/* CEO quote */}
             <figure className="mt-8 rounded-2xl bg-gray-50 p-6">
               <Quote className="h-5 w-5 text-violet-400" aria-hidden />
@@ -380,9 +409,20 @@ export default function Explained() {
                 );
               })}
             </div>
-            <p className="mt-6 rounded-2xl bg-gray-900 px-6 py-5 text-center text-base font-semibold text-white">
-              {COMPANY.rootCause}
-            </p>
+            <div className="relative mt-6 overflow-hidden rounded-2xl bg-gray-900">
+              {VESTA_ASSETS.fakeVan ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={VESTA_ASSETS.fakeVan}
+                  alt=""
+                  aria-hidden
+                  className="absolute inset-0 h-full w-full object-cover opacity-50"
+                />
+              ) : null}
+              <p className="relative px-6 py-12 text-center text-lg font-semibold text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]">
+                {COMPANY.rootCause}
+              </p>
+            </div>
           </div>
         </Container>
       </Section>

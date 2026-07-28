@@ -88,7 +88,7 @@ function StatusBand({
       </span>
     ) : (
       <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
-        <ShieldQuestion className="h-3.5 w-3.5" />
+        <ShieldQuestion className="h-3 w-3" />
         Could not verify
       </span>
     );

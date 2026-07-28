@@ -635,7 +635,7 @@ export default function Explained() {
         </Container>
       </Section>
 
-      {/* §2 · Elena's solution: pillars + the ecosystems Vesta wants to join */}
+      {/* §2 · The solution: pillars + the ecosystems Vesta wants to join */}
       <Section id="section-2" className="border-t border-gray-200 bg-white">
         <Container className="max-w-4xl">
           <SectionHeading number={2} title={SOLUTION.title} />

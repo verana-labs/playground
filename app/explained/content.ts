@@ -1,7 +1,7 @@
 // The full "Verana Explained" story content - one single page, six sections.
 // Source of truth: verana-spec → playground/verana-explained/spec.md (0.5).
 // §1 is a marketing-style company article (no protocol vocabulary);
-// §2 is Elena's solution (pillars + ecosystem choices); §3–§5 are the technical build with the
+// §2 is the solution section (CTO quote + pillars + ecosystem choices); §3–§5 are the technical build with the
 // progressive scene graph. Protocol facts target v3; reproduce recipes
 // follow the current verana-frontend UX: ecosystem → credential schema →
 // Participants tree → Join from the branch you want to join under.
@@ -124,7 +124,7 @@ export const REPAIR_NETWORK = {
     "The badge is real: training, audits, contracts stand behind it. But it lives on van doors, letterheads, and PDF certificates: online, anyone can print one, and there is no way to tell a certified partner from an impostor.",
 };
 
-// --------------------------------- §2 · Elena's solution
+// --------------------------------- §2 · The solution: become verifiable
 
 export const SOLUTION = {
   title: "The solution: become verifiable",

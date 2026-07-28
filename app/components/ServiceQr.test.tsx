@@ -29,9 +29,9 @@ describe("ServiceQr", () => {
       ),
     );
 
-    render(<ServiceQr serviceId="issuer-web-vs" label="ACME badge issuer (demo)" />);
+    render(<ServiceQr serviceId="issuer-web-vs" label="Vesta badge issuer (demo)" />);
 
-    const img = await screen.findByAltText("ACME badge issuer (demo) QR");
+    const img = await screen.findByAltText("Vesta badge issuer (demo) QR");
     expect(img.getAttribute("src")).toBe("data:image/png;base64,MOCKQR");
 
     const link = screen.getByRole("link", {
@@ -46,7 +46,7 @@ describe("ServiceQr", () => {
   it("renders the unavailable card with retry when the fetch fails", async () => {
     vi.stubGlobal("fetch", vi.fn(() => Promise.reject(new Error("network down"))));
 
-    render(<ServiceQr serviceId="issuer-web-vs" label="ACME badge issuer (demo)" />);
+    render(<ServiceQr serviceId="issuer-web-vs" label="Vesta badge issuer (demo)" />);
 
     expect(
       await screen.findByText("Live service link unavailable right now."),
@@ -66,7 +66,7 @@ describe("ServiceQr", () => {
       ),
     );
 
-    render(<ServiceQr serviceId="issuer-chatbot-vs" label="ACME badge issuer (demo)" />);
+    render(<ServiceQr serviceId="issuer-chatbot-vs" label="Vesta badge issuer (demo)" />);
 
     expect(
       await screen.findByText("Live service link unavailable right now."),
@@ -90,7 +90,7 @@ describe("ServiceQr", () => {
       ),
     );
 
-    render(<ServiceQr serviceId="issuer-web-vs" label="ACME badge issuer (demo)" />);
+    render(<ServiceQr serviceId="issuer-web-vs" label="Vesta badge issuer (demo)" />);
 
     expect(
       await screen.findByText("Live service link unavailable right now."),

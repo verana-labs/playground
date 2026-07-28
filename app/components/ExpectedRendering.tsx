@@ -23,12 +23,12 @@ const LINES: Record<
   "issue-refused": {
     icon: XCircle,
     tone: "bg-red-50 text-red-600",
-    text: "❌ Umbra Corp (demo) is not an authorized issuer of ECS-Badge — accepting is blocked.",
+    text: "❌ Umbra Repairs (demo) is not an authorized issuer of ECS-Badge — accepting is blocked.",
   },
   "present-refused": {
     icon: XCircle,
     tone: "bg-red-50 text-red-600",
-    text: "❌ Umbra Corp (demo) is not an authorized verifier of ECS-Badge — sharing is blocked.",
+    text: "❌ Umbra Repairs (demo) is not an authorized verifier of ECS-Badge — sharing is blocked.",
   },
 };
 

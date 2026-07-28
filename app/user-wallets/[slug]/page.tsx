@@ -14,8 +14,8 @@ import { userWallets, getIntegration } from "../../lib/integrations";
 import { LINKS } from "../../lib/site";
 
 // Per-user-wallet playground page — the identical template of spec §4:
-// breadcrumb · header · get the wallet · Service 1 (ACME badge issuer) ·
-// Service 2 (ACME login) · refusal paths. Generated from integration.yaml.
+// breadcrumb · header · get the wallet · Service 1 (Vesta badge issuer) ·
+// Service 2 (Vesta login) · refusal paths. Generated from integration.yaml.
 
 export function generateStaticParams() {
   return userWallets().map((w) => ({ slug: w.slug }));
@@ -175,7 +175,7 @@ export default async function UserWalletPlayground({
             </div>
             <div className="ml-11 grid gap-6 md:grid-cols-2">
               {w.badge_loop === "live" ? (
-                <ServiceQr serviceId="issuer-web-vs" label="ACME badge issuer (demo)" />
+                <ServiceQr serviceId="issuer-web-vs" label="Vesta badge issuer (demo)" />
               ) : (
                 <Placeholder title="Scan to receive your badge">
                   The AnonCreds/DIDComm badge flow reaches this wallet soon —
@@ -204,7 +204,7 @@ export default async function UserWalletPlayground({
             </div>
             <div className="ml-11 grid gap-6 md:grid-cols-2">
               {w.badge_loop === "live" ? (
-                <ServiceQr serviceId="verifier-web-vs" label="ACME login service (demo)" />
+                <ServiceQr serviceId="verifier-web-vs" label="Vesta login service (demo)" />
               ) : (
                 <Placeholder title="Scan to log in">
                   The AnonCreds/DIDComm login flow reaches this wallet soon —
@@ -228,7 +228,7 @@ export default async function UserWalletPlayground({
                 4
               </span>
               <h2 className="text-lg font-bold text-gray-900">
-                Refusal paths — Umbra Corp (demo)
+                Refusal paths — Umbra Repairs (demo)
               </h2>
             </div>
             <details className="ml-11 rounded-2xl border border-gray-200 bg-white p-5">
@@ -237,7 +237,7 @@ export default async function UserWalletPlayground({
               </summary>
               <div className="mt-4 space-y-4">
                 <p className="text-sm leading-relaxed text-gray-500">
-                  Umbra Corp (demo) holds no participant entries — every
+                  Umbra Repairs (demo) holds no participant entries — every
                   offer and request from it ends in the red verdict. Coming
                   live with the Umbra services.
                 </p>

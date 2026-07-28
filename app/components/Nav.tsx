@@ -1,15 +1,42 @@
 import Link from "next/link";
-import { Menu } from "lucide-react";
+import { ChevronDown, Menu } from "lucide-react";
 import NetworkChip from "./NetworkChip";
 
-// Persistent header (spec §2): logo · the four section anchors · network chip
-// · one CTA: "Add your wallet" → /integrate.
+// Persistent header (spec §2): logo · What is Verana · Use Cases submenu ·
+// wallet anchors · network chip · one CTA: "Add your wallet" → /integrate.
 const NAV = [
   { href: "/#what-is-verana", label: "What is Verana" },
-  { href: "/#learn", label: "Learn" },
   { href: "/#user-wallets", label: "User wallets" },
   { href: "/#cloud-wallets", label: "Cloud wallets" },
 ];
+
+const USE_CASES = [{ href: "/usecases/vesta", label: "Vesta Appliances" }];
+
+function UseCasesMenu() {
+  return (
+    <details className="group relative">
+      <summary className="flex list-none items-center gap-1 text-sm text-gray-500 transition-colors marker:hidden hover:text-gray-900 [&::-webkit-details-marker]:hidden">
+        Use Cases
+        <ChevronDown
+          className="h-3.5 w-3.5 transition-transform group-open:rotate-180"
+          aria-hidden="true"
+        />
+      </summary>
+      <ul className="absolute left-0 top-full z-50 mt-3 w-48 rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
+        {USE_CASES.map((item) => (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            >
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
 
 function Logo() {
   return (
@@ -44,7 +71,7 @@ function MobileMenu() {
         <Menu className="h-5 w-5" aria-hidden="true" />
       </summary>
       <ul className="absolute right-0 top-full z-50 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
-        {NAV.map((item) => (
+        {[NAV[0], ...USE_CASES, ...NAV.slice(1)].map((item) => (
           <li key={item.href}>
             <Link
               href={item.href}

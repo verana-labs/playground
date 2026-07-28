@@ -405,8 +405,12 @@ export default function Explained() {
             </div>
           </div>
 
-          {/* The product line */}
           <div className="mt-12">
+            <SectionHeading number={1} title="The Company" />
+          </div>
+
+          {/* The product line */}
+          <div>
             <SubHeading>The product line</SubHeading>
             <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
               {COMPANY.productLine}

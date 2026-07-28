@@ -127,7 +127,7 @@ export const REPAIR_NETWORK = {
 // --------------------------------- §2 · Elena's solution
 
 export const SOLUTION = {
-  title: "Elena's solution to Vesta's issues",
+  title: "The solution: become verifiable",
   ctoQuote: {
     text: "Today, open source software exists for user and cloud wallets, and there is Verana, a public trust infrastructure. We have everything we need to make Vesta and its partner network a network of verifiable organizations, providing verifiable services.",
     name: "Marc Keller",
@@ -430,7 +430,7 @@ export const SECTIONS_NAV = [
   {
     n: 2,
     anchor: "section-2",
-    title: "Elena's solution to Vesta's issues",
+    title: "The solution: become verifiable",
     oneLiner:
       "Make Vesta and its partner network a network of verifiable organizations: Verana's three pillars, and the ecosystems Vesta picks.",
   },

@@ -12,22 +12,22 @@ const LINES: Record<
 > = {
   issue: {
     icon: CheckCircle2,
-    tone: "text-emerald-700 bg-emerald-50",
+    tone: "bg-emerald-50 text-emerald-700",
     text: "✅ Example Issuer (demo) is an authorized issuer of ECS-Badge in the ECS Ecosystem.",
   },
   present: {
     icon: CheckCircle2,
-    tone: "text-emerald-700 bg-emerald-50",
+    tone: "bg-emerald-50 text-emerald-700",
     text: "✅ Example Web Verifier (demo) is an authorized verifier of ECS-Badge in the ECS Ecosystem.",
   },
   "issue-refused": {
     icon: XCircle,
-    tone: "text-red-700 bg-red-50",
+    tone: "bg-red-50 text-red-600",
     text: "❌ Umbra Corp (demo) is not an authorized issuer of ECS-Badge — accepting is blocked.",
   },
   "present-refused": {
     icon: XCircle,
-    tone: "text-red-700 bg-red-50",
+    tone: "bg-red-50 text-red-600",
     text: "❌ Umbra Corp (demo) is not an authorized verifier of ECS-Badge — sharing is blocked.",
   },
 };
@@ -35,7 +35,7 @@ const LINES: Record<
 export function ExpectedRendering({ kind }: { kind: ExpectedRenderingKind }) {
   const { icon: Icon, tone, text } = LINES[kind];
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
         Expected in the wallet
       </p>

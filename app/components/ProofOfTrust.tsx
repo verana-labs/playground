@@ -43,18 +43,14 @@ const chainRow = (entry: unknown) => {
 
 function BlockLabel({
   icon,
-  tint,
   children,
 }: {
   icon: React.ReactNode;
-  tint: string;
   children: React.ReactNode;
 }) {
   return (
     <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
-      <span className={`flex h-5 w-5 items-center justify-center rounded-md ${tint}`}>
-        {icon}
-      </span>
+      {icon}
       {children}
     </p>
   );
@@ -81,23 +77,23 @@ function StatusBand({
   };
   const pill =
     pot.state === "TRUSTED" ? (
-      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-        <ShieldCheck className="h-3.5 w-3.5" />
+      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
+        <ShieldCheck className="h-3 w-3" />
         Trusted
       </span>
     ) : pot.state === "UNTRUSTED" ? (
-      <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-1 text-xs font-semibold text-red-600">
-        <ShieldX className="h-3.5 w-3.5" />
+      <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-600">
+        <ShieldX className="h-3 w-3" />
         Untrusted
       </span>
     ) : (
-      <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">
+      <span className="inline-flex items-center gap-1 rounded-full bg-gray-100 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
         <ShieldQuestion className="h-3.5 w-3.5" />
         Could not verify
       </span>
     );
   return (
-    <div className="border-b border-gray-100 px-5 py-4">
+    <div className="border-b border-gray-100 px-4 py-2">
       <div className="flex flex-wrap items-center gap-2">
         {pill}
         <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900">
@@ -124,7 +120,7 @@ function StatusBand({
       </div>
       {did ? (
         <div className="mt-2 flex min-w-0 items-center gap-1.5">
-          <span className="truncate font-mono text-[11px] text-gray-400" title={did}>
+          <span className="truncate font-mono text-[10px] text-gray-400" title={did}>
             {middle(did)}
           </span>
           <button
@@ -133,7 +129,7 @@ function StatusBand({
             aria-label="Copy DID"
             className="shrink-0 text-gray-300 transition-colors hover:text-violet-600"
           >
-            <Copy className="h-3.5 w-3.5" />
+            <Copy className="h-3 w-3" />
           </button>
         </div>
       ) : null}
@@ -177,24 +173,21 @@ export function PotCard({
 
   return (
     <div
-      className={`overflow-hidden rounded-2xl border border-gray-200 bg-white ${
+      className={`overflow-hidden rounded-xl border border-gray-200 bg-gray-50 ${
         pot.state === "TRUSTED" ? "pot-verified" : ""
       }`}
     >
       <StatusBand pot={pot} did={did} label={label} onRetry={onRetry} />
       {pot.state === "UNVERIFIED" ? (
-        <p className="px-5 py-4 text-xs leading-relaxed text-gray-500">
+        <p className="px-4 py-3 text-xs leading-relaxed text-gray-500">
           The resolver could not be reached or this DID is not yet resolvable, so
           nothing is known about this service. Retry to query the network again.
         </p>
       ) : (
         <>
-          <div className="grid gap-5 px-5 py-4 sm:grid-cols-2">
+          <div className="grid gap-5 px-4 py-3 sm:grid-cols-2">
             <div className="min-w-0">
-              <BlockLabel
-                icon={<Server className="h-3 w-3" />}
-                tint="bg-violet-50 text-violet-700"
-              >
+              <BlockLabel icon={<Server className="h-3 w-3" />}>
                 Service
               </BlockLabel>
               {serviceCred ? (
@@ -203,7 +196,7 @@ export function PotCard({
                     {text(serviceCred.claims.name) ?? "Unnamed service"}
                   </p>
                   {text(serviceCred.claims.type) ? (
-                    <p className="mt-0.5 font-mono text-[11px] text-gray-400">
+                    <p className="mt-0.5 font-mono text-[10px] text-gray-400">
                       {text(serviceCred.claims.type)}
                     </p>
                   ) : null}
@@ -218,10 +211,7 @@ export function PotCard({
               )}
             </div>
             <div className="min-w-0">
-              <BlockLabel
-                icon={<Building2 className="h-3 w-3" />}
-                tint="bg-sky-50 text-sky-700"
-              >
+              <BlockLabel icon={<Building2 className="h-3 w-3" />}>
                 Operated by
               </BlockLabel>
               {orgCred ? (
@@ -239,7 +229,7 @@ export function PotCard({
                     {text(orgCred.claims.name) ?? "Unnamed organization"}
                   </p>
                   {text(orgCred.claims.registryId) ? (
-                    <p className="mt-0.5 font-mono text-[11px] text-gray-400">
+                    <p className="mt-0.5 font-mono text-[10px] text-gray-400">
                       {text(orgCred.claims.registryId)}
                     </p>
                   ) : null}
@@ -257,11 +247,8 @@ export function PotCard({
             </div>
           </div>
           {others.length > 0 ? (
-            <div className="border-t border-gray-100 px-5 py-4">
-              <BlockLabel
-                icon={<Layers className="h-3 w-3" />}
-                tint="bg-indigo-50 text-indigo-700"
-              >
+            <div className="border-t border-gray-100 px-4 py-3">
+              <BlockLabel icon={<Layers className="h-3 w-3" />}>
                 Other credentials
               </BlockLabel>
               <ul className="space-y-1.5">
@@ -277,7 +264,7 @@ export function PotCard({
                       </span>
                       {issuedBy ? (
                         <span
-                          className="min-w-0 truncate font-mono text-[11px] text-gray-400"
+                          className="min-w-0 truncate font-mono text-[10px] text-gray-400"
                           title={issuedBy}
                         >
                           {middle(issuedBy)}
@@ -287,7 +274,7 @@ export function PotCard({
                         <CircleCheck
                           role="img"
                           aria-label="Valid"
-                          className="ml-auto h-3.5 w-3.5 shrink-0 text-emerald-500"
+                          className="ml-auto h-3 w-3 shrink-0 text-emerald-500"
                         />
                       ) : (
                         <span className="ml-auto inline-flex shrink-0 items-center gap-1 text-[11px] font-medium text-amber-600">
@@ -302,7 +289,7 @@ export function PotCard({
             </div>
           ) : null}
           {pot.state === "UNTRUSTED" && failed.length > 0 ? (
-            <div className="border-t border-red-100 bg-red-50/60 px-5 py-4">
+            <div className="border-t border-red-100 bg-red-50/60 px-4 py-3">
               <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-red-600">
                 <TriangleAlert className="h-3 w-3" />
                 Failed credentials

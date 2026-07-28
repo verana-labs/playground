@@ -159,10 +159,15 @@ export default async function UserWalletPlayground({
 
           {/* 4 · Receive your ECS-Badge */}
           <div>
-            <h2 className="mb-4 text-lg font-bold text-gray-900">
-              2 · Receive your ECS-Badge
-            </h2>
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+                2
+              </span>
+              <h2 className="text-lg font-bold text-gray-900">
+                Receive your ECS-Badge
+              </h2>
+            </div>
+            <div className="ml-11 grid gap-6 md:grid-cols-2">
               {w.badge_loop === "live" ? (
                 <Placeholder title="Scan to receive your badge">
                   Scan from the ACME badge issuer — QR wiring lands with the
@@ -186,10 +191,15 @@ export default async function UserWalletPlayground({
 
           {/* 5 · Log in with your badge */}
           <div>
-            <h2 className="mb-4 text-lg font-bold text-gray-900">
-              3 · Log in with your badge
-            </h2>
-            <div className="grid gap-6 md:grid-cols-2">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+                3
+              </span>
+              <h2 className="text-lg font-bold text-gray-900">
+                Log in with your badge
+              </h2>
+            </div>
+            <div className="ml-11 grid gap-6 md:grid-cols-2">
               {w.badge_loop === "live" ? (
                 <Placeholder title="Scan to log in">
                   Scan from the ACME login service — QR wiring lands with the
@@ -213,10 +223,15 @@ export default async function UserWalletPlayground({
 
           {/* 6 · Refusal paths */}
           <div>
-            <h2 className="mb-4 text-lg font-bold text-gray-900">
-              4 · Refusal paths — Umbra Corp (demo)
-            </h2>
-            <details className="rounded-2xl border border-gray-200 bg-white p-5">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+                4
+              </span>
+              <h2 className="text-lg font-bold text-gray-900">
+                Refusal paths — Umbra Corp (demo)
+              </h2>
+            </div>
+            <details className="ml-11 rounded-2xl border border-gray-200 bg-white p-5">
               <summary className="cursor-pointer select-none font-medium text-gray-700 transition-colors hover:text-violet-700">
                 See the refusal verdicts
               </summary>

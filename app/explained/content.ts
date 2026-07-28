@@ -133,6 +133,43 @@ export const SOLUTION = {
     name: "Marc Keller",
     role: "CTO, Vesta Appliances",
   },
+  needsTitle: "What Marc needs",
+  needsIntro:
+    "To make every organization and every service verifiable, Marc's list is short:",
+  needs: [
+    {
+      section: 3,
+      tag: "ECS-Organization",
+      title: "Verifiable identities for organizations",
+      desc: "Vesta and every repair partner must be able to prove who they are, checkable by anyone, without sending paperwork around.",
+    },
+    {
+      section: 4,
+      tag: "ECS-Service",
+      title: "Verifiable identities for services",
+      desc: "Every service must prove what it is and who operates it, before a customer types a word.",
+    },
+    {
+      section: 4,
+      tag: "ECS-Badge",
+      title: "Credentials people can hold",
+      desc: "Employees and technicians need badges in a wallet: to log in without passwords, and to prove themselves at a customer's door.",
+    },
+    {
+      section: 3,
+      tag: "ISO 9001",
+      title: "Certifications as proof, not PDFs",
+      desc: "The ISO 9001 certificate must travel with Vesta's identity, verifiable everywhere.",
+    },
+    {
+      section: 5,
+      tag: "Vesta Repair Network",
+      title: "Vesta's own rules for its network",
+      desc: "A way for Vesta, and only Vesta, to say who is an Authorized Repairer, and to revoke it.",
+    },
+  ],
+  needsBridge:
+    "All of this needs wallets to hold and check the proofs (they exist, open source, for people and for organizations) and one neutral, public place where every proof anchors. That place is Verana.",
   pillarsTitle: "What is Verana?",
   pillarsIntro:
     "Verana is a public infrastructure that generalizes the use of verifiable credentials, and provides out of the box:",

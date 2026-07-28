@@ -675,7 +675,45 @@ export default function Explained() {
             </div>
           </figure>
 
-          {/* Possible thanks to Verana */}
+          {/* What Marc needs: the mission checklist */}
+          <div className="mb-14">
+            <SubHeading>{SOLUTION.needsTitle}</SubHeading>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+              {SOLUTION.needsIntro}
+            </p>
+            <ul className="reveal-stagger mx-auto mt-6 grid max-w-3xl gap-3">
+              {SOLUTION.needs.map((n) => (
+                <li
+                  key={n.title}
+                  className="flex items-start gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+                >
+                  <span
+                    aria-hidden
+                    className="mt-0.5 h-6 w-6 shrink-0 rounded-md border-2 border-gray-300"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <span className="font-semibold text-gray-900">
+                        {n.title}
+                      </span>
+                      <a
+                        href={`#section-${n.section}`}
+                        className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                      >
+                        → Section {n.section} · {n.tag}
+                      </a>
+                    </div>
+                    <p className="mt-1 text-sm text-gray-500">{n.desc}</p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <p className="reveal mx-auto mt-6 max-w-3xl rounded-2xl border border-violet-100 bg-violet-50/60 px-6 py-5 text-center text-base font-medium text-violet-900">
+              {SOLUTION.needsBridge}
+            </p>
+          </div>
+
+          {/* What is Verana? */}
           <div>
             <SubHeading>{SOLUTION.pillarsTitle}</SubHeading>
             <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">

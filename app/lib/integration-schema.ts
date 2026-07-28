@@ -18,6 +18,7 @@ export const IntegrationSchema = z
     demo_service: z.string().optional(),
     notes: z.string().optional(),
     contact: z.string().optional(),
+    fides: z.string().url().optional(),
   })
   .passthrough()
   .superRefine((d, ctx) => {

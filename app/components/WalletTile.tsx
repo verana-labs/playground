@@ -53,6 +53,16 @@ export default function WalletTile({ w }: { w: Integration }) {
             Get it
           </a>
         ) : null}
+        {w.fides ? (
+          <a
+            href={w.fides}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-lg border border-gray-200 px-3 py-1.5 text-sm font-medium text-gray-700 transition-colors hover:border-violet-300 hover:text-violet-700"
+          >
+            on FIDES
+          </a>
+        ) : null}
         <Link
           href={playgroundHref}
           className="rounded-lg bg-violet-600 px-3 py-1.5 text-sm font-medium text-white transition-colors hover:bg-violet-700"

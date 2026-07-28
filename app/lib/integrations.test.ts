@@ -44,4 +44,19 @@ describe("descriptor validation", () => {
   it("accepts a cloud-wallet without a download link", () => {
     expect(() => parseIntegration({ name: "X", kind: "cloud-wallet" }, "x")).not.toThrow();
   });
+
+  it("accepts a fides use-case URL", () => {
+    expect(() =>
+      parseIntegration(
+        { name: "X", kind: "cloud-wallet", fides: "https://fides.community/x" },
+        "x",
+      ),
+    ).not.toThrow();
+  });
+
+  it("rejects a non-URL fides value", () => {
+    expect(() =>
+      parseIntegration({ name: "X", kind: "cloud-wallet", fides: "not-a-url" }, "x"),
+    ).toThrow(/fides/);
+  });
 });

@@ -22,6 +22,7 @@ export type Integration = {
   scenarios: string[];
   demo_video?: string;
   logo?: string;
+  fides?: string;
   /** Mobile user wallet: direct APK link (stores may complement). Web wallet
    *  or cloud wallet: URL. */
   download?: string;
@@ -63,6 +64,7 @@ export function listIntegrations(): Integration[] {
       scenarios: data.scenarios ?? [],
       demo_video: data.demo_video,
       logo: data.logo,
+      fides: data.fides,
       download: data.download,
       appstore: data.appstore,
       playstore: data.playstore,

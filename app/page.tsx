@@ -97,6 +97,7 @@ const CAN_DO = [
 export default function Home() {
   const users = userWallets();
   const clouds = cloudWallets();
+  const fidesUsecaseUrl = process.env.NEXT_PUBLIC_FIDES_USECASE_URL;
 
   return (
     <>
@@ -130,6 +131,28 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      {/* FIDES award surface — dark until NEXT_PUBLIC_FIDES_USECASE_URL is set */}
+      {fidesUsecaseUrl ? (
+        <div className="border-b border-gray-200 bg-white shadow-sm">
+          <Container>
+            <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 py-3 text-center text-sm text-gray-600">
+              <span>
+                This playground is the living evidence of the &ldquo;One
+                trust layer, many wallets&rdquo; FIDES use case.
+              </span>
+              <a
+                href={fidesUsecaseUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-violet-700 hover:underline"
+              >
+                Support it on FIDES
+              </a>
+            </p>
+          </Container>
+        </div>
+      ) : null}
 
       {/* 1 · What is Verana */}
       <Section id="what-is-verana">

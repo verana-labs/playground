@@ -11,6 +11,7 @@ import {
   KeyRound,
   Landmark,
   LockKeyhole,
+  Network,
   PhoneOff,
   Quote,
   Terminal,
@@ -23,8 +24,8 @@ import StoryDiagram from "../components/StoryDiagram";
 import {
   CLOSING,
   COMPANY,
+  ECOSYSTEM_BUILD,
   ECOSYSTEM_CHOICES,
-  ECOSYSTEM_GAP,
   FACTS,
   PILLARS,
   REPAIR_NETWORK,
@@ -795,9 +796,49 @@ export default function Explained() {
                 );
               })}
             </div>
-            <p className="reveal mt-4 rounded-2xl border-2 border-dashed border-red-200 bg-red-50/40 px-6 py-4 text-center text-sm font-medium text-red-700">
-              {ECOSYSTEM_GAP}
+          </div>
+
+          {/* The ecosystems Vesta wants to build */}
+          <div className="mt-14">
+            <SubHeading>{ECOSYSTEM_BUILD.title}</SubHeading>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+              {ECOSYSTEM_BUILD.intro}
             </p>
+            <div className="mx-auto mt-6 max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="flex items-start justify-between gap-2">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+                  <Network className="h-5 w-5" />
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-xs font-semibold text-violet-700">
+                  <Landmark className="h-3 w-3" /> Vesta operates as{" "}
+                  {ECOSYSTEM_BUILD.card.role}
+                </span>
+              </div>
+              <div className="mt-3 text-lg font-bold text-gray-900">
+                {ECOSYSTEM_BUILD.card.name}
+              </div>
+              <div className="text-sm font-medium text-gray-400">
+                {ECOSYSTEM_BUILD.card.label}
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                {ECOSYSTEM_BUILD.card.about}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                <span className="font-semibold text-gray-800">
+                  Why Vesta builds it:
+                </span>{" "}
+                {ECOSYSTEM_BUILD.card.why}
+              </p>
+              <div className="mt-4 border-t border-gray-100 pt-3">
+                <a
+                  href={`#section-${ECOSYSTEM_BUILD.card.section}`}
+                  className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                >
+                  → Section {ECOSYSTEM_BUILD.card.section} · Vesta creates its
+                  own ecosystem
+                </a>
+              </div>
+            </div>
           </div>
         </Container>
       </Section>

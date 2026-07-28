@@ -228,8 +228,20 @@ export const ECOSYSTEM_CHOICES = [
   },
 ] as const;
 
-export const ECOSYSTEM_GAP =
-  "Authorized repairers? No ecosystem governs that; only Vesta can. That is Section 5.";
+export const ECOSYSTEM_BUILD = {
+  title: "The ecosystems Vesta wants to build",
+  intro:
+    "One need remains: no existing ecosystem can answer “who is an authorized Vesta repairer”. Only Vesta can. So Vesta will build its own:",
+  card: {
+    section: 5,
+    role: "ECOSYSTEM",
+    name: "Vesta Repair Network",
+    label: "the Authorized Repairer credential",
+    about:
+      "Vesta's own trust ecosystem, with a single credential schema: Authorized Repairer. Issuance is governed (only Vesta issues) and verification is open (anyone checks, no permission needed). The paper Vesta Certified Repair Company badge from Section 1 becomes verifiable, revocable proof.",
+    why: "brand protection as a structural property. Real partners turn green, impostors turn red, and a partner that goes rogue can be revoked.",
+  },
+};
 
 // ----------------- §3–§5 · The technical build (scene graph sections)
 

@@ -5,9 +5,9 @@ export const SITE_URL = "https://playground.testnet.verana.network";
 export const SITE_NAME = "Verana Playground";
 export const SITE_TAGLINE = "Try the open trust layer. Live.";
 export const SITE_DESCRIPTION =
-  "The Verana Playground: understand the Verana concepts through the ACME story, and try the integrated user and cloud wallets — everything live on the Verana testnet, nothing simulated.";
+  "The Verana Playground: understand the Verana concepts through the Vesta Appliances story, and try the integrated user and cloud wallets - everything live on the Verana testnet, nothing simulated.";
 
-/** Testnet endpoints (playground/README.md — shared reference). */
+/** Testnet endpoints (playground/README.md - shared reference). */
 export const ENDPOINTS = {
   rpc: "https://rpc.testnet.verana.network",
   api: "https://api.testnet.verana.network",

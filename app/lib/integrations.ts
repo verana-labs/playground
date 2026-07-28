@@ -1,5 +1,5 @@
 // Integration registry loader. Each integration lives in
-// integrations/<slug>/integration.yaml (submitted by PR — see the
+// integrations/<slug>/integration.yaml (submitted by PR - see the
 // user/cloud wallet guidelines). The site builds the wallet lists and the
 // per-wallet playground pages from these descriptors at build/render time.
 

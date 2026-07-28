@@ -36,7 +36,7 @@ export function Section({
   );
 }
 
-/** Numbered section heading — the verana-demos tutorial idiom:
+/** Numbered section heading - the verana-demos tutorial idiom:
  *  a violet number circle, bold title, gray subtitle. */
 export function SectionHeading({
   number,
@@ -160,7 +160,7 @@ export function Breadcrumb({
   );
 }
 
-/** Placeholder block for specified-but-not-wired parts — honest by design. */
+/** Placeholder block for specified-but-not-wired parts - honest by design. */
 export function Placeholder({
   title,
   children,

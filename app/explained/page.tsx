@@ -592,32 +592,34 @@ export default function Explained() {
             <SubHeading>The word of the CEO</SubHeading>
             <figure className="mx-auto mt-6 max-w-3xl rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
               <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
-                {VESTA_ASSETS.ceo ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={VESTA_ASSETS.ceo}
-                    alt={COMPANY.ceoQuote.name}
-                    className="h-48 w-40 shrink-0 rounded-2xl object-cover object-top shadow-md"
-                  />
-                ) : (
-                  <span className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-violet-100 text-2xl font-bold text-violet-700">
-                    {COMPANY.ceoQuote.name
-                      .split(" ")
-                      .map((w) => w[0])
-                      .join("")}
-                  </span>
-                )}
+                <figcaption className="shrink-0 text-center">
+                  {VESTA_ASSETS.ceo ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={VESTA_ASSETS.ceo}
+                      alt={COMPANY.ceoQuote.name}
+                      className="mx-auto h-48 w-40 rounded-2xl object-cover object-top shadow-md"
+                    />
+                  ) : (
+                    <span className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-violet-100 text-2xl font-bold text-violet-700">
+                      {COMPANY.ceoQuote.name
+                        .split(" ")
+                        .map((w) => w[0])
+                        .join("")}
+                    </span>
+                  )}
+                  <div className="mt-3 text-sm font-semibold text-gray-900">
+                    {COMPANY.ceoQuote.name}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {COMPANY.ceoQuote.role}
+                  </div>
+                </figcaption>
                 <div>
                   <Quote className="h-6 w-6 text-violet-400" aria-hidden />
                   <blockquote className="mt-3 text-xl font-medium leading-relaxed text-gray-800">
                     “{COMPANY.ceoQuote.text}”
                   </blockquote>
-                  <figcaption className="mt-5 text-sm">
-                    <div className="font-semibold text-gray-900">
-                      {COMPANY.ceoQuote.name}
-                    </div>
-                    <div className="text-gray-500">{COMPANY.ceoQuote.role}</div>
-                  </figcaption>
                 </div>
               </div>
             </figure>

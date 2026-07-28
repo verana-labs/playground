@@ -10,7 +10,7 @@ type PotApiResponse = {
 
 function UnavailableCard({ onRetry }: { onRetry: () => void }) {
   return (
-    <div className="rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4">
+    <div className="rounded-xl border border-gray-100 bg-gray-50 px-5 py-4">
       <p className="text-xs text-gray-500">Live service link unavailable right now.</p>
       <button
         type="button"
@@ -66,7 +66,7 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
 
   if (appUrl === undefined) {
     return (
-      <div className="animate-pulse rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 text-xs text-gray-500">
+      <div className="animate-pulse rounded-xl border border-gray-100 bg-gray-50 px-5 py-4 text-xs text-gray-500">
         Resolving the live service link…
       </div>
     );
@@ -78,14 +78,14 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
 
   if (!qrDataUrl) {
     return (
-      <div className="animate-pulse rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 text-xs text-gray-500">
+      <div className="animate-pulse rounded-xl border border-gray-100 bg-gray-50 px-5 py-4 text-xs text-gray-500">
         Resolving the live service link…
       </div>
     );
   }
 
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex flex-col items-center gap-3">
         <div className="flex h-40 w-40 shrink-0 items-center justify-center rounded-xl border border-gray-100 bg-white p-2">
           {/* eslint-disable-next-line @next/next/no-img-element -- generated data: URI, not a static asset next/image can optimize */}

@@ -132,7 +132,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* FIDES award surface — dark until NEXT_PUBLIC_FIDES_USECASE_URL is set */}
       {fidesUsecaseUrl ? (
         <div className="border-b border-gray-200 bg-white shadow-sm">
           <Container>

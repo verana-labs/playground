@@ -9,6 +9,7 @@ import {
 } from "../../components/ui";
 import { ExpectedRendering } from "../../components/ExpectedRendering";
 import { ProofOfTrust } from "../../components/ProofOfTrust";
+import { ServiceQr } from "../../components/ServiceQr";
 import { userWallets, getIntegration } from "../../lib/integrations";
 import { LINKS } from "../../lib/site";
 
@@ -169,10 +170,7 @@ export default async function UserWalletPlayground({
             </div>
             <div className="ml-11 grid gap-6 md:grid-cols-2">
               {w.badge_loop === "live" ? (
-                <Placeholder title="Scan to receive your badge">
-                  Scan from the ACME badge issuer — QR wiring lands with the
-                  badge service
-                </Placeholder>
+                <ServiceQr serviceId="issuer-web-vs" label="ACME badge issuer (demo)" />
               ) : (
                 <Placeholder title="Scan to receive your badge">
                   The AnonCreds/DIDComm badge flow reaches this wallet soon —
@@ -201,10 +199,7 @@ export default async function UserWalletPlayground({
             </div>
             <div className="ml-11 grid gap-6 md:grid-cols-2">
               {w.badge_loop === "live" ? (
-                <Placeholder title="Scan to log in">
-                  Scan from the ACME login service — QR wiring lands with the
-                  login service
-                </Placeholder>
+                <ServiceQr serviceId="verifier-web-vs" label="ACME login service (demo)" />
               ) : (
                 <Placeholder title="Scan to log in">
                   The AnonCreds/DIDComm login flow reaches this wallet soon —

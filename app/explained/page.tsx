@@ -763,11 +763,17 @@ export default function Explained() {
                     key={e.name}
                     className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
                   >
-                    <span
-                      className={`flex h-11 w-11 items-center justify-center rounded-xl ${chipTone}`}
-                    >
-                      <Icon className="h-5 w-5" />
-                    </span>
+                    <div className="flex items-start justify-between gap-2">
+                      <span
+                        className={`flex h-11 w-11 items-center justify-center rounded-xl ${chipTone}`}
+                      >
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                        <BadgeCheck className="h-3 w-3" /> Vesta joins as{" "}
+                        {e.role}
+                      </span>
+                    </div>
                     <div className="mt-3 text-lg font-bold text-gray-900">
                       {e.name}
                     </div>

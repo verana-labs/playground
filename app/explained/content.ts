@@ -211,6 +211,7 @@ export const ECOSYSTEM_CHOICES = [
   {
     icon: "landmark",
     tone: "violet",
+    role: "HOLDER",
     name: "ECS Ecosystem",
     label: "the identity card",
     why: "Governs the essential credentials: ECS-Organization (who you are, verified once by an accredited issuer) and ECS-Service (what each service is). This is what turns the check green; without it, nothing else can be proven.",
@@ -218,6 +219,7 @@ export const ECOSYSTEM_CHOICES = [
   {
     icon: "award",
     tone: "amber",
+    role: "HOLDER",
     name: "ISO Certification Ecosystem",
     label: "(demo) · the certificate becomes proof",
     why: "Today Vesta's ISO 9001 certificate is a PDF nobody can verify. As a credential on Vesta's verified identity, it becomes proof that customers and partners see on every Vesta service.",

@@ -16,7 +16,7 @@ import { userWallets, cloudWallets } from "./lib/integrations";
 import { SECTIONS_NAV } from "./usecases/vesta/content";
 import { LINKS, ENDPOINTS } from "./lib/site";
 
-// The six story sections (spec §3.2), deep-linking into /explained anchors.
+// The story sections (spec §3.2), deep-linking into /usecases/vesta anchors.
 
 // The concept cards of section 1 (verana-demos ConceptCard idiom).
 const CONCEPTS = [

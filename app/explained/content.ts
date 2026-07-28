@@ -367,7 +367,7 @@ export const TECH_SECTIONS: TechSection[] = [
         title: "The Vesta Repair Network",
         kind: "watch",
         story:
-          "Vesta publishes a one-page governance framework and creates its ecosystem with a single credential schema: Authorized Repairer. The design choice that matters: issuance is governed - only Vesta issues. Verification is open - anyone checks, no permission needed. Then Vesta onboards Zenith Repairs, itself a verifiable organization (it went through its own Sections 4–5 - the pattern replicates; that is the point): Vesta identifies Zenith by the ECS-Org credential on its DID and issues Authorized Repairer to Zenith's organization DID.",
+          "Vesta publishes a one-page governance framework and creates its ecosystem with a single credential schema: Authorized Repairer. The design choice that matters: issuance is governed - only Vesta issues. Verification is open - anyone checks, no permission needed. Then Vesta onboards Zenith Repairs, itself a verifiable organization (it went through its own Sections 3–4 - the pattern replicates; that is the point): Vesta identifies Zenith by the ECS-Org credential on its DID and issues Authorized Repairer to Zenith's organization DID.",
         underHood: [
           "Create New Trust Registry (+ EGF document) → Create New Credential Schema (issuer mode ECOSYSTEM, verifier mode OPEN) → Create Root Permission. Three transactions, and Vesta is an ecosystem.",
           "Zenith joins the tree as HOLDER under Vesta's root; Vesta validates by verifying Zenith's ECS-Org presentation - reusable KYB, now from the issuer's seat.",

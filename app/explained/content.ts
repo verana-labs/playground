@@ -46,7 +46,7 @@ export const COMPANY = {
     sub: "since 2003",
   },
   ceoQuote: {
-    text: "Our machines earn trust in people's homes every day. Online, we can't even prove a support chat is really ours. That has to change.",
+    text: "Our machines earn trust in people's homes every day. Yet online, we can't prove a support chat is really ours — and at the front door, we can't prove a technician is really one of our certified partners. That has to change.",
     name: "Elena Vasquez",
     role: "CEO, Vesta Appliances",
   },

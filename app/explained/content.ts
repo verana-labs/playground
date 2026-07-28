@@ -133,7 +133,7 @@ export const SOLUTION = {
     name: "Marc Keller",
     role: "CTO, Vesta Appliances",
   },
-  pillarsTitle: "Possible thanks to Verana",
+  pillarsTitle: "What is Verana?",
   pillarsIntro:
     "Verana is a public infrastructure that generalizes the use of verifiable credentials, and provides out of the box:",
   ecosystemsTitle: "The ecosystems Vesta wants to join",

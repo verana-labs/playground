@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Menu } from "lucide-react";
 import NetworkChip from "./NetworkChip";
 
 // Persistent header (spec §2): logo · the four section anchors · network chip
@@ -31,10 +32,37 @@ function Logo() {
   );
 }
 
+// Below `lg` the four anchors move into a disclosure menu. A native
+// <details>/<summary> keeps this JS-free — Nav stays a server component.
+function MobileMenu() {
+  return (
+    <details className="relative lg:hidden">
+      <summary
+        aria-label="Open section menu"
+        className="flex h-9 w-9 list-none items-center justify-center rounded-lg text-gray-500 marker:hidden hover:bg-gray-100 hover:text-gray-900 [&::-webkit-details-marker]:hidden"
+      >
+        <Menu className="h-5 w-5" aria-hidden="true" />
+      </summary>
+      <ul className="absolute right-0 top-full z-50 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
+        {NAV.map((item) => (
+          <li key={item.href}>
+            <Link
+              href={item.href}
+              className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+            >
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
+}
+
 export default function Nav() {
   return (
     <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/85 backdrop-blur">
-      <nav className="mx-auto flex h-16 max-w-6xl items-center gap-4 px-6">
+      <nav className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:gap-4 sm:px-6">
         <Logo />
         <ul className="ml-4 hidden items-center gap-5 lg:flex">
           {NAV.map((item) => (
@@ -48,16 +76,16 @@ export default function Nav() {
             </li>
           ))}
         </ul>
-        <div className="ml-auto flex items-center gap-3">
-          <span className="hidden sm:inline-flex">
-            <NetworkChip />
-          </span>
+        <div className="ml-auto flex items-center gap-2 sm:gap-3">
+          <NetworkChip />
           <Link
             href="/integrate"
-            className="hidden rounded-xl bg-violet-600 px-3.5 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700 sm:inline-flex"
+            className="inline-flex rounded-xl bg-violet-600 px-2.5 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700 sm:px-3.5"
           >
-            Add your wallet
+            <span className="sm:hidden">Add wallet</span>
+            <span className="hidden sm:inline">Add your wallet</span>
           </Link>
+          <MobileMenu />
         </div>
       </nav>
     </header>

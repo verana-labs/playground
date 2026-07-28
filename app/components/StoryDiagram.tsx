@@ -147,12 +147,12 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
 
   return (
     <figure className="rounded-2xl border border-gray-200 bg-white p-3 shadow-sm sm:p-5">
-      <div className="overflow-x-auto">
+      <div>
         <svg
           viewBox="30 20 930 570"
           role="img"
           aria-label={`The Vesta story graph at step ${stage}`}
-          className="min-w-[720px]"
+          className="h-auto w-full"
         >
           <defs>
             {tones.map((t) => (

@@ -103,12 +103,12 @@ function RepairNetworkDiagram() {
   const badgeText = `✓ ${REPAIR_NETWORK.badgeLabel}`;
   const badgeW = badgeText.length * 5.8 + 16;
   return (
-    <div className="overflow-x-auto rounded-2xl border border-gray-200 bg-white p-2 shadow-sm sm:p-3">
+    <div className="rounded-2xl border border-gray-200 bg-white p-2 shadow-sm sm:p-3">
       <svg
         viewBox="40 28 680 412"
         role="img"
         aria-label="The Vesta certified repair network: Vesta at the center, certified partner companies around it"
-        className="min-w-[680px]"
+        className="h-auto w-full"
       >
         {REPAIR_NETWORK.partners.map((p, i) => {
           const a = (i / n) * 2 * Math.PI - Math.PI / 2;

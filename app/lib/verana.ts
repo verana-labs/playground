@@ -3,7 +3,8 @@
 
 import { ENDPOINTS } from "./site";
 
-/** The standing demo services (the ACME cast), deployed from
+/** The standing demo services (the demo cast; dedicated Vesta instances
+ *  are being deployed per story participant), from
  *  verana-labs/verana-demos. */
 export const DEMO_SERVICE_IDS = [
   "organization-vs",

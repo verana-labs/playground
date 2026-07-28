@@ -3,7 +3,7 @@
 **Try the open trust layer. Live.** — `https://playground.testnet.verana.network`
 
 The interactive site for understanding the Verana concepts (the **Verana
-Explained** ACME story) and trying the **integrated user and cloud wallets**,
+Explained** Vesta Appliances story) and trying the **integrated user and cloud wallets**,
 everything running against the Verana **testnet** — real registry entries, real
 trust resolution, nothing simulated.
 
@@ -15,8 +15,8 @@ site spec, wallet-integration guidelines, and the Verana Explained story.
 
 ```
 app/                     Next.js 15 (App Router) + Tailwind v4, verana.io design language
-  page.tsx               Home: What is Verana · Learn (ACME story cards) · User wallets · Cloud wallets
-  explained/             Verana Explained (the ACME story)
+  page.tsx               Home: What is Verana · Learn (Vesta story cards) · User wallets · Cloud wallets
+  explained/             Verana Explained (the Vesta Appliances story, one page per chapter)
   user-wallets/[slug]/   Per-user-wallet playground (identical template, spec §4)
   cloud-wallets/[slug]/  Per-cloud-wallet playground (identical template, spec §5)
   integrate/             Add your wallet (guidelines + PR process)
@@ -44,7 +44,7 @@ npm run build      # production build (standalone output)
 
 ## Related
 
-- Demo services (the ACME cast, v3): [`verana-labs/verana-demos`](https://github.com/verana-labs/verana-demos)
+- Demo services (v3 examples; dedicated Vesta cast pending): [`verana-labs/verana-demos`](https://github.com/verana-labs/verana-demos)
 - Trust Resolver: `https://resolver.testnet.verana.network/docs`
 - Network frontend: `https://app.testnet.verana.network`
 

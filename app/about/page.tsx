@@ -35,7 +35,7 @@ export default function About() {
           </p>
           <h2>What is demo</h2>
           <p>
-            All featured entities — ACME Corp, the ISO Certification Ecosystem,
+            All featured entities — Vesta Appliances, the ISO Certification Ecosystem,
             CertBody issuers, Umbra Corp, Zenith Repairs — are{" "}
             <strong>fictional</strong> and labeled <em>(demo)</em>. Credentials
             referring to ISO standards are &ldquo;ISO 9001-<em>style</em>{" "}

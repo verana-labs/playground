@@ -15,7 +15,7 @@ import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
 import { userWallets, cloudWallets } from "./lib/integrations";
 import { LINKS, ENDPOINTS } from "./lib/site";
 
-// The five Verana Explained step cards (spec §3.2), linking into /explained.
+// The six Verana Explained chapter cards (spec §3.2), linking into /explained.
 const STEPS: {
   n: number;
   title: string;
@@ -24,31 +24,37 @@ const STEPS: {
 }[] = [
   {
     n: 1,
-    title: "ACME Corp creates itself in Verana",
+    title: "Meet Vesta Appliances",
     oneLiner:
-      "Deploy an Organization anchor, get verified (KYB → ECS-Organization), self-issue ECS-Service: a resolvable, trusted DID.",
+      "A real business, real services — and impostors trading on its name: fake support lines, fake “authorized” repairers. Nothing can be proven.",
   },
   {
     n: 2,
-    title: "ACME deploys its services",
+    title: "Why Verana",
     oneLiner:
-      "Support chatbot, employee badge issuer, credential login — each its own DID, provably ACME's.",
+      "What if services could prove who runs them? Ecosystems, credentials, wallets — trust before contact.",
   },
   {
     n: 3,
-    title: "ACME gets certified (ISO 9001)",
+    title: "Choosing ecosystems",
     oneLiner:
-      "No re-KYB: the ECS-Org credential is the identification; the certification travels everywhere ACME acts.",
+      "The ECS Ecosystem (the identity card) and the ISO Certification Ecosystem (demo) — and the gap only Vesta can fill.",
   },
   {
     n: 4,
-    title: "ACME creates its own ecosystem",
+    title: "Joining, in practice",
     oneLiner:
-      "The ACME Partner Ecosystem: governed issuance, open verification — brand impersonation fails structurally.",
+      "Anchor → KYB once → the check turns green; support chat, badges, passwordless login (hands-on); ISO 9001 with no re-KYB.",
   },
   {
     n: 5,
-    title: "Discovery with the Trust Graph",
+    title: "Vesta's own ecosystem",
+    oneLiner:
+      "The Vesta Repair Network: only Vesta issues Authorized Repairer, anyone verifies — Zenith ✓, Umbra ✗.",
+  },
+  {
+    n: 6,
+    title: "Being found",
     oneLiner: "Find services by what they prove, not what they claim.",
     pending: true,
   },
@@ -185,13 +191,13 @@ export default function Home() {
           <SectionHeading
             number={2}
             title="Learn step by step"
-            subtitle="Verana, explained by ACME Corp — one continuous story, and you take part with your own wallet"
+            subtitle="Verana, explained by Vesta Appliances — one continuous story, from business problem to full circle, and you take part with your own wallet"
           />
           <div className="reveal-stagger grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {STEPS.map((s) => (
               <Link
                 key={s.n}
-                href={`/explained/step-${s.n}`}
+                href={`/explained/chapter-${s.n}`}
                 className="group flex flex-col rounded-xl border border-gray-200 bg-gray-50 p-5 transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
@@ -219,7 +225,7 @@ export default function Home() {
           <SectionHeading
             number={3}
             title="User wallets"
-            subtitle="Every integrated open-source user wallet gets an identical playground page: receive a badge from ACME, then log in with it"
+            subtitle="Every integrated open-source user wallet gets an identical playground page: receive a badge from Vesta, then log in with it"
           />
           <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {users.map((w) => (
@@ -247,7 +253,7 @@ export default function Home() {
           <p className="reveal mt-8 flex items-center gap-2 text-sm text-gray-500">
             <Building2 className="h-4 w-4 text-violet-600" />
             Cloud wallets host organizations&apos; verifiable services — like the
-            ACME demo cast behind this playground.
+            Vesta demo cast behind this playground.
           </p>
         </Container>
       </Section>

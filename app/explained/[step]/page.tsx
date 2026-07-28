@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Eye, Hand, Terminal } from "lucide-react";
+import { ArrowLeft, ArrowRight, BookOpen, Eye, Hand, Terminal } from "lucide-react";
 import { Container, Section, Breadcrumb, Placeholder } from "../../components/ui";
 import ServiceTrustCard from "../../components/ServiceTrustCard";
 import StoryDiagram from "../../components/StoryDiagram";
-import { STEP_PAGES, getStepPage } from "../content";
+import { CHAPTERS, getChapter } from "../content";
 import { LINKS } from "../../lib/site";
 
-// One page per story step (verana-explained spec): every sub-step is
-// story · progressive diagram · reproduce-it recipe · under the hood.
+// One page per story chapter (verana-explained spec 0.4): every sub-step is
+// story · progressive diagram · (reproduce-it) · (under the hood).
 
 export function generateStaticParams() {
-  return STEP_PAGES.map((s) => ({ step: s.slug }));
+  return CHAPTERS.map((s) => ({ step: s.slug }));
 }
 
 export async function generateMetadata({
@@ -21,37 +21,45 @@ export async function generateMetadata({
   params: Promise<{ step: string }>;
 }): Promise<Metadata> {
   const { step } = await params;
-  const page = getStepPage(step);
+  const page = getChapter(step);
   return {
-    title: page ? `Step ${page.n} · ${page.title}` : "Verana Explained",
+    title: page ? `Chapter ${page.n} · ${page.title}` : "Verana Explained",
     description: page?.intro,
   };
 }
 
-function KindChip({ kind }: { kind: "watch" | "hands-on" }) {
-  return kind === "hands-on" ? (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-      <Hand className="h-3 w-3" /> hands-on — you do it
-    </span>
-  ) : (
-    <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-semibold text-violet-700">
-      <Eye className="h-3 w-3" /> watch — follow along
+function KindChip({ kind }: { kind: "story" | "watch" | "hands-on" }) {
+  if (kind === "hands-on")
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+        <Hand className="h-3 w-3" /> hands-on — you do it
+      </span>
+    );
+  if (kind === "watch")
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-semibold text-violet-700">
+        <Eye className="h-3 w-3" /> watch — Vesta does it
+      </span>
+    );
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">
+      <BookOpen className="h-3 w-3" /> story
     </span>
   );
 }
 
-export default async function ExplainedStep({
+export default async function ExplainedChapter({
   params,
 }: {
   params: Promise<{ step: string }>;
 }) {
   const { step } = await params;
-  const page = getStepPage(step);
+  const page = getChapter(step);
   if (!page) notFound();
 
-  const i = STEP_PAGES.findIndex((s) => s.slug === page.slug);
-  const prev = i > 0 ? STEP_PAGES[i - 1] : undefined;
-  const next = i < STEP_PAGES.length - 1 ? STEP_PAGES[i + 1] : undefined;
+  const i = CHAPTERS.findIndex((s) => s.slug === page.slug);
+  const prev = i > 0 ? CHAPTERS[i - 1] : undefined;
+  const next = i < CHAPTERS.length - 1 ? CHAPTERS[i + 1] : undefined;
 
   return (
     <>
@@ -62,7 +70,7 @@ export default async function ExplainedStep({
             items={[
               { label: "Playground", href: "/" },
               { label: "Verana Explained", href: "/explained" },
-              { label: `Step ${page.n}` },
+              { label: `Chapter ${page.n}` },
             ]}
           />
           <div className="mt-6 flex items-center gap-4">
@@ -85,9 +93,9 @@ export default async function ExplainedStep({
       {page.pending ? (
         <Section>
           <Container>
-            <Placeholder title="This step ships once Steps 1–4 are fully live">
-              The summary above is the preview: the DID Directory, crawlers
-              that only index what verifies, and discovery for people, search
+            <Placeholder title="This chapter ships once Chapters 1–5 are fully live">
+              The summary above is the preview: the registry crawled, every
+              artifact verified, and discovery by proof for people, search
               engines, and AI agents. The full walkthrough — with its own
               progressive diagrams — will be added here.
             </Placeholder>
@@ -116,66 +124,86 @@ export default async function ExplainedStep({
                   <KindChip kind={sub.kind} />
                 </div>
                 <p className="mt-4 max-w-3xl text-gray-600">{sub.story}</p>
+                {sub.points?.length ? (
+                  <ul className="reveal-stagger mt-4 grid max-w-3xl gap-2">
+                    {sub.points.map((p, pi) => (
+                      <li
+                        key={pi}
+                        className="flex gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600 shadow-sm"
+                      >
+                        <span className="text-violet-500" aria-hidden>
+                          ▸
+                        </span>
+                        {p}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
               </div>
 
               <StoryDiagram stage={sub.stage} />
 
-              <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-                <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-900">
-                  <Terminal className="h-4 w-4 text-violet-600" /> Reproduce it
-                </h3>
-                <ol className="mt-4 space-y-3">
-                  {sub.reproduce.map((r, ri) => (
-                    <li key={ri} className="flex gap-3 text-sm text-gray-600">
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-50 text-xs font-bold text-violet-700">
-                        {ri + 1}
-                      </span>
-                      <span className="pt-0.5">{r}</span>
-                    </li>
-                  ))}
-                </ol>
-                {sub.links?.length ? (
-                  <div className="mt-4 flex flex-wrap gap-2 border-t border-gray-100 pt-4">
-                    {sub.links.map((l) =>
-                      l.href.startsWith("/") ? (
-                        <Link
-                          key={l.href}
-                          href={l.href}
-                          className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
-                        >
-                          {l.label}
-                        </Link>
-                      ) : (
-                        <a
-                          key={l.href}
-                          href={l.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
-                        >
-                          {l.label} ↗
-                        </a>
-                      ),
-                    )}
-                  </div>
-                ) : null}
-              </div>
+              {sub.reproduce?.length ? (
+                <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+                  <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-900">
+                    <Terminal className="h-4 w-4 text-violet-600" /> Reproduce
+                    it
+                  </h3>
+                  <ol className="mt-4 space-y-3">
+                    {sub.reproduce.map((r, ri) => (
+                      <li key={ri} className="flex gap-3 text-sm text-gray-600">
+                        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-50 text-xs font-bold text-violet-700">
+                          {ri + 1}
+                        </span>
+                        <span className="pt-0.5">{r}</span>
+                      </li>
+                    ))}
+                  </ol>
+                  {sub.links?.length ? (
+                    <div className="mt-4 flex flex-wrap gap-2 border-t border-gray-100 pt-4">
+                      {sub.links.map((l) =>
+                        l.href.startsWith("/") ? (
+                          <Link
+                            key={l.href}
+                            href={l.href}
+                            className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                          >
+                            {l.label}
+                          </Link>
+                        ) : (
+                          <a
+                            key={l.href}
+                            href={l.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                          >
+                            {l.label} ↗
+                          </a>
+                        ),
+                      )}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
 
-              <details className="group rounded-2xl border border-gray-200 bg-gray-50 px-6 py-4">
-                <summary className="cursor-pointer select-none text-sm font-semibold text-gray-700 hover:text-violet-700">
-                  Under the hood
-                </summary>
-                <ul className="mt-3 space-y-2 text-sm text-gray-600">
-                  {sub.underHood.map((u, ui) => (
-                    <li key={ui} className="flex gap-2">
-                      <span className="text-violet-500" aria-hidden>
-                        ▸
-                      </span>
-                      {u}
-                    </li>
-                  ))}
-                </ul>
-              </details>
+              {sub.underHood?.length ? (
+                <details className="group rounded-2xl border border-gray-200 bg-gray-50 px-6 py-4">
+                  <summary className="cursor-pointer select-none text-sm font-semibold text-gray-700 hover:text-violet-700">
+                    Under the hood
+                  </summary>
+                  <ul className="mt-3 space-y-2 text-sm text-gray-600">
+                    {sub.underHood.map((u, ui) => (
+                      <li key={ui} className="flex gap-2">
+                        <span className="text-violet-500" aria-hidden>
+                          ▸
+                        </span>
+                        {u}
+                      </li>
+                    ))}
+                  </ul>
+                </details>
+              ) : null}
 
               {sub.liveService ? (
                 <div>
@@ -183,12 +211,25 @@ export default async function ExplainedStep({
                     Live right now, resolved against the public registry:
                   </p>
                   <ServiceTrustCard serviceId={sub.liveService} />
+                  {sub.liveNote ? (
+                    <p className="mt-2 text-xs text-gray-400">{sub.liveNote}</p>
+                  ) : null}
                 </div>
               ) : null}
             </Container>
           </Section>
         ))
       )}
+
+      {!page.pending && page.outro ? (
+        <Section className="border-t border-gray-200">
+          <Container className="max-w-4xl">
+            <p className="rounded-2xl border border-violet-100 bg-violet-50/60 px-6 py-4 text-sm font-medium text-violet-900">
+              {page.outro}
+            </p>
+          </Container>
+        </Section>
+      ) : null}
 
       <Section className="border-t border-gray-200 bg-white">
         <Container className="max-w-4xl">
@@ -198,14 +239,15 @@ export default async function ExplainedStep({
                 href={`/explained/${prev.slug}`}
                 className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:border-violet-300 hover:text-violet-700"
               >
-                <ArrowLeft className="h-4 w-4" /> Step {prev.n} · {prev.title}
+                <ArrowLeft className="h-4 w-4" /> Chapter {prev.n} ·{" "}
+                {prev.title}
               </Link>
             ) : (
               <Link
                 href="/explained"
                 className="inline-flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 shadow-sm hover:border-violet-300 hover:text-violet-700"
               >
-                <ArrowLeft className="h-4 w-4" /> All steps
+                <ArrowLeft className="h-4 w-4" /> All chapters
               </Link>
             )}
             {next ? (
@@ -213,7 +255,8 @@ export default async function ExplainedStep({
                 href={`/explained/${next.slug}`}
                 className="inline-flex items-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 text-sm font-medium text-white shadow-sm hover:bg-violet-700"
               >
-                Step {next.n} · {next.title} <ArrowRight className="h-4 w-4" />
+                Chapter {next.n} · {next.title}{" "}
+                <ArrowRight className="h-4 w-4" />
               </Link>
             ) : null}
           </div>

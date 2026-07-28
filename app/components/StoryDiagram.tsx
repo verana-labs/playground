@@ -8,6 +8,7 @@ import {
   Landmark,
   Network,
   Stamp,
+  User,
   Wallet,
   Wrench,
 } from "lucide-react";
@@ -15,16 +16,18 @@ import {
   BADGES,
   EDGES,
   NODES,
+  STAGE_CHANGES,
   nodeLabelAt,
+  nodeToneAt,
   stageIndex,
+  visibleAt,
   type SceneEdge,
-  type SceneNode,
   type Stage,
   type Tone,
 } from "../explained/scenes";
 
-// Renders the master ACME scene graph at a given stage: everything that has
-// appeared so far, with the elements new at this exact stage highlighted.
+// Renders the master Vesta scene graph at a given stage: everything visible
+// at that point of the story, with new or changed elements highlighted.
 // Pure SVG, server-rendered; positions never move between stages.
 
 const ICONS = {
@@ -39,6 +42,7 @@ const ICONS = {
   network: Network,
   wrench: Wrench,
   ghost: Ghost,
+  user: User,
 } as const;
 
 const TONE: Record<Tone, { stroke: string; halo: string; pill: string; pillText: string }> = {
@@ -127,18 +131,18 @@ function Pill({
 
 export default function StoryDiagram({ stage }: { stage: Stage }) {
   const idx = stageIndex(stage);
-  const visible = <T extends { appears: Stage }>(el: T) =>
-    stageIndex(el.appears) <= idx;
-  const isNew = <T extends { appears: Stage }>(el: T) =>
-    stageIndex(el.appears) === idx;
+  const isNew = (el: { appears: Stage }) => stageIndex(el.appears) === idx;
 
-  const nodes = NODES.filter(visible);
-  const edges = EDGES.filter(visible);
-  const badges = BADGES.filter(visible);
+  const nodes = NODES.filter((n) => visibleAt(n, stage));
+  const edges = EDGES.filter((e) => visibleAt(e, stage));
+  const badges = BADGES.filter((b) => visibleAt(b, stage));
+  const changes = STAGE_CHANGES[stage];
+  const changedNodes = new Set(changes?.nodes ?? []);
   const tones = Array.from(new Set(edges.map((e) => e.tone)));
   const newLabels = [
-    ...nodes.filter(isNew).map((n) => nodeLabelAt(n, stage).label ?? "the DID"),
+    ...nodes.filter(isNew).map((n) => nodeLabelAt(n, stage).label ?? ""),
     ...edges.filter(isNew).map((e) => e.label ?? ""),
+    ...(changes?.note ? [changes.note] : []),
   ].filter(Boolean);
 
   return (
@@ -147,7 +151,7 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
         <svg
           viewBox="30 20 930 570"
           role="img"
-          aria-label={`The ACME story graph at step ${stage}`}
+          aria-label={`The Vesta story graph at step ${stage}`}
           className="min-w-[720px]"
         >
           <defs>
@@ -189,13 +193,15 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
           })}
 
           {nodes.map((n) => {
-            const c = TONE[n.tone];
+            const tone = nodeToneAt(n, stage);
+            const c = TONE[tone];
             const r = n.r ?? 22;
+            const highlight = isNew(n) || changedNodes.has(n.id);
             const { label, sub } = nodeLabelAt(n, stage);
             const Icon = ICONS[n.icon];
             return (
-              <g key={n.id} className={isNew(n) ? "sd-new" : undefined}>
-                {isNew(n) ? (
+              <g key={n.id} className={highlight ? "sd-new" : undefined}>
+                {highlight ? (
                   <circle
                     cx={n.x}
                     cy={n.y}

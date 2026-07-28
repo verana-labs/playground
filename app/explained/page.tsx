@@ -3,13 +3,13 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Container, Section, Breadcrumb } from "../components/ui";
 import StoryDiagram from "../components/StoryDiagram";
-import { STEP_PAGES } from "./content";
+import { CHAPTERS } from "./content";
 import { LINKS } from "../lib/site";
 
 export const metadata: Metadata = {
   title: "Verana Explained",
   description:
-    "Verana, explained through one continuous story: ACME Corp creates itself in Verana, deploys verifiable services, gets certified, and builds its own trust ecosystem.",
+    "Verana, explained through one continuous story: Vesta Appliances — a real business with an impostor problem — joins Verana, becomes verifiable, and ends up governing trust for its own repair network.",
 };
 
 export default function Explained() {
@@ -22,12 +22,13 @@ export default function Explained() {
             items={[{ label: "Playground", href: "/" }, { label: "Verana Explained" }]}
           />
           <h1 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl">
-            Verana, explained by ACME Corp
+            Verana, explained by Vesta Appliances
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/80">
-            One continuous story, live on testnet. Each step grows the same
-            diagram: watch ACME go from a lone DID to a full trust ecosystem —
-            and reproduce every move yourself.
+            One continuous story, live on testnet — starting from the business,
+            not the technology. A company everyone recognizes, an impostor
+            problem everyone recognizes, and one picture that grows chapter by
+            chapter until anyone can tell real from fake.
           </p>
         </div>
       </header>
@@ -35,7 +36,7 @@ export default function Explained() {
       <Section>
         <Container className="max-w-4xl space-y-10">
           <div className="grid gap-4">
-            {STEP_PAGES.map((s) => (
+            {CHAPTERS.map((s) => (
               <Link
                 key={s.slug}
                 href={`/explained/${s.slug}`}
@@ -64,9 +65,10 @@ export default function Explained() {
 
           <div>
             <p className="mb-3 text-sm font-medium text-gray-700">
-              Where the story ends — the full picture, built step by step:
+              Where the story ends — the full picture, built chapter by
+              chapter, with the verdicts in place:
             </p>
-            <StoryDiagram stage="4.3" />
+            <StoryDiagram stage="5.3" />
           </div>
 
           <p className="text-sm text-gray-500">

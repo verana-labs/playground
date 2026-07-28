@@ -12,8 +12,8 @@ import { userWallets, getIntegration } from "../../lib/integrations";
 import { LINKS } from "../../lib/site";
 
 // Per-user-wallet playground page — the identical template of spec §4:
-// breadcrumb · header · get the wallet · Service 1 (ACME badge issuer) ·
-// Service 2 (ACME login) · refusal paths. Generated from integration.yaml.
+// breadcrumb · header · get the wallet · Service 1 (Vesta badge issuer) ·
+// Service 2 (Vesta login) · refusal paths. Generated from integration.yaml.
 
 export function generateStaticParams() {
   return userWallets().map((w) => ({ slug: w.slug }));
@@ -158,8 +158,8 @@ export default async function UserWalletPlayground({
 
           {/* 4 · Service 1 — receive the badge */}
           {w.badge_loop === "live" ? (
-            <Placeholder title="2 · Receive your ECS-Badge (ACME badge issuer)">
-              Wiring in progress: the QR / deep link to the ACME badge issuer
+            <Placeholder title="2 · Receive your ECS-Badge (Vesta badge issuer)">
+              Wiring in progress: the QR / deep link to the Vesta badge issuer
               (demo) will appear here, next to the expected Proof-of-Trust and
               the issuer verdict.
             </Placeholder>
@@ -171,8 +171,8 @@ export default async function UserWalletPlayground({
           )}
 
           {/* 5 · Service 2 — present the badge */}
-          <Placeholder title="3 · Log in with your badge (ACME login)">
-            The QR / deep link to the ACME login service (demo) will appear
+          <Placeholder title="3 · Log in with your badge (Vesta login)">
+            The QR / deep link to the Vesta login service (demo) will appear
             here, next to the expected Proof-of-Trust and the verifier verdict.
           </Placeholder>
 

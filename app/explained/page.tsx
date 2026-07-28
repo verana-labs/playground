@@ -371,6 +371,20 @@ export default function Explained() {
                 </h2>
                 <p className="text-gray-500">{COMPANY.tagline}</p>
               </div>
+              <div className="ml-auto flex flex-col items-center gap-1">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={COMPANY.certification.img}
+                  alt="ISO 9001:2015 certification seal"
+                  className="h-16 w-auto"
+                />
+                <span className="text-xs font-semibold text-gray-700">
+                  {COMPANY.certification.label}
+                </span>
+                <span className="text-[11px] text-gray-400">
+                  {COMPANY.certification.sub}
+                </span>
+              </div>
             </div>
             <div className="mt-5 flex flex-wrap gap-2">
               {COMPANY.meta.map((m) => (

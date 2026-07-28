@@ -40,6 +40,11 @@ export const COMPANY = {
     "Vesta Appliances has made washing machines and ovens for forty years. Three product lines, one promise: machines that last — and get repaired, not replaced.",
     "Vesta sells worldwide through resellers, and relies on a network of independent repair companies to service machines in customers' homes. That network is the heart of the brand: when a Vesta technician rings your doorbell, the company's reputation rings with them.",
   ],
+  certification: {
+    img: "/images/ISO_9001-2015.svg",
+    label: "ISO 9001 certified",
+    sub: "since 2003",
+  },
   ceoQuote: {
     text: "Our machines earn trust in people's homes every day. Online, we can't even prove a support chat is really ours. That has to change.",
     name: "Elena Vasquez",

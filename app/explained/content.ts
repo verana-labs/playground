@@ -21,7 +21,7 @@ export const VESTA_ASSETS = {
   hero: "/images/factory.webp" as string | null,
   heroCaption: "Vesta's assembly line - forty years of machines built to be repaired, not replaced.",
   lineup: "/images/lineup.webp" as string | null,
-  cto: null as string | null, // e.g. "/images/cto.webp"
+  cto: "/images/cto.webp" as string | null,
   lineupCaption: "The Vesta range: washer, oven, dryer - three product lines, one promise.",
   fakeVan: "/images/fake-van3.webp" as string | null,
 };

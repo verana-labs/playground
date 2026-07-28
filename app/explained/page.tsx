@@ -182,6 +182,14 @@ function RepairNetworkDiagram() {
   );
 }
 
+function SubHeading({ children }: { children: React.ReactNode }) {
+  return (
+    <h3 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
+      {children}
+    </h3>
+  );
+}
+
 function KindChip({ kind }: { kind: SubStep["kind"] }) {
   if (kind === "hands-on")
     return (
@@ -361,8 +369,8 @@ export default function Explained() {
       {/* §1 · Meet Vesta Appliances — marketing article, no protocol */}
       <Section id="section-1">
         <Container className="max-w-4xl">
+          {/* Brand header */}
           <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm sm:p-10">
-            {/* Brand header */}
             <div className="flex flex-wrap items-center gap-5">
               <VestaLogo />
               <div>
@@ -391,24 +399,35 @@ export default function Explained() {
                 <Chip key={m}>{m}</Chip>
               ))}
             </div>
-            {/* Article, with the product lineup and factory figures interleaved */}
-            <div className="mt-6 max-w-3xl space-y-4 text-[1.05rem] leading-relaxed text-gray-600">
-              <p>{COMPANY.article[0]}</p>
-              {VESTA_ASSETS.lineup ? (
-                <figure className="!my-6">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={VESTA_ASSETS.lineup}
-                    alt="The Vesta product range: washing machine, oven, dryer"
-                    className="w-full rounded-2xl object-cover"
-                  />
-                  <figcaption className="mt-2 text-center text-xs text-gray-400">
-                    {VESTA_ASSETS.lineupCaption}
-                  </figcaption>
-                </figure>
-              ) : null}
-              <p>{COMPANY.article[1]}</p>
-            </div>
+          </div>
+
+          {/* The product line */}
+          <div className="mt-12">
+            <SubHeading>The product line</SubHeading>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+              {COMPANY.productLine}
+            </p>
+            {VESTA_ASSETS.lineup ? (
+              <figure className="mt-6">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={VESTA_ASSETS.lineup}
+                  alt="The Vesta product range: washing machine, oven, dryer"
+                  className="w-full rounded-2xl object-cover"
+                />
+                <figcaption className="mt-2 text-center text-xs text-gray-400">
+                  {VESTA_ASSETS.lineupCaption}
+                </figcaption>
+              </figure>
+            ) : null}
+          </div>
+
+          {/* The factory */}
+          <div className="mt-12">
+            <SubHeading>The factory</SubHeading>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+              {COMPANY.factoryText}
+            </p>
             {VESTA_ASSETS.hero ? (
               <figure className="mt-6">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -422,43 +441,33 @@ export default function Explained() {
                 </figcaption>
               </figure>
             ) : null}
-            {/* CEO quote */}
-            <figure className="mt-8 rounded-2xl bg-gray-50 p-6">
-              <Quote className="h-5 w-5 text-violet-400" aria-hidden />
-              <blockquote className="mt-2 text-lg font-medium leading-relaxed text-gray-800">
-                “{COMPANY.ceoQuote.text}”
-              </blockquote>
-              <figcaption className="mt-4 flex items-center gap-3">
-                {VESTA_ASSETS.ceo ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={VESTA_ASSETS.ceo}
-                    alt={COMPANY.ceoQuote.name}
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
-                ) : (
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-violet-100 text-sm font-bold text-violet-700">
-                    {COMPANY.ceoQuote.name
-                      .split(" ")
-                      .map((w) => w[0])
-                      .join("")}
-                  </span>
-                )}
-                <div className="text-sm">
-                  <div className="font-semibold text-gray-900">
-                    {COMPANY.ceoQuote.name}
-                  </div>
-                  <div className="text-gray-500">{COMPANY.ceoQuote.role}</div>
-                </div>
-              </figcaption>
-            </figure>
           </div>
 
-          {/* The services — business ownership diagram */}
-          <div className="mt-10">
-            <h3 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
-              What Vesta runs online
-            </h3>
+          {/* The certified repair network */}
+          <div className="mt-12">
+            <SubHeading>{REPAIR_NETWORK.title}</SubHeading>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-gray-500">
+              {REPAIR_NETWORK.blurb}
+            </p>
+            <div className="mt-6">
+              <RepairNetworkDiagram />
+            </div>
+            <div className="mt-4 flex flex-wrap justify-center gap-2">
+              {REPAIR_NETWORK.stats.map((st) => (
+                <Chip key={st}>{st}</Chip>
+              ))}
+              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                ✓ {REPAIR_NETWORK.badgeFullName} badge
+              </span>
+            </div>
+            <p className="mx-auto mt-5 max-w-2xl text-center text-sm italic leading-relaxed text-gray-500">
+              {REPAIR_NETWORK.closing}
+            </p>
+          </div>
+
+          {/* Online services */}
+          <div className="mt-12">
+            <SubHeading>Online services</SubHeading>
             <div className="mt-6 flex flex-col items-center">
               <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-3 shadow-sm">
                 <VestaLogo className="h-12 w-12" />
@@ -477,12 +486,12 @@ export default function Explained() {
                 className="hidden h-px w-2/3 bg-gray-300 sm:block"
               />
               <div className="mt-[-1px] grid w-full gap-4 sm:grid-cols-3 sm:gap-6 sm:pt-6">
-                {COMPANY.services.map((s) => {
+                {COMPANY.services.map((sv) => {
                   const Icon =
-                    SERVICE_ICONS[s.icon as keyof typeof SERVICE_ICONS];
+                    SERVICE_ICONS[sv.icon as keyof typeof SERVICE_ICONS];
                   return (
                     <div
-                      key={s.name}
+                      key={sv.name}
                       className="relative rounded-2xl border border-gray-200 bg-white p-5 text-center shadow-sm"
                     >
                       <span
@@ -493,9 +502,9 @@ export default function Explained() {
                         <Icon className="h-5 w-5" />
                       </span>
                       <div className="mt-3 font-semibold text-gray-900">
-                        {s.name}
+                        {sv.name}
                       </div>
-                      <p className="mt-1 text-sm text-gray-500">{s.desc}</p>
+                      <p className="mt-1 text-sm text-gray-500">{sv.desc}</p>
                     </div>
                   );
                 })}
@@ -503,69 +512,113 @@ export default function Explained() {
             </div>
           </div>
 
-          {/* The certified repair network */}
+          {/* The problems — and what they cost the brand */}
           <div className="mt-12">
-            <h3 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
-              {REPAIR_NETWORK.title}
-            </h3>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-gray-500">
-              {REPAIR_NETWORK.blurb}
-            </p>
-            <div className="mt-6">
-              <RepairNetworkDiagram />
-            </div>
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-              {REPAIR_NETWORK.stats.map((s) => (
-                <Chip key={s}>{s}</Chip>
-              ))}
-              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                ✓ {REPAIR_NETWORK.badgeFullName} badge
-              </span>
-            </div>
-            <p className="mx-auto mt-5 max-w-2xl text-center text-sm italic leading-relaxed text-gray-500">
-              {REPAIR_NETWORK.closing}
-            </p>
-          </div>
+            <SubHeading>The problems — and what they cost the brand</SubHeading>
 
-          {/* The problems */}
-          <div className="mt-12">
-            <h3 className="text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
-              …and the problems it can&apos;t solve alone
-            </h3>
-            <div className="reveal-stagger mt-6 grid gap-4 sm:grid-cols-2">
-              {COMPANY.problems.map((p) => {
+            <p className="mt-6 text-xs font-bold uppercase tracking-wider text-red-500">
+              Online
+            </p>
+            <div className="reveal-stagger mt-3 grid gap-4 sm:grid-cols-3">
+              {COMPANY.problemsOnline.map((pb) => {
                 const Icon =
-                  PROBLEM_ICONS[p.icon as keyof typeof PROBLEM_ICONS];
+                  PROBLEM_ICONS[pb.icon as keyof typeof PROBLEM_ICONS];
                 return (
                   <div
-                    key={p.title}
+                    key={pb.title}
                     className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm"
                   >
                     <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 text-red-600">
                       <Icon className="h-5 w-5" />
                     </span>
                     <div className="mt-3 font-semibold text-gray-900">
-                      {p.title}
+                      {pb.title}
                     </div>
-                    <p className="mt-1 text-sm text-gray-500">{p.desc}</p>
+                    <p className="mt-1 text-sm text-gray-500">{pb.desc}</p>
                   </div>
                 );
               })}
             </div>
-            <div className="relative mt-6 overflow-hidden rounded-2xl bg-gray-900">
+            <p className="mt-3 text-sm italic text-gray-500">
+              {COMPANY.onlineConsequence}
+            </p>
+
+            <p className="mt-8 text-xs font-bold uppercase tracking-wider text-red-500">
+              On-site
+            </p>
+            <div className="mt-3 grid gap-4 sm:grid-cols-2">
               {VESTA_ASSETS.fakeVan ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={VESTA_ASSETS.fakeVan}
-                  alt=""
-                  aria-hidden
-                  className="absolute inset-0 h-full w-full object-cover opacity-50"
-                />
+                <figure>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={VESTA_ASSETS.fakeVan}
+                    alt="An impostor van with a printed Vesta panel on its door"
+                    className="h-full w-full rounded-2xl object-cover"
+                  />
+                </figure>
               ) : null}
-              <p className="relative px-6 py-16 text-center text-lg font-semibold sm:py-24 text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]">
-                {COMPANY.rootCause}
-              </p>
+              <div className="flex flex-col justify-center gap-3">
+                {COMPANY.problemsOnsite.map((pb) => {
+                  const Icon =
+                    PROBLEM_ICONS[pb.icon as keyof typeof PROBLEM_ICONS];
+                  return (
+                    <div
+                      key={pb.title}
+                      className="rounded-2xl border border-red-100 bg-white p-5 shadow-sm"
+                    >
+                      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-50 text-red-600">
+                        <Icon className="h-5 w-5" />
+                      </span>
+                      <div className="mt-3 font-semibold text-gray-900">
+                        {pb.title}
+                      </div>
+                      <p className="mt-1 text-sm text-gray-500">{pb.desc}</p>
+                    </div>
+                  );
+                })}
+                <p className="text-sm italic text-gray-500">
+                  {COMPANY.onsiteConsequence}
+                </p>
+              </div>
             </div>
+
+            <p className="mt-8 rounded-2xl bg-gray-900 px-6 py-8 text-center text-lg font-semibold text-white">
+              {COMPANY.rootCause}
+            </p>
+          </div>
+
+          {/* The word of the CEO */}
+          <div className="mt-12">
+            <SubHeading>The word of the CEO</SubHeading>
+            <figure className="mx-auto mt-6 max-w-2xl rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+              <Quote className="h-6 w-6 text-violet-400" aria-hidden />
+              <blockquote className="mt-3 text-xl font-medium leading-relaxed text-gray-800">
+                “{COMPANY.ceoQuote.text}”
+              </blockquote>
+              <figcaption className="mt-5 flex items-center gap-3">
+                {VESTA_ASSETS.ceo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={VESTA_ASSETS.ceo}
+                    alt={COMPANY.ceoQuote.name}
+                    className="h-12 w-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-100 text-sm font-bold text-violet-700">
+                    {COMPANY.ceoQuote.name
+                      .split(" ")
+                      .map((w) => w[0])
+                      .join("")}
+                  </span>
+                )}
+                <div className="text-sm">
+                  <div className="font-semibold text-gray-900">
+                    {COMPANY.ceoQuote.name}
+                  </div>
+                  <div className="text-gray-500">{COMPANY.ceoQuote.role}</div>
+                </div>
+              </figcaption>
+            </figure>
           </div>
         </Container>
       </Section>

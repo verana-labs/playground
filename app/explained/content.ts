@@ -36,10 +36,10 @@ export const COMPANY = {
     "Sold in 40+ countries",
     "120 independent repair partners",
   ],
-  article: [
+  productLine:
     "Vesta Appliances has made washing machines and ovens for forty years. Three product lines, one promise: machines that last — and get repaired, not replaced.",
-    "Vesta sells worldwide through resellers, and relies on a network of independent repair companies to service machines in customers' homes. That network is the heart of the brand: when a Vesta technician rings your doorbell, the company's reputation rings with them.",
-  ],
+  factoryText:
+    "Every Vesta machine comes out of the company's own plant — forty years of engineering on one assembly line, designed from the first screw to be serviceable in a customer's kitchen.",
   certification: {
     img: "/images/ISO_9001-2015.svg",
     label: "ISO 9001 certified",
@@ -67,16 +67,11 @@ export const COMPANY = {
       desc: "Orders, manuals, and warranty claims for staff and repair partners.",
     },
   ],
-  problems: [
+  problemsOnline: [
     {
       icon: "phone",
       title: "Fake support lines",
       desc: "Customers googling “Vesta support” land on scammers; impostor accounts “help” with refunds — and harvest card numbers.",
-    },
-    {
-      icon: "van",
-      title: "Fake “authorized” repairers",
-      desc: "Vans Vesta has never heard of ring doorbells. Customers get scammed; Vesta gets blamed.",
     },
     {
       icon: "lock",
@@ -89,8 +84,19 @@ export const COMPANY = {
       desc: "Every marketplace, bank, and certifier asks for the same company documents.",
     },
   ],
+  onlineConsequence:
+    "Refund scams run in Vesta's name, and the brand takes the blame for every scam it never saw.",
+  problemsOnsite: [
+    {
+      icon: "van",
+      title: "Fake “authorized” repairers",
+      desc: "Vans Vesta has never heard of ring doorbells with a printed Vesta panel on the door. Customers get scammed in their own homes.",
+    },
+  ],
+  onsiteConsequence:
+    "Customers get scammed at their own front door, honest certified partners lose the work — and Vesta gets blamed either way.",
   rootCause:
-    "Online, Vesta's word looks exactly like the scammers' word. Nothing can be proven.",
+    "Online or at the front door, Vesta's word looks exactly like the scammers' word. Nothing can be proven.",
 };
 
 /** §1 — the real-world certified repair network (business view: paper

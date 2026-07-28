@@ -1,7 +1,7 @@
 const BASE = process.env.DEMOS_BASE_DOMAIN ?? "main.demos.testnet.verana.network";
 
 export type DemoService = { id: string; label: string; host: string;
-  appUrl?: string; role: "anchor" | "issuer" | "verifier" };
+  appUrl?: string; did?: string; role: "anchor" | "issuer" | "verifier" };
 
 export const DEMO_SERVICES: DemoService[] = [
   { id: "organization-vs", label: "Verana Example Organization (demo)", host: `organization-vs.${BASE}`, role: "anchor" },
@@ -43,4 +43,9 @@ export async function serviceDid(host: string): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+export async function serviceDidFor(s: DemoService): Promise<string | null> {
+  if (s.did) return s.did;
+  return serviceDid(s.host);
 }

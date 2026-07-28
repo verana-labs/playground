@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, afterEach } from "vitest";
-import { DEMO_SERVICES, getDemoService, serviceDid } from "./demo-services";
+import { DEMO_SERVICES, getDemoService, serviceDid, serviceDidFor } from "./demo-services";
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -56,5 +56,26 @@ describe("demo services", () => {
     expect(getDemoService("organization-vs")).toBeDefined();
     expect(getDemoService("good")).toBeUndefined();
     vi.unstubAllEnvs();
+  });
+
+  it("resolves a literal did on an extra entry without any network call", async () => {
+    vi.stubEnv("DEMO_SERVICES_EXTRA", JSON.stringify([
+      { id: "fides-labs", label: "FIDES Labs Issuer (external)", host: "fides.acc.credenco.com",
+        did: "did:web:issuer.example:did:abc", role: "issuer" }]));
+    const fetchSpy = vi.fn();
+    vi.stubGlobal("fetch", fetchSpy);
+    const service = getDemoService("fides-labs");
+    expect(service).toBeDefined();
+    expect(await serviceDidFor(service!)).toBe("did:web:issuer.example:did:abc");
+    expect(fetchSpy).not.toHaveBeenCalled();
+    vi.unstubAllEnvs();
+  });
+
+  it("falls back to host discovery when an entry carries no literal did", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(new Response(JSON.stringify({
+      id: "did:web:x", alsoKnownAs: ["did:webvh:Qm:x"] }), { status: 200 }))));
+    const service = getDemoService("organization-vs");
+    expect(service).toBeDefined();
+    expect(await serviceDidFor(service!)).toBe("did:webvh:Qm:x");
   });
 });

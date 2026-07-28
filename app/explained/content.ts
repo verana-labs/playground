@@ -129,7 +129,7 @@ export const REPAIR_NETWORK = {
 export const SOLUTION = {
   title: "Elena's solution to Vesta's issues",
   ctoQuote: {
-    text: "Make Vesta and its partner network a network of verifiable organizations, providing verifiable services.",
+    text: "Today, open source software exists for user and cloud wallets, and there is Verana, a public trust infrastructure. We have everything we need to make Vesta and its partner network a network of verifiable organizations, providing verifiable services.",
     name: "Marc Keller",
     role: "CTO, Vesta Appliances",
   },

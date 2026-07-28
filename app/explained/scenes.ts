@@ -109,7 +109,7 @@ export const NODES: SceneNode[] = [
     icon: "bot",
     tone: "gray",
     appears: "4.0",
-    label: "Support chat",
+    label: "Agentic Support",
     sub: "just a name on a screen",
     toneByStage: { "5.2": "blue" },
     labelByStage: { "5.2": { sub: "verifiable service" } },

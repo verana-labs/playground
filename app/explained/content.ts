@@ -53,7 +53,7 @@ export const COMPANY = {
   services: [
     {
       icon: "bot",
-      name: "Support chat",
+      name: "Agentic Support",
       desc: "Help with your machine: troubleshooting, warranty, spare parts.",
     },
     {
@@ -311,7 +311,7 @@ export const TECH_SECTIONS: TechSection[] = [
         story:
           "Each real service becomes its own Verifiable Service - its own vs-agent and DID, with an ECS-Service credential issued by the anchor. The gray cards from Section 1 turn verified - and because the ISO 9001 credential lives on the Organization DID, it surfaces on every service's card at once. This is where you join the story:",
         points: [
-          "Support chat - install the Hologram App, scan the QR, review the Proof-of-Trust (green check · Service · Operated by Vesta), then chat. The fake support line from Section 1 can't produce that card: it shows red.",
+          "Agentic Support - install the Hologram App, scan the QR, review the Proof-of-Trust (green check · Service · Operated by Vesta), then chat. The fake support line from Section 1 can't produce that card: it shows red.",
           "Employee badge - pick an integrated open-source wallet and receive an ECS-Badge (AnonCreds/DIDComm for now; Hologram first). Your wallet first verifies the issuer is trusted and authorized to issue ECS-Badge.",
           "Passwordless login - the portal requests your badge. Your wallet verifies the verifier is trusted and authorized to request it, then presents. No password ever existed.",
         ],

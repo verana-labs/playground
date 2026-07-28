@@ -103,7 +103,7 @@ export default function Home() {
       {/* Hero — the verana-demos gradient */}
       <header className="hero-gradient text-white">
         <div className="mx-auto max-w-4xl px-6 py-16 text-center sm:py-20">
-          <p className="mb-3 text-sm font-medium uppercase tracking-wider text-white/70">
+          <p className="mb-3 text-sm font-medium uppercase tracking-wider text-white/90">
             Live on the Verana testnet
           </p>
           <h1 className="mb-4 text-4xl font-bold md:text-5xl">

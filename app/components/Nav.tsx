@@ -25,7 +25,7 @@ function Logo() {
         />
         <path fill="#10B981" d="M13.696 0L26.9935 25.4637L39.9367 0H13.696Z" />
       </svg>
-      <span>
+      <span className="hidden sm:inline">
         Verana <span className="text-violet-600">Playground</span>
       </span>
     </Link>

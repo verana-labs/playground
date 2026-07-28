@@ -49,7 +49,7 @@ function BlockLabel({
   children: React.ReactNode;
 }) {
   return (
-    <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+    <p className="mb-1.5 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-600">
       {icon}
       {children}
     </p>
@@ -120,21 +120,21 @@ function StatusBand({
       </div>
       {did ? (
         <div className="mt-2 flex min-w-0 items-center gap-1.5">
-          <span className="truncate font-mono text-[10px] text-gray-400" title={did}>
+          <span className="truncate font-mono text-[10px] text-gray-600" title={did}>
             {middle(did)}
           </span>
           <button
             type="button"
             onClick={copyDid}
             aria-label="Copy DID"
-            className="shrink-0 text-gray-300 transition-colors hover:text-violet-600"
+            className="shrink-0 text-gray-500 transition-colors hover:text-violet-600"
           >
             <Copy className="h-3 w-3" />
           </button>
         </div>
       ) : null}
       {pot.evaluatedAtBlock !== undefined || pot.evaluatedAt ? (
-        <p className="mt-1 text-[11px] text-gray-400">
+        <p className="mt-1 text-[11px] text-gray-600">
           Evaluated
           {pot.evaluatedAtBlock !== undefined ? ` at block ${pot.evaluatedAtBlock}` : ""}
           {pot.evaluatedAt ? (
@@ -196,7 +196,7 @@ export function PotCard({
                     {text(serviceCred.claims.name) ?? "Unnamed service"}
                   </p>
                   {text(serviceCred.claims.type) ? (
-                    <p className="mt-0.5 font-mono text-[10px] text-gray-400">
+                    <p className="mt-0.5 font-mono text-[10px] text-gray-600">
                       {text(serviceCred.claims.type)}
                     </p>
                   ) : null}
@@ -207,7 +207,7 @@ export function PotCard({
                   ) : null}
                 </>
               ) : (
-                <p className="text-xs text-gray-400">No ECS-Service credential presented.</p>
+                <p className="text-xs text-gray-500">No ECS-Service credential presented.</p>
               )}
             </div>
             <div className="min-w-0">
@@ -229,7 +229,7 @@ export function PotCard({
                     {text(orgCred.claims.name) ?? "Unnamed organization"}
                   </p>
                   {text(orgCred.claims.registryId) ? (
-                    <p className="mt-0.5 font-mono text-[10px] text-gray-400">
+                    <p className="mt-0.5 font-mono text-[10px] text-gray-600">
                       {text(orgCred.claims.registryId)}
                     </p>
                   ) : null}
@@ -240,7 +240,7 @@ export function PotCard({
                   ) : null}
                 </>
               ) : (
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-gray-500">
                   No ECS-Organization or ECS-Persona credential presented.
                 </p>
               )}
@@ -264,7 +264,7 @@ export function PotCard({
                       </span>
                       {issuedBy ? (
                         <span
-                          className="min-w-0 truncate font-mono text-[10px] text-gray-400"
+                          className="min-w-0 truncate font-mono text-[10px] text-gray-600"
                           title={issuedBy}
                         >
                           {middle(issuedBy)}
@@ -331,7 +331,7 @@ export function PotCard({
                           ))}
                         </ul>
                       ) : (
-                        <p className="mt-0.5 text-[11px] text-gray-400">
+                        <p className="mt-0.5 text-[11px] text-gray-600">
                           Chain data not returned by the resolver.
                         </p>
                       )}
@@ -398,7 +398,7 @@ export function ProofOfTrust({ serviceId, title }: { serviceId: string; title?: 
 
   if (data === undefined) {
     return (
-      <div className="animate-pulse rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 text-xs text-gray-400">
+      <div className="animate-pulse rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 text-xs text-gray-500">
         Resolving Proof-of-Trust against the network…
       </div>
     );

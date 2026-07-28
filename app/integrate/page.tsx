@@ -46,7 +46,7 @@ export default function Integrate() {
         <Container className="space-y-8">
           <div className="grid gap-4 sm:grid-cols-2">
             <a href={LINKS.guidelineUserWallet} target="_blank" rel="noopener noreferrer" className="group rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">Guideline</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Guideline</span>
               <h2 className="mt-2 text-xl font-bold text-gray-900">User wallets</h2>
               <p className="mt-2 text-sm leading-relaxed text-gray-500">
                 Trust resolution (Q1/Q2/Q3), the uniform Proof-of-Trust
@@ -58,7 +58,7 @@ export default function Integrate() {
               </span>
             </a>
             <a href={LINKS.guidelineCloudWallet} target="_blank" rel="noopener noreferrer" className="group rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md">
-              <span className="text-xs font-semibold uppercase tracking-wider text-gray-400">Guideline</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Guideline</span>
               <h2 className="mt-2 text-xl font-bold text-gray-900">Cloud wallets</h2>
               <p className="mt-2 text-sm leading-relaxed text-gray-500">
                 Resolvable DIDs (did:web / did:webvh), ECS onboarding, domain
@@ -125,13 +125,13 @@ export default function Integrate() {
               five-block card, live against the testnet. Reproduce it as-is.
             </p>
 
-            <p className="mt-6 text-xs font-semibold uppercase tracking-wider text-gray-400">
+            <p className="mt-6 text-xs font-semibold uppercase tracking-wider text-gray-500">
               Reference rendering
             </p>
             <div className="mt-2">
               <ProofOfTrust serviceId="organization-vs" />
             </div>
-            <p className="mt-2 text-xs text-gray-400">
+            <p className="mt-2 text-xs text-gray-500">
               This is the reference every wallet integration reproduces.
             </p>
 

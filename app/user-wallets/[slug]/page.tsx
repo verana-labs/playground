@@ -28,7 +28,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const w = getIntegration(slug);
-  return { title: w ? `${w.name} playground` : "User wallet" };
+  return {
+    title: w ? `${w.name} playground` : "User wallet",
+    description: w
+      ? `Try ${w.name} against the Verana testnet — receive and present credentials with live trust resolution.`
+      : undefined,
+  };
 }
 
 export default async function UserWalletPlayground({
@@ -244,7 +249,7 @@ export default async function UserWalletPlayground({
             </details>
           </div>
 
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             This page follows the identical per-wallet template of the{" "}
             <a
               className="text-violet-600 underline"

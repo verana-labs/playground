@@ -36,7 +36,7 @@ export function ExpectedRendering({ kind }: { kind: ExpectedRenderingKind }) {
   const { icon: Icon, tone, text } = LINES[kind];
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-wider text-gray-400">
+      <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
         Expected in the wallet
       </p>
       <div

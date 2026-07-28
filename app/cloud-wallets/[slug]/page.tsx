@@ -34,7 +34,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const w = getIntegration(slug);
-  return { title: w ? `${w.name} playground` : "Cloud wallet" };
+  return {
+    title: w ? `${w.name} playground` : "Cloud wallet",
+    description: w
+      ? `${w.name} on the Verana playground — a hosted verifiable service with live Proof-of-Trust.`
+      : undefined,
+  };
 }
 
 export default async function CloudWalletPlayground({
@@ -131,7 +136,7 @@ export default async function CloudWalletPlayground({
               <div className="ml-11">
                 <ProofOfTrust serviceId={liveServiceId} />
                 {demoService ? (
-                  <p className="mt-2 text-xs text-gray-400">
+                  <p className="mt-2 text-xs text-gray-500">
                     <code>{demoService.host}</code>
                     {" — "}
                     <a
@@ -230,15 +235,20 @@ export default async function CloudWalletPlayground({
                   &apos;s <code>common/common.sh</code>.
                 </p>
                 <div>
-                  <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+                  <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
                     Registry links
                   </p>
                   <ul className="space-y-1.5 text-sm">
                     <li>
                       <span className="text-gray-500">ECS Ecosystem: </span>
-                      <code className="break-all text-xs text-gray-600">
+                      <a
+                        href={`${ENDPOINTS.resolver}/v1/trust/resolve?did=${encodeURIComponent(ECS_ECOSYSTEM_DID)}&detail=full`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="break-all font-mono text-xs text-violet-600 hover:underline"
+                      >
                         {ECS_ECOSYSTEM_DID}
-                      </code>
+                      </a>
                     </li>
                     <li>
                       <a
@@ -266,7 +276,7 @@ export default async function CloudWalletPlayground({
             </details>
           </div>
 
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             This page follows the identical per-wallet template of the{" "}
             <a
               className="text-violet-600 underline"

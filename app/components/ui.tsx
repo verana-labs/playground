@@ -131,7 +131,7 @@ export function Breadcrumb({
   return (
     <nav
       aria-label="Breadcrumb"
-      className={`text-sm ${onDark ? "text-white/70" : "text-gray-500"}`}
+      className={`text-sm ${onDark ? "text-white/90" : "text-gray-500"}`}
     >
       <ol className="flex flex-wrap items-center gap-1.5">
         {items.map((it, i) => (

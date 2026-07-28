@@ -53,7 +53,7 @@ export default function ServiceTrustCard({ serviceId }: { serviceId: string }) {
 
   if (pot === undefined) {
     return (
-      <div className="animate-pulse rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-xs text-gray-400">
+      <div className="animate-pulse rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-xs text-gray-500">
         Resolving Proof-of-Trust against the network...
       </div>
     );
@@ -61,7 +61,7 @@ export default function ServiceTrustCard({ serviceId }: { serviceId: string }) {
 
   if (pot === null) {
     return (
-      <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-xs text-gray-400">
+      <div className="rounded-xl border border-gray-100 bg-gray-50 px-4 py-3 text-xs text-gray-500">
         Proof-of-Trust unavailable right now.
       </div>
     );
@@ -86,7 +86,7 @@ export default function ServiceTrustCard({ serviceId }: { serviceId: string }) {
           </span>
         )}
         <span
-          className="truncate font-mono text-[10px] text-gray-400"
+          className="truncate font-mono text-[10px] text-gray-600"
           title={pot.did}
         >
           {shortDid(pot.did)}
@@ -96,7 +96,7 @@ export default function ServiceTrustCard({ serviceId }: { serviceId: string }) {
       <div className="grid gap-4 px-4 py-3 sm:grid-cols-2">
         {/* The service */}
         <div className="min-w-0">
-          <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+          <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-600">
             <Server className="h-3 w-3" />
             Service
           </p>
@@ -104,7 +104,7 @@ export default function ServiceTrustCard({ serviceId }: { serviceId: string }) {
             {pot.service?.name ?? "Unnamed service"}
           </p>
           {pot.service?.type ? (
-            <p className="mt-0.5 font-mono text-[10px] text-gray-400">
+            <p className="mt-0.5 font-mono text-[10px] text-gray-600">
               {pot.service.type}
             </p>
           ) : null}
@@ -117,7 +117,7 @@ export default function ServiceTrustCard({ serviceId }: { serviceId: string }) {
 
         {/* The operator */}
         <div className="min-w-0">
-          <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400">
+          <p className="mb-1 flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-600">
             <Building2 className="h-3 w-3" />
             Operated by
           </p>
@@ -137,7 +137,7 @@ export default function ServiceTrustCard({ serviceId }: { serviceId: string }) {
                 {pot.org.name ?? "Unnamed organization"}
               </p>
               {pot.org.registryId ? (
-                <p className="mt-0.5 font-mono text-[10px] text-gray-400">
+                <p className="mt-0.5 font-mono text-[10px] text-gray-600">
                   {pot.org.registryId}
                 </p>
               ) : null}
@@ -146,7 +146,7 @@ export default function ServiceTrustCard({ serviceId }: { serviceId: string }) {
               ) : null}
             </>
           ) : (
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-500">
               No organization credential presented.
             </p>
           )}

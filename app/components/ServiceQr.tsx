@@ -11,7 +11,7 @@ type PotApiResponse = {
 function UnavailableCard({ onRetry }: { onRetry: () => void }) {
   return (
     <div className="rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4">
-      <p className="text-xs text-gray-400">Live service link unavailable right now.</p>
+      <p className="text-xs text-gray-500">Live service link unavailable right now.</p>
       <button
         type="button"
         onClick={onRetry}
@@ -66,7 +66,7 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
 
   if (appUrl === undefined) {
     return (
-      <div className="animate-pulse rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 text-xs text-gray-400">
+      <div className="animate-pulse rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 text-xs text-gray-500">
         Resolving the live service link…
       </div>
     );
@@ -78,7 +78,7 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
 
   if (!qrDataUrl) {
     return (
-      <div className="animate-pulse rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 text-xs text-gray-400">
+      <div className="animate-pulse rounded-2xl border border-gray-100 bg-gray-50 px-5 py-4 text-xs text-gray-500">
         Resolving the live service link…
       </div>
     );

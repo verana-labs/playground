@@ -284,11 +284,23 @@ export default function Explained() {
                 <Chip key={m}>{m}</Chip>
               ))}
             </div>
-            {/* Article */}
+            {/* Article, with the product lineup and factory figures interleaved */}
             <div className="mt-6 max-w-3xl space-y-4 text-[1.05rem] leading-relaxed text-gray-600">
-              {COMPANY.article.map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
+              <p>{COMPANY.article[0]}</p>
+              {VESTA_ASSETS.lineup ? (
+                <figure className="!my-6">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={VESTA_ASSETS.lineup}
+                    alt="The Vesta product range: washing machine, oven, dryer"
+                    className="w-full rounded-2xl object-cover"
+                  />
+                  <figcaption className="mt-2 text-center text-xs text-gray-400">
+                    {VESTA_ASSETS.lineupCaption}
+                  </figcaption>
+                </figure>
+              ) : null}
+              <p>{COMPANY.article[1]}</p>
             </div>
             {VESTA_ASSETS.hero ? (
               <figure className="mt-6">

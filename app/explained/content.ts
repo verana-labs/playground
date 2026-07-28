@@ -170,7 +170,7 @@ export const SOLUTION = {
   ],
   needsBridge:
     "All of this needs wallets to hold and check the proofs (they exist, open source, for people and for organizations) and one neutral, public place where every proof anchors. That place is Verana.",
-  pillarsTitle: "What is Verana?",
+  pillarsTitle: "Let's build on Verana",
   pillarsIntro:
     "Verana is a public infrastructure that generalizes the use of verifiable credentials, and provides out of the box:",
   ecosystemsTitle: "The ecosystems Vesta wants to join",

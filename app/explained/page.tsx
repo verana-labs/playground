@@ -548,7 +548,7 @@ export default function Explained() {
                   className="absolute inset-0 h-full w-full object-cover opacity-50"
                 />
               ) : null}
-              <p className="relative px-6 py-12 text-center text-lg font-semibold text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]">
+              <p className="relative px-6 py-16 text-center text-lg font-semibold sm:py-24 text-white [text-shadow:0_1px_8px_rgba(0,0,0,0.8)]">
                 {COMPANY.rootCause}
               </p>
             </div>

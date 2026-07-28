@@ -1,4 +1,4 @@
-# Verana Playground integration descriptor — see the cloud-wallet guideline:
+# Verana Playground integration descriptor - see the cloud-wallet guideline:
 # https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/cloud-wallet-integration.md
 name: VS Agent
 organization: Verana Labs
@@ -10,4 +10,4 @@ scenarios: [iso-certification-loop]
 download: https://github.com/verana-labs/vs-agent
 badge_loop: live
 demo_service: organization-vs # the demo anchor it hosts (verana-demos; Vesta cast pending)
-notes: Reference cloud wallet — the runtime behind the playground's demo services.
+notes: Reference cloud wallet - the runtime behind the playground's demo services.

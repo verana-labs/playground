@@ -16,7 +16,7 @@ import {
 } from "../../lib/integrations";
 import { LINKS } from "../../lib/site";
 
-// Per-cloud-wallet playground page — the identical template of spec §5:
+// Per-cloud-wallet playground page - the identical template of spec §5:
 // breadcrumb · header · the hosted demo service · the use case to test ·
 // under the hood. Generated from integration.yaml.
 
@@ -145,7 +145,7 @@ export default async function CloudWalletPlayground({
               </h2>
             </div>
             <ol className="ml-11 space-y-2 text-sm text-gray-600">
-              <li>1. Resolve the hosted service — see the Proof-of-Trust.</li>
+              <li>1. Resolve the hosted service - see the Proof-of-Trust.</li>
               <li>2. Receive a credential issued by the hosted service.</li>
               <li>3. Present it back to the hosted service&apos;s verifier.</li>
             </ol>
@@ -168,7 +168,7 @@ export default async function CloudWalletPlayground({
           {/* 5 · Under the hood */}
           <Placeholder title="3 · Under the hood">
             Integration pattern ({w.track}), credential-acquisition path, and
-            registry links (ecosystem, schema, permissions) — ships with the
+            registry links (ecosystem, schema, permissions) - ships with the
             live wiring.
           </Placeholder>
 

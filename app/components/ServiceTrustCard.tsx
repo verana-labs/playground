@@ -5,7 +5,7 @@ import { ShieldCheck, ShieldX, Building2, Server } from "lucide-react";
 
 // Compact Proof-of-Trust for one demo service: trust status, the service
 // identity (ECS-Service claims), and the organization operating it (ECS-Org
-// claims) — resolved live against the network resolver via
+// claims) - resolved live against the network resolver via
 // /api/pot/[serviceId]. First live instance of the uniform Proof-of-Trust
 // pattern (user-wallet guideline §5).
 

@@ -39,7 +39,7 @@ const CONCEPTS = [
     tone: "bg-emerald-50 text-emerald-700",
     title: "Verify first, then connect",
     description:
-      "Trust is resolved against the public registry and shown as a Proof-of-Trust before the first interaction — offers and requests are accepted only from authorized issuers and verifiers.",
+      "Trust is resolved against the public registry and shown as a Proof-of-Trust before the first interaction - offers and requests are accepted only from authorized issuers and verifiers.",
   },
   {
     icon: Search,
@@ -63,7 +63,7 @@ export default function Home() {
 
   return (
     <>
-      {/* Hero — the verana-demos gradient */}
+      {/* Hero - the verana-demos gradient */}
       <header className="hero-gradient text-white">
         <div className="mx-auto max-w-4xl px-6 py-16 text-center sm:py-20">
           <p className="mb-3 text-sm font-medium uppercase tracking-wider text-white/70">
@@ -75,7 +75,7 @@ export default function Home() {
           <p className="mx-auto mb-8 max-w-2xl text-lg text-white/80">
             Follow a company&apos;s journey into the open trust layer, then try
             it yourself with a real wallet. Real registry entries, real trust
-            resolution — nothing simulated.
+            resolution - nothing simulated.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <a
@@ -100,7 +100,7 @@ export default function Home() {
           <SectionHeading
             number={1}
             title="What is Verana?"
-            subtitle="Open, public trust infrastructure — the trust layer of the verifiable internet"
+            subtitle="Open, public trust infrastructure - the trust layer of the verifiable internet"
           />
           <div className="reveal-stagger grid gap-4 sm:grid-cols-2">
             {CONCEPTS.map((c) => (
@@ -149,7 +149,7 @@ export default function Home() {
           <SectionHeading
             number={2}
             title="Learn step by step"
-            subtitle="Verana, explained by Vesta Appliances — one continuous story, from business problem to full circle, and you take part with your own wallet"
+            subtitle="Verana, explained by Vesta Appliances - one continuous story, from business problem to full circle, and you take part with your own wallet"
           />
           <div className="reveal-stagger grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {SECTIONS_NAV.map((s) => (
@@ -209,7 +209,7 @@ export default function Home() {
           </div>
           <p className="reveal mt-8 flex items-center gap-2 text-sm text-gray-500">
             <Building2 className="h-4 w-4 text-violet-600" />
-            Cloud wallets host organizations&apos; verifiable services — like the
+            Cloud wallets host organizations&apos; verifiable services - like the
             Vesta demo cast behind this playground.
           </p>
         </Container>

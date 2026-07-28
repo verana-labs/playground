@@ -11,7 +11,7 @@ import {
 import { userWallets, getIntegration } from "../../lib/integrations";
 import { LINKS } from "../../lib/site";
 
-// Per-user-wallet playground page — the identical template of spec §4:
+// Per-user-wallet playground page - the identical template of spec §4:
 // breadcrumb · header · get the wallet · Service 1 (Vesta badge issuer) ·
 // Service 2 (Vesta login) · refusal paths. Generated from integration.yaml.
 
@@ -156,7 +156,7 @@ export default async function UserWalletPlayground({
             </div>
           </div>
 
-          {/* 4 · Service 1 — receive the badge */}
+          {/* 4 · Service 1 - receive the badge */}
           {w.badge_loop === "live" ? (
             <Placeholder title="2 · Receive your ECS-Badge (Vesta badge issuer)">
               Wiring in progress: the QR / deep link to the Vesta badge issuer
@@ -170,16 +170,16 @@ export default async function UserWalletPlayground({
             </Placeholder>
           )}
 
-          {/* 5 · Service 2 — present the badge */}
+          {/* 5 · Service 2 - present the badge */}
           <Placeholder title="3 · Log in with your badge (Vesta login)">
             The QR / deep link to the Vesta login service (demo) will appear
             here, next to the expected Proof-of-Trust and the verifier verdict.
           </Placeholder>
 
           {/* 6 · Refusal paths */}
-          <Placeholder title="4 · Refusal paths — Umbra Corp (demo)">
+          <Placeholder title="4 · Refusal paths - Umbra Corp (demo)">
             The same two actions against unauthorized demo services, ending in
-            red verdicts — ships when the Umbra services are deployed.
+            red verdicts - ships when the Umbra services are deployed.
           </Placeholder>
 
           <p className="text-xs text-gray-400">

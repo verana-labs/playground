@@ -31,7 +31,7 @@ export default function Integrate() {
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/80">
             Open source? Integrate Verana the same way every wallet does, pass
-            one acceptance loop, and get your own playground page — identical to
+            one acceptance loop, and get your own playground page - identical to
             every other wallet&apos;s, with your name on it.
           </p>
         </div>
@@ -70,17 +70,17 @@ export default function Integrate() {
             <h2 className="text-xl font-bold text-gray-900">Three steps to your page</h2>
             <ol className="mt-5 space-y-3 text-sm text-gray-600">
               <li>
-                <strong className="text-gray-900">1 · Integrate</strong> — follow the
+                <strong className="text-gray-900">1 · Integrate</strong> - follow the
                 guideline for your wallet kind (the resolver call, the
                 Proof-of-Trust pattern, the authorization checks).
               </li>
               <li>
                 <strong className="text-gray-900">2 · Record the acceptance loop</strong>{" "}
-                — one uncut run of the ISO Certification loop, per the
+                - one uncut run of the ISO Certification loop, per the
                 guideline&apos;s test section.
               </li>
               <li>
-                <strong className="text-gray-900">3 · Open a PR</strong> — add your
+                <strong className="text-gray-900">3 · Open a PR</strong> - add your
                 descriptor under <code>integrations/&lt;slug&gt;/</code>{" "}
                 in{" "}
                 <a className="text-violet-600 underline" href={LINKS.repo} target="_blank" rel="noopener noreferrer">

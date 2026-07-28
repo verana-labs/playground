@@ -38,10 +38,10 @@ import { LINKS } from "../lib/site";
 export const metadata: Metadata = {
   title: "Verana Explained",
   description:
-    "Verana, explained through one continuous story: Vesta Appliances — a real business with an impostor problem — joins Verana, makes its services verifiable, and ends up governing trust for its own repair network.",
+    "Verana, explained through one continuous story: Vesta Appliances - a real business with an impostor problem - joins Verana, makes its services verifiable, and ends up governing trust for its own repair network.",
 };
 
-// ————————————————————————————————————————————— shared bits
+// --------------------------------------------- shared bits
 
 const SERVICE_ICONS = { bot: Bot, badge: BadgeCheck, key: KeyRound } as const;
 const PROBLEM_ICONS = {
@@ -91,9 +91,9 @@ function VestaLogo({ className = "h-[84px] w-[84px]" }: { className?: string }) 
   );
 }
 
-/** §1 — the real-world repair network: Vesta at the hub, certified partner
+/** §1 - the real-world repair network: Vesta at the hub, certified partner
  *  companies around it, each carrying the amber "Vesta Certified" paper
- *  badge. Business visual — no DIDs, no protocol. */
+ *  badge. Business visual - no DIDs, no protocol. */
 function RepairNetworkDiagram() {
   const cx = 380;
   const cy = 210;
@@ -158,7 +158,7 @@ function RepairNetworkDiagram() {
             </g>
           );
         })}
-        {/* Hub — Vesta */}
+        {/* Hub - Vesta */}
         <circle cx={cx} cy={cy} r={56} fill="#f5f3ff" opacity={0.8} />
         <circle cx={cx} cy={cy} r={48} fill="#ffffff" stroke="#7c3aed" strokeWidth={2} />
         {VESTA_ASSETS.logo ? (
@@ -194,13 +194,13 @@ function KindChip({ kind }: { kind: SubStep["kind"] }) {
   if (kind === "hands-on")
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-        <Hand className="h-3 w-3" /> hands-on — you do it
+        <Hand className="h-3 w-3" /> hands-on - you do it
       </span>
     );
   if (kind === "watch")
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-semibold text-violet-700">
-        <Eye className="h-3 w-3" /> watch — Vesta does it
+        <Eye className="h-3 w-3" /> watch - Vesta does it
       </span>
     );
   return (
@@ -333,7 +333,7 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
   );
 }
 
-// ————————————————————————————————————————————— the page
+// --------------------------------------------- the page
 
 export default function Explained() {
   return (
@@ -348,7 +348,7 @@ export default function Explained() {
             Verana, explained by Vesta Appliances
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/80">
-            One continuous story on a single page — starting from the business,
+            One continuous story on a single page - starting from the business,
             not the technology. Meet a company everyone recognizes, watch it
             join Verana, and take part yourself with a real wallet.
           </p>
@@ -366,7 +366,7 @@ export default function Explained() {
         </div>
       </header>
 
-      {/* §1 · Meet Vesta Appliances — marketing article, no protocol */}
+      {/* §1 · Meet Vesta Appliances - marketing article, no protocol */}
       <Section id="section-1">
         <Container className="max-w-4xl">
           {/* Brand header */}
@@ -512,9 +512,9 @@ export default function Explained() {
             </div>
           </div>
 
-          {/* The problems — and what they cost the brand */}
+          {/* The problems, and what they cost the brand */}
           <div className="mt-12">
-            <SubHeading>The problems — and what they cost the brand</SubHeading>
+            <SubHeading>The problems, and what they cost the brand</SubHeading>
 
             <p className="mt-6 text-xs font-bold uppercase tracking-wider text-red-500">
               Online
@@ -590,46 +590,48 @@ export default function Explained() {
           {/* The word of the CEO */}
           <div className="mt-12">
             <SubHeading>The word of the CEO</SubHeading>
-            <figure className="mx-auto mt-6 max-w-2xl rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-              <Quote className="h-6 w-6 text-violet-400" aria-hidden />
-              <blockquote className="mt-3 text-xl font-medium leading-relaxed text-gray-800">
-                “{COMPANY.ceoQuote.text}”
-              </blockquote>
-              <figcaption className="mt-5 flex items-center gap-3">
+            <figure className="mx-auto mt-6 max-w-3xl rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+              <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
                 {VESTA_ASSETS.ceo ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={VESTA_ASSETS.ceo}
                     alt={COMPANY.ceoQuote.name}
-                    className="h-12 w-12 rounded-full object-cover"
+                    className="h-48 w-40 shrink-0 rounded-2xl object-cover object-top shadow-md"
                   />
                 ) : (
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-violet-100 text-sm font-bold text-violet-700">
+                  <span className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-violet-100 text-2xl font-bold text-violet-700">
                     {COMPANY.ceoQuote.name
                       .split(" ")
                       .map((w) => w[0])
                       .join("")}
                   </span>
                 )}
-                <div className="text-sm">
-                  <div className="font-semibold text-gray-900">
-                    {COMPANY.ceoQuote.name}
-                  </div>
-                  <div className="text-gray-500">{COMPANY.ceoQuote.role}</div>
+                <div>
+                  <Quote className="h-6 w-6 text-violet-400" aria-hidden />
+                  <blockquote className="mt-3 text-xl font-medium leading-relaxed text-gray-800">
+                    “{COMPANY.ceoQuote.text}”
+                  </blockquote>
+                  <figcaption className="mt-5 text-sm">
+                    <div className="font-semibold text-gray-900">
+                      {COMPANY.ceoQuote.name}
+                    </div>
+                    <div className="text-gray-500">{COMPANY.ceoQuote.role}</div>
+                  </figcaption>
                 </div>
-              </figcaption>
+              </div>
             </figure>
           </div>
         </Container>
       </Section>
 
-      {/* §2 · Why Verana — the three pillars */}
+      {/* §2 · Why Verana - the three pillars */}
       <Section id="section-2" className="border-t border-gray-200 bg-white">
         <Container className="max-w-4xl">
           <SectionHeading
             number={2}
             title="Why Verana"
-            subtitle="The three pillars of the open trust layer — as on verana.io"
+            subtitle="The three pillars of the open trust layer - as on verana.io"
           />
           <div className="reveal-stagger grid gap-4 sm:grid-cols-3">
             {PILLARS.map((p) => (
@@ -664,7 +666,7 @@ export default function Explained() {
           <SectionHeading
             number={3}
             title="The ecosystems Vesta wants to join"
-            subtitle="Vesta picks the two it needs — and discovers a gap only it can fill"
+            subtitle="Vesta picks the two it needs - and discovers a gap only it can fill"
           />
           <div className="reveal-stagger grid gap-4 sm:grid-cols-2">
             {ECOSYSTEM_CHOICES.map((e) => {

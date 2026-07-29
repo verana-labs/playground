@@ -257,7 +257,13 @@ export default function TrustCard({
           <ul className="mt-2 space-y-1.5 pl-6">
             {d.others.map((o) => (
               <li key={o.name} className="text-xs text-gray-600">
-                <b className="text-gray-900">{o.name}</b> · issued by {o.issuedBy}
+                <b className="text-gray-900">{o.name}</b>
+                {o.inherited ? (
+                  <span className="ml-1.5 rounded bg-violet-50 px-1.5 py-px text-[9px] font-bold text-violet-700">
+                    inherited from parent
+                  </span>
+                ) : null}{" "}
+                · issued by {o.issuedBy}
                 {o.ecosystem ? <> · {o.ecosystem}</> : null}{" "}
                 <span className="font-semibold text-emerald-600">✓ verified</span>
                 {o.note ? (

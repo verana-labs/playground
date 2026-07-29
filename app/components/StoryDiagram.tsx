@@ -15,6 +15,7 @@ import {
   Wallet,
   Wrench,
 } from "lucide-react";
+import TrustCard, { type TrustCardData } from "./TrustCard";
 import {
   ACCREDITATIONS,
   BADGES,
@@ -378,106 +379,46 @@ function NodeDetail({
   const node = NODES.find((n) => n.id === id);
   if (!node) return null;
   const { label } = nodeLabelAt(node, stage);
-  const tone = nodeToneAt(node, stage);
-  const c = TONE[tone];
-  const verified = node.verifiedAt && stageIndex(node.verifiedAt) <= idx;
-  const impostor = node.dashed === true;
   const creds = (CREDENTIALS[id] ?? []).filter((cr) => visibleAt(cr, stage));
-  const accs = (ACCREDITATIONS[id] ?? []).filter(
-    (a) => stageIndex(a.appears) <= idx,
+  const find = (n: string) => creds.find((c) => c.name === n);
+  const svc = find("ECS-Service");
+  const org = find("ECS-Organization");
+  const others = creds.filter(
+    (c) => c.name !== "ECS-Service" && c.name !== "ECS-Organization",
   );
-  const note = NODE_NOTES[id];
-  const Icon = ICONS[node.icon];
+  const isPerson = id === "customer" || id === "wallet";
+  const verified = !!node.verifiedAt && stageIndex(node.verifiedAt) <= idx;
+  const data: TrustCardData = {
+    name: label ?? id,
+    did: verified || svc || org ? node.did : undefined,
+    isService: !isPerson,
+    serviceType: node.serviceType,
+    service: svc ? { name: svc.name, issuedBy: svc.issuedBy, ecosystem: svc.ecosystem } : undefined,
+    organization: org
+      ? {
+          name: org.name,
+          orgName: node.operator ?? (label ?? id),
+          issuedBy: org.issuedBy,
+          ecosystem: org.ecosystem,
+          note: org.note,
+        }
+      : undefined,
+    trusted: verified && !!svc && !!org,
+    impostor: node.dashed === true,
+    others: isPerson ? [] : others,
+    holds: isPerson ? creds : undefined,
+    accreditations: (ACCREDITATIONS[id] ?? [])
+      .filter((a) => stageIndex(a.appears) <= idx)
+      .map(({ role, schema, context }) => ({ role, schema, context })),
+    note: NODE_NOTES[id],
+    resolvedNote:
+      verified && node.did
+        ? "Both identity checks verified against the Verana public registry (story data - dedicated Vesta cast pending)."
+        : undefined,
+  };
   return (
-    <div className="mt-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 text-left">
-      <div className="flex items-center gap-2.5">
-        <span
-          className="flex h-8 w-8 items-center justify-center rounded-full bg-white"
-          style={{ color: c.stroke, border: `1.5px solid ${c.stroke}` }}
-        >
-          <Icon width={16} height={16} strokeWidth={1.8} />
-        </span>
-        <span className="font-semibold text-gray-900">{label}</span>
-        {verified ? (
-          <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
-            <BadgeCheck className="h-3 w-3" /> trusted
-          </span>
-        ) : impostor ? (
-          <span className="rounded-full bg-red-50 px-2 py-0.5 text-[11px] font-semibold text-red-700">
-            ✗ unverifiable
-          </span>
-        ) : null}
-        <button
-          type="button"
-          onClick={onClose}
-          className="ml-auto rounded-full px-2 py-0.5 text-xs text-gray-400 hover:bg-gray-200 hover:text-gray-700"
-          aria-label="Close details"
-        >
-          ✕
-        </button>
-      </div>
-      {creds.length > 0 ? (
-        <ul className="mt-3 grid gap-2 sm:grid-cols-2">
-          {creds.map((cr) => {
-            const ct = TONE[cr.tone];
-            return (
-              <li
-                key={cr.name}
-                className="rounded-xl border bg-white p-3"
-                style={{ borderColor: `${ct.stroke}55` }}
-              >
-                <div className="flex items-center gap-2">
-                  <span
-                    className="rounded-full px-2 py-0.5 text-[11px] font-semibold"
-                    style={{ background: ct.pill, color: ct.pillText }}
-                  >
-                    {cr.name}
-                  </span>
-                  <span className="ml-auto text-[11px] font-semibold text-emerald-600">
-                    ✓ verified
-                  </span>
-                </div>
-                <dl className="mt-2 space-y-0.5 text-[11px] text-gray-500">
-                  <div>
-                    <dt className="inline font-medium text-gray-600">
-                      Issued by:
-                    </dt>{" "}
-                    <dd className="inline">{cr.issuedBy}</dd>
-                  </div>
-                  {cr.ecosystem ? (
-                    <div>
-                      <dt className="inline font-medium text-gray-600">
-                        Governed by:
-                      </dt>{" "}
-                      <dd className="inline">{cr.ecosystem}</dd>
-                    </div>
-                  ) : null}
-                  {cr.note ? <div className="text-gray-400">{cr.note}</div> : null}
-                </dl>
-              </li>
-            );
-          })}
-        </ul>
-      ) : null}
-      {accs.length > 0 ? (
-        <ul className="mt-2 space-y-1">
-          {accs.map((a) => (
-            <li key={a.text} className="text-[11px] text-gray-500">
-              <span className="font-medium text-violet-700">Accreditation:</span>{" "}
-              {a.text}
-            </li>
-          ))}
-        </ul>
-      ) : null}
-      {note ? (
-        <p
-          className={`mt-2 text-xs leading-relaxed ${
-            impostor ? "text-red-600" : "text-gray-500"
-          }`}
-        >
-          {note}
-        </p>
-      ) : null}
+    <div className="mt-3">
+      <TrustCard data={data} onClose={onClose} />
     </div>
   );
 }

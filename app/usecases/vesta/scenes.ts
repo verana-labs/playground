@@ -53,6 +53,12 @@ export type SceneNode = {
   dashed?: boolean;
   label?: string;
   sub?: string;
+  /** Placeholder DID shown on the trust card (dedicated Vesta cast pending). */
+  did?: string;
+  /** Service type line on the trust card's Service step. */
+  serviceType?: string;
+  /** Organization display name on the trust card's Operated-by step. */
+  operator?: string;
   /** From this stage on, a green trusted check renders before the name. */
   verifiedAt?: Stage;
   /** Latest override ≤ current stage wins. */
@@ -98,6 +104,9 @@ export const NODES: SceneNode[] = [
     appears: "3.0",
     label: "Vesta Appliances",
     sub: "nothing provable online - yet",
+    did: "did:webvh:QmPLACEHOLDER…:vesta-anchor.demos.testnet.verana.network",
+    serviceType: "Organization anchor service",
+    operator: "Vesta Appliances 🇨🇭 · Geneva, Switzerland",
     verifiedAt: "3.3",
     toneByStage: { "3.1": "blue" },
     labelByStage: {
@@ -190,6 +199,9 @@ export const NODES: SceneNode[] = [
     appears: "3.2",
     label: "Verana ECS Ecosystem",
     sub: "identity credentials - the green check",
+    did: "did:webvh:QmPLACEHOLDER…:ecs-ecosystem.testnet.verana.network",
+    serviceType: "Trust registry service",
+    operator: "The ECS Ecosystem operator",
     verifiedAt: "3.2",
   },
   {
@@ -201,6 +213,9 @@ export const NODES: SceneNode[] = [
     appears: "3.2",
     label: "Helvetia Trust Services",
     sub: "(demo) · accredited ECS-Org issuer",
+    did: "did:webvh:QmPLACEHOLDER…:helvetia-trust.demos.testnet.verana.network",
+    serviceType: "KYB issuance service",
+    operator: "Helvetia Trust Services (demo)",
     verifiedAt: "3.2",
   },
   {
@@ -212,6 +227,9 @@ export const NODES: SceneNode[] = [
     appears: "3.6",
     label: "ISO Certification Ecosystem",
     sub: "(demo) · accredited cert bodies",
+    did: "did:webvh:QmPLACEHOLDER…:iso-certification.testnet.verana.network",
+    serviceType: "Trust registry service",
+    operator: "The ISO Certification Ecosystem operator (demo)",
     verifiedAt: "3.6",
   },
   {
@@ -223,6 +241,9 @@ export const NODES: SceneNode[] = [
     appears: "3.7",
     label: "Vesta Repair Network",
     sub: "issuance governed by Vesta · anyone verifies",
+    did: "did:webvh:QmPLACEHOLDER…:repair-network.vesta.example",
+    serviceType: "Trust registry service",
+    operator: "Vesta Appliances 🇨🇭 · Geneva, Switzerland",
     verifiedAt: "3.7",
   },
   {
@@ -234,6 +255,9 @@ export const NODES: SceneNode[] = [
     appears: "3.7",
     label: "Zenith Repairs (demo)",
     sub: "a verifiable org itself",
+    did: "did:webvh:QmPLACEHOLDER…:zenith-anchor.demos.testnet.verana.network",
+    serviceType: "Organization anchor service",
+    operator: "Zenith Repairs (demo) · authorized partner",
     verifiedAt: "3.7",
   },
 ];
@@ -417,25 +441,47 @@ export const CREDENTIALS: Record<string, NodeCredential[]> = {
   ],
 };
 
-/** Accreditations (issuer/verifier permissions) shown in the detail panel. */
-export const ACCREDITATIONS: Record<
-  string,
-  { text: string; appears: Stage }[]
-> = {
+/** Accreditations (issuer/verifier permissions) shown on the trust card. */
+export type Accreditation = {
+  role: "ISSUER" | "VERIFIER";
+  schema: string;
+  context: string;
+  appears: Stage;
+};
+
+export const ACCREDITATIONS: Record<string, Accreditation[]> = {
   orgIssuer: [
     {
-      text: "Accredited issuer of ECS-Organization (Verana ECS Ecosystem)",
+      role: "ISSUER",
+      schema: "ECS-Organization",
+      context: "Verana ECS Ecosystem · accredited",
       appears: "3.2",
     },
   ],
   vesta: [
     {
-      text: "Issuer of ECS-Service (self-accredited participant on the schema)",
+      role: "ISSUER",
+      schema: "ECS-Service",
+      context: "Verana ECS Ecosystem · self-accredited",
       appears: "3.3",
     },
     {
-      text: "Issuer of ECS-Badge (self-accredited participant on the schema)",
+      role: "ISSUER",
+      schema: "ECS-Badge",
+      context: "Verana ECS Ecosystem · self-accredited",
       appears: "3.5",
+    },
+    {
+      role: "VERIFIER",
+      schema: "ECS-Badge",
+      context: "Verana ECS Ecosystem · badge login",
+      appears: "3.5",
+    },
+    {
+      role: "ISSUER",
+      schema: "Authorized Repairer",
+      context: "Vesta Repair Network · ecosystem root",
+      appears: "3.7",
     },
   ],
 };

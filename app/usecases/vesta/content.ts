@@ -51,6 +51,8 @@ export const COMPANY = {
     name: "Elena Vasquez",
     role: "CEO, Vesta Appliances",
   },
+  servicesIntro:
+    "Beyond the machines, Vesta is online every day: customers ask for help, employees sign in, partners order parts and file warranty claims. Three services, all owned and operated by the company itself.",
   services: [
     {
       icon: "bot",

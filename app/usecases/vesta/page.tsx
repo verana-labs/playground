@@ -481,6 +481,9 @@ export default function Explained() {
           {/* Online services */}
           <div className="mt-12">
             <SubHeading>Online services</SubHeading>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+              {COMPANY.servicesIntro}
+            </p>
             <div className="mt-6 flex flex-col items-center">
               <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-3 shadow-sm">
                 <VestaLogo className="h-12 w-12" />

@@ -430,6 +430,10 @@ export const ACCREDITATIONS: Record<
   ],
   vesta: [
     {
+      text: "Issuer of ECS-Service (self-accredited participant on the schema)",
+      appears: "3.3",
+    },
+    {
       text: "Issuer of ECS-Badge (self-accredited participant on the schema)",
       appears: "3.5",
     },

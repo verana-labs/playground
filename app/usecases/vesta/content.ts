@@ -380,7 +380,7 @@ export const JOURNEY: {
           title: "The Service credential, self-issued",
           kind: "watch",
           story:
-            "In Verana, any service must have a controller organization (in this case Vesta) and must present an ECS-Service credential for service identification, too. Vesta's Business Wallet self-issues its Service credential - valid because the same DID already presents the proven ECS-Organization.",
+            "In Verana, any service must have a controller organization (in this case Vesta) and must present an ECS-Service credential for service identification, too. Vesta self-accredits as an issuer of the ECS-Service credential, and its Business Wallet then self-issues the Service credential - valid because the same DID already presents the proven ECS-Organization.",
           underHood: [
             "ISSUER permission on ECS-Service per the schema's permission-management mode (tree join, or self-created if OPEN via Create Permission).",
             "Self-issue through the vs-agent Admin API and publish #vpr-schemas-service-vtc-vp. Self-issuance is valid because the same DID presents ECS-Org - every service traces to an accountable organization.",

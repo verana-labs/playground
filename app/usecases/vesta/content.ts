@@ -266,6 +266,10 @@ export type SubStep = {
   liveService?: string;
   liveNote?: string;
   image?: { src: string; alt: string; caption?: string };
+  /** Prominent mono display (e.g. the generated DID). */
+  code?: { label: string; value: string; note?: string };
+  /** Skip the scene diagram for this step (used when a step shares a stage). */
+  noDiagram?: boolean;
 };
 
 export type JourneyNeed = {
@@ -301,48 +305,59 @@ export const JOURNEY: {
     {
       id: "need-1",
       n: 1,
-      title: "Verifiable identities for organizations",
+      title: "Vesta Organization identity",
       tag: "ECS-Organization",
       intro: "First things first: Vesta itself must become provable.",
       steps: [
         {
           id: "3.1",
           stage: "3.1",
-          title: "Vesta gets its digital identity",
+          title: "Marc deploys Vesta's Business Wallet",
           kind: "watch",
           story:
-            "Marc deploys a vs-agent - a small cloud-wallet service - as Vesta's Organization anchor. A DID is born: the identifier everything else attaches to. It proves nothing yet; it is the empty identity card.",
+            "Marc deploys a vs-agent, an open source Business Wallet natively integrated with the public Verana infrastructure. Upon deployment, a decentralized identifier (DID) is generated for Vesta: the identifier everything else attaches to. It proves nothing yet; it is the empty identity card.",
+          code: {
+            label: "The DID generated for Vesta",
+            value:
+              "did:webvh:QmPLACEHOLDER…:vesta-anchor.demos.testnet.verana.network",
+            note: "Placeholder until the dedicated Vesta cast is deployed.",
+          },
           underHood: [
             "The vs-agent generates the DID (did:webvh recommended) and publishes its DID Document with a DIDComm endpoint at https://<host>/.well-known/did.json.",
-            "The anchor will hold and present Vesta's credentials as Linked Verifiable Presentations.",
+            "The Business Wallet will hold and present Vesta's credentials as Linked Verifiable Presentations.",
           ],
           reproduce: [
             "Deploy a vs-agent on a public domain (Docker image + compose examples in the vs-agent repo).",
-            "Open https://<your-host>/.well-known/did.json - that document is your anchor's DID.",
+            "Open https://<your-host>/.well-known/did.json - that document is your Business Wallet's DID.",
             `Resolve it: ${resolver}/v1/trust/resolve?did=<your-did> → UNTRUSTED. That's the starting line.`,
           ],
           links: [
-            { label: "vs-agent", href: "https://github.com/verana-labs/vs-agent" },
+            { label: "vs-agent home", href: "https://github.com/verana-labs/vs-agent" },
             { label: "verana-demos examples", href: LINKS.veranaDemos },
           ],
         },
         {
           id: "3.2",
           stage: "3.2",
-          title: "Joining ECS: proving who they are - once",
+          title: "KYB with an accredited issuer",
           kind: "watch",
           story:
-            "Vesta joins the Verana ECS Ecosystem on the Organization schema and passes Know-Your-Business once, over DIDComm, with an accredited issuer. The issuer verifies the company and issues the ECS-Organization credential to Vesta's DID. The anchor finally has a name that is proven, not claimed.",
+            "Marc connects to the Verana ECS Ecosystem and chooses an accredited issuer to obtain an Organization credential for Vesta:",
+          points: [
+            "Marc chooses Helvetia Trust Services (demo), an accredited ECS-Org issuer.",
+            "A Know-Your-Business (KYB) process runs between Vesta and Helvetia Trust Services, over DIDComm.",
+            "KYB concludes and Vesta is verified: Vesta's Business Wallet receives its Organization credential.",
+          ],
           underHood: [
             "Joining creates a HOLDER permission on the Organization schema via Start Permission VP - the validator is the issuer you joined under.",
             "After KYB, the issuer confirms with Set Permission VP to Validated; the permission becomes ACTIVE in the public tree.",
-            "The credential is issued over DIDComm and published by the vs-agent as a Linked VP (#vpr-schemas-org-vtc-vp).",
+            "The credential is issued over DIDComm and published by the Business Wallet as a Linked VP (#vpr-schemas-org-vtc-vp).",
           ],
           reproduce: [
             `Create a testnet account, get VNA from the faucet, and open the Verana app: ${app}.`,
             "Discover & Join → ECS Ecosystem → Organization credential schema → Participants.",
-            "In the permission tree, pick an active Issuer branch and click Join: you apply as Holder under that issuer, and it becomes your validator. Enter your anchor DID and submit.",
-            "Complete the KYB exchange with the issuer's service over DIDComm; on validation, the ECS-Organization credential lands on your anchor.",
+            "In the permission tree, pick an active Issuer branch and click Join: you apply as Holder under that issuer, and it becomes your validator. Enter your Business Wallet's DID and submit.",
+            "Complete the KYB exchange with the issuer's service over DIDComm; on validation, the ECS-Organization credential lands in your Business Wallet.",
           ],
           links: [
             { label: "Verana app", href: app },
@@ -354,18 +369,18 @@ export const JOURNEY: {
     {
       id: "need-2",
       n: 2,
-      title: "Verifiable identities for services",
+      title: "Service identity",
       tag: "ECS-Service",
       intro:
-        "With ECS-Organization on the anchor, every service can now prove what it is and who runs it.",
+        "Every service in Verana has an accountable controller organization - and an identity of its own.",
       steps: [
         {
           id: "3.3",
           stage: "3.3",
-          title: "The anchor turns green",
+          title: "The Service credential, self-issued",
           kind: "watch",
           story:
-            "Vesta registers as an issuer of the ECS-Service schema and self-issues the Service credential on its anchor - valid because the same DID already presents the proven ECS-Organization. Resolve the DID now: TRUSTED. The trust card below is the exact card every integrated wallet shows.",
+            "In Verana, any service must have a controller organization (in this case Vesta) and must present an ECS-Service credential for service identification, too. Vesta's Business Wallet self-issues its Service credential - valid because the same DID already presents the proven ECS-Organization.",
           underHood: [
             "ISSUER permission on ECS-Service per the schema's permission-management mode (tree join, or self-created if OPEN via Create Permission).",
             "Self-issue through the vs-agent Admin API and publish #vpr-schemas-service-vtc-vp. Self-issuance is valid because the same DID presents ECS-Org - every service traces to an accountable organization.",
@@ -373,61 +388,76 @@ export const JOURNEY: {
           reproduce: [
             "In the app: ECS Ecosystem → Service credential schema → Participants → join the tree on the issuer side for your DID.",
             "Issue the ECS-Service credential to yourself via the vs-agent Admin API and link it (the verana-demos scripts wrap this).",
-            `Re-resolve: ${resolver}/v1/trust/resolve?did=<your-did>&detail=full → TRUSTED, with both credentials and their permission chains.`,
           ],
-          liveService: "organization-vs",
-          liveNote: CAST_NOTE,
         },
         {
           id: "3.4",
           stage: "3.4",
-          title: "Every service turns verifiable",
-          kind: "hands-on",
+          title: "Vesta's first Verifiable Service",
+          kind: "watch",
           story:
-            "Each real service becomes its own Verifiable Service - its own vs-agent and DID, with an ECS-Service credential issued by the anchor. The gray cards from Section 1 turn verified, and you can already try it:",
-          points: [
-            "Agentic Support - install the Hologram App, scan the QR, review the Proof-of-Trust (green check · Service · Operated by Vesta), then chat. The fake support line from Section 1 can't produce that card: it shows red.",
-          ],
-          underHood: [
-            "Delegated pattern: each service DID presents an ECS-Service credential issued by the anchor; trust chains resolve through the anchor's ECS-Org.",
-          ],
+            "Vesta now has its own first Verifiable Service: the Vesta Organization trust anchor service. Resolve it and the check is green - ECS-Organization and ECS-Service, verified against the public registry. This is the exact card every integrated wallet shows.",
           reproduce: [
-            "Deploy one vs-agent per service; the anchor issues each its ECS-Service credential and links it (the verana-demos scripts wrap this).",
-            "Install the Hologram App and connect to Agentic Support from this playground; review the Proof-of-Trust, then chat.",
+            `Resolve it yourself: ${resolver}/v1/trust/resolve?did=<vesta-did>&detail=full → TRUSTED, with both credentials and their permission chains.`,
+            "Or read the live card below - click through to the service to see its credentials (service page comes with the Vesta cast).",
           ],
-          links: [{ label: "Hologram wallet page", href: "/user-wallets/hologram" }],
+          liveService: "organization-vs",
+          liveNote: CAST_NOTE,
         },
       ],
     },
     {
       id: "need-3",
       n: 3,
-      title: "Credentials people can hold",
+      title: "Vesta employee badges",
       tag: "ECS-Badge",
       intro:
-        "Employees and partner technicians get badges in their wallets - and passwords disappear.",
+        "Badges as verifiable credentials - for both physical access (office, factory) and Vesta's digital services.",
       steps: [
         {
           id: "3.5",
           stage: "3.5",
-          title: "Badges in, passwords out",
-          kind: "hands-on",
+          title: "Vesta becomes an ECS-Badge issuer",
+          kind: "watch",
           story:
-            "Vesta's badge service issues ECS-Badge credentials to employees and partner technicians (AnonCreds/DIDComm for now; Hologram first), and the portal stops asking for passwords: it requests the badge instead. No shared logins, no account churn - each person holds their own revocable credential.",
+            "Vesta wants to issue badges as verifiable credentials to its employees, for both physical access (office, factory) and access to Vesta's digital services. To do that, Vesta self-accredits as an issuer of the ECS-Badge credential - and can then issue an ECS-Badge to every employee, received in their Personal Wallet.",
           points: [
-            "Employee badge - pick an integrated open-source wallet and receive an ECS-Badge. Your wallet first verifies the issuer is trusted and authorized to issue ECS-Badge.",
-            "Passwordless login - the portal requests your badge. Your wallet verifies the verifier is trusted and authorized to request it, then presents. No password ever existed.",
+            "Self-accredit as an issuer of the ECS-Badge credential (a participant entry on the ECS-Badge schema).",
+            "Issue ECS-Badge credentials to employees - each person holds their own, revocable, in their Personal Wallet.",
           ],
           underHood: [
-            "Vesta holds ISSUER and VERIFIER permissions on the ECS-Badge schema - visible in the public tree.",
-            "Wallet rules from the user-wallet guideline: verify issuer authorization on offers (Q2) and verifier authorization on presentation requests (Q3); unauthorized → red verdict.",
+            "Vesta creates its ISSUER permission on the ECS-Badge schema - visible as a participant in the public tree.",
+            "Issuance runs over AnonCreds/DIDComm for now (Hologram first); the employee's Personal Wallet verifies the issuer is trusted and authorized to issue ECS-Badge (Q2) before accepting.",
           ],
           reproduce: [
+            `See Vesta's participant entry on the ECS-Badge schema in the Verana app: ${app} (deep link comes with the Vesta cast).`,
             "Open the badge issuer invitation with your wallet and accept the badge after the wallet's issuer check.",
+          ],
+          links: [
+            { label: "Verana app", href: app },
+            { label: "Hologram wallet page", href: "/user-wallets/hologram" },
+          ],
+        },
+        {
+          id: "3.5b",
+          stage: "3.5",
+          noDiagram: true,
+          title: "Log in with the badge - and open doors with it",
+          kind: "watch",
+          story:
+            "Vesta then adds a login-with-verifiable-credential option using the ECS-Badge: access is configured to only accept badges whose issuer is the DID of the Vesta Organization trust anchor service. And the same badge can work at the door:",
+          points: [
+            "Portal login: only ECS-Badge credentials issued by Vesta's trust anchor DID are accepted. No passwords, no shared logins.",
+            "Physical access: Bluetooth, NFC, or QR-code access to the office or the factory using the ECS-Badge - provided the Personal Wallet used supports it.",
+          ],
+          underHood: [
+            "The verifier-side policy pins the accepted issuer to the anchor DID: ECS-Badge presentations from any other issuer are rejected.",
+            "The Personal Wallet applies the mirror rule before presenting: verify the verifier is trusted and authorized to request ECS-Badge (Q3).",
+          ],
+          reproduce: [
             "Open the login demo, review the request (who asks, what for), present the badge - you're in.",
           ],
           links: [
-            { label: "Hologram wallet page", href: "/user-wallets/hologram" },
             { label: "User-wallet guideline", href: LINKS.guidelineUserWallet },
           ],
         },

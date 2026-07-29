@@ -248,7 +248,21 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
         ) : null}
       </div>
 
-      <StoryDiagram stage={sub.stage} />
+      {sub.code ? (
+        <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">
+          <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
+            {sub.code.label}
+          </div>
+          <code className="mt-2 block break-all font-mono text-sm text-violet-700">
+            {sub.code.value}
+          </code>
+          {sub.code.note ? (
+            <p className="mt-2 text-xs text-gray-400">{sub.code.note}</p>
+          ) : null}
+        </div>
+      ) : null}
+
+      {sub.noDiagram ? null : <StoryDiagram stage={sub.stage} />}
 
       {sub.image ? (
         <figure className="mx-auto max-w-md">
@@ -712,7 +726,7 @@ export default function Explained() {
                         href={`#need-${n.need}`}
                         className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                       >
-                        → Marc's journey · {n.tag}
+                        → Marc&apos;s journey · {n.tag}
                       </a>
                     </div>
                     <p className="mt-1 text-sm text-gray-500">{n.desc}</p>
@@ -868,7 +882,7 @@ export default function Explained() {
                     href={`#need-${ECOSYSTEM_BUILD.card.need}`}
                     className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                   >
-                    → Marc's journey · Vesta creates its own ecosystem
+                    → Marc&apos;s journey · Vesta creates its own ecosystem
                   </a>
                   <a
                     href={ECOSYSTEM_BUILD.card.veranaUrl}

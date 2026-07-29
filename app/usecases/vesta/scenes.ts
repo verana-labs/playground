@@ -111,8 +111,6 @@ export const NODES: SceneNode[] = [
     appears: "3.0",
     label: "Agentic Support",
     sub: "just a name on a screen",
-    toneByStage: { "3.4": "blue" },
-    labelByStage: { "3.4": { sub: "verifiable service" } },
   },
   {
     id: "badgeSvc",
@@ -123,8 +121,6 @@ export const NODES: SceneNode[] = [
     appears: "3.0",
     label: "Employee badges",
     sub: "password resets galore",
-    toneByStage: { "3.4": "blue" },
-    labelByStage: { "3.4": { sub: "verifiable service" }, "3.5": { sub: "issues ECS-Badge" } },
   },
   {
     id: "portal",
@@ -135,8 +131,7 @@ export const NODES: SceneNode[] = [
     appears: "3.0",
     label: "Staff & partner portal",
     sub: "phished passwords",
-    toneByStage: { "3.4": "blue" },
-    labelByStage: { "3.4": { sub: "verifiable service" }, "3.5": { sub: "credential login" } },
+    labelByStage: { "3.5": { sub: "badge login configured" } },
   },
   {
     id: "customer",
@@ -197,8 +192,8 @@ export const NODES: SceneNode[] = [
     icon: "stamp",
     tone: "blue",
     appears: "3.2",
-    label: "KYB Issuer (demo)",
-    sub: "accredited by ECS",
+    label: "Helvetia Trust Services",
+    sub: "(demo) · accredited ECS-Org issuer",
   },
   {
     id: "iso",
@@ -245,7 +240,7 @@ export const EDGES: SceneEdge[] = [
   { id: "e-vesta-kyb", from: "vesta", to: "orgIssuer", appears: "3.2", label: "KYB over DIDComm - once", tone: "gray", dashed: true, curve: -40, labelT: 0.45 },
   { id: "e-orgIssuer-vesta", from: "orgIssuer", to: "vesta", appears: "3.2", label: "issues ECS-Org", tone: "emerald", curve: 40, labelT: 0.6 },
   // Need 3 - credentials people can hold
-  { id: "e-badgeSvc-wallet", from: "badgeSvc", to: "wallet", appears: "3.5", label: "issues ECS-Badge", tone: "emerald", curve: 30, labelT: 0.5 },
+  { id: "e-vesta-badge", from: "vesta", to: "wallet", appears: "3.5", label: "issues ECS-Badge to employees", tone: "emerald", curve: -55, labelT: 0.45 },
   { id: "e-wallet-portal", from: "wallet", to: "portal", appears: "3.5", label: "presents badge → login", tone: "emerald", labelT: 0.5 },
   // Need 4 - certifications as proof
   { id: "e-iso-vesta", from: "iso", to: "vesta", appears: "3.6", label: "issues ISO 9001 (demo) - no re-KYB", tone: "emerald", curve: 30, labelT: 0.5 },
@@ -257,24 +252,18 @@ export const EDGES: SceneEdge[] = [
 
 export const BADGES: SceneBadge[] = [
   // Baseline - the customer cannot tell; the gap only Vesta can fill
-  { id: "b-question", node: "customer", dx: 34, dy: -24, text: "?", tone: "red", appears: "3.0", until: "3.4" },
+  { id: "b-question", node: "customer", dx: 34, dy: -24, text: "?", tone: "red", appears: "3.0", until: "3.8" },
   { id: "b-gap", node: "umbra", dx: 0, dy: -44, text: "authorized repairers? no proof exists", tone: "red", appears: "3.0", until: "3.7" },
   // Need 1 - the identity credential lands
   { id: "b-ecsorg", node: "vesta", dx: 44, dy: -26, text: "ECS-Org", tone: "blue", appears: "3.2" },
   // Need 2 - the check turns green, the services follow
   { id: "b-ecssvc", node: "vesta", dx: 44, dy: -6, text: "ECS-Service", tone: "violet", appears: "3.3" },
   { id: "b-trusted", node: "vesta", dx: 44, dy: 14, text: "✓ TRUSTED", tone: "emerald", appears: "3.3" },
-  { id: "b-ok-support", node: "support", dx: 30, dy: -24, text: "✓", tone: "emerald", appears: "3.4" },
-  { id: "b-ok-badgeSvc", node: "badgeSvc", dx: 30, dy: -24, text: "✓", tone: "emerald", appears: "3.4" },
-  { id: "b-ok-portal", node: "portal", dx: 30, dy: -24, text: "✓", tone: "emerald", appears: "3.4" },
-  { id: "b-no-fake", node: "fakeSupport", dx: 34, dy: -24, text: "✗", tone: "red", appears: "3.4" },
+  { id: "b-no-fake", node: "fakeSupport", dx: 34, dy: -24, text: "✗", tone: "red", appears: "3.8" },
   // Need 3 - badges in wallets
   { id: "b-badge-wallet", node: "wallet", dx: 0, dy: -40, text: "ECS-Badge", tone: "emerald", appears: "3.5" },
   // Need 4 - the certification lands and echoes on every service
   { id: "b-iso", node: "vesta", dx: 44, dy: 34, text: "ISO 9001 (demo)", tone: "amber", appears: "3.6" },
-  { id: "b-iso-support", node: "support", dx: 0, dy: -40, text: "ISO 9001", tone: "amber", appears: "3.6" },
-  { id: "b-iso-badgeSvc", node: "badgeSvc", dx: 0, dy: -40, text: "ISO 9001", tone: "amber", appears: "3.6" },
-  { id: "b-iso-portal", node: "portal", dx: 0, dy: -40, text: "ISO 9001", tone: "amber", appears: "3.6" },
   // Need 5 - full circle
   { id: "b-authorized-zenith", node: "zenith", dx: 0, dy: -40, text: "Authorized Repairer", tone: "emerald", appears: "3.7" },
   { id: "b-ok-zenith", node: "zenith", dx: 34, dy: -24, text: "✓", tone: "emerald", appears: "3.8" },
@@ -289,11 +278,12 @@ export const STAGE_CHANGES: Partial<
   "3.1": { nodes: ["vesta"], note: "Vesta's DID is born" },
   "3.3": { nodes: ["vesta"], note: "the check turns green" },
   "3.4": {
-    nodes: ["support", "badgeSvc", "portal"],
-    note: "the services turn verifiable - the fake one turns red",
+    nodes: ["vesta"],
+    note: "Vesta's first Verifiable Service is live",
   },
   "3.7": { nodes: ["umbra"], note: "the last problem gets its answer" },
   "3.8": { note: "full circle: anyone can tell" },
+  "3.5": { nodes: ["portal"], note: "badge login configured on the portal" },
 };
 
 /** Resolve a node's label/sub at a given stage (latest override ≤ stage). */

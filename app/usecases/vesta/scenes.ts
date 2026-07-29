@@ -469,6 +469,11 @@ export const STAGE_VIEW: Partial<
     viewBox: "20 30 460 350",
     maxWidth: "max-w-2xl",
   },
+  "3.3": {
+    only: ["vesta", "ecs", "orgIssuer"],
+    viewBox: "20 30 460 350",
+    maxWidth: "max-w-2xl",
+  },
 };
 
 /** Stages whose meaning is a *change* to existing elements rather than a new

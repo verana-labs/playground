@@ -218,7 +218,8 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
             return (
               <g
                 key={n.id}
-                className={`cursor-pointer ${highlight ? "sd-new" : ""}`}
+                className={`cursor-pointer outline-none focus:outline-none ${highlight ? "sd-new" : ""}`}
+                style={{ outline: "none" }}
                 role="button"
                 tabIndex={0}
                 aria-label={`${label ?? n.id} - view presented credentials`}

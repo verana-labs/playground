@@ -516,6 +516,76 @@ export const JOURNEY: {
   ],
 };
 
+
+// --------------------------------- §4 · Run the demos (examples.md)
+
+/** §4 · Run the demos - placeholders until the Vesta demo cast ships.
+ *  Source: verana-spec → playground/verana-explained/examples.md. */
+export const DEMOS = {
+  n: 4,
+  anchor: "section-4",
+  title: "Run the demos",
+  intro:
+    "Download one of the integrated user wallets to run the demos - every wallet shows the same verdicts, the same way.",
+  verifyRule:
+    "Always verify the certified Organization name and data shown in the Proof-of-Trust card in your wallet before proceeding.",
+  badge: {
+    title: "Obtain an ECS-Badge",
+    intro: "Request a badge and watch your wallet check the issuer first:",
+    offers: [
+      {
+        org: "From Vesta",
+        expect:
+          "Green Proof-of-Trust: Vesta Appliances, certified organization, authorized ECS-Badge issuer. Accept the badge.",
+        tone: "emerald",
+      },
+      {
+        org: "From Zenith Repairs",
+        expect:
+          "Green Proof-of-Trust: Zenith Repairs, certified organization presenting its Authorized Repairer credential. Accept the badge.",
+        tone: "emerald",
+      },
+      {
+        org: "From an organization that is not an Authorized Repairer",
+        expect:
+          "Your wallet warns you: the issuer is not what it claims. Red verdict - do not accept.",
+        tone: "red",
+      },
+    ],
+  },
+  login: {
+    title: "Log in as a repair employee with your ECS-Badge",
+    intro:
+      "Try to log in to the Vesta portal with a badge. The portal decides from the badge's issuer chain:",
+    outcomes: [
+      {
+        rule: "Your badge was issued by Vesta",
+        result: "You are recognized: access granted as a Vesta employee.",
+        tone: "emerald",
+      },
+      {
+        rule: "Your badge was issued by an organization presenting an Authorized Repairer credential",
+        result: "Access granted, as an Authorized Repairer employee.",
+        tone: "emerald",
+      },
+      {
+        rule: "Anything else",
+        result: "Access denied.",
+        tone: "red",
+      },
+    ],
+  },
+  directory: {
+    title: "Search the directory of Authorized Repairers",
+    intro:
+      "Discovery by proof: query the public registry for organizations by the credentials they present.",
+    queries: [
+      "View all organizations that present an Authorized Repairer credential, and choose which company to contact for service.",
+      "Narrow it down: organizations that present an Authorized Repairer credential AND an ISO 9001 credential.",
+    ],
+  },
+};
+
 // ----------------------------------- Closing teaser + navigation
 
 export const CLOSING = {
@@ -524,7 +594,7 @@ export const CLOSING = {
   body: "Everything Vesta published - the ECS credentials, the ISO 9001 certification, the Authorized Repairer credentials - is public, resolvable, and indexable. The Trust Graph turns that into discovery: only verified trust results are indexed, and people, search engines, and AI agents find services by what they prove, not what they claim: “ISO 9001-certified manufacturers”, “authorized Vesta repairers”. The full walkthrough ships later.",
 };
 
-/** The three sections, for home cards and in-page navigation. */
+/** The four sections, for home cards and in-page navigation. */
 export const SECTIONS_NAV = [
   {
     n: 1,
@@ -546,5 +616,12 @@ export const SECTIONS_NAV = [
     title: "Marc's journey",
     oneLiner:
       "Five needs, five builds: identity, verifiable services, badges, certification as proof, and Vesta's own ecosystem. Zenith ✓, Umbra ✗.",
+  },
+  {
+    n: 4,
+    anchor: "section-4",
+    title: "Run the demos",
+    oneLiner:
+      "Get a badge (from Vesta, from Zenith, or from an impostor), log in to the portal with it, and search the directory of Authorized Repairers.",
   },
 ] as const;

@@ -13,6 +13,9 @@ import {
   LockKeyhole,
   Network,
   PhoneOff,
+  QrCode,
+  Search,
+  ShieldCheck,
   Quote,
   Terminal,
   Truck,
@@ -24,6 +27,7 @@ import StoryDiagram from "../../components/StoryDiagram";
 import {
   CLOSING,
   COMPANY,
+  DEMOS,
   ECOSYSTEM_BUILD,
   ECOSYSTEM_CHOICES,
   FACTS,
@@ -917,8 +921,121 @@ export default function Explained() {
         </Container>
       </Section>
 
+      {/* §4 · Run the demos - placeholders until the Vesta cast ships */}
+      <Section id={DEMOS.anchor} className="border-t border-gray-200 bg-white">
+        <Container className="max-w-4xl">
+          <SectionHeading number={DEMOS.n} title={DEMOS.title} subtitle={DEMOS.intro} />
+
+          <p className="mb-10 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm font-medium text-amber-800">
+            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
+            {DEMOS.verifyRule}
+          </p>
+
+          {/* Demo 1 · Obtain an ECS-Badge */}
+          <div>
+            <SubHeading>{DEMOS.badge.title}</SubHeading>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.badge.intro}
+            </p>
+            <div className="reveal-stagger mt-6 grid gap-4 sm:grid-cols-3">
+              {DEMOS.badge.offers.map((o) => (
+                <div
+                  key={o.org}
+                  className={`flex flex-col rounded-2xl border bg-white p-5 shadow-sm ${
+                    o.tone === "red" ? "border-red-100" : "border-gray-200"
+                  }`}
+                >
+                  <div className="font-semibold text-gray-900">{o.org}</div>
+                  <p
+                    className={`mt-2 flex-1 text-sm leading-relaxed ${
+                      o.tone === "red" ? "text-red-600" : "text-gray-500"
+                    }`}
+                  >
+                    {o.expect}
+                  </p>
+                  <div className="mt-4 flex items-center justify-between gap-2 border-t border-gray-100 pt-4">
+                    <span
+                      aria-hidden
+                      className="flex h-16 w-16 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-gray-300"
+                    >
+                      <QrCode className="h-7 w-7" />
+                    </span>
+                    <Chip tone="pending">demo coming</Chip>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Demo 2 · Log in with the badge */}
+          <div className="mt-14">
+            <SubHeading>{DEMOS.login.title}</SubHeading>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.login.intro}
+            </p>
+            <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <ul className="space-y-3">
+                {DEMOS.login.outcomes.map((o) => (
+                  <li key={o.rule} className="flex items-start gap-3 text-sm">
+                    <span
+                      aria-hidden
+                      className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                        o.tone === "red"
+                          ? "bg-red-50 text-red-600"
+                          : "bg-emerald-50 text-emerald-700"
+                      }`}
+                    >
+                      {o.tone === "red" ? "✗" : "✓"}
+                    </span>
+                    <span>
+                      <span className="font-semibold text-gray-900">
+                        {o.rule}:
+                      </span>{" "}
+                      <span className="text-gray-600">{o.result}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-5 flex items-center justify-between gap-2 border-t border-gray-100 pt-4">
+                <span className="flex items-center gap-2 text-sm text-gray-400">
+                  <KeyRound className="h-4 w-4" aria-hidden /> Vesta portal
+                  login demo
+                </span>
+                <Chip tone="pending">demo coming</Chip>
+              </div>
+            </div>
+          </div>
+
+          {/* Demo 3 · Directory search */}
+          <div className="mt-14">
+            <SubHeading>{DEMOS.directory.title}</SubHeading>
+            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.directory.intro}
+            </p>
+            <div className="reveal-stagger mx-auto mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
+              {DEMOS.directory.queries.map((q) => (
+                <div
+                  key={q}
+                  className="flex flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50 text-violet-700">
+                    <Search className="h-5 w-5" aria-hidden />
+                  </span>
+                  <p className="mt-3 flex-1 text-sm leading-relaxed text-gray-600">
+                    {q}
+                  </p>
+                  <div className="mt-4 border-t border-gray-100 pt-3">
+                    <Chip tone="pending">demo coming</Chip>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Container>
+      </Section>
+
       {/* Closing teaser */}
-      <Section className="border-t border-gray-200 bg-white">
+      <Section className="border-t border-gray-200">
         <Container className="max-w-4xl">
           <div className="rounded-2xl border border-gray-200 bg-gray-50 p-6">
             <div className="flex flex-wrap items-center gap-3">

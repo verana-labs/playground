@@ -39,7 +39,7 @@ describe("ServiceQr", () => {
     });
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
-    expect(screen.getByText("Scan or open the live demo service.")).toBeDefined();
+    expect(screen.getByText("phone camera")).toBeDefined();
     expect(fetch).toHaveBeenCalledWith("/api/pot/issuer-web-vs");
   });
 

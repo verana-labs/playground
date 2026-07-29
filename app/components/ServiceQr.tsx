@@ -100,7 +100,9 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
           {appUrl}
         </a>
         <p className="text-center text-xs text-gray-500">
-          Scan or open the live demo service.
+          Scan with your <strong className="font-semibold">phone camera</strong>,
+          not your wallet — this opens the demo service in a browser. The service
+          then shows the invitation QR your wallet scans.
         </p>
       </div>
     </div>

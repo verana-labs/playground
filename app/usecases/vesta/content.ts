@@ -403,7 +403,6 @@ export const JOURNEY: {
         {
           id: "3.5",
           stage: "3.5",
-          noDiagram: true,
           title: "Vesta becomes an ECS-Badge issuer",
           kind: "watch",
           story:

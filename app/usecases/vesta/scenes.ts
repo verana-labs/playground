@@ -524,6 +524,11 @@ export const STAGE_VIEW: Partial<
     viewBox: "20 30 460 350",
     maxWidth: "max-w-2xl",
   },
+  "3.5": {
+    only: ["vesta", "ecs", "orgIssuer"],
+    viewBox: "20 30 460 350",
+    maxWidth: "max-w-2xl",
+  },
 };
 
 /** Stages whose meaning is a *change* to existing elements rather than a new
@@ -534,8 +539,8 @@ export const STAGE_CHANGES: Partial<
   "3.1": { nodes: ["vesta"], note: "Vesta's DID is born" },
   "3.3": { nodes: ["vesta"], note: "the check turns green" },
   "3.7": { nodes: ["umbra"], note: "the last problem gets its answer" },
+  "3.5": { nodes: ["vesta"], note: "new accreditations on Vesta - click it to see them" },
   "3.8": { note: "full circle: anyone can tell" },
-  "3.5": { nodes: ["portal"], note: "badge login configured on the portal" },
 };
 
 /** Resolve a node's label/sub at a given stage (latest override ≤ stage). */

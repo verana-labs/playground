@@ -9,3 +9,4 @@ scenarios: [iso-certification-loop]
 download: https://github.com/AirKyzzZ/AltMe-verana
 badge_loop: coming
 notes: Verana trust resolution on the OID4VP accept path with a config-driven TESTNET label.
+logo: ./logo.webp

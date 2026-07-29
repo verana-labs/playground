@@ -7,6 +7,7 @@ import {
   Breadcrumb,
   Placeholder,
 } from "../../components/ui";
+import WalletLogo from "../../components/WalletLogo";
 import { ExpectedRendering } from "../../components/ExpectedRendering";
 import { ProofOfTrust } from "../../components/ProofOfTrust";
 import { ServiceQr } from "../../components/ServiceQr";
@@ -60,12 +61,7 @@ export default async function UserWalletPlayground({
           />
           {/* 2 · Header */}
           <div className="mt-6 flex flex-wrap items-center gap-4">
-            <span
-              aria-hidden
-              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-xl font-bold text-white backdrop-blur"
-            >
-              {w.name.charAt(0)}
-            </span>
+            <WalletLogo w={w} size="header" onDark />
             <div>
               <h1 className="text-3xl font-bold">{w.name}</h1>
               <p className="text-white/80">{w.organization}</p>

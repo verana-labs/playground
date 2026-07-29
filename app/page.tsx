@@ -10,7 +10,7 @@ import {
   Landmark,
   Wallet,
 } from "lucide-react";
-import { Container, Section, SectionHeading, Chip } from "./components/ui";
+import { Container, Section, SectionHeading } from "./components/ui";
 import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
 import { ProofOfTrust } from "./components/ProofOfTrust";
 import { userWallets, cloudWallets } from "./lib/integrations";

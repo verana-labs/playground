@@ -11,7 +11,10 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "validate:registry": "node scripts/validate-registry.mjs"
+    "validate:registry": "node scripts/validate-registry.mjs",
+    "sync:logos": "node scripts/sync-logos.mjs",
+    "predev": "node scripts/sync-logos.mjs",
+    "prebuild": "node scripts/sync-logos.mjs"
   },
   "dependencies": {
     "js-yaml": "^4.1.0",

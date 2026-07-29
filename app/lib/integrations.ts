@@ -41,6 +41,16 @@ const REGISTRY_DIR = path.join(process.cwd(), "integrations");
 
 let cache: Integration[] | null = null;
 
+// Descriptors declare the logo next to themselves (`logo: ./logo.svg`);
+// scripts/sync-logos.mjs publishes it under public/wallets/<slug>.<ext>.
+function publicLogo(slug: string, logo: string | undefined) {
+  if (!logo) return undefined;
+  if (/^(https?:)?\/\//.test(logo)) return logo;
+  const ext = path.extname(logo);
+  const served = path.join(process.cwd(), "public", "wallets", `${slug}${ext}`);
+  return fs.existsSync(served) ? `/wallets/${slug}${ext}` : undefined;
+}
+
 export function listIntegrations(): Integration[] {
   if (cache) return cache;
   if (!fs.existsSync(REGISTRY_DIR)) {
@@ -63,7 +73,7 @@ export function listIntegrations(): Integration[] {
       track: data.track ?? "",
       scenarios: data.scenarios ?? [],
       demo_video: data.demo_video,
-      logo: data.logo,
+      logo: publicLogo(slug, data.logo),
       fides: data.fides,
       download: data.download,
       appstore: data.appstore,

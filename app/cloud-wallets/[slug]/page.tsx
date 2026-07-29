@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink, Github, PlayCircle } from "lucide-react";
 import {
   Container,
   Section,
   Breadcrumb,
   Placeholder,
 } from "../../components/ui";
+import WalletLogo from "../../components/WalletLogo";
 import { ProofOfTrust } from "../../components/ProofOfTrust";
 import {
   cloudWallets,
@@ -69,12 +70,7 @@ export default async function CloudWalletPlayground({
           />
           {/* 2 · Header */}
           <div className="mt-6 flex flex-wrap items-center gap-4">
-            <span
-              aria-hidden
-              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-xl font-bold text-white backdrop-blur"
-            >
-              {w.name.charAt(0)}
-            </span>
+            <WalletLogo w={w} size="header" onDark />
             <div>
               <h1 className="text-3xl font-bold">{w.name}</h1>
               <p className="text-white/80">{w.organization}</p>
@@ -109,6 +105,16 @@ export default async function CloudWalletPlayground({
                 className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 font-medium text-white backdrop-blur transition-colors hover:bg-white/25"
               >
                 <Github className="h-4 w-4" /> Source
+              </a>
+            ) : null}
+            {w.demo_video ? (
+              <a
+                href={w.demo_video}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 font-medium text-white backdrop-blur transition-colors hover:bg-white/25"
+              >
+                <PlayCircle className="h-4 w-4" /> Video
               </a>
             ) : null}
           </div>

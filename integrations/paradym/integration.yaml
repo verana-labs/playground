@@ -8,3 +8,4 @@ scenarios: [iso-certification-loop]
 download: https://github.com/AirKyzzZ/paradym-wallet-verana/releases/download/verana-2026-07-28/paradym-verana-dev-debug.apk
 badge_loop: coming
 notes: Verana trust integration in Paradym's SDK trust-mechanism registry (Credo-TS wallet). Badge flow activates when OpenID4VC issuance lands for ECS-Badge.
+logo: ./logo.webp

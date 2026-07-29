@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import {
   Award,
   BadgeCheck,
@@ -12,11 +15,16 @@ import {
   Wallet,
   Wrench,
 } from "lucide-react";
+import TrustCard, { type TrustCardData } from "./TrustCard";
 import {
+  ACCREDITATIONS,
   BADGES,
+  CREDENTIALS,
   EDGES,
   NODES,
+  NODE_NOTES,
   STAGE_CHANGES,
+  STAGE_VIEW,
   nodeLabelAt,
   nodeToneAt,
   stageIndex,
@@ -131,11 +139,26 @@ function Pill({
 
 export default function StoryDiagram({ stage }: { stage: Stage }) {
   const idx = stageIndex(stage);
+  const [selected, setSelected] = useState<string | null>(null);
+  // Measured label widths, so the trusted check sits at a consistent gap
+  // from the text regardless of glyph widths.
+  const [labelW, setLabelW] = useState<Record<string, number>>({});
+  const measure = (id: string) => (el: SVGTextElement | null) => {
+    if (!el) return;
+    const w = el.getComputedTextLength();
+    setLabelW((prev) =>
+      Math.abs((prev[id] ?? 0) - w) < 0.5 ? prev : { ...prev, [id]: w },
+    );
+  };
   const isNew = (el: { appears: Stage }) => stageIndex(el.appears) === idx;
 
-  const nodes = NODES.filter((n) => visibleAt(n, stage));
-  const edges = EDGES.filter((e) => visibleAt(e, stage));
-  const badges = BADGES.filter((b) => visibleAt(b, stage));
+  const view = STAGE_VIEW[stage];
+  const inView = (id: string) => !view?.only || view.only.includes(id);
+  const nodes = NODES.filter((n) => visibleAt(n, stage) && inView(n.id));
+  const edges = EDGES.filter(
+    (e) => visibleAt(e, stage) && inView(e.from) && inView(e.to),
+  );
+  const badges = BADGES.filter((b) => visibleAt(b, stage) && inView(b.node));
   const changes = STAGE_CHANGES[stage];
   const changedNodes = new Set(changes?.nodes ?? []);
   const tones = Array.from(new Set(edges.map((e) => e.tone)));
@@ -146,10 +169,14 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
   ].filter(Boolean);
 
   return (
-    <figure className="rounded-2xl border border-gray-200 bg-white p-3 shadow-sm sm:p-5">
+    <figure
+      className={`rounded-2xl border border-gray-200 bg-white p-3 shadow-sm sm:p-5 ${
+        view?.maxWidth ? `${view.maxWidth} mx-auto` : ""
+      }`}
+    >
       <div>
         <svg
-          viewBox="30 20 930 570"
+          viewBox={view?.viewBox ?? "30 20 930 570"}
           role="img"
           aria-label={`The Vesta story graph at step ${stage}`}
           className="h-auto w-full"
@@ -200,7 +227,34 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
             const { label, sub } = nodeLabelAt(n, stage);
             const Icon = ICONS[n.icon];
             return (
-              <g key={n.id} className={highlight ? "sd-new" : undefined}>
+              <g
+                key={n.id}
+                className={`cursor-pointer outline-none focus:outline-none ${highlight ? "sd-new" : ""}`}
+                style={{ outline: "none" }}
+                role="button"
+                tabIndex={0}
+                aria-label={`${label ?? n.id} - view presented credentials`}
+                onClick={() =>
+                  setSelected((cur) => (cur === n.id ? null : n.id))
+                }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    setSelected((cur) => (cur === n.id ? null : n.id));
+                  }
+                }}
+              >
+                {selected === n.id ? (
+                  <circle
+                    cx={n.x}
+                    cy={n.y}
+                    r={r + 12}
+                    fill="none"
+                    stroke={c.stroke}
+                    strokeWidth={2}
+                    strokeDasharray="3 3"
+                  />
+                ) : null}
                 {highlight ? (
                   <circle
                     cx={n.x}
@@ -229,16 +283,32 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
                   <Icon width={20} height={20} strokeWidth={1.8} />
                 </g>
                 {label ? (
-                  <text
-                    x={n.x}
-                    y={n.y + r + 20}
-                    textAnchor="middle"
-                    fontSize={12}
-                    fontWeight={700}
-                    fill="#111827"
-                  >
-                    {label}
-                  </text>
+                  <>
+                    {n.verifiedAt && stageIndex(n.verifiedAt) <= idx ? (
+                      <g
+                        transform={`translate(${
+                          n.x -
+                          (labelW[n.id] ?? label.length * 6.6) / 2 -
+                          17
+                        }, ${n.y + r + 9})`}
+                        style={{ color: "#059669" }}
+                        aria-label="trusted"
+                      >
+                        <BadgeCheck width={13} height={13} strokeWidth={2.2} />
+                      </g>
+                    ) : null}
+                    <text
+                      ref={measure(n.id)}
+                      x={n.x}
+                      y={n.y + r + 20}
+                      textAnchor="middle"
+                      fontSize={12}
+                      fontWeight={700}
+                      fill="#111827"
+                    >
+                      {label}
+                    </text>
+                  </>
                 ) : null}
                 {sub ? (
                   <text
@@ -270,6 +340,13 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
           })}
         </svg>
       </div>
+      {selected ? (
+        <NodeDetail id={selected} stage={stage} onClose={() => setSelected(null)} />
+      ) : (
+        <p className="mt-2 text-center text-[11px] text-gray-400">
+          Click a participant to see the credentials it presents.
+        </p>
+      )}
       {newLabels.length > 0 ? (
         <figcaption className="mt-2 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3 text-xs text-gray-500">
           <span className="font-semibold text-violet-600">
@@ -286,5 +363,66 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
         </figcaption>
       ) : null}
     </figure>
+  );
+}
+
+function NodeDetail({
+  id,
+  stage,
+  onClose,
+}: {
+  id: string;
+  stage: Stage;
+  onClose: () => void;
+}) {
+  const idx = stageIndex(stage);
+  const node = NODES.find((n) => n.id === id);
+  if (!node) return null;
+  const { label } = nodeLabelAt(node, stage);
+  const creds = (CREDENTIALS[id] ?? []).filter((cr) => visibleAt(cr, stage));
+  const find = (n: string) => creds.find((c) => c.name === n);
+  const svc = find("ECS-Service");
+  const org = find("ECS-Organization");
+  const others = creds.filter(
+    (c) => c.name !== "ECS-Service" && c.name !== "ECS-Organization",
+  );
+  const isPerson = id === "customer" || id === "wallet";
+  const verified = !!node.verifiedAt && stageIndex(node.verifiedAt) <= idx;
+  const data: TrustCardData = {
+    name: label ?? id,
+    did: verified || svc || org ? node.did : undefined,
+    isService: !isPerson,
+    serviceType: node.serviceType,
+    service: svc ? { name: svc.name, issuedBy: svc.issuedBy, ecosystem: svc.ecosystem } : undefined,
+    organization: org
+      ? {
+          name: org.name,
+          orgName: node.operator ?? (label ?? id),
+          issuedBy: org.issuedBy,
+          ecosystem: org.ecosystem,
+          note: org.note,
+          inherited: org.inherited,
+        }
+      : undefined,
+    trusted: verified && !!svc && !!org,
+    impostor: node.dashed === true,
+    others: isPerson ? [] : others,
+    holds: isPerson ? creds : undefined,
+    accreditations: (ACCREDITATIONS[id] ?? [])
+      .filter((a) => stageIndex(a.appears) <= idx)
+      .map(({ role, schema, context }) => ({ role, schema, context })),
+    note:
+      creds.length === 0 || id === "ecs" || id === "iso" || id === "vestaEco"
+        ? NODE_NOTES[id]
+        : undefined,
+    resolvedNote:
+      verified && node.did
+        ? "Both identity checks verified against the Verana public registry (story data - dedicated Vesta cast pending)."
+        : undefined,
+  };
+  return (
+    <div className="mt-3">
+      <TrustCard data={data} onClose={onClose} />
+    </div>
   );
 }

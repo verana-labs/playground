@@ -4,10 +4,11 @@ import { DEMO_SERVICES, getDemoService, serviceDid, serviceDidFor } from "./demo
 afterEach(() => vi.unstubAllGlobals());
 
 describe("demo services", () => {
-  it("knows the five main.demos services", () => {
+  it("knows the main.demos cast and the hosted cloud-stack anchors", () => {
     expect(DEMO_SERVICES.map((s) => s.id)).toEqual([
       "organization-vs", "issuer-chatbot-vs", "issuer-web-vs",
       "verifier-chatbot-vs", "verifier-web-vs",
+      "mosip-organization-vs", "unfold-organization-vs",
     ]);
     expect(getDemoService("nope")).toBeUndefined();
   });

@@ -9,6 +9,10 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "issuer-web-vs", label: "Example Issuer Web App (demo)", host: `issuer-web-vs.${BASE}`, appUrl: `https://app.issuer-web-vs.${BASE}`, role: "issuer" },
   { id: "verifier-chatbot-vs", label: "Example Verifier Chatbot (demo)", host: `verifier-chatbot-vs.${BASE}`, role: "verifier" },
   { id: "verifier-web-vs", label: "Example Web Verifier (demo)", host: `verifier-web-vs.${BASE}`, appUrl: `https://app.verifier-web-vs.${BASE}`, role: "verifier" },
+  // Hosted anchors of the integrated cloud stacks (spec §5.3). Not part of the
+  // verana-demos cast, so they carry their own fully-qualified hosts.
+  { id: "mosip-organization-vs", label: "MOSIP × Verana anchor", host: "organization-vs.mosip.testnet.verana.network", appUrl: "https://playground.mosip.testnet.verana.network", role: "anchor" },
+  { id: "unfold-organization-vs", label: "Unfold × Verana anchor", host: "unfold-org.77.42.86.24.sslip.io", appUrl: "https://api.playground.france-identite.gouv.fr/verana/verana/", role: "anchor" },
 ];
 
 function extraServices(): DemoService[] {

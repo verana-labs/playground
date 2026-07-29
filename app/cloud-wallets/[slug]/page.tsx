@@ -22,8 +22,6 @@ import { ECS_ECOSYSTEM_DID, ENDPOINTS, LINKS } from "../../lib/site";
 // breadcrumb · header · the hosted demo service · the use case to test ·
 // under the hood. Generated from integration.yaml.
 
-const CLOUD_SERVICE_IDS: Record<string, string> = { "vs-agent": "organization-vs" };
-
 export function generateStaticParams() {
   return cloudWallets().map((w) => ({ slug: w.slug }));
 }
@@ -52,8 +50,10 @@ export default async function CloudWalletPlayground({
   const w = getIntegration(slug);
   if (!w || w.kind !== "cloud-wallet") notFound();
   const pickers = userWallets();
-  const liveServiceId = CLOUD_SERVICE_IDS[w.slug];
-  const demoService = liveServiceId ? getDemoService(liveServiceId) : undefined;
+  // The standing service this cloud wallet hosts, named by its descriptor
+  // (spec §5.3). Unknown ids fall through to the Placeholder branch.
+  const demoService = w.demo_service ? getDemoService(w.demo_service) : undefined;
+  const liveServiceId = demoService?.id;
 
   return (
     <>

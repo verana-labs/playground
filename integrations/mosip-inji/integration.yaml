@@ -1,0 +1,11 @@
+name: MOSIP Inji
+organization: MOSIP
+kind: cloud-wallet
+repo: https://github.com/verana-labs/mosip-playground
+license: Apache-2.0
+track: sidecar # real Inji components, a vs-agent trust layer alongside them
+scenarios: [iso-certification-loop]
+download: https://playground.mosip.testnet.verana.network/
+demo_service: mosip-organization-vs
+notes: The full triangle in one stack - Inji Certify issues, Inji Web holds, Inji Verify verifies, each identified by a DID and trust-resolved against the Verana registry.
+logo: ./logo.webp

@@ -14,47 +14,10 @@ import { Container, Section, SectionHeading, Chip } from "./components/ui";
 import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
 import { ProofOfTrust } from "./components/ProofOfTrust";
 import { userWallets, cloudWallets } from "./lib/integrations";
+import { SECTIONS_NAV } from "./usecases/vesta/content";
 import { LINKS, ENDPOINTS } from "./lib/site";
 
-// The five Vesta Appliances section cards (spec §3.2), deep-linking into the
-// single /usecases/vesta page anchors.
-const STEPS: {
-  n: number;
-  title: string;
-  oneLiner: string;
-  pending?: boolean;
-}[] = [
-  {
-    n: 1,
-    title: "Meet Vesta Appliances",
-    oneLiner:
-      "A real business, real services, and impostors trading on its name. Nothing can be proven.",
-  },
-  {
-    n: 2,
-    title: "The solution: become verifiable",
-    oneLiner:
-      "Make Vesta and its partner network a network of verifiable organizations: Verana's three pillars, and the ecosystems Vesta picks.",
-  },
-  {
-    n: 3,
-    title: "Joining the ecosystems",
-    oneLiner:
-      "A DID is born; KYB once, then ECS-Organization; ISO 9001 with no re-KYB.",
-  },
-  {
-    n: 4,
-    title: "Making the services verifiable",
-    oneLiner:
-      "The check turns green; Agentic Support, badges, passwordless login: hands-on with your wallet.",
-  },
-  {
-    n: 5,
-    title: "Vesta creates its own ecosystem",
-    oneLiner:
-      "The Vesta Repair Network: only Vesta issues Authorized Repairer, anyone verifies. Zenith ✓, Umbra ✗.",
-  },
-];
+// The story sections (spec §3.2), deep-linking into /usecases/vesta anchors.
 
 // The concept cards of section 1 (verana-demos ConceptCard idiom).
 const CONCEPTS = [
@@ -77,7 +40,7 @@ const CONCEPTS = [
     tone: "bg-emerald-50 text-emerald-700",
     title: "Verify first, then connect",
     description:
-      "Trust is resolved against the public registry and shown as a Proof-of-Trust before the first interaction — offers and requests are accepted only from authorized issuers and verifiers.",
+      "Trust is resolved against the public registry and shown as a Proof-of-Trust before the first interaction - offers and requests are accepted only from authorized issuers and verifiers.",
   },
   {
     icon: Search,
@@ -102,7 +65,7 @@ export default function Home() {
 
   return (
     <>
-      {/* Hero — the verana-demos gradient */}
+      {/* Hero - the verana-demos gradient */}
       <header className="hero-gradient text-white">
         <div className="mx-auto max-w-4xl px-6 py-16 text-center sm:py-20">
           <p className="mb-3 text-sm font-medium uppercase tracking-wider text-white/90">
@@ -114,7 +77,7 @@ export default function Home() {
           <p className="mx-auto mb-8 max-w-2xl text-lg text-white/80">
             Follow a company&apos;s journey into the open trust layer, then try
             it yourself with a real wallet. Real registry entries, real trust
-            resolution — nothing simulated.
+            resolution - nothing simulated.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <a
@@ -160,7 +123,7 @@ export default function Home() {
           <SectionHeading
             number={1}
             title="What is Verana?"
-            subtitle="Open, public trust infrastructure — the trust layer of the verifiable internet"
+            subtitle="Open, public trust infrastructure - the trust layer of the verifiable internet"
           />
           <div className="reveal-stagger grid gap-4 sm:grid-cols-2">
             {CONCEPTS.map((c) => (
@@ -215,27 +178,26 @@ export default function Home() {
           <SectionHeading
             number={2}
             title="Learn step by step"
-            subtitle="Verana, explained by Vesta Appliances — one continuous story, and you take part with your own wallet"
+            subtitle="Verana, explained by Vesta Appliances - one continuous story, from business problem to full circle, and you take part with your own wallet"
           />
           <div className="reveal-stagger grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {STEPS.map((s) => (
+            {SECTIONS_NAV.map((s) => (
               <Link
                 key={s.n}
-                href={`/usecases/vesta#section-${s.n}`}
+                href={`/usecases/vesta#${s.anchor}`}
                 className="group flex flex-col rounded-xl border border-gray-200 bg-gray-50 p-5 transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
                     {s.n}
                   </span>
-                  {s.pending ? <Chip tone="pending">pending</Chip> : null}
                 </div>
                 <h3 className="mt-3 font-semibold text-gray-900">{s.title}</h3>
                 <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
                   {s.oneLiner}
                 </p>
                 <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
-                  Read the step →
+                  Read the section →
                 </span>
               </Link>
             ))}
@@ -276,7 +238,7 @@ export default function Home() {
           </div>
           <p className="reveal mt-8 flex items-center gap-2 text-sm text-gray-500">
             <Building2 className="h-4 w-4 text-violet-600" />
-            Cloud wallets host organizations&apos; verifiable services — like the
+            Cloud wallets host organizations&apos; verifiable services - like the
             Vesta demo cast behind this playground.
           </p>
         </Container>

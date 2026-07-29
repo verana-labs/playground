@@ -147,7 +147,12 @@ export const NODES: SceneNode[] = [
     appears: "3.0",
     label: "Staff & partner portal",
     sub: "phished passwords",
-    labelByStage: { "3.5": { sub: "badge login configured" } },
+    did: "did:webvh:QmPLACEHOLDER…:login.vesta.example",
+    serviceType: "Credential login service",
+    operator: "Vesta Appliances 🇨🇭 · Geneva, Switzerland",
+    verifiedAt: "3.5b",
+    toneByStage: { "3.5b": "blue" },
+    labelByStage: { "3.5b": { sub: "credential login service" } },
   },
   {
     id: "customer",

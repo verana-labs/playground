@@ -294,6 +294,55 @@ export type NodeCredential = {
 
 /** Credentials presented by each participant (filtered by stage). */
 export const CREDENTIALS: Record<string, NodeCredential[]> = {
+  ecs: [
+    {
+      name: "ECS-Organization",
+      tone: "blue",
+      issuedBy: "An accredited ECS-Org issuer",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.2",
+    },
+    {
+      name: "ECS-Service",
+      tone: "violet",
+      issuedBy: "Self-issued (controller: the ECS Ecosystem operator)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.2",
+    },
+  ],
+  iso: [
+    {
+      name: "ECS-Organization",
+      tone: "blue",
+      issuedBy: "An accredited ECS-Org issuer",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.6",
+    },
+    {
+      name: "ECS-Service",
+      tone: "violet",
+      issuedBy: "Self-issued (controller: the ISO Certification Ecosystem operator)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.6",
+    },
+  ],
+  vestaEco: [
+    {
+      name: "ECS-Organization",
+      tone: "blue",
+      issuedBy: "Helvetia Trust Services (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.7",
+      note: "Vesta's own Organization credential - the network is operated by Vesta Appliances.",
+    },
+    {
+      name: "ECS-Service",
+      tone: "violet",
+      issuedBy: "Self-issued (controller: Vesta Appliances)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.7",
+    },
+  ],
   vesta: [
     {
       name: "ECS-Organization",
@@ -401,10 +450,10 @@ export const NODE_NOTES: Record<string, string> = {
     "Claims to be Vesta-authorized - but no Authorized Repairer credential exists for its DID: red verdict.",
   customer:
     "A person - holds credentials in a Personal Wallet rather than presenting service credentials.",
-  ecs: "A trust ecosystem (registry root): it governs the essential credential schemas and accredits issuers.",
-  iso: "A trust ecosystem (demo): it governs the ISO 9001 credential schema; accredited certification bodies issue it.",
+  ecs: "A trust ecosystem (registry root) - and a verifiable service itself: it governs the essential credential schemas and accredits issuers.",
+  iso: "A trust ecosystem (demo) - and a verifiable service itself: it governs the ISO 9001 credential schema; accredited certification bodies issue it.",
   vestaEco:
-    "Vesta's own trust ecosystem: it governs the Authorized Repairer schema. Issuance governed, verification open.",
+    "Vesta's own trust ecosystem - and a verifiable service itself: it governs the Authorized Repairer schema. Issuance governed, verification open.",
 };
 
 /** Per-stage view overrides: `only` restricts the render to the listed

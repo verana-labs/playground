@@ -454,7 +454,7 @@ function NodeDetail({
           ))}
         </ul>
       ) : null}
-      {creds.length === 0 && note ? (
+      {note ? (
         <p
           className={`mt-2 text-xs leading-relaxed ${
             impostor ? "text-red-600" : "text-gray-500"
@@ -462,7 +462,7 @@ function NodeDetail({
         >
           {note}
         </p>
-      ) : note && creds.length > 0 ? null : null}
+      ) : null}
     </div>
   );
 }

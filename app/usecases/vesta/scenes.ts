@@ -281,6 +281,11 @@ export const STAGE_VIEW: Partial<
   Record<Stage, { only?: string[]; viewBox?: string; maxWidth?: string }>
 > = {
   "3.1": { only: ["vesta"], viewBox: "140 240 320 140", maxWidth: "max-w-md" },
+  "3.2": {
+    only: ["vesta", "ecs", "orgIssuer"],
+    viewBox: "20 30 460 350",
+    maxWidth: "max-w-2xl",
+  },
 };
 
 /** Stages whose meaning is a *change* to existing elements rather than a new

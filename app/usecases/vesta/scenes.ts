@@ -471,6 +471,15 @@ export const CREDENTIALS: Record<string, NodeCredential[]> = {
       inherited: true,
       note: "Inherited from the parent service: the ECS-Service issuer's DID (the Vesta trust anchor) presents this ECS-Org credential.",
     },
+    {
+      name: "ISO 9001 (demo)",
+      tone: "amber",
+      issuedBy: "NormaCert (demo)",
+      ecosystem: "ISO Certification Ecosystem (demo)",
+      appears: "3.6",
+      inherited: true,
+      note: "Inherited from the parent service: the credential lives on Vesta's Organization DID and surfaces on every Vesta service.",
+    },
   ],
   normacert: [
     {

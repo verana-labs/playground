@@ -139,6 +139,16 @@ function Pill({
 export default function StoryDiagram({ stage }: { stage: Stage }) {
   const idx = stageIndex(stage);
   const [selected, setSelected] = useState<string | null>(null);
+  // Measured label widths, so the trusted check sits at a consistent gap
+  // from the text regardless of glyph widths.
+  const [labelW, setLabelW] = useState<Record<string, number>>({});
+  const measure = (id: string) => (el: SVGTextElement | null) => {
+    if (!el) return;
+    const w = el.getComputedTextLength();
+    setLabelW((prev) =>
+      Math.abs((prev[id] ?? 0) - w) < 0.5 ? prev : { ...prev, [id]: w },
+    );
+  };
   const isNew = (el: { appears: Stage }) => stageIndex(el.appears) === idx;
 
   const view = STAGE_VIEW[stage];
@@ -275,7 +285,11 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
                   <>
                     {n.verifiedAt && stageIndex(n.verifiedAt) <= idx ? (
                       <g
-                        transform={`translate(${n.x - (label.length * 6.6) / 2 - 17}, ${n.y + r + 9})`}
+                        transform={`translate(${
+                          n.x -
+                          (labelW[n.id] ?? label.length * 6.6) / 2 -
+                          17
+                        }, ${n.y + r + 9})`}
                         style={{ color: "#059669" }}
                         aria-label="trusted"
                       >
@@ -283,6 +297,7 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
                       </g>
                     ) : null}
                     <text
+                      ref={measure(n.id)}
                       x={n.x}
                       y={n.y + r + 20}
                       textAnchor="middle"

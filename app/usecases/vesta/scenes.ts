@@ -239,6 +239,20 @@ export const NODES: SceneNode[] = [
     verifiedAt: "3.6",
   },
   {
+    id: "normacert",
+    x: 660,
+    y: 90,
+    icon: "stamp",
+    tone: "blue",
+    appears: "3.6",
+    label: "NormaCert",
+    sub: "(demo) · accredited ISO 9001 issuer",
+    did: "did:webvh:QmPLACEHOLDER…:normacert.demos.testnet.verana.network",
+    serviceType: "Certification issuance service",
+    operator: "NormaCert (demo)",
+    verifiedAt: "3.6",
+  },
+  {
     id: "vestaEco",
     x: 850,
     y: 90,
@@ -284,7 +298,8 @@ export const EDGES: SceneEdge[] = [
   { id: "e-vesta-badge", from: "vesta", to: "wallet", appears: "3.5", label: "issues ECS-Badge to employees", tone: "emerald", curve: -55, labelT: 0.45 },
   { id: "e-wallet-portal", from: "wallet", to: "portal", appears: "3.5b", label: "presents badge → login", tone: "emerald", labelT: 0.5 },
   // Need 4 - certifications as proof
-  { id: "e-iso-vesta", from: "iso", to: "vesta", appears: "3.6", label: "NormaCert issues ISO 9001 (demo) - no paperwork", tone: "emerald", curve: 30, labelT: 0.5 },
+  { id: "e-iso-normacert", from: "iso", to: "normacert", appears: "3.6", label: "accredits", tone: "violet" },
+  { id: "e-normacert-vesta", from: "normacert", to: "vesta", appears: "3.6", label: "issues ISO 9001 (demo)", tone: "emerald", curve: 40, labelT: 0.45 },
   // Need 5 - Vesta's own ecosystem
   { id: "e-vesta-eco", from: "vesta", to: "vestaEco", appears: "3.7", label: "creates & governs", tone: "violet", curve: -60, labelT: 0.5 },
   { id: "e-eco-zenith", from: "vestaEco", to: "zenith", appears: "3.7", label: "issues Authorized Repairer", tone: "emerald", labelT: 0.5 },
@@ -457,6 +472,22 @@ export const CREDENTIALS: Record<string, NodeCredential[]> = {
       note: "Inherited from the parent service: the ECS-Service issuer's DID (the Vesta trust anchor) presents this ECS-Org credential.",
     },
   ],
+  normacert: [
+    {
+      name: "ECS-Organization",
+      tone: "blue",
+      issuedBy: "An accredited ECS-Org issuer",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.6",
+    },
+    {
+      name: "ECS-Service",
+      tone: "violet",
+      issuedBy: "Self-issued (controller: NormaCert)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.6",
+    },
+  ],
   wallet: [
     {
       name: "ECS-Badge",
@@ -478,6 +509,14 @@ export type Accreditation = {
 };
 
 export const ACCREDITATIONS: Record<string, Accreditation[]> = {
+  normacert: [
+    {
+      role: "ISSUER",
+      schema: "ISO 9001 (demo)",
+      context: "ISO Certification Ecosystem (demo) · accredited",
+      appears: "3.6",
+    },
+  ],
   portal: [
     {
       role: "VERIFIER",
@@ -563,6 +602,11 @@ export const STAGE_VIEW: Partial<
     only: ["vesta", "ecs", "orgIssuer", "portal"],
     viewBox: "20 30 560 520",
     maxWidth: "max-w-2xl",
+  },
+  "3.6": {
+    only: ["vesta", "ecs", "orgIssuer", "portal", "iso", "normacert"],
+    viewBox: "20 30 780 520",
+    maxWidth: "max-w-3xl",
   },
 };
 

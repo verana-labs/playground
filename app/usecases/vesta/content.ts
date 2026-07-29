@@ -79,7 +79,7 @@ export const COMPANY = {
     {
       icon: "lock",
       title: "Password pain",
-      desc: "Portal passwords are phished and reset endlessly; the support team drowns.",
+      desc: "Portal passwords are phished and reset endlessly. Partner staff rotate, so accounts must be created and deleted constantly; in practice, partners end up sharing one login across employees. Not secure.",
     },
     {
       icon: "files",

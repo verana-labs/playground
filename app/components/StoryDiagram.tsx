@@ -238,16 +238,27 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
                   <Icon width={20} height={20} strokeWidth={1.8} />
                 </g>
                 {label ? (
-                  <text
-                    x={n.x}
-                    y={n.y + r + 20}
-                    textAnchor="middle"
-                    fontSize={12}
-                    fontWeight={700}
-                    fill="#111827"
-                  >
-                    {label}
-                  </text>
+                  <>
+                    {n.verifiedAt && stageIndex(n.verifiedAt) <= idx ? (
+                      <g
+                        transform={`translate(${n.x - (label.length * 6.6) / 2 - 17}, ${n.y + r + 9})`}
+                        style={{ color: "#059669" }}
+                        aria-label="trusted"
+                      >
+                        <BadgeCheck width={13} height={13} strokeWidth={2.2} />
+                      </g>
+                    ) : null}
+                    <text
+                      x={n.x}
+                      y={n.y + r + 20}
+                      textAnchor="middle"
+                      fontSize={12}
+                      fontWeight={700}
+                      fill="#111827"
+                    >
+                      {label}
+                    </text>
+                  </>
                 ) : null}
                 {sub ? (
                   <text

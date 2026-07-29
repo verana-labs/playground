@@ -53,6 +53,8 @@ export type SceneNode = {
   dashed?: boolean;
   label?: string;
   sub?: string;
+  /** From this stage on, a green trusted check renders before the name. */
+  verifiedAt?: Stage;
   /** Latest override ≤ current stage wins. */
   labelByStage?: StageOverride<{ label?: string; sub?: string }>;
   toneByStage?: StageOverride<Tone>;
@@ -96,6 +98,7 @@ export const NODES: SceneNode[] = [
     appears: "3.0",
     label: "Vesta Appliances",
     sub: "nothing provable online - yet",
+    verifiedAt: "3.3",
     toneByStage: { "3.1": "blue" },
     labelByStage: {
       "3.1": { label: "Unverifiable Organization", sub: "did:webvh:…vesta" },
@@ -187,6 +190,7 @@ export const NODES: SceneNode[] = [
     appears: "3.2",
     label: "Verana ECS Ecosystem",
     sub: "identity credentials - the green check",
+    verifiedAt: "3.2",
   },
   {
     id: "orgIssuer",
@@ -197,6 +201,7 @@ export const NODES: SceneNode[] = [
     appears: "3.2",
     label: "Helvetia Trust Services",
     sub: "(demo) · accredited ECS-Org issuer",
+    verifiedAt: "3.2",
   },
   {
     id: "iso",
@@ -207,6 +212,7 @@ export const NODES: SceneNode[] = [
     appears: "3.6",
     label: "ISO Certification Ecosystem",
     sub: "(demo) · accredited cert bodies",
+    verifiedAt: "3.6",
   },
   {
     id: "vestaEco",
@@ -217,6 +223,7 @@ export const NODES: SceneNode[] = [
     appears: "3.7",
     label: "Vesta Repair Network",
     sub: "issuance governed by Vesta · anyone verifies",
+    verifiedAt: "3.7",
   },
   {
     id: "zenith",
@@ -227,6 +234,7 @@ export const NODES: SceneNode[] = [
     appears: "3.7",
     label: "Zenith Repairs (demo)",
     sub: "a verifiable org itself",
+    verifiedAt: "3.7",
   },
 ];
 
@@ -240,8 +248,8 @@ export const EDGES: SceneEdge[] = [
   { id: "e-umbra-customer", from: "umbra", to: "customer", appears: "3.0", label: "rings the doorbell", tone: "red", dashed: true, labelT: 0.5 },
   // Need 1 - a verifiable identity for the organization
   { id: "e-ecs-orgIssuer", from: "ecs", to: "orgIssuer", appears: "3.2", label: "accredits", tone: "violet" },
-  { id: "e-vesta-kyb", from: "vesta", to: "orgIssuer", appears: "3.2", label: "KYB over DIDComm - once", tone: "gray", dashed: true, curve: -40, labelT: 0.45 },
-  { id: "e-orgIssuer-vesta", from: "orgIssuer", to: "vesta", appears: "3.2", label: "issues ECS-Org", tone: "emerald", curve: 40, labelT: 0.6 },
+  { id: "e-vesta-kyb", from: "vesta", to: "orgIssuer", appears: "3.2", label: "KYB over DIDComm - once", tone: "gray", dashed: true, curve: -40, labelT: 0.2 },
+  { id: "e-orgIssuer-vesta", from: "orgIssuer", to: "vesta", appears: "3.2", label: "issues ECS-Org", tone: "emerald", curve: -40, labelT: 0.4 },
   // Need 3 - credentials people can hold
   { id: "e-vesta-badge", from: "vesta", to: "wallet", appears: "3.5", label: "issues ECS-Badge to employees", tone: "emerald", curve: -55, labelT: 0.45 },
   { id: "e-wallet-portal", from: "wallet", to: "portal", appears: "3.5", label: "presents badge → login", tone: "emerald", labelT: 0.5 },

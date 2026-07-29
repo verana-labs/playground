@@ -10,3 +10,10 @@ download: https://github.com/AirKyzzZ/AltMe-verana
 badge_loop: coming
 notes: Verana trust resolution on the OID4VP accept path with a config-driven TESTNET label.
 logo: ./logo.webp
+screenshots:
+  - src: ./screenshots/1.webp
+    caption: "Verana trust card"
+  - src: ./screenshots/2.webp
+    caption: "The trust dossier"
+  - src: ./screenshots/3.webp
+    caption: "Rogue service denied"

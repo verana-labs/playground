@@ -12,9 +12,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "validate:registry": "node scripts/validate-registry.mjs",
-    "sync:logos": "node scripts/sync-logos.mjs",
-    "predev": "node scripts/sync-logos.mjs",
-    "prebuild": "node scripts/sync-logos.mjs"
+    "predev": "node scripts/sync-media.mjs",
+    "prebuild": "node scripts/sync-media.mjs",
+    "sync:media": "node scripts/sync-media.mjs"
   },
   "dependencies": {
     "js-yaml": "^4.1.0",

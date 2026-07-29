@@ -9,3 +9,10 @@ download: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/re
 badge_loop: coming
 notes: Strict Q1+Q2 before acceptance, device-verified, with a full evidence dossier. Q1+Q3 disclosure gating implemented in source; the presentation flow is pending an ES256-signing verifier.
 logo: ./logo.webp
+screenshots:
+  - src: ./screenshots/1.webp
+    caption: "Verana warning before the accept action"
+  - src: ./screenshots/2.webp
+    caption: "Q2: the authorized-issuer check"
+  - src: ./screenshots/3.webp
+    caption: "Credential stored once the checks passed"

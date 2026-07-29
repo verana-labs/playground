@@ -22,6 +22,9 @@ export type Integration = {
   scenarios: string[];
   demo_video?: string;
   logo?: string;
+  /** Real captures of this wallet rendering Verana trust (spec §4 "the
+   *  expected wallet rendering"). */
+  screenshots?: { src: string; caption?: string }[];
   fides?: string;
   /** Mobile user wallet: direct APK link (stores may complement). Web wallet
    *  or cloud wallet: URL. */
@@ -41,14 +44,17 @@ const REGISTRY_DIR = path.join(process.cwd(), "integrations");
 
 let cache: Integration[] | null = null;
 
-// Descriptors declare the logo next to themselves (`logo: ./logo.svg`);
-// scripts/sync-logos.mjs publishes it under public/wallets/<slug>.<ext>.
-function publicLogo(slug: string, logo: string | undefined) {
-  if (!logo) return undefined;
-  if (/^(https?:)?\/\//.test(logo)) return logo;
-  const ext = path.extname(logo);
-  const served = path.join(process.cwd(), "public", "wallets", `${slug}${ext}`);
-  return fs.existsSync(served) ? `/wallets/${slug}${ext}` : undefined;
+// Descriptors reference their media relatively (`logo: ./logo.svg`,
+// `src: ./screenshots/1.webp`); scripts/sync-media.mjs publishes the tree under
+// public/wallets/<slug>/. Absolute URLs pass through; missing files drop out.
+function publicAsset(slug: string, ref: string | undefined) {
+  if (!ref) return undefined;
+  if (/^(https?:)?\/\//.test(ref)) return ref;
+  const rel = ref.replace(/^\.\//, "");
+  const url = `/wallets/${slug}/${rel}`;
+  return fs.existsSync(path.join(process.cwd(), "public", url.slice(1)))
+    ? url
+    : undefined;
 }
 
 export function listIntegrations(): Integration[] {
@@ -73,7 +79,11 @@ export function listIntegrations(): Integration[] {
       track: data.track ?? "",
       scenarios: data.scenarios ?? [],
       demo_video: data.demo_video,
-      logo: publicLogo(slug, data.logo),
+      logo: publicAsset(slug, data.logo),
+      screenshots: data.screenshots?.flatMap((s) => {
+        const src = publicAsset(slug, s.src);
+        return src ? [{ src, caption: s.caption }] : [];
+      }),
       fides: data.fides,
       download: data.download,
       appstore: data.appstore,

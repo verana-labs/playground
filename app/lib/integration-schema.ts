@@ -14,6 +14,9 @@ export const IntegrationSchema = z
     appstore: z.string().url().optional(),
     demo_video: z.string().url().optional(),
     logo: z.string().optional(),
+    screenshots: z
+      .array(z.object({ src: z.string().min(1), caption: z.string().optional() }))
+      .optional(),
     badge_loop: z.enum(["live", "coming"]).optional(),
     demo_service: z.string().optional(),
     notes: z.string().optional(),

@@ -10,3 +10,10 @@ download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/tag/ve
 badge_loop: coming
 notes: Q1+Q2/Q3 in the Rust core with typed verdicts and a trust dossier in the wallet UI.
 logo: ./logo.webp
+screenshots:
+  - src: ./screenshots/1.webp
+    caption: "Issuance from a trusted, authorized issuer"
+  - src: ./screenshots/2.webp
+    caption: "Q1 and Q2 verdicts in the trust dossier"
+  - src: ./screenshots/3.webp
+    caption: "Non-positive control: trust unavailable"

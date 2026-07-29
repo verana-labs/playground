@@ -8,6 +8,7 @@ import {
   Placeholder,
 } from "../../components/ui";
 import WalletLogo from "../../components/WalletLogo";
+import WalletShots from "../../components/WalletShots";
 import { ExpectedRendering } from "../../components/ExpectedRendering";
 import { ProofOfTrust } from "../../components/ProofOfTrust";
 import { ServiceQr } from "../../components/ServiceQr";
@@ -158,6 +159,8 @@ export default async function UserWalletPlayground({
               ) : null}
             </div>
           </div>
+
+          <WalletShots w={w} />
 
           {/* 4 · Receive your ECS-Badge */}
           <div>

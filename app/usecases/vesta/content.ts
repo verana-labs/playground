@@ -466,28 +466,42 @@ export const JOURNEY: {
     {
       id: "need-4",
       n: 4,
-      title: "Certifications as proof, not PDFs",
+      title: "ISO 9001 credential",
       tag: "ISO 9001",
       intro:
-        "The paper certificate becomes a credential on Vesta's identity - and shows up everywhere at once.",
+        "Certified since 2003 - now the certificate becomes a verifiable credential on Vesta's identity.",
       steps: [
         {
           id: "3.6",
           stage: "3.6",
-          title: "ISO 9001, no re-KYB",
+          title: "ISO 9001, without re-certifying",
           kind: "watch",
           story:
-            "The shortcut that shows the model's power: the certification body never asks Vesta to prove who it is again. Vesta presents the ECS-Organization credential on its DID - the KYB from 3.2, reused - the body runs its certification checks, and issues ISO 9001 directly to Vesta's Organization DID. And because the credential lives on the Organization DID, it surfaces on every Vesta service's card at once.",
+            "Vesta is certified ISO 9001 since 2003. Its certification body, NormaCert (demo), was recently accredited as an issuer of the ISO 9001 credential in the ISO Certification Ecosystem (demo). Good news for Vesta: now that the company holds its Organization credential, it applies to the ISO Certification Ecosystem as a holder of the ISO 9001 credential, selecting NormaCert as its issuer:",
+          points: [
+            "NormaCert's service immediately accepts the request: it identifies Vesta's DID and dereferences its Organization credential.",
+            "Match - the company is in NormaCert's certification database. No paperwork, no identity re-checks.",
+            "NormaCert immediately issues the ISO 9001 credential over DIDComm to Vesta's Organization DID, into its Business Wallet.",
+          ],
           underHood: [
-            "HOLDER permission on the ISO 9001 schema, certification body as validator - same tree-join flow, different registry.",
+            "HOLDER permission on the ISO 9001 schema, NormaCert as validator - same tree-join flow, different registry.",
             "Identification by ECS-Org presentation over DIDComm: reusable organizational identity - the ECS layer is the KYB other ecosystems build on.",
-            "Org-level credentials surface on all of the organization's services' Proof-of-Trust cards.",
           ],
           reproduce: [
-            `In ${app}: Discover & Join → ISO Certification Ecosystem (demo) → ISO 9001 schema → Participants → Join under the certification body.`,
-            "Present ECS-Org over the DIDComm session when asked to identify; receive ISO 9001 on the anchor DID.",
-            "Reconnect to Agentic Support with your wallet: the ISO 9001 credential is now on its card too.",
+            `In ${app}: Discover & Join → ISO Certification Ecosystem (demo) → ISO 9001 schema → Participants → Join under NormaCert (demo).`,
+            "Present ECS-Org over the DIDComm session when asked to identify; receive ISO 9001 on the Organization DID.",
           ],
+        },
+        {
+          id: "3.6b",
+          stage: "3.6",
+          noDiagram: true,
+          title: "The Proof-of-Trust gets richer",
+          kind: "watch",
+          story:
+            "Now, when someone connects to a Vesta service, receives a credential from it, or presents a credential to it, the Proof-of-Trust shows - in addition to the Organization and Service identity - the ISO 9001 credential.",
+          liveService: "organization-vs",
+          liveNote: CAST_NOTE,
         },
       ],
     },

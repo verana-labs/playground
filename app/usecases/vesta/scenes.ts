@@ -243,7 +243,7 @@ export const EDGES: SceneEdge[] = [
   { id: "e-vesta-badge", from: "vesta", to: "wallet", appears: "3.5", label: "issues ECS-Badge to employees", tone: "emerald", curve: -55, labelT: 0.45 },
   { id: "e-wallet-portal", from: "wallet", to: "portal", appears: "3.5", label: "presents badge → login", tone: "emerald", labelT: 0.5 },
   // Need 4 - certifications as proof
-  { id: "e-iso-vesta", from: "iso", to: "vesta", appears: "3.6", label: "issues ISO 9001 (demo) - no re-KYB", tone: "emerald", curve: 30, labelT: 0.5 },
+  { id: "e-iso-vesta", from: "iso", to: "vesta", appears: "3.6", label: "NormaCert issues ISO 9001 (demo) - no paperwork", tone: "emerald", curve: 30, labelT: 0.5 },
   // Need 5 - Vesta's own ecosystem
   { id: "e-vesta-eco", from: "vesta", to: "vestaEco", appears: "3.7", label: "creates & governs", tone: "violet", curve: -60, labelT: 0.5 },
   { id: "e-eco-zenith", from: "vestaEco", to: "zenith", appears: "3.7", label: "issues Authorized Repairer", tone: "emerald", labelT: 0.5 },

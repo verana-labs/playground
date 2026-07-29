@@ -35,8 +35,8 @@ export default function About() {
           </p>
           <h2>What is demo</h2>
           <p>
-            All featured entities - Vesta Appliances, the ISO Certification Ecosystem,
-            CertBody issuers, Umbra Corp, Zenith Repairs - are{" "}
+            All featured entities — Vesta Appliances, the ISO Certification
+            Ecosystem, CertBody issuers, Umbra Repairs, Zenith Repairs — are{" "}
             <strong>fictional</strong> and labeled <em>(demo)</em>. Credentials
             referring to ISO standards are &ldquo;ISO 9001-<em>style</em>{" "}
             (demo)&rdquo; and imply no real certification. The trusted ECS
@@ -45,7 +45,7 @@ export default function About() {
           </p>
           <h2>Protocol version</h2>
           <p>
-            The playground targets Verifiable Trust / VPR <strong>v3</strong> -
+            The playground targets Verifiable Trust / VPR <strong>v3</strong> —
             what runs on testnet today (
             <a href={LINKS.vtSpecV3} target="_blank" rel="noopener noreferrer">VT spec v3</a>,{" "}
             <a href={LINKS.vprSpecV3} target="_blank" rel="noopener noreferrer">VPR spec v3</a>

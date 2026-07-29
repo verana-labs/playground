@@ -1,0 +1,11 @@
+name: Keycloak DID-bound Login
+organization: Verana Labs
+kind: cloud-wallet
+repo: https://github.com/AirKyzzZ/verana-keycloak-playground-verana
+# TODO(maxime): declare license
+track: bridge
+scenarios: [iso-certification-loop]
+# TODO(maxime): hosted instance URL once deployed
+download: https://github.com/AirKyzzZ/verana-keycloak-playground-verana
+notes: Keycloak brokers login through a DID-bound Verana Wallet IdP (vs-agent). The holder presents a credential, trust-gated Q1/Q3 fail-closed, and the broker provisions the account. Local-controlled reference deployment; hosted instance pending.
+logo: ./logo.svg

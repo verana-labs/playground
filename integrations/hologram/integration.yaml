@@ -13,3 +13,4 @@ playstore: https://play.google.com/store/apps/details?id=io.twentysixty.mobileag
 appstore: https://apps.apple.com/cl/app/hologram-messaging/id6474701855
 badge_loop: live # AnonCreds/DIDComm badge loop - the first wallet to complete it
 notes: Reference user wallet. Badge issuance and credential login run over AnonCreds/DIDComm.
+logo: ./logo.webp

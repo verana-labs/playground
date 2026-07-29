@@ -6,6 +6,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
+import { parseIntegration } from "./integration-schema";
 
 export type IntegrationKind = "user-wallet" | "cloud-wallet";
 
@@ -20,6 +21,13 @@ export type Integration = {
   track: string;
   scenarios: string[];
   demo_video?: string;
+  /** Recording conditions (speed, editing) — disclosed under the player. */
+  demo_video_note?: string;
+  logo?: string;
+  /** Real captures of this wallet rendering Verana trust (spec §4 "the
+   *  expected wallet rendering"). */
+  screenshots?: { src: string; caption?: string }[];
+  fides?: string;
   /** Mobile user wallet: direct APK link (stores may complement). Web wallet
    *  or cloud wallet: URL. */
   download?: string;
@@ -27,7 +35,7 @@ export type Integration = {
   playstore?: string;
   contact?: string;
   /** Which parts of the playground template are live for this wallet. */
-  badge_loop?: "live" | "coming";
+  badge_loop?: string;
   /** Cloud wallets: id of the standing demo service it hosts (from the
    *  verana-demos cast), rendered as a live Proof-of-Trust on its page. */
   demo_service?: string;
@@ -36,33 +44,60 @@ export type Integration = {
 
 const REGISTRY_DIR = path.join(process.cwd(), "integrations");
 
+let cache: Integration[] | null = null;
+
+// Descriptors reference their media relatively (`logo: ./logo.svg`,
+// `src: ./screenshots/1.webp`); scripts/sync-media.mjs publishes the tree under
+// public/wallets/<slug>/. Absolute URLs pass through; missing files drop out.
+function publicAsset(slug: string, ref: string | undefined) {
+  if (!ref) return undefined;
+  if (/^(https?:)?\/\//.test(ref)) return ref;
+  const rel = ref.replace(/^\.\//, "");
+  const url = `/wallets/${slug}/${rel}`;
+  return fs.existsSync(path.join(process.cwd(), "public", url.slice(1)))
+    ? url
+    : undefined;
+}
+
 export function listIntegrations(): Integration[] {
-  if (!fs.existsSync(REGISTRY_DIR)) return [];
+  if (cache) return cache;
+  if (!fs.existsSync(REGISTRY_DIR)) {
+    cache = [];
+    return cache;
+  }
   const out: Integration[] = [];
   for (const slug of fs.readdirSync(REGISTRY_DIR).sort()) {
     const file = path.join(REGISTRY_DIR, slug, "integration.yaml");
     if (!fs.existsSync(file)) continue;
-    const raw = yaml.load(fs.readFileSync(file, "utf8")) as Partial<Integration>;
-    if (!raw || !raw.name || !raw.kind) continue;
+    const raw = yaml.load(fs.readFileSync(file, "utf8"));
+    const data = parseIntegration(raw, slug);
     out.push({
       slug,
-      name: raw.name,
-      organization: raw.organization ?? "",
-      kind: raw.kind,
-      repo: raw.repo ?? "",
-      license: raw.license ?? "",
-      track: raw.track ?? "",
-      scenarios: raw.scenarios ?? [],
-      demo_video: raw.demo_video,
-      download: raw.download,
-      appstore: raw.appstore,
-      playstore: raw.playstore,
-      contact: raw.contact,
-      badge_loop: raw.badge_loop ?? "coming",
-      demo_service: raw.demo_service,
-      notes: raw.notes,
+      name: data.name,
+      organization: data.organization ?? "",
+      kind: data.kind,
+      repo: data.repo ?? "",
+      license: data.license ?? "",
+      track: data.track ?? "",
+      scenarios: data.scenarios ?? [],
+      demo_video: publicAsset(slug, data.demo_video),
+      demo_video_note: data.demo_video_note,
+      logo: publicAsset(slug, data.logo),
+      screenshots: data.screenshots?.flatMap((s) => {
+        const src = publicAsset(slug, s.src);
+        return src ? [{ src, caption: s.caption }] : [];
+      }),
+      fides: data.fides,
+      download: data.download,
+      appstore: data.appstore,
+      playstore: data.playstore,
+      contact: data.contact,
+      badge_loop: data.badge_loop ?? "coming",
+      demo_service: data.demo_service,
+      notes: data.notes,
     });
   }
+  cache = out;
   return out;
 }
 

@@ -10,8 +10,9 @@ import {
   Landmark,
   Wallet,
 } from "lucide-react";
-import { Container, Section, SectionHeading, Chip } from "./components/ui";
+import { Container, Section, SectionHeading } from "./components/ui";
 import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
+import { ProofOfTrust } from "./components/ProofOfTrust";
 import { userWallets, cloudWallets } from "./lib/integrations";
 import { SECTIONS_NAV } from "./usecases/vesta/content";
 import { LINKS, ENDPOINTS } from "./lib/site";
@@ -60,13 +61,14 @@ const CAN_DO = [
 export default function Home() {
   const users = userWallets();
   const clouds = cloudWallets();
+  const fidesUsecaseUrl = process.env.NEXT_PUBLIC_FIDES_USECASE_URL;
 
   return (
     <>
       {/* Hero - the verana-demos gradient */}
       <header className="hero-gradient text-white">
         <div className="mx-auto max-w-4xl px-6 py-16 text-center sm:py-20">
-          <p className="mb-3 text-sm font-medium uppercase tracking-wider text-white/70">
+          <p className="mb-3 text-sm font-medium uppercase tracking-wider text-white/90">
             Live on the Verana testnet
           </p>
           <h1 className="mb-4 text-4xl font-bold md:text-5xl">
@@ -93,6 +95,27 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      {fidesUsecaseUrl ? (
+        <div className="border-b border-gray-200 bg-white shadow-sm">
+          <Container>
+            <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 py-3 text-center text-sm text-gray-600">
+              <span>
+                This playground is the living evidence of the &ldquo;One
+                trust layer, many wallets&rdquo; FIDES use case.
+              </span>
+              <a
+                href={fidesUsecaseUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-violet-700 hover:underline"
+              >
+                Support it on FIDES
+              </a>
+            </p>
+          </Container>
+        </div>
+      ) : null}
 
       {/* 1 · What is Verana */}
       <Section id="what-is-verana">
@@ -139,6 +162,12 @@ export default function Home() {
               <a className="hover:text-violet-700 hover:underline" href={LINKS.vprSpecV3} target="_blank" rel="noopener noreferrer">VPR spec ↗</a>
               <a className="hover:text-violet-700 hover:underline" href={ENDPOINTS.frontend} target="_blank" rel="noopener noreferrer">app.testnet ↗</a>
             </p>
+          </div>
+          <div className="reveal mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <h3 className="mb-4 text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
+              Live from the testnet
+            </h3>
+            <ProofOfTrust serviceId="issuer-web-vs" title="Live from the testnet" />
           </div>
         </Container>
       </Section>

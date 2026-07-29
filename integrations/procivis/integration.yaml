@@ -1,0 +1,21 @@
+name: Procivis One Wallet
+organization: Procivis
+kind: user-wallet
+repo: https://github.com/procivis/one-wallet
+license: Apache-2.0
+track: bridge
+scenarios: [iso-certification-loop]
+# TODO(maxime): direct .apk asset link after standalone device verification
+download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/tag/verana-2026-07-26
+badge_loop: coming
+notes: Q1+Q2/Q3 in the Rust core with typed verdicts and a trust dossier in the wallet UI.
+logo: ./logo.webp
+demo_video: ./demo.mp4
+demo_video_note: "Real device, three segments concatenated, 1.75x speed. Silent."
+screenshots:
+  - src: ./screenshots/1.webp
+    caption: "Issuance from a trusted, authorized issuer"
+  - src: ./screenshots/2.webp
+    caption: "Q1 and Q2 verdicts in the trust dossier"
+  - src: ./screenshots/3.webp
+    caption: "Non-positive control: trust unavailable"

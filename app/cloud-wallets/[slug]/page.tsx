@@ -1,22 +1,24 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ExternalLink, Github } from "lucide-react";
+import { ExternalLink, Github, PlayCircle } from "lucide-react";
 import {
   Container,
   Section,
   Breadcrumb,
   Placeholder,
 } from "../../components/ui";
-import ServiceTrustCard from "../../components/ServiceTrustCard";
+import WalletLogo from "../../components/WalletLogo";
+import { ProofOfTrust } from "../../components/ProofOfTrust";
 import {
   cloudWallets,
   userWallets,
   getIntegration,
 } from "../../lib/integrations";
-import { LINKS } from "../../lib/site";
+import { getDemoService } from "../../lib/demo-services";
+import { ECS_ECOSYSTEM_DID, ENDPOINTS, LINKS } from "../../lib/site";
 
-// Per-cloud-wallet playground page - the identical template of spec §5:
+// Per-cloud-wallet playground page — the identical template of spec §5:
 // breadcrumb · header · the hosted demo service · the use case to test ·
 // under the hood. Generated from integration.yaml.
 
@@ -31,7 +33,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const w = getIntegration(slug);
-  return { title: w ? `${w.name} playground` : "Cloud wallet" };
+  return {
+    title: w ? `${w.name} playground` : "Cloud wallet",
+    description: w
+      ? `${w.name} on the Verana playground — a hosted verifiable service with live Proof-of-Trust.`
+      : undefined,
+  };
 }
 
 export default async function CloudWalletPlayground({
@@ -43,6 +50,10 @@ export default async function CloudWalletPlayground({
   const w = getIntegration(slug);
   if (!w || w.kind !== "cloud-wallet") notFound();
   const pickers = userWallets();
+  // The standing service this cloud wallet hosts, named by its descriptor
+  // (spec §5.3). Unknown ids fall through to the Placeholder branch.
+  const demoService = w.demo_service ? getDemoService(w.demo_service) : undefined;
+  const liveServiceId = demoService?.id;
 
   return (
     <>
@@ -59,12 +70,7 @@ export default async function CloudWalletPlayground({
           />
           {/* 2 · Header */}
           <div className="mt-6 flex flex-wrap items-center gap-4">
-            <span
-              aria-hidden
-              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-xl font-bold text-white backdrop-blur"
-            >
-              {w.name.charAt(0)}
-            </span>
+            <WalletLogo w={w} size="header" onDark />
             <div>
               <h1 className="text-3xl font-bold">{w.name}</h1>
               <p className="text-white/80">{w.organization}</p>
@@ -101,6 +107,16 @@ export default async function CloudWalletPlayground({
                 <Github className="h-4 w-4" /> Source
               </a>
             ) : null}
+            {w.demo_video ? (
+              <a
+                href={w.demo_video}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-xl bg-white/15 px-5 py-2.5 font-medium text-white backdrop-blur transition-colors hover:bg-white/25"
+              >
+                <PlayCircle className="h-4 w-4" /> Video
+              </a>
+            ) : null}
           </div>
         </div>
       </header>
@@ -108,9 +124,9 @@ export default async function CloudWalletPlayground({
       <Section>
         <Container className="space-y-8">
           {/* 3 · The hosted demo service */}
-          {w.demo_service ? (
+          {liveServiceId ? (
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="mb-4 flex items-center gap-3">
+              <div className="mb-2 flex items-center gap-3">
                 <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
                   1
                 </span>
@@ -118,12 +134,36 @@ export default async function CloudWalletPlayground({
                   The hosted demo service
                 </h2>
               </div>
-              <p className="mb-4 ml-11 text-sm text-gray-500">
-                A standing service run by {w.name}, trust-resolved against the
-                public registry <em>right now</em>:
+              <p className="ml-11 mb-4 text-sm text-gray-500">
+                A standing service run by {w.name}, Verana-verified — its DID
+                and live Proof-of-Trust, resolved against the testnet on page
+                load.
               </p>
               <div className="ml-11">
-                <ServiceTrustCard serviceId={w.demo_service} />
+                <ProofOfTrust serviceId={liveServiceId} />
+                {demoService ? (
+                  <p className="mt-2 text-xs text-gray-500">
+                    <code>{demoService.host}</code>
+                    {" — "}
+                    <a
+                      href={`https://${demoService.host}/.well-known/did.json`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-violet-600 hover:underline"
+                    >
+                      DID document
+                    </a>
+                    {" · "}
+                    <a
+                      href={`${ENDPOINTS.resolver}/docs`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-violet-600 hover:underline"
+                    >
+                      Resolver API
+                    </a>
+                  </p>
+                ) : null}
               </div>
             </div>
           ) : (
@@ -145,7 +185,7 @@ export default async function CloudWalletPlayground({
               </h2>
             </div>
             <ol className="ml-11 space-y-2 text-sm text-gray-600">
-              <li>1. Resolve the hosted service - see the Proof-of-Trust.</li>
+              <li>1. Resolve the hosted service — see the Proof-of-Trust.</li>
               <li>2. Receive a credential issued by the hosted service.</li>
               <li>3. Present it back to the hosted service&apos;s verifier.</li>
             </ol>
@@ -166,13 +206,83 @@ export default async function CloudWalletPlayground({
           </div>
 
           {/* 5 · Under the hood */}
-          <Placeholder title="3 · Under the hood">
-            Integration pattern ({w.track}), credential-acquisition path, and
-            registry links (ecosystem, schema, permissions) - ships with the
-            live wiring.
-          </Placeholder>
+          <div>
+            <div className="mb-2 flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+                3
+              </span>
+              <h2 className="text-lg font-bold text-gray-900">
+                Under the hood
+              </h2>
+            </div>
+            <details className="ml-11 rounded-2xl border border-gray-200 bg-white p-5">
+              <summary className="cursor-pointer select-none font-medium text-gray-700 transition-colors hover:text-violet-700">
+                See how this wallet is wired
+              </summary>
+              <div className="mt-4 space-y-4">
+                <p className="text-sm leading-relaxed text-gray-600">
+                  {w.track === "native"
+                    ? "Pattern A/B — the stack itself (or a vs-agent sidecar) owns the DID, DIDComm, Linked VPs and VPR operations."
+                    : "Pattern C — bridge: OID4VC stack + a resolvable DID with Linked VPs; trust checks via the public Trust Resolver."}
+                </p>
+                <p className="text-sm leading-relaxed text-gray-500">
+                  ECS credentials are obtained via the vs-agent Admin API or
+                  out-of-band, then published as Linked VPs on the
+                  service&apos;s DID document. The reference automation lives
+                  in{" "}
+                  <a
+                    href={LINKS.veranaDemos}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-medium text-violet-600 hover:underline"
+                  >
+                    verana-demos
+                  </a>
+                  &apos;s <code>common/common.sh</code>.
+                </p>
+                <div>
+                  <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-500">
+                    Registry links
+                  </p>
+                  <ul className="space-y-1.5 text-sm">
+                    <li>
+                      <span className="text-gray-500">ECS Ecosystem: </span>
+                      <a
+                        href={`${ENDPOINTS.resolver}/v1/trust/resolve?did=${encodeURIComponent(ECS_ECOSYSTEM_DID)}&detail=full`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="break-all font-mono text-xs text-violet-600 hover:underline"
+                      >
+                        {ECS_ECOSYSTEM_DID}
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href={ENDPOINTS.frontend}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-violet-600 hover:underline"
+                      >
+                        Network frontend
+                      </a>
+                    </li>
+                    <li>
+                      <a
+                        href={`${ENDPOINTS.resolver}/docs`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-violet-600 hover:underline"
+                      >
+                        Resolver API docs
+                      </a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </details>
+          </div>
 
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             This page follows the identical per-wallet template of the{" "}
             <a
               className="text-violet-600 underline"

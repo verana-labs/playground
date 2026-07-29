@@ -4,14 +4,18 @@ import { Download, Github, PlayCircle } from "lucide-react";
 import {
   Container,
   Section,
-  Chip,
   Breadcrumb,
   Placeholder,
 } from "../../components/ui";
+import WalletLogo from "../../components/WalletLogo";
+import WalletEvidence from "../../components/WalletEvidence";
+import { ExpectedRendering } from "../../components/ExpectedRendering";
+import { ProofOfTrust } from "../../components/ProofOfTrust";
+import { ServiceQr } from "../../components/ServiceQr";
 import { userWallets, getIntegration } from "../../lib/integrations";
 import { LINKS } from "../../lib/site";
 
-// Per-user-wallet playground page - the identical template of spec §4:
+// Per-user-wallet playground page — the identical template of spec §4:
 // breadcrumb · header · get the wallet · Service 1 (Vesta badge issuer) ·
 // Service 2 (Vesta login) · refusal paths. Generated from integration.yaml.
 
@@ -26,7 +30,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { slug } = await params;
   const w = getIntegration(slug);
-  return { title: w ? `${w.name} playground` : "User wallet" };
+  return {
+    title: w ? `${w.name} playground` : "User wallet",
+    description: w
+      ? `Try ${w.name} against the Verana testnet — receive and present credentials with live trust resolution.`
+      : undefined,
+  };
 }
 
 export default async function UserWalletPlayground({
@@ -53,12 +62,7 @@ export default async function UserWalletPlayground({
           />
           {/* 2 · Header */}
           <div className="mt-6 flex flex-wrap items-center gap-4">
-            <span
-              aria-hidden
-              className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-xl font-bold text-white backdrop-blur"
-            >
-              {w.name.charAt(0)}
-            </span>
+            <WalletLogo w={w} size="header" onDark />
             <div>
               <h1 className="text-3xl font-bold">{w.name}</h1>
               <p className="text-white/80">{w.organization}</p>
@@ -156,33 +160,95 @@ export default async function UserWalletPlayground({
             </div>
           </div>
 
-          {/* 4 · Service 1 - receive the badge */}
-          {w.badge_loop === "live" ? (
-            <Placeholder title="2 · Receive your ECS-Badge (Vesta badge issuer)">
-              Wiring in progress: the QR / deep link to the Vesta badge issuer
-              (demo) will appear here, next to the expected Proof-of-Trust and
-              the issuer verdict.
-            </Placeholder>
-          ) : (
-            <Placeholder title="2 · Receive your ECS-Badge">
-              The badge loop for {w.name} activates when the wallet supports the
-              current AnonCreds/DIDComm flow or when OpenID4VC issuance lands.
-            </Placeholder>
-          )}
+          <WalletEvidence w={w} />
 
-          {/* 5 · Service 2 - present the badge */}
-          <Placeholder title="3 · Log in with your badge (Vesta login)">
-            The QR / deep link to the Vesta login service (demo) will appear
-            here, next to the expected Proof-of-Trust and the verifier verdict.
-          </Placeholder>
+          {/* 4 · Receive your ECS-Badge */}
+          <div>
+            <div className="mb-4 flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+                2
+              </span>
+              <h2 className="text-lg font-bold text-gray-900">
+                Receive your ECS-Badge
+              </h2>
+            </div>
+            <div className="ml-11 grid gap-6 md:grid-cols-2">
+              {w.badge_loop === "live" ? (
+                <ServiceQr serviceId="issuer-web-vs" label="Vesta badge issuer (demo)" />
+              ) : (
+                <Placeholder title="Scan to receive your badge">
+                  The AnonCreds/DIDComm badge flow reaches this wallet soon —
+                  resolve & connect already work
+                </Placeholder>
+              )}
+              <div className="space-y-4">
+                <ExpectedRendering kind="issue" />
+                <ProofOfTrust
+                  serviceId="issuer-web-vs"
+                  title="The issuer's live Proof-of-Trust"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 5 · Log in with your badge */}
+          <div>
+            <div className="mb-4 flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+                3
+              </span>
+              <h2 className="text-lg font-bold text-gray-900">
+                Log in with your badge
+              </h2>
+            </div>
+            <div className="ml-11 grid gap-6 md:grid-cols-2">
+              {w.badge_loop === "live" ? (
+                <ServiceQr serviceId="verifier-web-vs" label="Vesta login service (demo)" />
+              ) : (
+                <Placeholder title="Scan to log in">
+                  The AnonCreds/DIDComm login flow reaches this wallet soon —
+                  resolve & connect already work
+                </Placeholder>
+              )}
+              <div className="space-y-4">
+                <ExpectedRendering kind="present" />
+                <ProofOfTrust
+                  serviceId="verifier-web-vs"
+                  title="The verifier's live Proof-of-Trust"
+                />
+              </div>
+            </div>
+          </div>
 
           {/* 6 · Refusal paths */}
-          <Placeholder title="4 · Refusal paths - Umbra Corp (demo)">
-            The same two actions against unauthorized demo services, ending in
-            red verdicts - ships when the Umbra services are deployed.
-          </Placeholder>
+          <div>
+            <div className="mb-4 flex items-center gap-3">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+                4
+              </span>
+              <h2 className="text-lg font-bold text-gray-900">
+                Refusal paths — Umbra Repairs (demo)
+              </h2>
+            </div>
+            <details className="ml-11 rounded-2xl border border-gray-200 bg-white p-5">
+              <summary className="cursor-pointer select-none font-medium text-gray-700 transition-colors hover:text-violet-700">
+                See the refusal verdicts
+              </summary>
+              <div className="mt-4 space-y-4">
+                <p className="text-sm leading-relaxed text-gray-500">
+                  Umbra Repairs (demo) holds no participant entries — every
+                  offer and request from it ends in the red verdict. Coming
+                  live with the Umbra services.
+                </p>
+                <div className="grid gap-6 md:grid-cols-2">
+                  <ExpectedRendering kind="issue-refused" />
+                  <ExpectedRendering kind="present-refused" />
+                </div>
+              </div>
+            </details>
+          </div>
 
-          <p className="text-xs text-gray-400">
+          <p className="text-xs text-gray-500">
             This page follows the identical per-wallet template of the{" "}
             <a
               className="text-violet-600 underline"

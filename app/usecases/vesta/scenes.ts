@@ -98,8 +98,11 @@ export const NODES: SceneNode[] = [
     sub: "nothing provable online - yet",
     toneByStage: { "3.1": "blue" },
     labelByStage: {
-      "3.1": { sub: "a DID is born · did:webvh:…vesta" },
-      "3.2": { sub: "Organization anchor · did:webvh:…vesta" },
+      "3.1": { label: "Unverifiable Organization", sub: "did:webvh:…vesta" },
+      "3.2": {
+        label: "Vesta Appliances",
+        sub: "Organization anchor · did:webvh:…vesta",
+      },
     },
   },
   {
@@ -269,6 +272,16 @@ export const BADGES: SceneBadge[] = [
   { id: "b-ok-zenith", node: "zenith", dx: 34, dy: -24, text: "✓", tone: "emerald", appears: "3.8" },
   { id: "b-no-umbra", node: "umbra", dx: 34, dy: -24, text: "✗", tone: "red", appears: "3.8" },
 ];
+
+/** Per-stage view overrides: `only` restricts the render to the listed
+ *  nodes (edges/badges follow), `viewBox` crops the canvas, `maxWidth`
+ *  constrains the rendered size. Used for intimate moments like 3.1,
+ *  where the newborn identity stands alone. */
+export const STAGE_VIEW: Partial<
+  Record<Stage, { only?: string[]; viewBox?: string; maxWidth?: string }>
+> = {
+  "3.1": { only: ["vesta"], viewBox: "140 240 320 140", maxWidth: "max-w-md" },
+};
 
 /** Stages whose meaning is a *change* to existing elements rather than a new
  *  element: the listed nodes pulse, and the note joins the caption. */

@@ -17,6 +17,7 @@ import {
   EDGES,
   NODES,
   STAGE_CHANGES,
+  STAGE_VIEW,
   nodeLabelAt,
   nodeToneAt,
   stageIndex,
@@ -133,9 +134,13 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
   const idx = stageIndex(stage);
   const isNew = (el: { appears: Stage }) => stageIndex(el.appears) === idx;
 
-  const nodes = NODES.filter((n) => visibleAt(n, stage));
-  const edges = EDGES.filter((e) => visibleAt(e, stage));
-  const badges = BADGES.filter((b) => visibleAt(b, stage));
+  const view = STAGE_VIEW[stage];
+  const inView = (id: string) => !view?.only || view.only.includes(id);
+  const nodes = NODES.filter((n) => visibleAt(n, stage) && inView(n.id));
+  const edges = EDGES.filter(
+    (e) => visibleAt(e, stage) && inView(e.from) && inView(e.to),
+  );
+  const badges = BADGES.filter((b) => visibleAt(b, stage) && inView(b.node));
   const changes = STAGE_CHANGES[stage];
   const changedNodes = new Set(changes?.nodes ?? []);
   const tones = Array.from(new Set(edges.map((e) => e.tone)));
@@ -146,10 +151,14 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
   ].filter(Boolean);
 
   return (
-    <figure className="rounded-2xl border border-gray-200 bg-white p-3 shadow-sm sm:p-5">
+    <figure
+      className={`rounded-2xl border border-gray-200 bg-white p-3 shadow-sm sm:p-5 ${
+        view?.maxWidth ? `${view.maxWidth} mx-auto` : ""
+      }`}
+    >
       <div>
         <svg
-          viewBox="30 20 930 570"
+          viewBox={view?.viewBox ?? "30 20 930 570"}
           role="img"
           aria-label={`The Vesta story graph at step ${stage}`}
           className="h-auto w-full"

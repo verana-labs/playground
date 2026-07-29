@@ -410,7 +410,10 @@ function NodeDetail({
     accreditations: (ACCREDITATIONS[id] ?? [])
       .filter((a) => stageIndex(a.appears) <= idx)
       .map(({ role, schema, context }) => ({ role, schema, context })),
-    note: NODE_NOTES[id],
+    note:
+      creds.length === 0 || id === "ecs" || id === "iso" || id === "vestaEco"
+        ? NODE_NOTES[id]
+        : undefined,
     resolvedNote:
       verified && node.did
         ? "Both identity checks verified against the Verana public registry (story data - dedicated Vesta cast pending)."

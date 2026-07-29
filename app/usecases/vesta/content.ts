@@ -426,21 +426,23 @@ export const JOURNEY: {
         },
         {
           id: "3.5b",
-          stage: "3.5",
-          noDiagram: true,
-          title: "Log in with the badge - and open doors with it",
+          stage: "3.5b",
+          title: "A verifiable login service, accredited to verify badges",
           kind: "watch",
           story:
-            "Vesta then adds a login-with-verifiable-credential option using the ECS-Badge: access is configured to only accept badges whose issuer is the DID of the Vesta Organization trust anchor service. And the same badge can work at the door:",
+            "Vesta deploys a new Business Wallet for the login service, and issues it an ECS-Service credential - so the login service is verifiable in its own right (Vesta can do this: it is an accredited ECS-Service issuer). The service is accredited for ECS-Badge verification, and access is configured to only accept badges whose issuer is the DID of the Vesta Organization trust anchor. The same badge can also work at the door:",
           points: [
-            "Portal login: only ECS-Badge credentials issued by Vesta's trust anchor DID are accepted. No passwords, no shared logins.",
+            "Portal login: the verifiable login service requests your badge; only ECS-Badge credentials issued by Vesta's trust anchor DID are accepted. No passwords, no shared logins.",
             "Physical access: Bluetooth, NFC, or QR-code access to the office or the factory using the ECS-Badge - provided the Personal Wallet used supports it.",
           ],
           underHood: [
-            "The verifier-side policy pins the accepted issuer to the anchor DID: ECS-Badge presentations from any other issuer are rejected.",
+            "Delegated pattern: the login service's DID presents an ECS-Service credential issued by the anchor; its Operated-by resolves through Vesta's ECS-Organization.",
+            "The login service holds the VERIFIER permission on the ECS-Badge schema; its verifier-side policy pins the accepted issuer to the anchor DID.",
             "The Personal Wallet applies the mirror rule before presenting: verify the verifier is trusted and authorized to request ECS-Badge (Q3).",
           ],
           reproduce: [
+            "Deploy a vs-agent for the login service; from the anchor, issue it an ECS-Service credential and link it.",
+            "Join the ECS-Badge schema tree as VERIFIER for the login service's DID.",
             "Open the login demo, review the request (who asks, what for), present the badge - you're in.",
           ],
           links: [

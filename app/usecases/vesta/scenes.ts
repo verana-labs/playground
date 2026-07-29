@@ -13,6 +13,7 @@ export const STAGES = [
   "3.3",
   "3.4",
   "3.5",
+  "3.5b",
   "3.6",
   "3.7",
   "3.8",
@@ -266,7 +267,8 @@ export const EDGES: SceneEdge[] = [
   // Baseline - the world of §1, pre-populated when the journey opens
   { id: "e-vesta-support", from: "vesta", to: "support", appears: "3.0", tone: "gray" },
   { id: "e-vesta-badgeSvc", from: "vesta", to: "badgeSvc", appears: "3.0", label: "runs its services", tone: "gray", labelT: 0.55 },
-  { id: "e-vesta-portal", from: "vesta", to: "portal", appears: "3.0", tone: "gray" },
+  { id: "e-vesta-portal", from: "vesta", to: "portal", appears: "3.0", until: "3.5b", tone: "gray" },
+  { id: "e-vesta-portal-svc", from: "vesta", to: "portal", appears: "3.5b", label: "issues ECS-Service", tone: "emerald", labelT: 0.55 },
   { id: "e-customer-support", from: "customer", to: "support", appears: "3.0", label: "contacts support…", tone: "gray", dashed: true, curve: 40, labelT: 0.45 },
   { id: "e-customer-fake", from: "customer", to: "fakeSupport", appears: "3.0", label: "…or the fake one? can't tell", tone: "red", dashed: true, curve: -20, labelT: 0.5 },
   { id: "e-umbra-customer", from: "umbra", to: "customer", appears: "3.0", label: "rings the doorbell", tone: "red", dashed: true, labelT: 0.5 },
@@ -275,7 +277,7 @@ export const EDGES: SceneEdge[] = [
   { id: "e-orgIssuer-vesta", from: "orgIssuer", to: "vesta", appears: "3.2", label: "issues ECS-Org", tone: "emerald", curve: -40, labelT: 0.4 },
   // Need 3 - credentials people can hold
   { id: "e-vesta-badge", from: "vesta", to: "wallet", appears: "3.5", label: "issues ECS-Badge to employees", tone: "emerald", curve: -55, labelT: 0.45 },
-  { id: "e-wallet-portal", from: "wallet", to: "portal", appears: "3.5", label: "presents badge → login", tone: "emerald", labelT: 0.5 },
+  { id: "e-wallet-portal", from: "wallet", to: "portal", appears: "3.5b", label: "presents badge → login", tone: "emerald", labelT: 0.5 },
   // Need 4 - certifications as proof
   { id: "e-iso-vesta", from: "iso", to: "vesta", appears: "3.6", label: "NormaCert issues ISO 9001 (demo) - no paperwork", tone: "emerald", curve: 30, labelT: 0.5 },
   // Need 5 - Vesta's own ecosystem
@@ -429,6 +431,23 @@ export const CREDENTIALS: Record<string, NodeCredential[]> = {
       appears: "3.7",
     },
   ],
+  portal: [
+    {
+      name: "ECS-Service",
+      tone: "violet",
+      issuedBy: "Issued by Vesta Appliances (accredited ECS-Service issuer)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.5b",
+    },
+    {
+      name: "ECS-Organization",
+      tone: "blue",
+      issuedBy: "Helvetia Trust Services (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.5b",
+      note: "Presented via the controller organization, Vesta Appliances (delegated service).",
+    },
+  ],
   wallet: [
     {
       name: "ECS-Badge",
@@ -450,6 +469,14 @@ export type Accreditation = {
 };
 
 export const ACCREDITATIONS: Record<string, Accreditation[]> = {
+  portal: [
+    {
+      role: "VERIFIER",
+      schema: "ECS-Badge",
+      context: "Verana ECS Ecosystem · badge login",
+      appears: "3.5b",
+    },
+  ],
   orgIssuer: [
     {
       role: "ISSUER",
@@ -469,12 +496,6 @@ export const ACCREDITATIONS: Record<string, Accreditation[]> = {
       role: "ISSUER",
       schema: "ECS-Badge",
       context: "Verana ECS Ecosystem · self-accredited",
-      appears: "3.5",
-    },
-    {
-      role: "VERIFIER",
-      schema: "ECS-Badge",
-      context: "Verana ECS Ecosystem · badge login",
       appears: "3.5",
     },
     {
@@ -529,6 +550,11 @@ export const STAGE_VIEW: Partial<
     viewBox: "20 30 460 350",
     maxWidth: "max-w-2xl",
   },
+  "3.5b": {
+    only: ["vesta", "ecs", "orgIssuer", "portal"],
+    viewBox: "20 30 560 520",
+    maxWidth: "max-w-2xl",
+  },
 };
 
 /** Stages whose meaning is a *change* to existing elements rather than a new
@@ -539,7 +565,8 @@ export const STAGE_CHANGES: Partial<
   "3.1": { nodes: ["vesta"], note: "Vesta's DID is born" },
   "3.3": { nodes: ["vesta"], note: "the check turns green" },
   "3.7": { nodes: ["umbra"], note: "the last problem gets its answer" },
-  "3.5": { nodes: ["vesta"], note: "new accreditations on Vesta - click it to see them" },
+  "3.5": { nodes: ["vesta"], note: "new accreditation on Vesta - click it to see it" },
+  "3.5b": { nodes: ["portal"], note: "a new verifiable login service - click it to see its accreditation" },
   "3.8": { note: "full circle: anyone can tell" },
 };
 

@@ -436,7 +436,7 @@ export const JOURNEY: {
             "Physical access: Bluetooth, NFC, or QR-code access to the office or the factory using the ECS-Badge - provided the Personal Wallet used supports it.",
           ],
           underHood: [
-            "Delegated pattern: the login service's DID presents an ECS-Service credential issued by the anchor; its Operated-by resolves through Vesta's ECS-Organization.",
+            "Per the Verifiable Trust spec: the login service is verifiable and trusted because its ECS-Service credential was issued by a DID that presents an ECS-Org credential (the Vesta trust anchor) - the service inherits the ECS-Org from the parent service.",
             "The login service holds the VERIFIER permission on the ECS-Badge schema; its verifier-side policy pins the accepted issuer to the anchor DID.",
             "The Personal Wallet applies the mirror rule before presenting: verify the verifier is trusted and authorized to request ECS-Badge (Q3).",
           ],

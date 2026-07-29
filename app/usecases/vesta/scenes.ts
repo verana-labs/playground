@@ -316,6 +316,9 @@ export type NodeCredential = {
   appears: Stage;
   until?: Stage;
   note?: string;
+  /** Not presented by this DID: inherited from the parent service's DID
+   *  (the ECS-Service issuer), per the Verifiable Trust spec. */
+  inherited?: boolean;
 };
 
 /** Credentials presented by each participant (filtered by stage). */
@@ -445,7 +448,8 @@ export const CREDENTIALS: Record<string, NodeCredential[]> = {
       issuedBy: "Helvetia Trust Services (demo)",
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.5b",
-      note: "Presented via the controller organization, Vesta Appliances (delegated service).",
+      inherited: true,
+      note: "Inherited from the parent service: the ECS-Service issuer's DID (the Vesta trust anchor) presents this ECS-Org credential.",
     },
   ],
   wallet: [

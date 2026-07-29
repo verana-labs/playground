@@ -13,6 +13,8 @@ export type TrustCardCredential = {
   issuedBy: string;
   ecosystem?: string;
   note?: string;
+  /** Inherited from the parent service's DID (Verifiable Trust spec). */
+  inherited?: boolean;
 };
 
 export type TrustCardData = {
@@ -166,8 +168,13 @@ export default function TrustCard({
             </li>
             <li className="relative pb-4 pl-10">
               <Tick ok={!!d.organization} />
-              <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+              <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                 Operated by · ECS-Organization
+                {d.organization?.inherited ? (
+                  <span className="rounded bg-violet-50 px-1.5 py-px text-[9px] font-bold normal-case tracking-normal text-violet-700">
+                    inherited from parent
+                  </span>
+                ) : null}
               </div>
               {d.organization ? (
                 <>
@@ -175,6 +182,11 @@ export default function TrustCard({
                     {d.organization.orgName}
                   </div>
                   <CredMeta cred={d.organization} />
+                  {d.organization.note ? (
+                    <div className="mt-0.5 text-[11px] text-gray-400">
+                      {d.organization.note}
+                    </div>
+                  ) : null}
                 </>
               ) : (
                 <div className="text-xs text-red-500">

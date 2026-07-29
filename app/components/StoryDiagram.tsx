@@ -401,6 +401,7 @@ function NodeDetail({
           issuedBy: org.issuedBy,
           ecosystem: org.ecosystem,
           note: org.note,
+          inherited: org.inherited,
         }
       : undefined,
     trusted: verified && !!svc && !!org,

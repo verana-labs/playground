@@ -390,20 +390,6 @@ export const JOURNEY: {
             "Issue the ECS-Service credential to yourself via the vs-agent Admin API and link it (the verana-demos scripts wrap this).",
           ],
         },
-        {
-          id: "3.4",
-          stage: "3.4",
-          title: "Vesta's first Verifiable Service",
-          kind: "watch",
-          story:
-            "Vesta now has its own first Verifiable Service: the Vesta Organization trust anchor service. Resolve it and the check is green - ECS-Organization and ECS-Service, verified against the public registry. This is the exact card every integrated wallet shows.",
-          reproduce: [
-            `Resolve it yourself: ${resolver}/v1/trust/resolve?did=<vesta-did>&detail=full → TRUSTED, with both credentials and their permission chains.`,
-            "Or read the live card below - click through to the service to see its credentials (service page comes with the Vesta cast).",
-          ],
-          liveService: "organization-vs",
-          liveNote: CAST_NOTE,
-        },
       ],
     },
     {

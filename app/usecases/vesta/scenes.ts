@@ -487,10 +487,6 @@ export const STAGE_CHANGES: Partial<
 > = {
   "3.1": { nodes: ["vesta"], note: "Vesta's DID is born" },
   "3.3": { nodes: ["vesta"], note: "the check turns green" },
-  "3.4": {
-    nodes: ["vesta"],
-    note: "Vesta's first Verifiable Service is live",
-  },
   "3.7": { nodes: ["umbra"], note: "the last problem gets its answer" },
   "3.8": { note: "full circle: anyone can tell" },
   "3.5": { nodes: ["portal"], note: "badge login configured on the portal" },

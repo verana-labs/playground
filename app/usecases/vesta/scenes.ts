@@ -280,6 +280,133 @@ export const BADGES: SceneBadge[] = [
   { id: "b-no-umbra", node: "umbra", dx: 34, dy: -24, text: "✗", tone: "red", appears: "3.8" },
 ];
 
+/** A credential presented by a participant, as shown in the click-to-open
+ *  detail panel (verana.io/ecosystems idiom). */
+export type NodeCredential = {
+  name: string;
+  tone: Tone;
+  issuedBy: string;
+  ecosystem?: string;
+  appears: Stage;
+  until?: Stage;
+  note?: string;
+};
+
+/** Credentials presented by each participant (filtered by stage). */
+export const CREDENTIALS: Record<string, NodeCredential[]> = {
+  vesta: [
+    {
+      name: "ECS-Organization",
+      tone: "blue",
+      issuedBy: "Helvetia Trust Services (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.2",
+    },
+    {
+      name: "ECS-Service",
+      tone: "violet",
+      issuedBy: "Self-issued (controller: Vesta Appliances)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.3",
+    },
+    {
+      name: "ISO 9001 (demo)",
+      tone: "amber",
+      issuedBy: "NormaCert (demo)",
+      ecosystem: "ISO Certification Ecosystem (demo)",
+      appears: "3.6",
+    },
+  ],
+  orgIssuer: [
+    {
+      name: "ECS-Organization",
+      tone: "blue",
+      issuedBy: "A peer accredited ECS-Org issuer",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.2",
+    },
+    {
+      name: "ECS-Service",
+      tone: "violet",
+      issuedBy: "Self-issued (controller: Helvetia Trust Services)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.2",
+    },
+  ],
+  zenith: [
+    {
+      name: "ECS-Organization",
+      tone: "blue",
+      issuedBy: "Helvetia Trust Services (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.7",
+    },
+    {
+      name: "ECS-Service",
+      tone: "violet",
+      issuedBy: "Self-issued (controller: Zenith Repairs)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.7",
+    },
+    {
+      name: "Authorized Repairer",
+      tone: "emerald",
+      issuedBy: "Vesta Appliances",
+      ecosystem: "Vesta Repair Network",
+      appears: "3.7",
+    },
+  ],
+  wallet: [
+    {
+      name: "ECS-Badge",
+      tone: "emerald",
+      issuedBy: "Vesta Appliances (trust anchor DID)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.5",
+      note: "Held by the employee in their Personal Wallet.",
+    },
+  ],
+};
+
+/** Accreditations (issuer/verifier permissions) shown in the detail panel. */
+export const ACCREDITATIONS: Record<
+  string,
+  { text: string; appears: Stage }[]
+> = {
+  orgIssuer: [
+    {
+      text: "Accredited issuer of ECS-Organization (Verana ECS Ecosystem)",
+      appears: "3.2",
+    },
+  ],
+  vesta: [
+    {
+      text: "Issuer of ECS-Badge (self-accredited participant on the schema)",
+      appears: "3.5",
+    },
+  ],
+};
+
+/** Panel text for participants with no presented credentials (or context). */
+export const NODE_NOTES: Record<string, string> = {
+  support:
+    "No verifiable credentials presented yet - just a name on a screen.",
+  badgeSvc:
+    "No verifiable credentials presented yet - just a name on a screen.",
+  portal:
+    "No verifiable credentials presented yet - just a name on a screen.",
+  fakeSupport:
+    "Claims to be Vesta support - but presents no verifiable credential. Nothing can be proven: red verdict.",
+  umbra:
+    "Claims to be Vesta-authorized - but no Authorized Repairer credential exists for its DID: red verdict.",
+  customer:
+    "A person - holds credentials in a Personal Wallet rather than presenting service credentials.",
+  ecs: "A trust ecosystem (registry root): it governs the essential credential schemas and accredits issuers.",
+  iso: "A trust ecosystem (demo): it governs the ISO 9001 credential schema; accredited certification bodies issue it.",
+  vestaEco:
+    "Vesta's own trust ecosystem: it governs the Authorized Repairer schema. Issuance governed, verification open.",
+};
+
 /** Per-stage view overrides: `only` restricts the render to the listed
  *  nodes (edges/badges follow), `viewBox` crops the canvas, `maxWidth`
  *  constrains the rendered size. Used for intimate moments like 3.1,

@@ -218,7 +218,7 @@ export const NODES: SceneNode[] = [
     tone: "violet",
     appears: "5.2",
     label: "Vesta Repair Network",
-    sub: "only Vesta issues · anyone verifies",
+    sub: "issuance governed by Vesta · anyone verifies",
   },
   {
     id: "zenith",

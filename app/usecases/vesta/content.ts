@@ -244,7 +244,7 @@ export const ECOSYSTEM_BUILD = {
     name: "Vesta Repair Network",
     label: "the Authorized Repairer credential",
     about:
-      "Vesta's own trust ecosystem, with a single credential schema: Authorized Repairer. Issuance is governed (only Vesta issues) and verification is open (anyone checks, no permission needed). The paper Vesta Certified Repair Company badge from Section 1 becomes verifiable, revocable proof.",
+      "Vesta's own trust ecosystem, with a single credential schema: Authorized Repairer. Issuance is governed (only Vesta and its subsidiaries issue) and verification is open (anyone checks, no permission needed). The paper Vesta Certified Repair Company badge from Section 1 becomes verifiable, revocable proof.",
     why: "brand protection as a structural property. Real partners turn green, impostors turn red, and a partner that goes rogue can be revoked.",
     did: "did:webvh:QmPLACEHOLDER…:repair-network.vesta.example (created in Section 5)",
     veranaUrl: app, // TODO: deep link once created
@@ -432,9 +432,10 @@ export const TECH_SECTIONS: TechSection[] = [
         title: "The Vesta Repair Network",
         kind: "watch",
         story:
-          "Vesta publishes a one-page governance framework and creates its ecosystem with a single credential schema: Authorized Repairer. The design choice that matters: issuance is governed - only Vesta issues. Verification is open - anyone checks, no permission needed. Then Vesta onboards Zenith Repairs, itself a verifiable organization (it went through its own Sections 3–4 - the pattern replicates; that is the point): Vesta identifies Zenith by the ECS-Org credential on its DID and issues Authorized Repairer to Zenith's organization DID.",
+          "Vesta publishes a one-page governance framework and creates its ecosystem with a single credential schema: Authorized Repairer. The design choice that matters: issuance is governed - only Vesta and its subsidiaries issue. Verification is open - anyone checks, no permission needed. Then Vesta onboards Zenith Repairs, itself a verifiable organization (it went through its own Sections 3–4 - the pattern replicates; that is the point): Vesta identifies Zenith by the ECS-Org credential on its DID and issues Authorized Repairer to Zenith's organization DID.",
         underHood: [
           "Create New Trust Registry (+ EGF document) → Create New Credential Schema (issuer mode ECOSYSTEM, verifier mode OPEN) → Create Root Permission. Three transactions, and Vesta is an ecosystem.",
+          "Governed issuance does not mean a single issuer: Vesta can register several entities (for example its subsidiaries) as issuers of the Authorized Repairer schema by granting them ISSUER permissions under its root.",
           "Zenith joins the tree as HOLDER under Vesta's root; Vesta validates by verifying Zenith's ECS-Org presentation - reusable KYB, now from the issuer's seat.",
           "Extension: Zenith can in turn issue technician badges to its employees, so the technician at your door can prove they're from an authorized repairer.",
         ],
@@ -514,6 +515,6 @@ export const SECTIONS_NAV = [
     anchor: "section-5",
     title: "Vesta creates its own ecosystem",
     oneLiner:
-      "The Vesta Repair Network: only Vesta issues Authorized Repairer, anyone verifies. Zenith ✓, Umbra ✗.",
+      "The Vesta Repair Network: only Vesta and its subsidiaries issue Authorized Repairer, anyone verifies. Zenith ✓, Umbra ✗.",
   },
 ] as const;

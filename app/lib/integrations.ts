@@ -21,6 +21,8 @@ export type Integration = {
   track: string;
   scenarios: string[];
   demo_video?: string;
+  /** Recording conditions (speed, editing) — disclosed under the player. */
+  demo_video_note?: string;
   logo?: string;
   /** Real captures of this wallet rendering Verana trust (spec §4 "the
    *  expected wallet rendering"). */
@@ -78,7 +80,8 @@ export function listIntegrations(): Integration[] {
       license: data.license ?? "",
       track: data.track ?? "",
       scenarios: data.scenarios ?? [],
-      demo_video: data.demo_video,
+      demo_video: publicAsset(slug, data.demo_video),
+      demo_video_note: data.demo_video_note,
       logo: publicAsset(slug, data.logo),
       screenshots: data.screenshots?.flatMap((s) => {
         const src = publicAsset(slug, s.src);

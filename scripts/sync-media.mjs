@@ -7,7 +7,7 @@ import path from "node:path";
 
 const REGISTRY = path.join(process.cwd(), "integrations");
 const OUT = path.join(process.cwd(), "public", "wallets");
-const MEDIA = /\.(svg|webp|png|jpe?g)$/i;
+const MEDIA = /\.(svg|webp|png|jpe?g|mp4)$/i;
 
 fs.rmSync(OUT, { recursive: true, force: true });
 

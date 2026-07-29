@@ -12,7 +12,9 @@ export const IntegrationSchema = z
     download: z.string().url().optional(),
     playstore: z.string().url().optional(),
     appstore: z.string().url().optional(),
-    demo_video: z.string().url().optional(),
+    // A URL, or a path relative to the descriptor (./demo.mp4) like `logo`.
+    demo_video: z.string().min(1).optional(),
+    demo_video_note: z.string().optional(),
     logo: z.string().optional(),
     screenshots: z
       .array(z.object({ src: z.string().min(1), caption: z.string().optional() }))

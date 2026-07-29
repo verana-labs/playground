@@ -9,6 +9,8 @@ download: https://github.com/AirKyzzZ/sphereon-mobile-wallet-verana/releases/dow
 badge_loop: coming
 notes: Verana trust card on contact creation for did:webvh-identified verifiers.
 logo: ./logo.webp
+demo_video: ./demo.mp4
+demo_video_note: "Real device, edited at 4x speed. Silent."
 screenshots:
   - src: ./screenshots/1.webp
     caption: "Contact created with the Verana trust card"

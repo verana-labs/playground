@@ -10,6 +10,8 @@ download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/tag/ve
 badge_loop: coming
 notes: Q1+Q2/Q3 in the Rust core with typed verdicts and a trust dossier in the wallet UI.
 logo: ./logo.webp
+demo_video: ./demo.mp4
+demo_video_note: "Real device, three segments concatenated, 1.75x speed. Silent."
 screenshots:
   - src: ./screenshots/1.webp
     caption: "Issuance from a trusted, authorized issuer"

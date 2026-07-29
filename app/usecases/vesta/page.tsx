@@ -31,7 +31,7 @@ import {
   REPAIR_NETWORK,
   SECTIONS_NAV,
   SOLUTION,
-  TECH_SECTIONS,
+  JOURNEY,
   VESTA_ASSETS,
   type SubStep,
 } from "./content";
@@ -705,10 +705,10 @@ export default function Explained() {
                         {n.title}
                       </span>
                       <a
-                        href={`#section-${n.section}`}
+                        href={`#need-${n.need}`}
                         className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                       >
-                        → Section {n.section} · {n.tag}
+                        → Marc's journey · {n.tag}
                       </a>
                     </div>
                     <p className="mt-1 text-sm text-gray-500">{n.desc}</p>
@@ -861,11 +861,10 @@ export default function Explained() {
                 </code>
                 <div className="flex flex-wrap items-center gap-2">
                   <a
-                    href={`#section-${ECOSYSTEM_BUILD.card.section}`}
+                    href={`#need-${ECOSYSTEM_BUILD.card.need}`}
                     className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                   >
-                    → Section {ECOSYSTEM_BUILD.card.section} · Vesta creates its
-                    own ecosystem
+                    → Marc's journey · Vesta creates its own ecosystem
                   </a>
                   <a
                     href={ECOSYSTEM_BUILD.card.veranaUrl}
@@ -882,32 +881,41 @@ export default function Explained() {
         </Container>
       </Section>
 
-      {/* §3–§5 · The technical build */}
-      {TECH_SECTIONS.map((sec, i) => (
-        <Section
-          key={sec.anchor}
-          id={sec.anchor}
-          className={
-            i % 2 === 0
-              ? "border-t border-gray-200"
-              : "border-t border-gray-200 bg-white"
-          }
-        >
-          <Container className="max-w-4xl">
-            <SectionHeading number={sec.n} title={sec.title} subtitle={sec.intro} />
-            <div className="space-y-14">
-              {sec.substeps.map((sub) => (
-                <SubStepBlock key={sub.id} sub={sub} />
-              ))}
-            </div>
-            {sec.outro ? (
-              <p className="mt-10 rounded-2xl border border-violet-100 bg-violet-50/60 px-6 py-4 text-sm font-medium text-violet-900">
-                {sec.outro}
-              </p>
-            ) : null}
-          </Container>
-        </Section>
-      ))}
+      {/* §3 · Marc's journey - one subsection per checklist need */}
+      <Section id={JOURNEY.anchor} className="border-t border-gray-200">
+        <Container className="max-w-4xl">
+          <SectionHeading
+            number={JOURNEY.n}
+            title={JOURNEY.title}
+            subtitle={JOURNEY.intro}
+          />
+          <div className="space-y-20">
+            {JOURNEY.needs.map((need) => (
+              <div key={need.id} id={need.id} className="scroll-mt-24">
+                <div className="text-center">
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
+                    ☑ Need {need.n} of 5 · {need.tag}
+                  </span>
+                </div>
+                <div className="mt-3">
+                  <SubHeading>{need.title}</SubHeading>
+                </div>
+                <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+                  {need.intro}
+                </p>
+                <div className="mt-8 space-y-14">
+                  {need.steps.map((sub) => (
+                    <SubStepBlock key={sub.id} sub={sub} />
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-12 rounded-2xl border border-violet-100 bg-violet-50/60 px-6 py-4 text-sm font-medium text-violet-900">
+            {JOURNEY.outro}
+          </p>
+        </Container>
+      </Section>
 
       {/* Closing teaser */}
       <Section className="border-t border-gray-200 bg-white">

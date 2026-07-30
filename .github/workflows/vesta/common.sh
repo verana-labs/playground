@@ -226,10 +226,20 @@ get_agent_did() {
   curl -sf "$1/v1/agent" | jq -r '.publicDid // empty'
 }
 
-# Public DID of an agent, via its published DID document
+# Public DID of an agent, via its published DID documents.
+# Prefers the did:webvh log (did.jsonl): the agents SIGN with their webvh DID,
+# while did.json serves a did:web compatibility alias — permissions bound to
+# the alias never match the issuer of any credential.
 # Usage: get_public_did_from_host <host>
 get_public_did_from_host() {
-  curl -sf "https://$1/.well-known/did.json" | jq -r '.id // empty'
+  local host=$1
+  local did
+  did=$(curl -sf "https://${host}/.well-known/did.jsonl" 2>/dev/null \
+    | tail -1 | jq -r '.state.id // empty' 2>/dev/null)
+  if [ -z "$did" ]; then
+    did=$(curl -sf "https://${host}/.well-known/did.json" | jq -r '.id // empty')
+  fi
+  echo "$did"
 }
 
 # Remove non-VPR self-generated VTJSCs (and their linked VPs) left by agent

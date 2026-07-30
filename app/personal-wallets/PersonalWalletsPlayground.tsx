@@ -162,7 +162,7 @@ function WalletIcon({
     <span
       aria-hidden
       className="flex shrink-0 items-center justify-center rounded-lg bg-violet-50 font-bold text-violet-700"
-      style={{ width: size, height: size }}
+      style={{ width: size, height: size, fontSize: Math.round(size * 0.4) }}
     >
       {w.name.charAt(0)}
     </span>
@@ -398,10 +398,27 @@ export default function PersonalWalletsPlayground({
             </div>
 
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="mb-4 flex flex-wrap items-center gap-3">
-                <WalletIcon w={wallet} />
-                <span className="font-semibold text-gray-900">{wallet.name}</span>
-                <span className="text-sm text-gray-500">{wallet.vendor}</span>
+              <div className="mb-4 flex flex-wrap items-center gap-4">
+                <WalletIcon w={wallet} size={56} />
+                <span className="min-w-0">
+                  <span className="block text-xl font-bold tracking-tight text-gray-900">
+                    {wallet.name}
+                  </span>
+                  {wallet.website ? (
+                    <a
+                      href={wallet.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-sm text-gray-500 hover:text-violet-700 hover:underline"
+                    >
+                      {wallet.vendor}
+                    </a>
+                  ) : (
+                    <span className="block text-sm text-gray-500">
+                      {wallet.vendor}
+                    </span>
+                  )}
+                </span>
                 <span className="ml-auto flex flex-wrap gap-1.5">
                   {wallet.formats.map((f) => (
                     <Chip key={f} tone={f === format ? "verified" : "default"}>

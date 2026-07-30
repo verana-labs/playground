@@ -38,11 +38,18 @@ function str(body: unknown, key: string): string | null {
 
 const oobUrl = (body: unknown) => str(body, "shortUrl") ?? str(body, "url");
 
+// OID4VC identifiers configured on the demo cast agents (OID4VC plugin).
+const OID4VC_CRED_CONFIG =
+  process.env.DEMO_OID4VC_CRED_CONFIG ?? "demo-credential";
+const OID4VC_POLICY = process.env.DEMO_OID4VC_POLICY ?? "demo-credential";
+
 export async function GET(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ serviceId: string }> },
 ) {
   const { serviceId } = await params;
+  const format =
+    new URL(req.url).searchParams.get("format") ?? "anoncreds";
   const service = getDemoService(serviceId);
   if (!service)
     return NextResponse.json({ error: "unknown service" }, { status: 404 });
@@ -58,6 +65,53 @@ export async function GET(
   }
 
   const admin = adminBase(serviceId);
+
+  // OpenID4VC SD-JWT rail: mint an OID4VCI credential offer / OID4VP
+  // authorization request via the agents' OID4VC plugin endpoints. Until the
+  // cast agents carry the plugin configuration, this degrades to
+  // {kind: "unsupported"} and the page shows a coming-soon placeholder.
+  if (format === "openid4vc-sdjwt" || format === "oid4vc") {
+    try {
+      if (service.role === "issuer") {
+        const offer = await adminJson(`${admin}/v1/oid4vc/offers`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            credentialConfigurationId: OID4VC_CRED_CONFIG,
+            claims: {
+              name: "Playground Visitor",
+              demoId: `demo-${crypto.randomUUID().slice(0, 8)}`,
+            },
+          }),
+        });
+        const url =
+          str(offer, "credentialOffer") ?? str(offer, "credentialOfferUri");
+        if (!url) throw new Error("no credentialOffer in response");
+        return NextResponse.json({
+          kind: "oid4vc-credential-offer",
+          url,
+          issuanceSessionId: str(offer, "issuanceSessionId"),
+        });
+      }
+      const request = await adminJson(`${admin}/v1/oid4vc/verifier/requests`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ policyId: OID4VC_POLICY }),
+      });
+      const url =
+        str(request, "authorizationRequest") ??
+        str(request, "authorizationRequestUri");
+      if (!url) throw new Error("no authorizationRequest in response");
+      return NextResponse.json({
+        kind: "oid4vc-presentation-request",
+        url,
+        verificationSessionId: str(request, "verificationSessionId"),
+      });
+    } catch {
+      return NextResponse.json({ kind: "unsupported", format });
+    }
+  }
+
   try {
     if (service.role === "issuer") {
       const credentialDefinitionId = await demoCredDefId(admin);

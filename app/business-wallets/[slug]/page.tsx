@@ -12,9 +12,9 @@ import WalletLogo from "../../components/WalletLogo";
 import { ProofOfTrust } from "../../components/ProofOfTrust";
 import {
   businessWallets,
-  personalWallets,
   getIntegration,
 } from "../../lib/integrations";
+import { listPersonalWallets } from "../../lib/wallets";
 import { getDemoService } from "../../lib/demo-services";
 import { ECS_ECOSYSTEM_DID, ENDPOINTS, LINKS } from "../../lib/site";
 
@@ -49,7 +49,7 @@ export default async function CloudWalletPlayground({
   const { slug } = await params;
   const w = getIntegration(slug);
   if (!w || w.kind !== "business-wallet") notFound();
-  const pickers = personalWallets();
+  const pickers = listPersonalWallets();
   // The standing service this business wallet hosts, named by its descriptor
   // (spec §5.3). Unknown ids fall through to the Placeholder branch.
   const demoService = w.demo_service ? getDemoService(w.demo_service) : undefined;
@@ -192,10 +192,10 @@ export default async function CloudWalletPlayground({
             <p className="ml-11 mt-4 text-sm text-gray-500">
               Run it with any integrated personal wallet:{" "}
               {pickers.map((p, i) => (
-                <span key={p.slug}>
+                <span key={p.id}>
                   {i > 0 ? " · " : ""}
                   <Link
-                    href={`/personal-wallets/${p.slug}`}
+                    href={`/personal-wallets?wallet=${p.id}`}
                     className="font-medium text-violet-600 hover:underline"
                   >
                     {p.name}

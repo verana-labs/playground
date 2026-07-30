@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
         destination: "/personal-wallets/:path*",
         permanent: true,
       },
+      // Single personal-wallets page: old per-wallet URLs deep-link into it.
+      {
+        source: "/personal-wallets/:slug",
+        destination: "/personal-wallets?wallet=:slug",
+        permanent: true,
+      },
       {
         source: "/cloud-wallets/:path*",
         destination: "/business-wallets/:path*",

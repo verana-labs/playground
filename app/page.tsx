@@ -14,7 +14,8 @@ import {
 import { Container, Section, SectionHeading } from "./components/ui";
 import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
 import { ProofOfTrust } from "./components/ProofOfTrust";
-import { personalWallets, businessWallets } from "./lib/integrations";
+import { businessWallets } from "./lib/integrations";
+import { listPersonalWallets, type PersonalWallet } from "./lib/wallets";
 import { CHAPTERS_NAV } from "./usecases/vesta/chapters";
 import { LINKS, ENDPOINTS } from "./lib/site";
 
@@ -59,8 +60,31 @@ const CAN_DO = [
   { icon: Wallet, text: "Integrate your wallet" },
 ];
 
+function PersonalWalletHomeTile({ w }: { w: PersonalWallet }) {
+  return (
+    <Link
+      href={`/personal-wallets?wallet=${w.id}`}
+      className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors hover:border-violet-300"
+    >
+      {w.icon ? (
+        // eslint-disable-next-line @next/next/no-img-element -- pre-optimized small assets from wallets/
+        <img src={w.icon} alt="" aria-hidden width={40} height={40}
+          className="shrink-0 rounded-lg bg-white object-contain ring-1 ring-black/5" />
+      ) : (
+        <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-50 font-bold text-violet-700">
+          {w.name.charAt(0)}
+        </span>
+      )}
+      <span className="min-w-0">
+        <span className="block truncate font-semibold text-gray-900">{w.name}</span>
+        <span className="block truncate text-sm text-gray-500">{w.vendor}</span>
+      </span>
+    </Link>
+  );
+}
+
 export default function Home() {
-  const users = personalWallets();
+  const users = listPersonalWallets();
   const clouds = businessWallets();
   const fidesUsecaseUrl = process.env.NEXT_PUBLIC_FIDES_USECASE_URL;
 
@@ -212,11 +236,11 @@ export default function Home() {
           <SectionHeading
             number={3}
             title="Personal wallets"
-            subtitle="Every integrated open-source personal wallet gets an identical playground page: receive a badge from Vesta, then log in with it"
+            subtitle="One playground for every integrated open-source personal wallet: pick your wallet and run the six DemoCredential scenarios"
           />
           <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {users.map((w) => (
-              <WalletTile key={w.slug} w={w} />
+              <PersonalWalletHomeTile key={w.id} w={w} />
             ))}
             <AddYourWalletTile />
           </div>

@@ -69,9 +69,19 @@ function UnavailableCard({ onRetry }: { onRetry: () => void }) {
 // live action for this visitor — an OOB credential offer (issuers) or OOB
 // presentation request (verifiers), or the plain connection invitation for
 // the untrusted service.
-export function ServiceQr({ serviceId, label }: { serviceId: string; label: string }) {
+export function ServiceQr({
+  serviceId,
+  label,
+  format = "anoncreds",
+}: {
+  serviceId: string;
+  label: string;
+  /** Credential format of the selected wallet — decides the minted QR. */
+  format?: string;
+}) {
   const [revealed, setRevealed] = useState(false);
   const [appUrl, setAppUrl] = useState<string | null | undefined>(undefined);
+  const [unsupported, setUnsupported] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | undefined>(undefined);
   const [qrFailed, setQrFailed] = useState(false);
   const [proofId, setProofId] = useState<string | null>(null);
@@ -83,12 +93,18 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
     if (!revealed) return;
     let alive = true;
     setAppUrl(undefined);
+    setUnsupported(false);
     setProofId(null);
     setProof(null);
-    fetch(`/api/demo/${serviceId}`)
+    fetch(`/api/demo/${serviceId}?format=${encodeURIComponent(format)}`)
       .then((res) => (res.ok ? (res.json() as Promise<DemoApiResponse>) : null))
       .then((body) => {
         if (!alive) return;
+        if (body?.kind === "unsupported") {
+          setUnsupported(true);
+          setAppUrl(null);
+          return;
+        }
         setAppUrl(body?.url ?? null);
         setProofId(body?.proofExchangeId ?? null);
       })
@@ -98,7 +114,7 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
     return () => {
       alive = false;
     };
-  }, [serviceId, attempt, revealed]);
+  }, [serviceId, attempt, revealed, format]);
 
   // Verifier flows: poll the presentation status so the QR flips into the
   // presented credential the moment the wallet shares it.
@@ -163,6 +179,15 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
 
   if (proof && proof.state === "done") {
     return <PresentedCredential proof={proof} />;
+  }
+
+  if (unsupported) {
+    return (
+      <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-5 py-4 text-xs text-gray-500">
+        The OpenID4VC rail for the demo services is being enabled — this
+        scenario reaches OpenID4VC wallets soon.
+      </div>
+    );
   }
 
   if (appUrl === undefined) {

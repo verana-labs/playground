@@ -125,10 +125,6 @@ export function listIntegrations(): Integration[] {
   return out;
 }
 
-export function personalWallets(): Integration[] {
-  return listIntegrations().filter((i) => i.kind === "personal-wallet");
-}
-
 export function businessWallets(): Integration[] {
   return listIntegrations().filter((i) => i.kind === "business-wallet");
 }

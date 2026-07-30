@@ -1,16 +1,17 @@
 import { describe, expect, it } from "vitest";
-import { listIntegrations, personalWallets } from "./integrations";
+import { listIntegrations, businessWallets } from "./integrations";
 import { parseIntegration } from "./integration-schema";
 
 describe("integration registry", () => {
   it("loads every descriptor directory", () => {
     const slugs = listIntegrations().map((i) => i.slug).sort();
-    expect(slugs).toContain("hologram");
+    expect(slugs).toContain("keycloak-verana");
     expect(slugs).toContain("vs-agent");
   });
 
   it("classifies kinds", () => {
-    for (const w of personalWallets()) expect(w.kind).toBe("personal-wallet");
+    expect(businessWallets().length).toBeGreaterThan(0);
+    for (const w of businessWallets()) expect(w.kind).toBe("business-wallet");
   });
 });
 

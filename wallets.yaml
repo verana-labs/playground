@@ -1,0 +1,144 @@
+# =============================================================================
+# Verana Playground — personal wallets configuration
+# =============================================================================
+# One entry per integrated personal wallet. The single /personal-wallets page
+# is generated from this file: the wallet picker, the download section, the
+# captures/videos, and the credential format used to mint the demo QR codes.
+#
+# To get listed: test the DemoCredential loop with AnonCreds and/or
+# OpenID4VC SD-JWT (see the personal-wallet guideline), then open a PR with:
+#   - your entry in this file
+#   - wallets/<id>/ containing your icon (required) and optional screen
+#     captures and videos
+#
+# Fields:
+#   id              slug; must match the wallets/<id>/ directory
+#   name            wallet display name
+#   vendor          organization behind the wallet
+#   icon            ./<id>/… path inside wallets/ (stored in this repo)
+#   formats         credential formats the wallet passed the loop with:
+#                   anoncreds | openid4vc-sdjwt (one or both)
+#   verana_builtin  true when the standard published build supports Verana
+#                   out of the box (no modified APK needed)
+#   download        direct APK (modified build) or the store/web link when
+#                   verana_builtin
+#   playstore/appstore/web   complementary install links
+#   repo, license, contact, notes
+#   captures        [{src, caption}] — screen captures of the wallet running
+#                   the scenarios
+#   videos          [{src, note}] — screen recordings; note discloses
+#                   recording conditions (speed, editing)
+
+wallets:
+  - id: hologram
+    name: Hologram Messaging
+    vendor: "2060"
+    icon: ./hologram/logo.webp
+    formats: [anoncreds]
+    verana_builtin: true
+    download: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
+    playstore: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
+    appstore: https://apps.apple.com/cl/app/hologram-messaging/id6474701855
+    repo: https://github.com/2060-io/hologram-app
+    license: Apache-2.0
+    notes: Reference personal wallet. The DemoCredential scenarios run over AnonCreds/DIDComm.
+
+  - id: paradym
+    name: Paradym Wallet
+    vendor: Animo Solutions
+    icon: ./paradym/logo.webp
+    formats: [openid4vc-sdjwt]
+    download: https://github.com/AirKyzzZ/paradym-wallet-verana/releases/download/verana-2026-07-28/paradym-verana-dev-debug.apk
+    repo: https://github.com/animo/paradym-wallet
+    license: Apache-2.0
+    notes: Verana trust integration in Paradym's SDK trust-mechanism registry (Credo-TS wallet).
+    captures:
+      - src: ./paradym/screenshots/1.webp
+        caption: Verana trust card on a trusted verifier
+      - src: ./paradym/screenshots/2.webp
+        caption: "The trust dossier: credentials and chain"
+      - src: ./paradym/screenshots/3.webp
+        caption: Rogue verifier rendered untrusted
+    videos:
+      - src: ./paradym/demo.mp4
+        note: Real device. Silent.
+
+  - id: procivis
+    name: Procivis One Wallet
+    vendor: Procivis
+    icon: ./procivis/logo.webp
+    formats: [openid4vc-sdjwt]
+    download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/tag/verana-2026-07-26
+    repo: https://github.com/procivis/one-wallet
+    license: Apache-2.0
+    notes: Q1+Q2/Q3 in the Rust core with typed verdicts and a trust dossier in the wallet UI.
+    captures:
+      - src: ./procivis/screenshots/1.webp
+        caption: Issuance from a trusted, authorized issuer
+      - src: ./procivis/screenshots/2.webp
+        caption: Q1 and Q2 verdicts in the trust dossier
+      - src: ./procivis/screenshots/3.webp
+        caption: "Non-positive control: trust unavailable"
+    videos:
+      - src: ./procivis/demo.mp4
+        note: Real device, three segments concatenated, 1.75x speed. Silent.
+
+  - id: sphereon
+    name: Sphereon Wallet
+    vendor: Sphereon
+    icon: ./sphereon/logo.webp
+    formats: [openid4vc-sdjwt]
+    download: https://github.com/AirKyzzZ/sphereon-mobile-wallet-verana/releases/download/verana-2026-07-28/sphereon-verana-dev-debug.apk
+    repo: https://github.com/Sphereon-Opensource/mobile-wallet
+    license: Apache-2.0
+    notes: Verana trust card on contact creation for did:webvh-identified verifiers.
+    captures:
+      - src: ./sphereon/screenshots/1.webp
+        caption: Contact created with the Verana trust card
+      - src: ./sphereon/screenshots/2.webp
+        caption: "Trust details: service and operator"
+      - src: ./sphereon/screenshots/3.webp
+        caption: Rogue verifier rendered untrusted
+    videos:
+      - src: ./sphereon/demo.mp4
+        note: Real device, edited at 4x speed. Silent.
+
+  - id: swiyu
+    name: swiyu Wallet
+    vendor: Swiss Confederation (swiyu open source)
+    icon: ./swiyu/logo.webp
+    formats: [openid4vc-sdjwt]
+    download: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-07-26/swiyu-verana-fabrice-arm64-debug.apk
+    repo: https://github.com/swiyu-admin-ch/eidch-android-wallet
+    license: MIT
+    notes: Strict Q1+Q2 before acceptance, device-verified, with a full evidence dossier.
+    captures:
+      - src: ./swiyu/screenshots/1.webp
+        caption: Verana warning before the accept action
+      - src: ./swiyu/screenshots/2.webp
+        caption: "Q2: the authorized-issuer check"
+      - src: ./swiyu/screenshots/3.webp
+        caption: Credential stored once the checks passed
+    videos:
+      - src: ./swiyu/demo.mp4
+        note: Real device, human-paced. Silent.
+
+  - id: talao
+    name: Altme Wallet
+    vendor: Talao
+    icon: ./talao/logo.webp
+    formats: [openid4vc-sdjwt]
+    download: https://github.com/AirKyzzZ/AltMe-verana
+    repo: https://github.com/TalaoDAO/AltMe
+    license: Apache-2.0
+    notes: Verana trust resolution on the OID4VP accept path with a config-driven TESTNET label.
+    captures:
+      - src: ./talao/screenshots/1.webp
+        caption: Verana trust card
+      - src: ./talao/screenshots/2.webp
+        caption: The trust dossier
+      - src: ./talao/screenshots/3.webp
+        caption: Rogue service denied
+    videos:
+      - src: ./talao/demo.mp4
+        note: Real device, human-paced. Silent.

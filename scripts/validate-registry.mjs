@@ -5,9 +5,9 @@ import yaml from "js-yaml";
 const dir = join(process.cwd(), "integrations");
 let failed = false;
 
-// wallets.yaml — the personal wallets configuration (one entry per wallet)
+// personal-wallets.yaml — the personal wallets configuration (one entry per wallet)
 try {
-  const raw = yaml.load(readFileSync(join(process.cwd(), "wallets.yaml"), "utf8"), { schema: yaml.JSON_SCHEMA });
+  const raw = yaml.load(readFileSync(join(process.cwd(), "personal-wallets.yaml"), "utf8"), { schema: yaml.JSON_SCHEMA });
   if (!Array.isArray(raw?.wallets) || raw.wallets.length === 0)
     throw new Error("missing wallets list");
   const FORMATS = ["anoncreds", "openid4vc-sdjwt"];
@@ -19,9 +19,9 @@ try {
     if (!statSync(join(process.cwd(), "wallets", w.id)).isDirectory())
       throw new Error(`${w.id}: wallets/${w.id}/ directory missing`);
   }
-  console.log(`ok wallets.yaml (${raw.wallets.length} personal wallets)`);
+  console.log(`ok personal-wallets.yaml (${raw.wallets.length} personal wallets)`);
 } catch (e) {
-  console.error(`FAIL wallets.yaml: ${e.message}`);
+  console.error(`FAIL personal-wallets.yaml: ${e.message}`);
   failed = true;
 }
 for (const slug of readdirSync(dir)) {

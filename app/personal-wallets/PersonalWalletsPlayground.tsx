@@ -523,7 +523,7 @@ export default function PersonalWalletsPlayground({
         {/* 3 · Issuer demos */}
         <div>
           <SectionHeading
-            eyebrow="Accredited issuers?"
+            eyebrow="Accredited issuers"
             title="Issuer demos - three services, three verdicts"
             subtitle={
               <>
@@ -552,7 +552,7 @@ export default function PersonalWalletsPlayground({
         {/* 4 · Verifier demos */}
         <div>
           <SectionHeading
-            eyebrow="Accredited relying parties?"
+            eyebrow="Accredited relying parties"
             title="Verifier Demos: relying parties"
             subtitle="Three verifier services ask you to present the DemoCredential you received above. Only one request should ever reach your wallet's share button."
           />

@@ -175,10 +175,10 @@ function RepairNetworkDiagram() {
         {VESTA_ASSETS.logo ? (
           <image
             href={VESTA_ASSETS.logo}
-            x={cx - 34}
-            y={cy - 34}
-            width={68}
-            height={68}
+            x={cx - 29}
+            y={cy - 29}
+            width={58}
+            height={58}
           />
         ) : null}
         <rect x={cx - 78} y={cy + 58} width={156} height={32} fill="#ffffff" />

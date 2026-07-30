@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { Wallet } from "lucide-react";
 import { listPersonalWallets } from "../lib/wallets";
 import PersonalWalletsPlayground from "./PersonalWalletsPlayground";
 
@@ -21,6 +22,9 @@ export default function PersonalWallets() {
     <>
       <header className="hero-gradient text-white">
         <div className="mx-auto max-w-4xl px-6 py-14 sm:py-16">
+          <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 ring-1 ring-white/25 backdrop-blur">
+            <Wallet className="h-7 w-7" aria-hidden />
+          </div>
           <h1 className="text-4xl font-bold tracking-tight">Personal wallets</h1>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white/85">
             One playground for every integrated open-source personal wallet:

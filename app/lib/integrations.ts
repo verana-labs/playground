@@ -39,6 +39,9 @@ export type Integration = {
   /** Mobile user wallet: direct APK link (stores may complement). Web wallet
    *  or cloud wallet: URL. */
   download?: string;
+  /** The standard published build supports Verana out of the box — no
+   *  modified APK needed. */
+  verana_builtin?: boolean;
   appstore?: string;
   playstore?: string;
   contact?: string;
@@ -101,6 +104,7 @@ export function listIntegrations(): Integration[] {
       }),
       fides: data.fides,
       download: data.download,
+      verana_builtin: data.verana_builtin,
       appstore: data.appstore,
       playstore: data.playstore,
       contact: data.contact,

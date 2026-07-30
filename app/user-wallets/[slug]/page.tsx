@@ -348,16 +348,27 @@ export default async function UserWalletPlayground({
           <div>
             <StepHeading n={2} title="Get the wallet" />
             <div className="ml-11 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <p className="text-sm leading-relaxed text-gray-600">
-                Download the{" "}
-                <strong className="font-semibold text-gray-900">
-                  modified APK
-                </strong>{" "}
-                by clicking the link below — it is the Verana-integrated build
-                of {w.name}, configured for the testnet. Store builds may not
-                include the integration; store links only complement the direct
-                download.
-              </p>
+              {w.verana_builtin ? (
+                <p className="text-sm leading-relaxed text-gray-600">
+                  {w.name} supports Verana{" "}
+                  <strong className="font-semibold text-gray-900">
+                    out of the box
+                  </strong>{" "}
+                  — install the standard build from the links below; no special
+                  version needed.
+                </p>
+              ) : (
+                <p className="text-sm leading-relaxed text-gray-600">
+                  Download the{" "}
+                  <strong className="font-semibold text-gray-900">
+                    modified APK
+                  </strong>{" "}
+                  by clicking the link below — it is the Verana-integrated
+                  build of {w.name}, configured for the testnet. Store builds
+                  may not include the integration; store links only complement
+                  the direct download.
+                </p>
+              )}
               {w.notes ? (
                 <p className="mt-2 text-sm leading-relaxed text-gray-500">
                   {w.notes}
@@ -371,7 +382,8 @@ export default async function UserWalletPlayground({
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700"
                   >
-                    <Download className="h-4 w-4" /> Download the modified APK
+                    <Download className="h-4 w-4" />{" "}
+                    {w.verana_builtin ? "Get the wallet" : "Download the modified APK"}
                   </a>
                 ) : null}
                 {w.playstore ? (

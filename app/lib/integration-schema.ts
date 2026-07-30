@@ -10,6 +10,9 @@ export const IntegrationSchema = z
     track: z.string().optional(),
     scenarios: z.array(z.string()).optional(),
     download: z.string().url().optional(),
+    // True when the wallet's standard published build supports Verana out of
+    // the box — no modified APK needed; store installs work as-is.
+    verana_builtin: z.boolean().optional(),
     playstore: z.string().url().optional(),
     appstore: z.string().url().optional(),
     // A URL, or a path relative to the descriptor (./demo.mp4) like `logo`.

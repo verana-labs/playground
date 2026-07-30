@@ -6,8 +6,8 @@ kind: user-wallet
 repo: https://github.com/2060-io/hologram-app
 license: Apache-2.0
 track: native # DIDComm-native (full Verifiable Trust integration)
+verana_builtin: true # standard builds support Verana out of the box - no modified APK
 scenarios: [demo-credential-loop]
-# TODO: replace with a direct APK download link; store pages complement it.
 download: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
 playstore: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
 appstore: https://apps.apple.com/cl/app/hologram-messaging/id6474701855

@@ -401,8 +401,8 @@ export const JOURNEY: {
         "Badges as verifiable credentials - for both physical access (office, factory) and Vesta's digital services.",
       steps: [
         {
-          id: "3.5",
-          stage: "3.5",
+          id: "3.4",
+          stage: "3.4",
           title: "Vesta becomes an ECS-Badge issuer",
           kind: "watch",
           story:
@@ -425,8 +425,8 @@ export const JOURNEY: {
           ],
         },
         {
-          id: "3.5b",
-          stage: "3.5b",
+          id: "3.5",
+          stage: "3.5",
           title: "A verifiable login service, accredited to verify badges",
           kind: "watch",
           story:
@@ -529,7 +529,7 @@ export const JOURNEY: {
             caption: "The technician at your door, proving they're from an authorized repairer - trust before you open.",
           },
           underHood: [
-            "Zenith self-accredits as an ECS-Badge issuer (the same move Vesta made in 3.5) and issues badges to its employees.",
+            "Zenith self-accredits as an ECS-Badge issuer (the same move Vesta made in 3.4) and issues badges to its employees.",
             "The Vesta login service's verifier policy accepts ECS-Badge from Vesta's anchor DID (employees) or from any issuer DID presenting a valid Authorized Repairer credential (partner employees). Two rules cover the whole network.",
             "The customer's wallet resolves the badge issuer's DID: Zenith's chain shows ECS-Org, ECS-Service, and Authorized Repairer under the Vesta Repair Network - the seal.",
           ],

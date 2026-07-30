@@ -33,9 +33,9 @@ export const LINKS = {
   repo: "https://github.com/verana-labs/playground",
   spec: "https://github.com/verana-labs/verana-spec/tree/main/playground",
   guidelineUserWallet:
-    "https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/user-wallet-integration.md",
+    "https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/personal-wallet-integration.md",
   guidelineCloudWallet:
-    "https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/cloud-wallet-integration.md",
+    "https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/business-wallet-integration.md",
   vtSpecV3: "https://verana-labs.github.io/verifiable-trust-spec/index-v3.html",
   vprSpecV3:
     "https://verana-labs.github.io/verifiable-trust-vpr-spec/index-v3.html",

@@ -21,6 +21,12 @@ describe("personal wallets configuration", () => {
     for (const w of wallets) {
       expect(w.formats.length).toBeGreaterThan(0);
       expect(w.download).toMatch(/^https:/);
+      for (const key of Object.keys(w.captures)) {
+        expect([
+          "issue-accredited", "issue-unaccredited", "issue-untrusted",
+          "present-accredited", "present-unaccredited", "present-untrusted",
+        ]).toContain(key);
+      }
     }
   });
 

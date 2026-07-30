@@ -134,3 +134,97 @@ html {
     opacity: 0.4;
   }
 }
+
+/* ————— The Mix design system (Aurora base · Film scenes · Path mechanics) ————— */
+.aurora {
+  position: relative;
+  overflow: hidden;
+}
+.aurora > * {
+  position: relative;
+  z-index: 1;
+}
+.blob {
+  position: absolute;
+  z-index: 0;
+  border-radius: 50%;
+  filter: blur(70px);
+  pointer-events: none;
+}
+.blob-violet { background: #8b5cf6; opacity: 0.42; }
+.blob-emerald { background: #34d9a8; opacity: 0.26; }
+.blob-amber { background: #ffc46b; opacity: 0.3; }
+.glass-panel {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  box-shadow: 0 24px 60px rgb(23 20 60 / 0.14);
+}
+.btn-gradient {
+  background: linear-gradient(92deg, #6d28d9, #7c3aed);
+  color: #fff;
+  box-shadow: 0 10px 26px rgb(109 40 217 / 0.32);
+}
+.btn-gradient:hover { filter: brightness(1.06); }
+.text-gradient {
+  background: linear-gradient(92deg, #6d28d9, #8b5cf6 55%, #10b981);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.photo-frame {
+  border-radius: 20px;
+  box-shadow: 0 18px 44px rgb(23 20 60 / 0.14);
+}
+.scene-scrim {
+  background: linear-gradient(180deg, rgb(11 10 16 / 0.4) 0%, rgb(11 10 16 / 0.8) 74%, rgb(11 10 16 / 0.94) 100%);
+}
+.float-slow { animation: float-slow 7s ease-in-out infinite; }
+@keyframes float-slow {
+  50% { transform: translateY(-9px) rotate(1.8deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .float-slow { animation: none; }
+}
+
+/* Anchors clear the sticky nav + stepper */
+[id^="section-"],
+[id^="need-"] {
+  scroll-margin-top: 120px;
+}
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* Status LED */
+.led {
+  position: relative;
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+}
+.led-green {
+  background: #10b981;
+  box-shadow: 0 0 6px 1px rgb(16 185 129 / 0.7);
+}
+.led-green::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 999px;
+  background: rgb(16 185 129 / 0.35);
+  animation: led-pulse 2s ease-out infinite;
+}
+.led-red {
+  background: #ef4444;
+  box-shadow: 0 0 6px 1px rgb(239 68 68 / 0.6);
+}
+@keyframes led-pulse {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  70%, 100% { transform: scale(1.6); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .led-green::after { animation: none; opacity: 0; }
+}

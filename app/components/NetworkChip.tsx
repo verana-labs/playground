@@ -31,6 +31,10 @@ export default function NetworkChip() {
       {resolver === null ? null : (
         <>
           <span aria-hidden>·</span>
+          <span
+            aria-hidden
+            className={`led ${resolver === "ok" ? "led-green" : "led-red"}`}
+          />
           <span className={resolver === "ok" ? "text-emerald-600" : "text-red-500"}>
             resolver {resolver === "ok" ? "OK" : "down"}
           </span>

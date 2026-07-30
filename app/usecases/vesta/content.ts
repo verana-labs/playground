@@ -282,9 +282,6 @@ export type JourneyNeed = {
   steps: SubStep[];
 };
 
-const CAST_NOTE =
-  "The dedicated Vesta demo cast (separate vs-agent instances per participant) is being deployed; until then, the verana-demos anchor stands in on this live card.";
-
 /** §3 · Marc's journey - one subsection per checklist need. */
 export const JOURNEY: {
   n: number;
@@ -538,7 +535,7 @@ export const JOURNEY: {
             "Scan a technician's badge with your wallet: the issuer chain ends at the Vesta Repair Network seal.",
           ],
           links: [
-            { label: "Run the demos", href: "/usecases/vesta#section-4" },
+            { label: "Run the demos", href: "/usecases/vesta/demos" },
           ],
         },
       ],

@@ -348,6 +348,10 @@ export default async function UserWalletPlayground({
           <div>
             <StepHeading n={2} title="Get the wallet" />
             <div className="ml-11 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center gap-3">
+                <WalletLogo w={w} size="tile" />
+                <span className="font-semibold text-gray-900">{w.name}</span>
+              </div>
               {w.verana_builtin ? (
                 <p className="text-sm leading-relaxed text-gray-600">
                   {w.name} supports Verana{" "}

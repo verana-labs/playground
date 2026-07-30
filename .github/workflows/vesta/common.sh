@@ -334,7 +334,8 @@ download_logo_data_uri() {
 # ---------------------------------------------------------------------------
 
 # Discover a VTJSC from a trust registry / issuer by resolving its DID document.
-# Finds the LinkedVerifiablePresentation entry matching "<schema_base_id>-jsc-vp",
+# Finds the LinkedVerifiablePresentation entry matching "<schema_base_id>-jsc-vp"
+# (vs-agent <= v1.11.x) or "<schema_base_id>-vtjsc-vp" (v1.12.0-oidc4vc line),
 # fetches the VP and extracts the VTJSC credential URL plus the VPR schema ID.
 # Works for the ECS TR ("organization", "service") and for cast registries
 # ("iso-9001-demo", "authorized-repairer").
@@ -354,13 +355,16 @@ discover_ecs_vtjsc() {
     return 1
   fi
 
+  # vs-agent <= v1.11.x publishes VTJSC VPs as '<base>-jsc-vp'; the
+  # v1.12.0-oidc4vc line renamed the fragment to '<base>-vtjsc-vp'
+  # (v4 spec naming). Accept both.
   local vp_url
-  vp_url=$(echo "$did_doc" | jq -r --arg pat "${schema_name}-jsc-vp" '
+  vp_url=$(echo "$did_doc" | jq -r --arg pat "${schema_name}-(vt)?jsc-vp" '
     .service[] | select(.type == "LinkedVerifiablePresentation") |
     select(.id | test($pat)) | .serviceEndpoint' | head -1)
 
   if [ -z "$vp_url" ]; then
-    err "No LinkedVerifiablePresentation matching '${schema_name}-jsc-vp' in DID document"
+    err "No LinkedVerifiablePresentation matching '${schema_name}-(vt)?jsc-vp' in DID document"
     return 1
   fi
   ok "VTJSC VP endpoint: $vp_url"
@@ -802,6 +806,9 @@ ensure_jsc() {
 # ---------------------------------------------------------------------------
 
 # Check if a LinkedVerifiablePresentation already exists in a DID document.
+# Linked credential VPs use the '<base>-c-vp' fragment on every vs-agent
+# generation (the earlier '-jsc-vp' pattern here never matched, so the skip
+# logic always re-issued).
 # Usage: has_linked_vp <public_url> <schema_base_id>
 has_linked_vp() {
   local public_url=$1
@@ -815,7 +822,7 @@ has_linked_vp() {
     --arg sbi "$schema_base_id" \
     '.service[] |
      select(.type == "LinkedVerifiablePresentation") |
-     select(.id | test($sbi + "-jsc-vp")) |
+     select(.id | test($sbi + "-c-vp")) |
      .id' 2>/dev/null | head -1)
 
   [ -n "$match" ]

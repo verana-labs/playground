@@ -18,7 +18,7 @@ import {
 import WalletLogo from "../../components/WalletLogo";
 import WalletEvidence from "../../components/WalletEvidence";
 import { type ExpectedRenderingKind } from "../../components/ExpectedRendering";
-import ServiceTrustCard from "../../components/ServiceTrustCard";
+import LiveTrustCard from "../../components/LiveTrustCard";
 import { ServiceQr } from "../../components/ServiceQr";
 import {
   personalWallets,
@@ -155,6 +155,17 @@ const VERIFIER_SCENARIOS: Scenario[] = [
  *  verifiers, the QR flips into the presented credential once shared. */
 function ScenarioCard({ s, w }: { s: Scenario; w: Integration }) {
   const live = !s.needsRail || w.demo_loop === "live";
+  const accreditations = s.accredited
+    ? [
+        {
+          role: (s.key.startsWith("issue") ? "ISSUER" : "VERIFIER") as
+            | "ISSUER"
+            | "VERIFIER",
+          schema: "DemoCredential",
+          context: "Playground Ecosystem (demo)",
+        },
+      ]
+    : [];
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex flex-wrap items-center gap-2">
@@ -178,7 +189,7 @@ function ScenarioCard({ s, w }: { s: Scenario; w: Integration }) {
             trust resolution demos already work.
           </Placeholder>
         )}
-        <ServiceTrustCard serviceId={s.serviceId} />
+        <LiveTrustCard serviceId={s.serviceId} accreditations={accreditations} />
       </div>
     </div>
   );

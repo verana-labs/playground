@@ -174,8 +174,7 @@ html {
 }
 .photo-frame {
   border-radius: 20px;
-  box-shadow: 0 30px 70px rgb(23 20 60 / 0.2);
-  transform: rotate(-1.2deg);
+  box-shadow: 0 18px 44px rgb(23 20 60 / 0.14);
 }
 .scene-scrim {
   background: linear-gradient(180deg, rgb(11 10 16 / 0.4) 0%, rgb(11 10 16 / 0.8) 74%, rgb(11 10 16 / 0.94) 100%);

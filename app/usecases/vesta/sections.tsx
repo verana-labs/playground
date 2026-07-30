@@ -105,7 +105,7 @@ function RepairNetworkDiagram() {
   const badgeText = `✓ ${REPAIR_NETWORK.badgeLabel}`;
   const badgeW = badgeText.length * 5.8 + 16;
   return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-2 shadow-sm sm:p-3">
+    <div>
       <svg
         viewBox="40 28 680 412"
         role="img"

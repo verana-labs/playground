@@ -226,15 +226,16 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
         </div>
         <p className="mt-4 max-w-3xl text-gray-600">{sub.story}</p>
         {sub.points?.length ? (
-          <ul className="reveal-stagger mt-4 grid max-w-3xl gap-2">
+          <ul className="mt-4 max-w-3xl space-y-2.5">
             {sub.points.map((p, pi) => (
               <li
                 key={pi}
-                className="flex gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm text-gray-600 shadow-sm"
+                className="flex gap-3 text-[15px] leading-relaxed text-gray-600"
               >
-                <span className="text-violet-500" aria-hidden>
-                  ▸
-                </span>
+                <span
+                  aria-hidden
+                  className="mt-[9px] h-1.5 w-1.5 shrink-0 rounded-full bg-violet-500"
+                />
                 {p}
               </li>
             ))}

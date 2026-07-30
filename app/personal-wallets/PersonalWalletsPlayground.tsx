@@ -316,7 +316,7 @@ export default function PersonalWalletsPlayground({
         {/* 1 · What you'll test - the Q1/Q2/Q3 mental model */}
         <div>
           <SectionHeading
-            number={1}
+            eyebrow="Purpose"
             title="What you'll test"
             subtitle="A Verana-integrated wallet answers three questions for you, at the right moments - before you connect, before you accept, before you share. The six demos below make each answer visible, in green and in red."
           />
@@ -356,7 +356,7 @@ export default function PersonalWalletsPlayground({
 
         {/* 2 · Get the wallet - pick, then install */}
         <div>
-          <SectionHeading number={2} title="Get the wallet" />
+          <SectionHeading eyebrow="Choose your wallet" title="Get the wallet" />
           <div className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {wallets.map((w) => (
@@ -523,7 +523,7 @@ export default function PersonalWalletsPlayground({
         {/* 3 · Issuer demos */}
         <div>
           <SectionHeading
-            number={3}
+            eyebrow="Accredited issuers?"
             title="Issuer demos - three services, three verdicts"
             subtitle={
               <>
@@ -552,8 +552,8 @@ export default function PersonalWalletsPlayground({
         {/* 4 · Verifier demos */}
         <div>
           <SectionHeading
-            number={4}
-            title="Verifier demos - log in with your DemoCredential"
+            eyebrow="Accredited relying parties?"
+            title="Verifier Demos: relying parties"
             subtitle="Three verifier services ask you to present the DemoCredential you received above. Only one request should ever reach your wallet's share button."
           />
           <div className="space-y-4">

@@ -25,16 +25,10 @@ export default function VestaChapter1() {
               { label: "Vesta Appliances" },
             ]}
           />
-          <div className="mt-6 flex items-center gap-4">
-            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white p-1.5 ring-1 ring-white/25">
-              {/* eslint-disable-next-line @next/next/no-img-element -- small pre-optimized cast asset */}
-              <img src="/images/cast/vesta.png" alt="" aria-hidden className="h-full w-full object-contain" />
-            </div>
-            <h1 className="max-w-3xl text-4xl font-bold md:text-5xl">
-              Learn with Vesta how to make your organization verifiable and
-              trusted
-            </h1>
-          </div>
+          <h1 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl">
+            Learn with Vesta how to make your organization verifiable and
+            trusted
+          </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/80">
             Follow Vesta Appliances, a company everyone recognizes, through
             its full journey: proving its identity, making its services

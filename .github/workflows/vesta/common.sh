@@ -551,33 +551,47 @@ ensure_validated_issuer_perm() {
     return 0
   fi
 
-  local root_perm_id
-  root_perm_id=$(discover_active_root_perm "$schema_id")
+  local issuer_perm
+  # Reuse a previously started (not yet validated) permission VP if one exists
+  # — a prior run may have started it and failed before validation.
+  issuer_perm=$(curl -s "${INDEXER_URL}/verana/perm/v1/list?schema_id=${schema_id}" \
+    | jq -r --arg did "$did" '
+      .permissions[]? |
+      select(.type == "ISSUER" and .did == $did) |
+      select(.perm_state | test("REVOKED|TERMINATED|EXPIRED|SLASHED") | not) |
+      .id' | head -1)
 
-  log "Starting ISSUER permission VP for $did (root perm $root_perm_id)..."
-  check_balance "$USER_ACC"
+  if [ -n "$issuer_perm" ]; then
+    ok "Reusing pending ISSUER permission VP: $issuer_perm"
+  else
+    local root_perm_id
+    root_perm_id=$(discover_active_root_perm "$schema_id")
 
-  local start_result start_tx_hash issuer_perm
-  start_result=$(veranad tx perm start-perm-vp \
-    issuer "$root_perm_id" \
-    --did "$did" \
-    --from "$USER_ACC" --chain-id "$CHAIN_ID" --keyring-backend test \
-    --fees "$FEES" --gas auto --node "$NODE_RPC" \
-    --output json -y 2>&1 | extract_tx_json)
-  start_tx_hash=$(echo "$start_result" | jq -r '.txhash // empty')
-  if [ -z "$start_tx_hash" ]; then
-    err "Failed to start ISSUER permission VP"
-    return 1
-  fi
-  sleep 8
-  issuer_perm=$(extract_tx_event "$start_tx_hash" "start_permission_vp" "permission_id")
-  if [ -z "$issuer_perm" ]; then
-    sleep 6
+    log "Starting ISSUER permission VP for $did (root perm $root_perm_id)..."
+    check_balance "$USER_ACC"
+
+    local start_result start_tx_hash
+    start_result=$(veranad tx perm start-perm-vp \
+      issuer "$root_perm_id" \
+      --did "$did" \
+      --from "$USER_ACC" --chain-id "$CHAIN_ID" --keyring-backend test \
+      --fees "$FEES" --gas auto --node "$NODE_RPC" \
+      --output json -y 2>&1 | extract_tx_json)
+    start_tx_hash=$(echo "$start_result" | jq -r '.txhash // empty')
+    if [ -z "$start_tx_hash" ]; then
+      err "Failed to start ISSUER permission VP"
+      return 1
+    fi
+    sleep 8
     issuer_perm=$(extract_tx_event "$start_tx_hash" "start_permission_vp" "permission_id")
-  fi
-  if [ -z "$issuer_perm" ]; then
-    err "Could not extract permission_id from start_permission_vp (tx: $start_tx_hash)"
-    return 1
+    if [ -z "$issuer_perm" ]; then
+      sleep 6
+      issuer_perm=$(extract_tx_event "$start_tx_hash" "start_permission_vp" "permission_id")
+    fi
+    if [ -z "$issuer_perm" ]; then
+      err "Could not extract permission_id from start_permission_vp (tx: $start_tx_hash)"
+      return 1
+    fi
   fi
 
   check_balance "$USER_ACC"

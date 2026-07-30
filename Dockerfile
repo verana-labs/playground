@@ -10,6 +10,10 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN mkdir -p public
+# NEXT_PUBLIC_* is inlined at build time, so a runtime container env var cannot
+# reach it. Without this the "Support it on FIDES" CTA never renders in prod.
+ARG NEXT_PUBLIC_FIDES_USECASE_URL
+ENV NEXT_PUBLIC_FIDES_USECASE_URL=$NEXT_PUBLIC_FIDES_USECASE_URL
 RUN npm run build
 
 FROM base AS runner

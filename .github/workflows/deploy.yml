@@ -43,6 +43,8 @@ jobs:
           tags: |
             veranalabs/playground:${{ github.sha }}
             veranalabs/playground:latest
+          build-args: |
+            NEXT_PUBLIC_FIDES_USECASE_URL=${{ vars.NEXT_PUBLIC_FIDES_USECASE_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 

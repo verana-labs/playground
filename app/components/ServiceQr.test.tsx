@@ -16,11 +16,11 @@ afterEach(() => vi.unstubAllGlobals());
 // demo); every test reveals it first.
 function renderRevealed(serviceId: string, label: string) {
   render(<ServiceQr serviceId={serviceId} label={label} />);
-  fireEvent.click(screen.getByRole("button", { name: `Show QR code — ${label}` }));
+  fireEvent.click(screen.getByRole("button", { name: `Show QR code - ${label}` }));
 }
 
 describe("ServiceQr", () => {
-  it("stays collapsed — no fetch — until the Show QR button is clicked", () => {
+  it("stays collapsed - no fetch - until the Show QR button is clicked", () => {
     const fetchSpy = vi.fn();
     vi.stubGlobal("fetch", fetchSpy);
 
@@ -29,7 +29,7 @@ describe("ServiceQr", () => {
     );
 
     expect(
-      screen.getByRole("button", { name: /Show QR code — Accredited Issuer \(demo\)/ }),
+      screen.getByRole("button", { name: /Show QR code - Accredited Issuer \(demo\)/ }),
     ).toBeDefined();
     expect(fetchSpy).not.toHaveBeenCalled();
   });

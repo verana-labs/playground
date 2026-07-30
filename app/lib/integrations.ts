@@ -29,7 +29,7 @@ export type Integration = {
   track: string;
   scenarios: string[];
   demo_video?: string;
-  /** Recording conditions (speed, editing) — disclosed under the player. */
+  /** Recording conditions (speed, editing) - disclosed under the player. */
   demo_video_note?: string;
   logo?: string;
   /** Real captures of this wallet rendering Verana trust (spec §4 "the
@@ -39,14 +39,14 @@ export type Integration = {
   /** Mobile personal wallet: direct APK link (stores may complement). Web wallet
    *  or business wallet: URL. */
   download?: string;
-  /** The standard published build supports Verana out of the box — no
+  /** The standard published build supports Verana out of the box - no
    *  modified APK needed. */
   verana_builtin?: boolean;
   appstore?: string;
   playstore?: string;
   contact?: string;
   /** Whether the six DemoCredential scenarios are live for this wallet
-   *  (over its track's rail) — spec §4. */
+   *  (over its track's rail) - spec §4. */
   demo_loop?: string;
   /** Per-scenario captures of this wallet's expected behavior; keys are the
    *  six scenario ids (issue|present × accredited|unaccredited|untrusted). */

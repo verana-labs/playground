@@ -88,7 +88,7 @@ const ISSUER_SCENARIOS: Scenario[] = [
     trusted: true,
     accredited: true,
     blurb:
-      "Trusted, and authorized to issue the DemoCredential. Accept its offer and you hold a DemoCredential — you'll use it in the verifier demos below.",
+      "Trusted, and authorized to issue the DemoCredential. Accept its offer and you hold a DemoCredential - you'll use it in the verifier demos below.",
   },
   {
     key: "issue-unaccredited",
@@ -97,7 +97,7 @@ const ISSUER_SCENARIOS: Scenario[] = [
     trusted: true,
     accredited: false,
     blurb:
-      "A perfectly trusted service — but it holds no issuer accreditation for the DemoCredential, so your wallet must block its offer. Trust and authorization are different questions.",
+      "A perfectly trusted service - but it holds no issuer accreditation for the DemoCredential, so your wallet must block its offer. Trust and authorization are different questions.",
   },
   {
     key: "issue-untrusted",
@@ -105,7 +105,7 @@ const ISSUER_SCENARIOS: Scenario[] = [
     title: "Untrusted Service (demo)",
     trusted: false,
     blurb:
-      "Fails trust resolution outright — no verifiable identity, no operator. Your wallet refuses the connection before any offer can reach you.",
+      "Fails trust resolution outright - no verifiable identity, no operator. Your wallet refuses the connection before any offer can reach you.",
   },
 ];
 
@@ -117,7 +117,7 @@ const VERIFIER_SCENARIOS: Scenario[] = [
     trusted: true,
     accredited: true,
     blurb:
-      "Trusted, and authorized to verify the DemoCredential. Present the credential you received above and you're in — no password, no account: the trust chain did the work.",
+      "Trusted, and authorized to verify the DemoCredential. Present the credential you received above and you're in - no password, no account: the trust chain did the work.",
   },
   {
     key: "present-unaccredited",
@@ -126,7 +126,7 @@ const VERIFIER_SCENARIOS: Scenario[] = [
     trusted: true,
     accredited: false,
     blurb:
-      "Trusted, but not authorized to verify the DemoCredential — your wallet must refuse to share it. Verifiers need accreditation too: no over-asking.",
+      "Trusted, but not authorized to verify the DemoCredential - your wallet must refuse to share it. Verifiers need accreditation too: no over-asking.",
   },
   {
     key: "present-untrusted",
@@ -324,12 +324,12 @@ export default function PersonalWalletsPlayground({
   return (
     <Section>
       <Container className="space-y-10">
-        {/* 1 · What you'll test — the Q1/Q2/Q3 mental model */}
+        {/* 1 · What you'll test - the Q1/Q2/Q3 mental model */}
         <div>
           <StepHeading n={1} title="What you'll test" />
           <p className="ml-11 text-sm leading-relaxed text-gray-500">
             A Verana-integrated wallet answers three questions for you, at the
-            right moments — before you connect, before you accept, before you
+            right moments - before you connect, before you accept, before you
             share. The six demos below make each answer visible, in green and
             in red.
           </p>
@@ -361,13 +361,13 @@ export default function PersonalWalletsPlayground({
             <strong className="font-semibold text-gray-700">
               Playground Ecosystem (demo)
             </strong>{" "}
-            and its single <em>DemoCredential</em> schema — real registry
+            and its single <em>DemoCredential</em> schema - real registry
             entries, resolved live on the Verana testnet. The same services
             for every wallet; only the QR format changes.
           </p>
         </div>
 
-        {/* 2 · Get the wallet — pick, then install */}
+        {/* 2 · Get the wallet - pick, then install */}
         <div>
           <StepHeading n={2} title="Get the wallet" />
           <div className="ml-11 space-y-4">
@@ -426,7 +426,7 @@ export default function PersonalWalletsPlayground({
                   <strong className="font-semibold text-gray-900">
                     out of the box
                   </strong>{" "}
-                  — install the standard build from the links below; no special
+                  - install the standard build from the links below; no special
                   version needed.
                 </p>
               ) : (
@@ -435,7 +435,7 @@ export default function PersonalWalletsPlayground({
                   <strong className="font-semibold text-gray-900">
                     modified APK
                   </strong>{" "}
-                  by clicking the link below — it is the Verana-integrated
+                  by clicking the link below - it is the Verana-integrated
                   build of {wallet.name}, configured for the testnet. Store
                   builds may not include the integration.
                 </p>
@@ -518,7 +518,7 @@ export default function PersonalWalletsPlayground({
 
         {/* 3 · Issuer demos */}
         <div>
-          <StepHeading n={3} title="Issuer demos — three services, three verdicts" />
+          <StepHeading n={3} title="Issuer demos - three services, three verdicts" />
           <p className="ml-11 text-sm leading-relaxed text-gray-500">
             Three issuer services offer you the DemoCredential over{" "}
             <strong className="font-medium text-gray-700">
@@ -542,7 +542,7 @@ export default function PersonalWalletsPlayground({
 
         {/* 4 · Verifier demos */}
         <div>
-          <StepHeading n={4} title="Verifier demos — log in with your DemoCredential" />
+          <StepHeading n={4} title="Verifier demos - log in with your DemoCredential" />
           <p className="ml-11 text-sm leading-relaxed text-gray-500">
             Three verifier services ask you to present the DemoCredential you
             received above. Only one request should ever reach your
@@ -571,7 +571,7 @@ export default function PersonalWalletsPlayground({
           >
             <code>personal-wallets.yaml</code>
           </a>{" "}
-          — to list your wallet, test the loop with AnonCreds and/or OpenID4VC
+          - to list your wallet, test the loop with AnonCreds and/or OpenID4VC
           SD-JWT and open a PR with your entry, icon, and optional captures
           and videos.
         </p>

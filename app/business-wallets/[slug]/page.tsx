@@ -18,7 +18,7 @@ import { listPersonalWallets } from "../../lib/wallets";
 import { getDemoService } from "../../lib/demo-services";
 import { ECS_ECOSYSTEM_DID, ENDPOINTS, LINKS } from "../../lib/site";
 
-// Per-business-wallet playground page — the identical template of spec §5:
+// Per-business-wallet playground page - the identical template of spec §5:
 // breadcrumb · header · the hosted demo service · the use case to test ·
 // under the hood. Generated from integration.yaml.
 
@@ -36,7 +36,7 @@ export async function generateMetadata({
   return {
     title: w ? `${w.name} playground` : "Business wallet",
     description: w
-      ? `${w.name} on the Verana playground — a hosted verifiable service with live Proof-of-Trust.`
+      ? `${w.name} on the Verana playground - a hosted verifiable service with live Proof-of-Trust.`
       : undefined,
   };
 }
@@ -135,7 +135,7 @@ export default async function CloudWalletPlayground({
                 </h2>
               </div>
               <p className="ml-11 mb-4 text-sm text-gray-500">
-                A standing service run by {w.name}, Verana-verified — its DID
+                A standing service run by {w.name}, Verana-verified - its DID
                 and live Proof-of-Trust, resolved against the testnet on page
                 load.
               </p>
@@ -144,7 +144,7 @@ export default async function CloudWalletPlayground({
                 {demoService ? (
                   <p className="mt-2 text-xs text-gray-500">
                     <code>{demoService.host}</code>
-                    {" — "}
+                    {" - "}
                     <a
                       href={`https://${demoService.host}/.well-known/did.json`}
                       target="_blank"
@@ -185,7 +185,7 @@ export default async function CloudWalletPlayground({
               </h2>
             </div>
             <ol className="ml-11 space-y-2 text-sm text-gray-600">
-              <li>1. Resolve the hosted service — see the Proof-of-Trust.</li>
+              <li>1. Resolve the hosted service - see the Proof-of-Trust.</li>
               <li>2. Receive a credential issued by the hosted service.</li>
               <li>3. Present it back to the hosted service&apos;s verifier.</li>
             </ol>
@@ -222,8 +222,8 @@ export default async function CloudWalletPlayground({
               <div className="mt-4 space-y-4">
                 <p className="text-sm leading-relaxed text-gray-600">
                   {w.track === "native"
-                    ? "Pattern A/B — the stack itself (or a vs-agent sidecar) owns the DID, DIDComm, Linked VPs and VPR operations."
-                    : "Pattern C — bridge: OID4VC stack + a resolvable DID with Linked VPs; trust checks via the public Trust Resolver."}
+                    ? "Pattern A/B - the stack itself (or a vs-agent sidecar) owns the DID, DIDComm, Linked VPs and VPR operations."
+                    : "Pattern C - bridge: OID4VC stack + a resolvable DID with Linked VPs; trust checks via the public Trust Resolver."}
                 </p>
                 <p className="text-sm leading-relaxed text-gray-500">
                   ECS credentials are obtained via the vs-agent Admin API or

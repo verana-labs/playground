@@ -1,7 +1,7 @@
 import type { Integration } from "../lib/integrations";
 
 /** The recording and the device captures of this wallet rendering Verana trust
- *  — the per-wallet form of spec §4's "expected wallet rendering", and the
+ *  - the per-wallet form of spec §4's "expected wallet rendering", and the
  *  screen recording the listing requirements ask for. */
 export default function WalletEvidence({ w }: { w: Integration }) {
   const shots = w.screenshots ?? [];

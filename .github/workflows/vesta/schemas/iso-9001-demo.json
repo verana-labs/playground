@@ -1,0 +1,39 @@
+{
+  "$id": "https://iso-certification.playground.testnet.verana.network/schemas/iso-9001-demo.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ISO9001DemoCredential",
+  "description": "ISO 9001-style (demo) quality management certification. For demonstration only; not affiliated with ISO.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID of the certified organization"
+        },
+        "certificateNumber": {
+          "type": "string",
+          "description": "Certificate number assigned by the certification body"
+        },
+        "standard": {
+          "type": "string",
+          "description": "Standard the certification refers to"
+        },
+        "scope": {
+          "type": "string",
+          "description": "Scope of the certified activities"
+        },
+        "validUntil": {
+          "type": "string",
+          "description": "Certificate expiry date (ISO 8601)"
+        }
+      },
+      "required": [
+        "certificateNumber",
+        "standard",
+        "scope"
+      ]
+    }
+  }
+}

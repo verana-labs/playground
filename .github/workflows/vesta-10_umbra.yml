@@ -1,0 +1,31 @@
+name: "Vesta 10 · Umbra Repairs (impostor)"
+
+# Deploys the impostor vs-agent. Deliberately unprovisioned: DID only, no credentials, no permissions.
+# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  umbra:
+    uses: ./.github/workflows/vesta-00_core.yml
+    with:
+      org: umbra
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

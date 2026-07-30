@@ -1,0 +1,31 @@
+name: "Vesta 05 · NormaCert (demo)"
+
+# Deploys NormaCert, accredits it on the ISO schema and issues the certificate to the Vesta anchor.
+# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  normacert:
+    uses: ./.github/workflows/vesta-00_core.yml
+    with:
+      org: normacert
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

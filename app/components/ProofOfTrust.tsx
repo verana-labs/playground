@@ -297,7 +297,7 @@ export function PotCard({
               <ul className="space-y-1">
                 {failed.map((f, i) => (
                   <li key={i} className="text-xs text-red-700">
-                    <span className="font-mono">{text(f.id) ?? "credential"}</span> —{" "}
+                    <span className="font-mono">{text(f.id) ?? "credential"}</span> - {" "}
                     {text(f.error) ?? text(f.errorCode) ?? "verification failed"}
                   </li>
                 ))}
@@ -345,7 +345,7 @@ export function PotCard({
                       <ul className="mt-0.5 space-y-0.5">
                         {failed.map((f, i) => (
                           <li key={i} className="text-[11px] text-red-600">
-                            <span className="font-mono">{text(f.id) ?? "credential"}</span> —{" "}
+                            <span className="font-mono">{text(f.id) ?? "credential"}</span> - {" "}
                             {text(f.error) ?? text(f.errorCode) ?? "verification failed"}
                           </li>
                         ))}

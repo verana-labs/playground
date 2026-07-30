@@ -97,7 +97,7 @@ html {
   padding-left: 1.4rem;
 }
 
-/* Story diagram — highlight what is new at the current stage */
+/* Story diagram - highlight what is new at the current stage */
 .sd-new {
   animation: sd-fade-in 0.6s ease-out both;
 }
@@ -135,7 +135,7 @@ html {
   }
 }
 
-/* ————— The Mix design system (Aurora base · Film scenes · Path mechanics) ————— */
+/* -  -  -  -  - The Mix design system (Aurora base · Film scenes · Path mechanics) -  -  -  -  - */
 .aurora {
   position: relative;
   overflow: hidden;

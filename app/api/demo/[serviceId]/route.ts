@@ -4,7 +4,7 @@ import { adminBase, adminJson, CAST_DOMAIN, VTJSC_URL } from "@/app/lib/demo-adm
 
 // Live demo-action link for a Playground cast service (spec §4): what the
 // wallet actually scans. Issuers mint an OOB CREDENTIAL OFFER and verifiers
-// an OOB PRESENTATION REQUEST via their in-cluster vs-agent admin APIs — the
+// an OOB PRESENTATION REQUEST via their in-cluster vs-agent admin APIs - the
 // wallet lands directly on the offer/request consent screen (with its
 // Q2/Q3 verdict), not in a DIDComm chat. The untrusted service keeps a plain
 // connection invitation: its lesson (Q1) happens before any exchange exists.

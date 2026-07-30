@@ -146,24 +146,24 @@ export default function Integrate() {
 
             <ol className="mt-6 space-y-2 text-sm text-gray-600">
               <li>
-                <strong className="text-gray-900">1 · Status band</strong> —
+                <strong className="text-gray-900">1 · Status band</strong> - 
                 verdict pill, DID, evaluation time/block, TESTNET chip.
               </li>
               <li>
-                <strong className="text-gray-900">2 · Service</strong> —
+                <strong className="text-gray-900">2 · Service</strong> - 
                 ECS-Service claims.
               </li>
               <li>
-                <strong className="text-gray-900">3 · Operated by</strong> —
+                <strong className="text-gray-900">3 · Operated by</strong> - 
                 ECS-Organization/Persona claims.
               </li>
               <li>
                 <strong className="text-gray-900">4 · Other credentials</strong>{" "}
-                — per-entry valid/invalid marks.
+                - per-entry valid/invalid marks.
               </li>
               <li>
                 <strong className="text-gray-900">5 · Trust chain &amp; failures</strong>{" "}
-                — expandable; failures are first-class content.
+                - expandable; failures are first-class content.
               </li>
             </ol>
 

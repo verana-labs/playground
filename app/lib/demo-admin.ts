@@ -5,7 +5,7 @@
 export const CAST_DOMAIN =
   process.env.CAST_BASE_DOMAIN ?? "playground.testnet.verana.network";
 
-// Admin API of a cast vs-agent — {id} is replaced by the service id
+// Admin API of a cast vs-agent - {id} is replaced by the service id
 // (= Helm release = k8s Service name).
 const ADMIN_TEMPLATE =
   process.env.DEMO_ADMIN_BASE_TEMPLATE ?? "http://{id}:3000";

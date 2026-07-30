@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { ChevronDown, Menu } from "lucide-react";
 import NetworkChip from "./NetworkChip";
+import { MobileMenu, UseCasesMenu } from "./NavMenus";
 
 // Persistent header (spec §2): logo · What is Verana · Use Cases submenu ·
 // wallet anchors · network chip · one CTA: "Add your wallet" → /integrate.
@@ -11,32 +11,6 @@ const NAV = [
 ];
 
 const USE_CASES = [{ href: "/usecases/vesta", label: "Vesta Appliances" }];
-
-function UseCasesMenu() {
-  return (
-    <details className="group relative">
-      <summary className="flex list-none items-center gap-1 text-sm text-gray-500 transition-colors marker:hidden hover:text-gray-900 [&::-webkit-details-marker]:hidden">
-        Use Cases
-        <ChevronDown
-          className="h-3.5 w-3.5 transition-transform group-open:rotate-180"
-          aria-hidden="true"
-        />
-      </summary>
-      <ul className="absolute left-0 top-full z-50 mt-3 w-48 rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
-        {USE_CASES.map((item) => (
-          <li key={item.href}>
-            <Link
-              href={item.href}
-              className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-            >
-              {item.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </details>
-  );
-}
 
 function Logo() {
   return (
@@ -59,33 +33,6 @@ function Logo() {
   );
 }
 
-// Below `lg` the four anchors move into a disclosure menu. A native
-// <details>/<summary> keeps this JS-free — Nav stays a server component.
-function MobileMenu() {
-  return (
-    <details className="relative lg:hidden">
-      <summary
-        aria-label="Open section menu"
-        className="flex h-9 w-9 list-none items-center justify-center rounded-lg text-gray-500 marker:hidden hover:bg-gray-100 hover:text-gray-900 [&::-webkit-details-marker]:hidden"
-      >
-        <Menu className="h-5 w-5" aria-hidden="true" />
-      </summary>
-      <ul className="absolute right-0 top-full z-50 mt-2 w-52 rounded-xl border border-gray-200 bg-white p-2 shadow-sm">
-        {[NAV[0], ...USE_CASES, ...NAV.slice(1)].map((item) => (
-          <li key={item.href}>
-            <Link
-              href={item.href}
-              className="block rounded-lg px-3 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-            >
-              {item.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </details>
-  );
-}
-
 export default function Nav() {
   return (
     <header className="sticky top-0 z-40 border-b border-[#efeef6] bg-white/70 backdrop-blur-md">
@@ -101,7 +48,7 @@ export default function Nav() {
             </Link>
           </li>
           <li>
-            <UseCasesMenu />
+            <UseCasesMenu items={USE_CASES} />
           </li>
           {NAV.slice(1).map((item) => (
             <li key={item.href}>
@@ -123,7 +70,7 @@ export default function Nav() {
             <span className="sm:hidden">Add wallet</span>
             <span className="hidden sm:inline">Add your wallet</span>
           </Link>
-          <MobileMenu />
+          <MobileMenu items={[NAV[0], ...USE_CASES, ...NAV.slice(1)]} />
         </div>
       </nav>
     </header>

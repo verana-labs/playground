@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     "Integrate your open-source user or business wallet with Verana and get your own playground page: guidelines, integration.yaml, and the PR process.",
 };
 
-const YAML_EXAMPLE = `# personal wallet: one entry in wallets.yaml (+ wallets/<id>/ for media)
+const YAML_EXAMPLE = `# personal wallet: one entry in personal-wallets.yaml (+ wallets/<id>/ for media)
 - id: your-wallet
   name: Your Wallet
   vendor: Your Org
@@ -93,7 +93,7 @@ export default function Integrate() {
               </li>
               <li>
                 <strong className="text-gray-900">3 · Open a PR</strong> - personal
-                wallets: add your entry to <code>wallets.yaml</code> plus{" "}
+                wallets: add your entry to <code>personal-wallets.yaml</code> plus{" "}
                 <code>wallets/&lt;id&gt;/</code> (icon, optional captures and
                 videos) · business wallets: add{" "}
                 <code>integrations/&lt;slug&gt;/integration.yaml</code> - in{" "}

@@ -4,7 +4,7 @@ import { listPersonalWallets } from "../lib/wallets";
 import PersonalWalletsPlayground from "./PersonalWalletsPlayground";
 
 // The single personal-wallets playground (spec §4, simplified): one page for
-// all wallets, generated from wallets.yaml. The visitor picks a wallet in
+// all wallets, generated from personal-wallets.yaml. The visitor picks a wallet in
 // the download section; the six DemoCredential scenarios run against the
 // same shared services for everyone — only the QR artifact changes with the
 // wallet's credential format (AnonCreds or OpenID4VC SD-JWT).

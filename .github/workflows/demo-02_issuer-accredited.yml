@@ -1,0 +1,31 @@
+name: "Demo 02 · Accredited Issuer (demo)"
+
+# Deploys the Accredited Issuer (demo): delegated service + validated ISSUER permission on the DemoCredential. Requires demo-01.
+# Part of the Playground demo cast CI/CD — see .github/workflows/demo/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  demo-issuer-accredited:
+    uses: ./.github/workflows/demo-00_core.yml
+    with:
+      org: demo-issuer-accredited
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

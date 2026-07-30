@@ -1,0 +1,16 @@
+name: EUDI Wallet (reference)
+organization: European Commission
+kind: personal-wallet
+repo: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui
+license: EUPL-1.2
+track: bridge # OpenID4VC (OID4VCI + OID4VP); Verana trust resolution planned on both
+scenarios: [demo-credential-loop]
+download: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui/releases/download/Wallet/Demo_Version%3D2026.07.39-Demo_Build%3D39/2026.07.39-Demo.apk
+demo_loop: coming
+verana_builtin: false
+notes: >-
+  The European Commission's reference Android wallet, Kotlin and Jetpack Compose.
+  The download above is the upstream demo build as published, without Verana trust
+  resolution; the integration adds it to the issuance and presentation flows, the
+  same hook points already used for swiyu.
+logo: ./logo.svg

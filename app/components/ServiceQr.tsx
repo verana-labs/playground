@@ -1,13 +1,52 @@
 "use client";
 
-import { QrCode, RefreshCw } from "lucide-react";
+import { BadgeCheck, QrCode, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "qrcode";
 
 type DemoApiResponse = {
   kind?: string;
   url?: string | null;
+  proofExchangeId?: string | null;
 };
+
+type ProofStatus = {
+  state?: string | null;
+  verified?: boolean;
+  claims?: { name: string; value: string }[];
+};
+
+/** What the verifier received — shown in place of the QR once the wallet
+ *  has presented the DemoCredential. */
+function PresentedCredential({ proof }: { proof: ProofStatus }) {
+  return (
+    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
+      <div className="flex items-center justify-center gap-2 text-emerald-700">
+        <BadgeCheck className="h-5 w-5 shrink-0" aria-hidden />
+        <span className="font-semibold">DemoCredential presented</span>
+      </div>
+      {proof.claims?.length ? (
+        <dl className="mx-auto mt-4 max-w-xs space-y-1.5">
+          {proof.claims.map((c) => (
+            <div key={c.name} className="flex items-baseline justify-between gap-4">
+              <dt className="text-xs font-semibold uppercase tracking-wider text-emerald-700/70">
+                {c.name}
+              </dt>
+              <dd className="break-all font-mono text-sm text-emerald-900">
+                {c.value}
+              </dd>
+            </div>
+          ))}
+        </dl>
+      ) : null}
+      <p className="mt-3 text-center text-xs text-emerald-700/80">
+        {proof.verified
+          ? "Cryptographically verified by the service — you're in, no password, no account."
+          : "Presentation received — verification still pending on the service."}
+      </p>
+    </div>
+  );
+}
 
 function UnavailableCard({ onRetry }: { onRetry: () => void }) {
   return (
@@ -35,6 +74,8 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
   const [appUrl, setAppUrl] = useState<string | null | undefined>(undefined);
   const [qrDataUrl, setQrDataUrl] = useState<string | undefined>(undefined);
   const [qrFailed, setQrFailed] = useState(false);
+  const [proofId, setProofId] = useState<string | null>(null);
+  const [proof, setProof] = useState<ProofStatus | null>(null);
   const [attempt, setAttempt] = useState(0);
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
@@ -42,10 +83,14 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
     if (!revealed) return;
     let alive = true;
     setAppUrl(undefined);
+    setProofId(null);
+    setProof(null);
     fetch(`/api/demo/${serviceId}`)
       .then((res) => (res.ok ? (res.json() as Promise<DemoApiResponse>) : null))
       .then((body) => {
-        if (alive) setAppUrl(body?.url ?? null);
+        if (!alive) return;
+        setAppUrl(body?.url ?? null);
+        setProofId(body?.proofExchangeId ?? null);
       })
       .catch(() => {
         if (alive) setAppUrl(null);
@@ -54,6 +99,36 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
       alive = false;
     };
   }, [serviceId, attempt, revealed]);
+
+  // Verifier flows: poll the presentation status so the QR flips into the
+  // presented credential the moment the wallet shares it.
+  const presented = proof?.state === "done";
+  useEffect(() => {
+    if (!revealed || !proofId || presented) return;
+    let alive = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const poll = async () => {
+      try {
+        const res = await fetch(`/api/demo/${serviceId}/proof/${proofId}`);
+        if (res.ok) {
+          const body = (await res.json()) as ProofStatus;
+          if (!alive) return;
+          if (body?.state === "done") {
+            setProof(body);
+            return;
+          }
+        }
+      } catch {
+        // keep polling — transient errors are expected while the pod scales
+      }
+      if (alive) timer = setTimeout(poll, 3000);
+    };
+    poll();
+    return () => {
+      alive = false;
+      if (timer) clearTimeout(timer);
+    };
+  }, [revealed, proofId, presented, serviceId, attempt]);
 
   useEffect(() => {
     if (!appUrl) return;
@@ -83,6 +158,10 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
         Show QR code — {label}
       </button>
     );
+  }
+
+  if (proof && proof.state === "done") {
+    return <PresentedCredential proof={proof} />;
   }
 
   if (appUrl === undefined) {

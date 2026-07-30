@@ -5,12 +5,15 @@ import {
   BadgeCheck,
   BookOpen,
   Bot,
-  Eye,
   Files,
   Hand,
   KeyRound,
   Landmark,
   LockKeyhole,
+  ExternalLink,
+  SquareCheckBig,
+  Check,
+  X,
   Network,
   PhoneOff,
   QrCode,
@@ -206,12 +209,7 @@ function KindChip({ kind }: { kind: SubStep["kind"] }) {
         <Hand className="h-3 w-3" /> hands-on - you do it
       </span>
     );
-  if (kind === "watch")
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-semibold text-violet-700">
-        <Eye className="h-3 w-3" /> watch - Vesta does it
-      </span>
-    );
+  if (kind === "watch") return null;
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">
       <BookOpen className="h-3 w-3" /> story
@@ -224,10 +222,7 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
     <div className="space-y-6">
       <div>
         <div className="flex flex-wrap items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
-            {sub.id}
-          </span>
-          <h3 className="text-xl font-bold text-gray-900">{sub.title}</h3>
+          <h4 className="text-xl font-bold text-gray-900">{sub.title}</h4>
           <KindChip kind={sub.kind} />
         </div>
         <p className="mt-4 max-w-3xl text-gray-600">{sub.story}</p>
@@ -314,7 +309,7 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
                     rel="noopener noreferrer"
                     className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                   >
-                    {l.label} ↗
+                    {l.label} <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
                   </a>
                 ),
               )}
@@ -488,7 +483,7 @@ export default function Explained() {
                 <Chip key={st}>{st}</Chip>
               ))}
               <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                ✓ {REPAIR_NETWORK.badgeFullName} badge
+                <Check className="h-3 w-3" aria-hidden /> {REPAIR_NETWORK.badgeFullName} badge
               </span>
             </div>
             <p className="mx-auto mt-5 max-w-2xl text-center text-sm italic leading-relaxed text-gray-500">
@@ -830,7 +825,7 @@ export default function Explained() {
                         rel="noopener noreferrer"
                         className="shrink-0 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                       >
-                        Open in Verana ↗
+                        Open in Verana <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
                       </a>
                     </div>
                   </div>
@@ -890,7 +885,7 @@ export default function Explained() {
                     rel="noopener noreferrer"
                     className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                   >
-                    Open in Verana ↗
+                    Open in Verana <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
                   </a>
                 </div>
               </div>
@@ -910,15 +905,21 @@ export default function Explained() {
           <div className="space-y-20">
             {JOURNEY.needs.map((need) => (
               <div key={need.id} id={need.id} className="scroll-mt-24">
-                <div className="text-center">
-                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">
-                    ☑ Need {need.n} of 5 · {need.tag}
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-600 text-base font-bold text-white">
+                    3.{need.n}
+                  </span>
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    {need.title}
+                  </h3>
+                  <span
+                    title={`Need ${need.n} of 5 from Marc's checklist`}
+                    className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700"
+                  >
+                    <SquareCheckBig className="h-3.5 w-3.5" aria-hidden />
                   </span>
                 </div>
-                <div className="mt-3">
-                  <SubHeading>{need.title}</SubHeading>
-                </div>
-                <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+                <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
                   {need.intro}
                 </p>
                 <div className="mt-8 space-y-14">
@@ -999,7 +1000,11 @@ export default function Explained() {
                           : "bg-emerald-50 text-emerald-700"
                       }`}
                     >
-                      {o.tone === "red" ? "✗" : "✓"}
+                      {o.tone === "red" ? (
+                        <X className="h-3.5 w-3.5" aria-hidden />
+                      ) : (
+                        <Check className="h-3.5 w-3.5" aria-hidden />
+                      )}
                     </span>
                     <span>
                       <span className="font-semibold text-gray-900">
@@ -1072,7 +1077,7 @@ export default function Explained() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              verana-spec / playground / verana-explained ↗
+              verana-spec / playground / verana-explained <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
             </a>
           </p>
         </Container>

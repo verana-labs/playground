@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { ExternalLink } from "lucide-react";
 import { Container, Section, Button, Breadcrumb } from "../components/ui";
 import { ProofOfTrust } from "../components/ProofOfTrust";
 import { LINKS } from "../lib/site";
@@ -54,7 +55,7 @@ export default function Integrate() {
                 acceptance test.
               </p>
               <span className="mt-3 inline-block text-sm font-medium text-violet-600 group-hover:underline">
-                Read it ↗
+                Read it <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
               </span>
             </a>
             <a href={LINKS.guidelineCloudWallet} target="_blank" rel="noopener noreferrer" className="group rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md">
@@ -66,7 +67,7 @@ export default function Integrate() {
                 sidecar / bridge).
               </p>
               <span className="mt-3 inline-block text-sm font-medium text-violet-600 group-hover:underline">
-                Read it ↗
+                Read it <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
               </span>
             </a>
           </div>
@@ -107,10 +108,10 @@ export default function Integrate() {
 
           <div className="flex flex-wrap gap-3">
             <Button href={LINKS.repo} external>
-              Open a PR ↗
+              Open a PR <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
             </Button>
             <Button href={LINKS.spec} variant="ghost" external>
-              Full spec ↗
+              Full spec <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
             </Button>
           </div>
         </Container>
@@ -169,7 +170,7 @@ export default function Integrate() {
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                ProofOfTrust.tsx ↗
+                ProofOfTrust.tsx <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
               </a>
             </p>
             <p className="mt-4 text-sm text-gray-500">

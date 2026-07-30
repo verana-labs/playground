@@ -401,8 +401,8 @@ export const JOURNEY: {
         "Badges as verifiable credentials - for both physical access (office, factory) and Vesta's digital services.",
       steps: [
         {
-          id: "3.5",
-          stage: "3.5",
+          id: "3.4",
+          stage: "3.4",
           title: "Vesta becomes an ECS-Badge issuer",
           kind: "watch",
           story:
@@ -425,8 +425,8 @@ export const JOURNEY: {
           ],
         },
         {
-          id: "3.5b",
-          stage: "3.5b",
+          id: "3.5",
+          stage: "3.5",
           title: "A verifiable login service, accredited to verify badges",
           kind: "watch",
           story:
@@ -480,17 +480,6 @@ export const JOURNEY: {
             "Present ECS-Org over the DIDComm session when asked to identify; receive ISO 9001 on the Organization DID.",
           ],
         },
-        {
-          id: "3.6b",
-          stage: "3.6",
-          noDiagram: true,
-          title: "The Proof-of-Trust gets richer",
-          kind: "watch",
-          story:
-            "Now, when someone connects to a Vesta service, receives a credential from it, or presents a credential to it, the Proof-of-Trust shows - in addition to the Organization and Service identity - the ISO 9001 credential.",
-          liveService: "organization-vs",
-          liveNote: CAST_NOTE,
-        },
       ],
     },
     {
@@ -507,7 +496,7 @@ export const JOURNEY: {
           title: "The Vesta Repair Network",
           kind: "watch",
           story:
-            "Vesta publishes a one-page governance framework and creates its ecosystem with a single credential schema: Authorized Repairer. The design choice that matters: issuance is governed - only Vesta and its subsidiaries issue. Verification is open - anyone checks, no permission needed. Then Vesta onboards Zenith Repairs, itself a verifiable organization (it walked the same journey: anchor, KYB, ECS-Service - the pattern replicates; that is the point): Vesta identifies Zenith by the ECS-Org credential on its DID and issues Authorized Repairer to Zenith's organization DID.",
+            "Vesta publishes a one-page governance framework and creates its ecosystem with a single credential schema: Authorized Repairer. The design choice that matters: issuance is governed - only Vesta and its subsidiaries issue - and verification is open: anyone checks, no permission needed. Vesta accredits two subsidiary issuers, Vesta Iberia and Vesta Nordics. Then Zenith Repairs joins, itself a verifiable organization (it walked the same journey: anchor, KYB, ECS-Service - the pattern replicates; that is the point): Vesta Iberia identifies Zenith by the ECS-Org credential on its DID and issues Authorized Repairer to Zenith's organization DID.",
           underHood: [
             "Create New Trust Registry (+ EGF document) → Create New Credential Schema (issuer mode ECOSYSTEM, verifier mode OPEN) → Create Root Permission. Three transactions, and Vesta is an ecosystem.",
             "Governed issuance does not mean a single issuer: Vesta can register several entities (for example its subsidiaries) as issuers of the Authorized Repairer schema by granting them ISSUER permissions under its root.",
@@ -525,22 +514,31 @@ export const JOURNEY: {
         {
           id: "3.8",
           stage: "3.8",
-          title: "Full circle - anyone can tell",
-          kind: "hands-on",
+          title: "Authorized Repairer login - and at the front door",
+          kind: "watch",
           story:
-            "The Section 1 picture returns, with verdicts. Resolve Zenith's service with your wallet: green - ECS-Org, ECS-Service, Authorized Repairer, chain verified to the Vesta Repair Network. Then Umbra Repairs, which still claims to be authorized: red - no credential Vesta ever issued exists for its DID, and the claim cannot be forged. Brand impersonation fails structurally. And if a partner goes rogue, Vesta revokes - re-resolution drops the credential from every card.",
+            "The Authorized Repairer credential now works everywhere trust is needed:",
+          points: [
+            "Zenith Repairs issues ECS-Badges to its employees - each technician holds one in their Personal Wallet.",
+            "Zenith employees can now log in to the Vesta portal: when they present their ECS-Badge, Vesta knows the badge was issued by Zenith Repairs - and allows access, because Zenith Repairs presents an Authorized Repairer credential.",
+            "At the door, the worker presents their badge to the customer; the customer scans it and sees the Vesta Authorized Repairer seal.",
+          ],
           image: {
             src: "/images/zenith.webp",
             alt: "A Zenith Repairs technician at the door, showing a green trust check on their phone",
             caption: "The technician at your door, proving they're from an authorized repairer - trust before you open.",
           },
           underHood: [
-            "Verification mode OPEN: any wallet checks a repairer claim without asking anyone's permission - only issuance is gated.",
-            "Revocation: Revoke Permission + re-resolution removes the credential from every card and from future discovery results.",
+            "Zenith self-accredits as an ECS-Badge issuer (the same move Vesta made in 3.3) and issues badges to its employees.",
+            "The Vesta login service's verifier policy accepts ECS-Badge from Vesta's anchor DID (employees) or from any issuer DID presenting a valid Authorized Repairer credential (partner employees). Two rules cover the whole network.",
+            "The customer's wallet resolves the badge issuer's DID: Zenith's chain shows ECS-Org, ECS-Service, and Authorized Repairer under the Vesta Repair Network - the seal.",
           ],
           reproduce: [
-            "Resolve Zenith's demo service with your wallet: Authorized Repairer appears with its chain to the Vesta Repair Network.",
-            "Resolve Umbra's demo service: red verdict - the claim has no chain.",
+            "Get a badge from Zenith Repairs and try the Vesta portal login (see Run the demos below).",
+            "Scan a technician's badge with your wallet: the issuer chain ends at the Vesta Repair Network seal.",
+          ],
+          links: [
+            { label: "Run the demos", href: "/usecases/vesta#section-4" },
           ],
         },
       ],

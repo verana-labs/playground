@@ -1,6 +1,6 @@
 "use client";
 
-import { ChevronDown } from "lucide-react";
+import { Check, ChevronDown, X } from "lucide-react";
 
 // The reusable Verana trust card, "chain" design: DID → Service check →
 // Operated-by check → verdict, then collapsed "Also presents" and
@@ -129,7 +129,7 @@ export default function TrustCard({
             className="shrink-0 rounded-full px-2 py-0.5 text-xs text-gray-400 hover:bg-gray-100 hover:text-gray-700"
             aria-label="Close details"
           >
-            ✕
+            <X className="h-3.5 w-3.5" aria-hidden />
           </button>
         ) : null}
       </div>
@@ -227,8 +227,8 @@ export default function TrustCard({
                 <span className="rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700">
                   {c.name}
                 </span>
-                <span className="ml-auto text-[11px] font-semibold text-emerald-600">
-                  ✓ verified
+                <span className="ml-auto inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600">
+                  <Check className="h-3 w-3" aria-hidden /> verified
                 </span>
               </div>
               <div className="mt-1.5 text-[11px] text-gray-500">
@@ -265,7 +265,7 @@ export default function TrustCard({
                 ) : null}{" "}
                 · issued by {o.issuedBy}
                 {o.ecosystem ? <> · {o.ecosystem}</> : null}{" "}
-                <span className="font-semibold text-emerald-600">✓ verified</span>
+                <span className="inline-flex items-center gap-1 font-semibold text-emerald-600"><Check className="h-3 w-3" aria-hidden /> verified</span>
                 {o.note ? (
                   <div className="text-[11px] text-gray-400">{o.note}</div>
                 ) : null}

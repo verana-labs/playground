@@ -55,9 +55,15 @@ export default async function VestaChapter({
               { label: `Chapter ${c.n}` },
             ]}
           />
-          <h1 className="mt-5 max-w-3xl text-3xl font-extrabold tracking-tight md:text-4xl">
-            {c.title}
-          </h1>
+          <div className="mt-5 flex items-center gap-4">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white p-1.5 ring-1 ring-white/25">
+              {/* eslint-disable-next-line @next/next/no-img-element -- small pre-optimized cast asset */}
+              <img src="/images/cast/vesta.png" alt="" aria-hidden className="h-full w-full object-contain" />
+            </div>
+            <h1 className="max-w-3xl text-3xl font-extrabold tracking-tight md:text-4xl">
+              {c.title}
+            </h1>
+          </div>
           <p className="mt-3 max-w-2xl text-lg text-white/80">{c.intro}</p>
         </div>
       </header>

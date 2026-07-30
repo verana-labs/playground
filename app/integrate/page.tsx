@@ -17,9 +17,12 @@ kind: user-wallet          # user-wallet | cloud-wallet
 repo: https://github.com/your-org/your-wallet
 license: Apache-2.0        # OSI-approved license required
 track: bridge              # user: native | bridge · cloud: native | sidecar | bridge
-scenarios: [iso-certification-loop]
+scenarios: [demo-credential-loop]
+demo_loop: live            # the six DemoCredential scenarios run on your rail
 demo_video: https://…
-download: https://…        # mobile: direct APK · web/cloud: URL
+download: https://…        # mobile: direct APK (modified build) · web/cloud: URL
+captures:                  # optional: per-scenario captures for your page
+  issue-accredited: { src: ./captures/issue-accredited.webp }
 contact: you@example.org`;
 
 const POT_USAGE_EXAMPLE = `<ProofOfTrust serviceId="…" />
@@ -82,8 +85,10 @@ export default function Integrate() {
               </li>
               <li>
                 <strong className="text-gray-900">2 · Record the acceptance loop</strong>{" "}
-                - one uncut run of the ISO Certification loop, per the
-                guideline&apos;s test section.
+                - one uncut run of the six DemoCredential scenarios against
+                the shared Playground demo cast, per the guideline&apos;s test
+                section. The recording is also the source of your page&apos;s
+                per-scenario captures.
               </li>
               <li>
                 <strong className="text-gray-900">3 · Open a PR</strong> - add your

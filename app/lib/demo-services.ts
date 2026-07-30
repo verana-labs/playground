@@ -1,9 +1,21 @@
 const BASE = process.env.DEMOS_BASE_DOMAIN ?? "main.demos.testnet.verana.network";
+const CAST = process.env.CAST_BASE_DOMAIN ?? "playground.testnet.verana.network";
 
 export type DemoService = { id: string; label: string; host: string;
-  appUrl?: string; did?: string; role: "anchor" | "issuer" | "verifier" };
+  appUrl?: string; did?: string; role: "anchor" | "issuer" | "verifier" | "untrusted" };
+
+// The Playground demo cast (spec §4/§6): the same six services behind every
+// user-wallet playground page, provisioned by .github/workflows/demo-*.
+// appUrl is each vs-agent's DIDComm out-of-band invitation link.
+const castInvite = (slug: string) => `https://${slug}.${CAST}/invitation`;
 
 export const DEMO_SERVICES: DemoService[] = [
+  { id: "playground-demo", label: "Playground Demo", host: `playground-demo.${CAST}`, role: "anchor" },
+  { id: "demo-issuer-accredited", label: "Accredited Issuer (demo)", host: `demo-issuer-accredited.${CAST}`, appUrl: castInvite("demo-issuer-accredited"), role: "issuer" },
+  { id: "demo-issuer-unaccredited", label: "Unaccredited Issuer (demo)", host: `demo-issuer-unaccredited.${CAST}`, appUrl: castInvite("demo-issuer-unaccredited"), role: "issuer" },
+  { id: "demo-verifier-accredited", label: "Accredited Verifier (demo)", host: `demo-verifier-accredited.${CAST}`, appUrl: castInvite("demo-verifier-accredited"), role: "verifier" },
+  { id: "demo-verifier-unaccredited", label: "Unaccredited Verifier (demo)", host: `demo-verifier-unaccredited.${CAST}`, appUrl: castInvite("demo-verifier-unaccredited"), role: "verifier" },
+  { id: "demo-untrusted", label: "Untrusted Service (demo)", host: `demo-untrusted.${CAST}`, appUrl: castInvite("demo-untrusted"), role: "untrusted" },
   { id: "organization-vs", label: "Verana Example Organization (demo)", host: `organization-vs.${BASE}`, role: "anchor" },
   { id: "issuer-chatbot-vs", label: "Example Issuer Chatbot (demo)", host: `issuer-chatbot-vs.${BASE}`, role: "issuer" },
   { id: "issuer-web-vs", label: "Example Issuer Web App (demo)", host: `issuer-web-vs.${BASE}`, appUrl: `https://app.issuer-web-vs.${BASE}`, role: "issuer" },

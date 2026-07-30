@@ -10,6 +10,9 @@ export const IntegrationSchema = z
     track: z.string().optional(),
     scenarios: z.array(z.string()).optional(),
     download: z.string().url().optional(),
+    // True when the wallet's standard published build supports Verana out of
+    // the box — no modified APK needed; store installs work as-is.
+    verana_builtin: z.boolean().optional(),
     playstore: z.string().url().optional(),
     appstore: z.string().url().optional(),
     // A URL, or a path relative to the descriptor (./demo.mp4) like `logo`.
@@ -19,7 +22,25 @@ export const IntegrationSchema = z
     screenshots: z
       .array(z.object({ src: z.string().min(1), caption: z.string().optional() }))
       .optional(),
+    // Whether this wallet completes the six DemoCredential scenarios of
+    // spec §4 (over its track's rail). `badge_loop` is the legacy name.
+    demo_loop: z.enum(["live", "coming"]).optional(),
     badge_loop: z.enum(["live", "coming"]).optional(),
+    // Per-scenario captures of this wallet's expected behavior (spec §4);
+    // keys match the six scenario cards. Values are URLs or ./-relative paths.
+    captures: z
+      .record(
+        z.enum([
+          "issue-accredited",
+          "issue-unaccredited",
+          "issue-untrusted",
+          "present-accredited",
+          "present-unaccredited",
+          "present-untrusted",
+        ]),
+        z.object({ src: z.string().min(1), caption: z.string().optional() }),
+      )
+      .optional(),
     demo_service: z.string().optional(),
     notes: z.string().optional(),
     contact: z.string().optional(),

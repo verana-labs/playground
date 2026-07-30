@@ -65,7 +65,7 @@ const QUESTIONS = [
   {
     icon: FileBadge,
     chip: "Q2 · on every credential offer",
-    title: "Is it authorized to issue this credential?",
+    title: "Is it accredited to issue this credential?",
     body: "Before you can accept an offer, the wallet checks the issuer's accreditation for that schema in its ecosystem.",
   },
   {

@@ -66,7 +66,7 @@ export default function PageNav({ items }: { items: PageNavItem[] }) {
                 {it.label}
               </a>
               {it.children?.length ? (
-                <ul>
+                <ul className={isActive ? "" : "hidden"}>
                   {it.children.map((c) => (
                     <li key={c.id}>
                       <a

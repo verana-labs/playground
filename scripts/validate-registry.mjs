@@ -16,6 +16,17 @@ try {
     if (!Array.isArray(w.formats) || w.formats.length === 0 || !w.formats.every((f) => FORMATS.includes(f)))
       throw new Error(`${w.id}: formats must be a non-empty subset of ${FORMATS.join("|")}`);
     if (!w.download) throw new Error(`${w.id}: download link required`);
+    const SCENARIOS = ["issue-accredited", "issue-unaccredited", "issue-untrusted",
+      "present-accredited", "present-unaccredited", "present-untrusted"];
+    if (w.captures != null) {
+      if (Array.isArray(w.captures) || typeof w.captures !== "object")
+        throw new Error(`${w.id}: captures must map scenario ids to {src, caption}`);
+      for (const [k, v] of Object.entries(w.captures)) {
+        if (!SCENARIOS.includes(k)) throw new Error(`${w.id}: unknown capture scenario '${k}'`);
+        if (!v?.src) throw new Error(`${w.id}: capture '${k}' missing src`);
+      }
+    }
+    if (w.video != null && !w.video.src) throw new Error(`${w.id}: video missing src`);
     if (!statSync(join(process.cwd(), "wallets", w.id)).isDirectory())
       throw new Error(`${w.id}: wallets/${w.id}/ directory missing`);
   }

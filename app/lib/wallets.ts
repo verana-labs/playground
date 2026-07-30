@@ -12,6 +12,17 @@ import { z } from "zod";
 export const CREDENTIAL_FORMATS = ["anoncreds", "openid4vc-sdjwt"] as const;
 export type CredentialFormat = (typeof CREDENTIAL_FORMATS)[number];
 
+// The six demo scenarios of the single personal-wallets page — capture keys.
+export const SCENARIO_KEYS = [
+  "issue-accredited",
+  "issue-unaccredited",
+  "issue-untrusted",
+  "present-accredited",
+  "present-unaccredited",
+  "present-untrusted",
+] as const;
+export type ScenarioKey = (typeof SCENARIO_KEYS)[number];
+
 const MediaSchema = z.object({
   src: z.string().min(1),
   caption: z.string().optional(),
@@ -33,8 +44,12 @@ const WalletSchema = z.object({
   license: z.string().optional(),
   contact: z.string().optional(),
   notes: z.string().optional(),
-  captures: z.array(MediaSchema).optional(),
-  videos: z.array(MediaSchema).optional(),
+  // Up to one screen capture per demo scenario (optional), keyed by the
+  // scenario id; rendered inside the corresponding demo card.
+  captures: z.partialRecord(z.enum(SCENARIO_KEYS), MediaSchema).optional(),
+  // A single optional video, rendered in Get-the-wallet after the download
+  // link; note discloses recording conditions (speed, editing).
+  video: MediaSchema.optional(),
 });
 
 export const WalletsFileSchema = z.object({
@@ -43,11 +58,11 @@ export const WalletsFileSchema = z.object({
 
 export type PersonalWallet = Omit<
   z.infer<typeof WalletSchema>,
-  "icon" | "captures" | "videos"
+  "icon" | "captures" | "video"
 > & {
   icon?: string;
-  captures: { src: string; caption?: string }[];
-  videos: { src: string; note?: string }[];
+  captures: Partial<Record<ScenarioKey, { src: string; caption?: string }>>;
+  video?: { src: string; note?: string };
 };
 
 // ./<id>/… references inside wallets/ resolve to the synced public copy;
@@ -79,18 +94,20 @@ export function listPersonalWallets(): PersonalWallet[] {
       .join("; ");
     throw new Error(`personal-wallets.yaml invalid — ${issues}`);
   }
-  cache = parsed.data.wallets.map((w) => ({
-    ...w,
-    icon: publicAsset(w.icon),
-    captures: (w.captures ?? []).flatMap((m) => {
-      const src = publicAsset(m.src);
-      return src ? [{ src, caption: m.caption }] : [];
-    }),
-    videos: (w.videos ?? []).flatMap((m) => {
-      const src = publicAsset(m.src);
-      return src ? [{ src, note: m.note }] : [];
-    }),
-  }));
+  cache = parsed.data.wallets.map((w) => {
+    const videoSrc = publicAsset(w.video?.src);
+    return {
+      ...w,
+      icon: publicAsset(w.icon),
+      captures: Object.fromEntries(
+        Object.entries(w.captures ?? {}).flatMap(([key, m]) => {
+          const src = publicAsset(m.src);
+          return src ? [[key, { src, caption: m.caption }]] : [];
+        }),
+      ),
+      video: videoSrc ? { src: videoSrc, note: w.video?.note } : undefined,
+    };
+  });
   return cache;
 }
 

@@ -24,10 +24,14 @@
 #                   verana_builtin
 #   playstore/appstore/web   complementary install links
 #   repo, license, contact, notes
-#   captures        [{src, caption}] — screen captures of the wallet running
-#                   the scenarios
-#   videos          [{src, note}] — screen recordings; note discloses
-#                   recording conditions (speed, editing)
+#   captures        up to ONE screen capture per demo scenario (optional),
+#                   keyed by scenario id (issue-accredited,
+#                   issue-unaccredited, issue-untrusted, present-accredited,
+#                   present-unaccredited, present-untrusted); rendered inside
+#                   the corresponding demo card
+#   video           a single optional recording {src, note}, rendered in the
+#                   Get-the-wallet section; note discloses recording
+#                   conditions (speed, editing)
 
 wallets:
   - id: hologram
@@ -53,15 +57,18 @@ wallets:
     license: Apache-2.0
     notes: Verana trust integration in Paradym's SDK trust-mechanism registry (Credo-TS wallet).
     captures:
-      - src: ./paradym/screenshots/1.webp
-        caption: Verana trust card on a trusted verifier
-      - src: ./paradym/screenshots/2.webp
+      issue-accredited:
+        src: ./paradym/screenshots/2.webp
         caption: "The trust dossier: credentials and chain"
-      - src: ./paradym/screenshots/3.webp
+      present-accredited:
+        src: ./paradym/screenshots/1.webp
+        caption: Verana trust card on a trusted verifier
+      present-untrusted:
+        src: ./paradym/screenshots/3.webp
         caption: Rogue verifier rendered untrusted
-    videos:
-      - src: ./paradym/demo.mp4
-        note: Real device. Silent.
+    video:
+      src: ./paradym/demo.mp4
+      note: Real device. Silent.
 
   - id: procivis
     name: Procivis One Wallet
@@ -73,15 +80,18 @@ wallets:
     license: Apache-2.0
     notes: Q1+Q2/Q3 in the Rust core with typed verdicts and a trust dossier in the wallet UI.
     captures:
-      - src: ./procivis/screenshots/1.webp
+      issue-accredited:
+        src: ./procivis/screenshots/1.webp
         caption: Issuance from a trusted, authorized issuer
-      - src: ./procivis/screenshots/2.webp
+      issue-unaccredited:
+        src: ./procivis/screenshots/2.webp
         caption: Q1 and Q2 verdicts in the trust dossier
-      - src: ./procivis/screenshots/3.webp
+      issue-untrusted:
+        src: ./procivis/screenshots/3.webp
         caption: "Non-positive control: trust unavailable"
-    videos:
-      - src: ./procivis/demo.mp4
-        note: Real device, three segments concatenated, 1.75x speed. Silent.
+    video:
+      src: ./procivis/demo.mp4
+      note: Real device, three segments concatenated, 1.75x speed. Silent.
 
   - id: sphereon
     name: Sphereon Wallet
@@ -93,15 +103,18 @@ wallets:
     license: Apache-2.0
     notes: Verana trust card on contact creation for did:webvh-identified verifiers.
     captures:
-      - src: ./sphereon/screenshots/1.webp
-        caption: Contact created with the Verana trust card
-      - src: ./sphereon/screenshots/2.webp
+      issue-accredited:
+        src: ./sphereon/screenshots/2.webp
         caption: "Trust details: service and operator"
-      - src: ./sphereon/screenshots/3.webp
+      present-accredited:
+        src: ./sphereon/screenshots/1.webp
+        caption: Contact created with the Verana trust card
+      present-untrusted:
+        src: ./sphereon/screenshots/3.webp
         caption: Rogue verifier rendered untrusted
-    videos:
-      - src: ./sphereon/demo.mp4
-        note: Real device, edited at 4x speed. Silent.
+    video:
+      src: ./sphereon/demo.mp4
+      note: Real device, edited at 4x speed. Silent.
 
   - id: swiyu
     name: swiyu Wallet
@@ -113,15 +126,18 @@ wallets:
     license: MIT
     notes: Strict Q1+Q2 before acceptance, device-verified, with a full evidence dossier.
     captures:
-      - src: ./swiyu/screenshots/1.webp
-        caption: Verana warning before the accept action
-      - src: ./swiyu/screenshots/2.webp
-        caption: "Q2: the authorized-issuer check"
-      - src: ./swiyu/screenshots/3.webp
+      issue-accredited:
+        src: ./swiyu/screenshots/3.webp
         caption: Credential stored once the checks passed
-    videos:
-      - src: ./swiyu/demo.mp4
-        note: Real device, human-paced. Silent.
+      issue-unaccredited:
+        src: ./swiyu/screenshots/1.webp
+        caption: Verana warning before the accept action
+      present-accredited:
+        src: ./swiyu/screenshots/2.webp
+        caption: "Q2: the authorized-issuer check"
+    video:
+      src: ./swiyu/demo.mp4
+      note: Real device, human-paced. Silent.
 
   - id: talao
     name: Altme Wallet
@@ -133,12 +149,15 @@ wallets:
     license: Apache-2.0
     notes: Verana trust resolution on the OID4VP accept path with a config-driven TESTNET label.
     captures:
-      - src: ./talao/screenshots/1.webp
-        caption: Verana trust card
-      - src: ./talao/screenshots/2.webp
+      issue-accredited:
+        src: ./talao/screenshots/2.webp
         caption: The trust dossier
-      - src: ./talao/screenshots/3.webp
+      present-accredited:
+        src: ./talao/screenshots/1.webp
+        caption: Verana trust card
+      present-untrusted:
+        src: ./talao/screenshots/3.webp
         caption: Rogue service denied
-    videos:
-      - src: ./talao/demo.mp4
-        note: Real device, human-paced. Silent.
+    video:
+      src: ./talao/demo.mp4
+      note: Real device, human-paced. Silent.

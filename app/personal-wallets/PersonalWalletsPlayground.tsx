@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Download,
@@ -11,7 +11,34 @@ import {
 import { Container, Section, Chip } from "../components/ui";
 import { ServiceQr } from "../components/ServiceQr";
 import LiveTrustCard from "../components/LiveTrustCard";
-import type { CredentialFormat, PersonalWallet } from "../lib/wallets";
+import type {
+  CredentialFormat,
+  PersonalWallet,
+  ScenarioKey,
+} from "../lib/wallets";
+
+/** portrait = handset-like capture (renders beside the demo card content);
+ *  wide = square or landscape (renders below it). */
+function useImageOrientation(src?: string) {
+  const [orientation, setOrientation] = useState<"portrait" | "wide" | null>(
+    null,
+  );
+  useEffect(() => {
+    setOrientation(null);
+    if (!src) return;
+    let alive = true;
+    const img = new window.Image();
+    img.onload = () => {
+      if (alive)
+        setOrientation(img.naturalHeight > img.naturalWidth ? "portrait" : "wide");
+    };
+    img.src = src;
+    return () => {
+      alive = false;
+    };
+  }, [src]);
+  return orientation;
+}
 
 // The interactive body of the single personal-wallets playground: wallet
 // picker (deep-linkable via ?wallet=<id>), download section, and the two
@@ -153,13 +180,55 @@ function StepHeading({ n, title }: { n: number; title: string }) {
   );
 }
 
+function ScenarioCapture({
+  capture,
+  walletName,
+  position,
+}: {
+  capture: { src: string; caption?: string };
+  walletName: string;
+  position: "side" | "bottom";
+}) {
+  return (
+    <figure
+      className={
+        position === "side"
+          ? "mx-auto mt-4 w-full max-w-[200px] md:mx-0 md:mt-0"
+          : "mt-4"
+      }
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized captures from wallets/ */}
+      <img
+        src={capture.src}
+        alt={capture.caption ?? `${walletName} capture`}
+        loading="lazy"
+        className={`rounded-xl border border-gray-200 bg-gray-50 ${
+          position === "side"
+            ? "w-full"
+            : "mx-auto max-h-72 w-auto max-w-full"
+        }`}
+      />
+      {capture.caption ? (
+        <figcaption className="mt-1.5 text-center text-xs text-gray-500">
+          {capture.caption}
+        </figcaption>
+      ) : null}
+    </figure>
+  );
+}
+
 function ScenarioCard({
   s,
   format,
+  capture,
+  walletName,
 }: {
   s: Scenario;
   format: CredentialFormat;
+  capture?: { src: string; caption?: string };
+  walletName: string;
 }) {
+  const orientation = useImageOrientation(capture?.src);
   const accreditations = s.accredited
     ? [
         {
@@ -171,6 +240,8 @@ function ScenarioCard({
         },
       ]
     : [];
+  const sideCapture = capture && orientation === "portrait";
+  const bottomCapture = capture && orientation === "wide";
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex flex-wrap items-center gap-2">
@@ -185,10 +256,35 @@ function ScenarioCard({
         ) : null}
       </div>
       <p className="mt-2 text-sm leading-relaxed text-gray-500">{s.blurb}</p>
-      <div className="mt-4 space-y-3">
-        <ServiceQr serviceId={s.serviceId} label={s.title} format={format} />
-        <LiveTrustCard serviceId={s.serviceId} accreditations={accreditations} />
+      <div
+        className={
+          sideCapture
+            ? "mt-4 md:grid md:grid-cols-[minmax(0,1fr)_200px] md:gap-4"
+            : "mt-4"
+        }
+      >
+        <div className="space-y-3">
+          <ServiceQr serviceId={s.serviceId} label={s.title} format={format} />
+          <LiveTrustCard
+            serviceId={s.serviceId}
+            accreditations={accreditations}
+          />
+        </div>
+        {sideCapture ? (
+          <ScenarioCapture
+            capture={capture}
+            walletName={walletName}
+            position="side"
+          />
+        ) : null}
       </div>
+      {bottomCapture ? (
+        <ScenarioCapture
+          capture={capture}
+          walletName={walletName}
+          position="bottom"
+        />
+      ) : null}
     </div>
   );
 }
@@ -393,48 +489,27 @@ export default function PersonalWalletsPlayground({
                 ) : null}
               </div>
 
-              {wallet.videos.length || wallet.captures.length ? (
+              {wallet.video ? (
                 <div className="mt-6 border-t border-gray-100 pt-5">
                   <h3 className="text-sm font-semibold text-gray-900">
-                    Verana trust, rendered in {wallet.name}
+                    {wallet.name} running the demos
                   </h3>
-                  {wallet.videos.map((v) => (
-                    <div key={v.src} className="mt-4">
-                      <video
-                        controls
-                        playsInline
-                        preload="metadata"
-                        className="mx-auto w-full max-w-[280px] rounded-xl border border-gray-200 bg-black"
-                      >
-                        <source src={v.src} type="video/mp4" />
-                      </video>
-                      {v.note ? (
-                        <p className="mt-2 text-center text-xs text-gray-500">
-                          {v.note}
-                        </p>
-                      ) : null}
-                    </div>
-                  ))}
-                  {wallet.captures.length ? (
-                    <ul className="mt-5 grid gap-5 sm:grid-cols-3">
-                      {wallet.captures.map((c) => (
-                        <li key={c.src} className="flex flex-col gap-2.5">
-                          {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized captures from wallets/ */}
-                          <img
-                            src={c.src}
-                            alt={c.caption ?? `${wallet.name} capture`}
-                            loading="lazy"
-                            className="w-full rounded-xl border border-gray-200 bg-gray-50"
-                          />
-                          {c.caption ? (
-                            <p className="text-center text-xs text-gray-500">
-                              {c.caption}
-                            </p>
-                          ) : null}
-                        </li>
-                      ))}
-                    </ul>
-                  ) : null}
+                  <div className="mt-4">
+                    <video
+                      key={wallet.video.src}
+                      controls
+                      playsInline
+                      preload="metadata"
+                      className="mx-auto w-full max-w-[280px] rounded-xl border border-gray-200 bg-black"
+                    >
+                      <source src={wallet.video.src} type="video/mp4" />
+                    </video>
+                    {wallet.video.note ? (
+                      <p className="mt-2 text-center text-xs text-gray-500">
+                        {wallet.video.note}
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
               ) : null}
             </div>
@@ -454,7 +529,13 @@ export default function PersonalWalletsPlayground({
           </p>
           <div className="ml-11 mt-4 space-y-4">
             {ISSUER_SCENARIOS.map((s) => (
-              <ScenarioCard key={s.key} s={s} format={format} />
+              <ScenarioCard
+                key={s.key}
+                s={s}
+                format={format}
+                capture={wallet.captures[s.key as ScenarioKey]}
+                walletName={wallet.name}
+              />
             ))}
           </div>
         </div>
@@ -469,7 +550,13 @@ export default function PersonalWalletsPlayground({
           </p>
           <div className="ml-11 mt-4 space-y-4">
             {VERIFIER_SCENARIOS.map((s) => (
-              <ScenarioCard key={s.key} s={s} format={format} />
+              <ScenarioCard
+                key={s.key}
+                s={s}
+                format={format}
+                capture={wallet.captures[s.key as ScenarioKey]}
+                walletName={wallet.name}
+              />
             ))}
           </div>
         </div>

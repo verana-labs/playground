@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import QRCode from "qrcode";
 import { ServiceQr } from "./ServiceQr";
@@ -12,26 +12,26 @@ vi.mock("qrcode", () => ({
 
 afterEach(() => vi.unstubAllGlobals());
 
-// The component is collapsed by default (spec §4: "Show QR" executes the
-// demo); every test reveals it first.
+// jsdom has no IntersectionObserver, so the component auto-reveals at
+// mount (the browser reveals on scroll-into-view).
 function renderRevealed(serviceId: string, label: string) {
   render(<ServiceQr serviceId={serviceId} label={label} />);
-  fireEvent.click(screen.getByRole("button", { name: `Show QR code - ${label}` }));
 }
 
 describe("ServiceQr", () => {
-  it("stays collapsed - no fetch - until the Show QR button is clicked", () => {
-    const fetchSpy = vi.fn();
-    vi.stubGlobal("fetch", fetchSpy);
+  it("reveals automatically and mints the live action", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => ok({ kind: "invitation", url: null })));
 
     render(
       <ServiceQr serviceId="demo-issuer-accredited" label="Accredited Issuer (demo)" />,
     );
 
     expect(
-      screen.getByRole("button", { name: /Show QR code - Accredited Issuer \(demo\)/ }),
+      await screen.findByText("Live service link unavailable right now."),
     ).toBeDefined();
-    expect(fetchSpy).not.toHaveBeenCalled();
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/demo/demo-issuer-accredited?format=anoncreds",
+    );
   });
 
   it("renders the QR image and the live link when the service has an appUrl", async () => {

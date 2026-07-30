@@ -1,7 +1,7 @@
 "use client";
 
-import { BadgeCheck, QrCode, RefreshCw } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { BadgeCheck, RefreshCw } from "lucide-react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 
 type DemoApiResponse = {
@@ -64,11 +64,10 @@ function UnavailableCard({ onRetry }: { onRetry: () => void }) {
   );
 }
 
-// Collapsed by default (spec §4: a "Show QR" button reveals the QR code and
-// executes the demo). Revealing fetches /api/demo/<id>, which mints a fresh
-// live action for this visitor - an OOB credential offer (issuers) or OOB
-// presentation request (verifiers), or the plain connection invitation for
-// the untrusted service.
+// Auto-reveals when scrolled into view: revealing fetches /api/demo/<id>,
+// which mints a fresh live action for this visitor - an OOB credential offer
+// (issuers) or OOB presentation request (verifiers), or the plain connection
+// invitation for the untrusted service.
 export function ServiceQr({
   serviceId,
   label,
@@ -88,6 +87,27 @@ export function ServiceQr({
   const [proof, setProof] = useState<ProofStatus | null>(null);
   const [attempt, setAttempt] = useState(0);
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+
+  // Auto-reveal: mint and show the QR as soon as the card scrolls into
+  // view (once). Environments without IntersectionObserver reveal at mount.
+  useEffect(() => {
+    if (revealed) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setRevealed(true);
+      return;
+    }
+    const node = rootRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) setRevealed(true);
+      },
+      { rootMargin: "0px 0px 120px 0px", threshold: 0.1 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [revealed]);
 
   useEffect(() => {
     if (!revealed) return;
@@ -163,75 +183,52 @@ export function ServiceQr({
     };
   }, [appUrl, attempt]);
 
-  if (!revealed) {
-    return (
-      <button
-        type="button"
-        onClick={() => setRevealed(true)}
-        aria-label={`Show QR code - ${label}`}
-        title={`Show QR code - ${label}`}
-        className="inline-flex items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2.5 text-sm font-medium text-violet-700 transition-colors hover:bg-violet-100"
-      >
-        <QrCode className="h-6 w-6" aria-hidden />
-      </button>
-    );
-  }
-
+  let content: React.ReactNode;
   if (proof && proof.state === "done") {
-    return <PresentedCredential proof={proof} />;
-  }
-
-  if (unsupported) {
-    return (
+    content = <PresentedCredential proof={proof} />;
+  } else if (unsupported) {
+    content = (
       <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-5 py-4 text-xs text-gray-500">
         The OpenID4VC rail for the demo services is being enabled - this
         scenario reaches OpenID4VC wallets soon.
       </div>
     );
-  }
-
-  if (appUrl === undefined) {
-    return (
+  } else if (!revealed || appUrl === undefined || (appUrl && !qrDataUrl && !qrFailed)) {
+    content = (
       <div className="animate-pulse rounded-xl border border-gray-100 bg-gray-50 px-5 py-4 text-xs text-gray-500">
         Resolving the live service link…
       </div>
     );
-  }
-
-  if (!appUrl || qrFailed) {
-    return <UnavailableCard onRetry={retry} />;
-  }
-
-  if (!qrDataUrl) {
-    return (
-      <div className="animate-pulse rounded-xl border border-gray-100 bg-gray-50 px-5 py-4 text-xs text-gray-500">
-        Resolving the live service link…
-      </div>
-    );
-  }
-
-  return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-col items-center gap-3">
-        <div className="flex h-40 w-40 shrink-0 items-center justify-center rounded-xl border border-gray-100 bg-white p-2">
-          {/* eslint-disable-next-line @next/next/no-img-element -- generated data: URI, not a static asset next/image can optimize */}
-          <img src={qrDataUrl} alt={`${label} QR`} className="h-full w-full" />
+  } else if (!appUrl || qrFailed) {
+    content = <UnavailableCard onRetry={retry} />;
+  } else {
+    content = (
+      <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-col items-center gap-3">
+          <div className="flex h-40 w-40 shrink-0 items-center justify-center rounded-xl border border-gray-100 bg-white p-2">
+            {/* eslint-disable-next-line @next/next/no-img-element -- generated data: URI, not a static asset next/image can optimize */}
+            <img src={qrDataUrl} alt={`${label} QR`} className="h-full w-full" />
+          </div>
+          <a
+            href={appUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="break-all text-center font-mono text-xs text-violet-600 underline"
+          >
+            {appUrl}
+          </a>
+          <p className="text-center text-xs text-gray-500">
+            Scan with your <strong className="font-semibold">wallet</strong> - a
+            live, single-use out-of-band action from this service. Your wallet
+            trust-resolves it and shows the verdict before anything else
+            happens.
+          </p>
         </div>
-        <a
-          href={appUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="break-all text-center font-mono text-xs text-violet-600 underline"
-        >
-          {appUrl}
-        </a>
-        <p className="text-center text-xs text-gray-500">
-          Scan with your <strong className="font-semibold">wallet</strong> - a
-          live, single-use out-of-band action from this service. Your wallet
-          trust-resolves it and shows the verdict before anything else
-          happens.
-        </p>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // The wrapper is the IntersectionObserver target, so it exists before the
+  // reveal happens.
+  return <div ref={rootRef}>{content}</div>;
 }

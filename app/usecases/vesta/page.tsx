@@ -5,7 +5,6 @@ import {
   BadgeCheck,
   BookOpen,
   Bot,
-  Eye,
   Files,
   Hand,
   KeyRound,
@@ -206,12 +205,7 @@ function KindChip({ kind }: { kind: SubStep["kind"] }) {
         <Hand className="h-3 w-3" /> hands-on - you do it
       </span>
     );
-  if (kind === "watch")
-    return (
-      <span className="inline-flex items-center gap-1.5 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-semibold text-violet-700">
-        <Eye className="h-3 w-3" /> watch - Vesta does it
-      </span>
-    );
+  if (kind === "watch") return null;
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">
       <BookOpen className="h-3 w-3" /> story

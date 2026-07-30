@@ -4,8 +4,9 @@ import { QrCode, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "qrcode";
 
-type PotApiResponse = {
-  service?: { appUrl?: string } | null;
+type DemoApiResponse = {
+  kind?: string;
+  url?: string | null;
 };
 
 function UnavailableCard({ onRetry }: { onRetry: () => void }) {
@@ -25,7 +26,10 @@ function UnavailableCard({ onRetry }: { onRetry: () => void }) {
 }
 
 // Collapsed by default (spec §4: a "Show QR" button reveals the QR code and
-// executes the demo); the service link is only fetched once revealed.
+// executes the demo). Revealing fetches /api/demo/<id>, which mints a fresh
+// live action for this visitor — an OOB credential offer (issuers) or OOB
+// presentation request (verifiers), or the plain connection invitation for
+// the untrusted service.
 export function ServiceQr({ serviceId, label }: { serviceId: string; label: string }) {
   const [revealed, setRevealed] = useState(false);
   const [appUrl, setAppUrl] = useState<string | null | undefined>(undefined);
@@ -38,10 +42,10 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
     if (!revealed) return;
     let alive = true;
     setAppUrl(undefined);
-    fetch(`/api/pot/${serviceId}`)
-      .then((res) => (res.ok ? (res.json() as Promise<PotApiResponse>) : null))
+    fetch(`/api/demo/${serviceId}`)
+      .then((res) => (res.ok ? (res.json() as Promise<DemoApiResponse>) : null))
       .then((body) => {
-        if (alive) setAppUrl(body?.service?.appUrl ?? null);
+        if (alive) setAppUrl(body?.url ?? null);
       })
       .catch(() => {
         if (alive) setAppUrl(null);
@@ -118,8 +122,9 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
         </a>
         <p className="text-center text-xs text-gray-500">
           Scan with your <strong className="font-semibold">wallet</strong> (or
-          phone camera) — this is the service&apos;s live DIDComm invitation.
-          Your wallet trust-resolves the service before anything else happens.
+          phone camera) — a live, single-use out-of-band action from this
+          service. Your wallet trust-resolves it and shows the verdict before
+          anything else happens.
         </p>
       </div>
     </div>

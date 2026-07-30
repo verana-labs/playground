@@ -39,14 +39,8 @@ describe("ServiceQr", () => {
       "fetch",
       vi.fn(() =>
         ok({
-          service: {
-            id: "demo-issuer-accredited",
-            label: "Accredited Issuer (demo)",
-            appUrl:
-              "https://demo-issuer-accredited.playground.testnet.verana.network/invitation",
-          },
-          did: "did:webvh:Qm:svc.example",
-          pot: null,
+          kind: "credential-offer",
+          url: "https://demo-issuer-accredited.playground.testnet.verana.network/s?id=abcd1234",
         }),
       ),
     );
@@ -57,12 +51,12 @@ describe("ServiceQr", () => {
     expect(img.getAttribute("src")).toBe("data:image/png;base64,MOCKQR");
 
     const link = screen.getByRole("link", {
-      name: "https://demo-issuer-accredited.playground.testnet.verana.network/invitation",
+      name: "https://demo-issuer-accredited.playground.testnet.verana.network/s?id=abcd1234",
     });
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
     expect(screen.getByText("wallet")).toBeDefined();
-    expect(fetch).toHaveBeenCalledWith("/api/pot/demo-issuer-accredited");
+    expect(fetch).toHaveBeenCalledWith("/api/demo/demo-issuer-accredited");
   });
 
   it("renders the unavailable card with retry when the fetch fails", async () => {
@@ -76,15 +70,11 @@ describe("ServiceQr", () => {
     expect(screen.getByRole("button", { name: /retry/i })).toBeDefined();
   });
 
-  it("renders the unavailable card when the service has no appUrl", async () => {
+  it("renders the unavailable card when no live action link is available", async () => {
     vi.stubGlobal(
       "fetch",
       vi.fn(() =>
-        ok({
-          service: { id: "playground-demo", label: "Playground Demo" },
-          did: "did:webvh:Qm:svc.example",
-          pot: null,
-        }),
+        ok({ kind: "invitation", url: null }),
       ),
     );
 
@@ -101,14 +91,8 @@ describe("ServiceQr", () => {
       "fetch",
       vi.fn(() =>
         ok({
-          service: {
-            id: "demo-issuer-accredited",
-            label: "Accredited Issuer (demo)",
-            appUrl:
-              "https://demo-issuer-accredited.playground.testnet.verana.network/invitation",
-          },
-          did: "did:webvh:Qm:svc.example",
-          pot: null,
+          kind: "credential-offer",
+          url: "https://demo-issuer-accredited.playground.testnet.verana.network/s?id=abcd1234",
         }),
       ),
     );

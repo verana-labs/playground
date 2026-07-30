@@ -10,7 +10,6 @@ import {
   Landmark,
   LockKeyhole,
   ExternalLink,
-  SquareCheckBig,
   Check,
   X,
   Network,
@@ -909,12 +908,6 @@ export function Section3() {
                   <h3 className="text-2xl font-bold text-gray-900">
                     {need.title}
                   </h3>
-                  <span
-                    title={`Need ${need.n} of 5 from Marc's checklist`}
-                    className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700"
-                  >
-                    <SquareCheckBig className="h-3.5 w-3.5" aria-hidden />
-                  </span>
                 </div>
                 <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
                   {need.intro}

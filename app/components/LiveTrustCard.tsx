@@ -56,14 +56,22 @@ function toTrustCardData(
     did: body.did,
     isService: true,
     serviceType: text(svc?.claims?.type) ?? undefined,
+    // Green bubbles only when the chain verdict is TRUSTED: the resolver
+    // reports even an untrusted service's self-issued credentials as
+    // signature-VALID, so per-credential results alone can't be trusted.
     service: svc
-      ? { name: "ECS-Service", issuedBy: `issued by ${didHost(svc.issuedBy)}` }
+      ? {
+          name: "ECS-Service",
+          issuedBy: `issued by ${didHost(svc.issuedBy)}`,
+          verified: trusted,
+        }
       : undefined,
     organization: org
       ? {
           name: "ECS-Organization",
           orgName: text(org.claims?.name) ?? "Unnamed organization",
           issuedBy: `issued by ${didHost(org.issuedBy)}`,
+          verified: trusted,
         }
       : undefined,
     trusted,

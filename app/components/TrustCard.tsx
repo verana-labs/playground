@@ -15,6 +15,9 @@ export type TrustCardCredential = {
   note?: string;
   /** Inherited from the parent service's DID (Verifiable Trust spec). */
   inherited?: boolean;
+  /** false = presented but NOT verified by trust resolution (e.g. on an
+   *  untrusted service) — renders a grey bubble, never a green one. */
+  verified?: boolean;
 };
 
 export type TrustCardData = {
@@ -59,13 +62,15 @@ function VeranaMark({ size = 15 }: { size?: number }) {
   );
 }
 
+// Green bubble ONLY for a credential verified by trust resolution; a
+// missing or unverified credential gets a grey bubble.
 function Tick({ ok }: { ok: boolean }) {
   return (
     <span
       className={`absolute left-0 top-0 flex h-7 w-7 items-center justify-center rounded-full border-2 ${
         ok
           ? "border-emerald-600 bg-emerald-50 text-emerald-600"
-          : "border-red-300 bg-red-50 text-red-500"
+          : "border-gray-300 bg-gray-50 text-gray-400"
       }`}
       aria-hidden
     >
@@ -150,7 +155,7 @@ export default function TrustCard({
               aria-hidden
             />
             <li className="relative pb-4 pl-10">
-              <Tick ok={!!d.service} />
+              <Tick ok={!!d.service && d.service.verified !== false} />
               <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
                 Service · ECS-Service
               </div>
@@ -170,7 +175,7 @@ export default function TrustCard({
               )}
             </li>
             <li className="relative pb-4 pl-10">
-              <Tick ok={!!d.organization} />
+              <Tick ok={!!d.organization && d.organization.verified !== false} />
               <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-400">
                 Operated by · ECS-Organization
                 {d.organization?.inherited ? (

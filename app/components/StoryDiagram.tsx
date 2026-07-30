@@ -290,7 +290,7 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
                           n.x -
                           (labelW[n.id] ?? label.length * 6.6) / 2 -
                           17
-                        }, ${n.y + r + 9})`}
+                        }, ${n.y + r + 13})`}
                         style={{ color: "#059669" }}
                         aria-label="trusted"
                       >
@@ -300,7 +300,7 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
                     <text
                       ref={measure(n.id)}
                       x={n.x}
-                      y={n.y + r + 20}
+                      y={n.y + r + 24}
                       textAnchor="middle"
                       fontSize={12}
                       fontWeight={700}
@@ -313,7 +313,7 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
                 {sub ? (
                   <text
                     x={n.x}
-                    y={n.y + r + (label ? 35 : 22)}
+                    y={n.y + r + (label ? 39 : 26)}
                     textAnchor="middle"
                     fontSize={9.5}
                     fill="#6b7280"

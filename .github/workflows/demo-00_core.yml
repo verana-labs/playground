@@ -1,0 +1,155 @@
+name: "Demo 00 · Core (reusable)"
+
+# Reusable deploy + provision pipeline for one Playground demo cast member
+# (the shared user-wallet demo services of spec §4 — see
+# .github/workflows/demo/README.md). Called by the demo-01..06 workflows;
+# not meant to be run directly. Mirrors vesta-00_core.yml with the cast
+# assets under .github/workflows/demo/; common.sh is shared from the vesta
+# cast directory.
+
+on:
+  workflow_call:
+    inputs:
+      org:
+        description: "Cast member — must match a directory under .github/workflows/demo/orgs/"
+        required: true
+        type: string
+      step:
+        description: "deploy | provision | all"
+        required: false
+        default: all
+        type: string
+      force_refresh:
+        description: "Re-issue credentials even when a linked VP already exists"
+        required: false
+        default: false
+        type: boolean
+
+env:
+  NETWORK: testnet
+  VERANAD_VERSION: v0.9.5
+
+jobs:
+  run:
+    name: "${{ inputs.org }}"
+    runs-on: ubuntu-latest
+    # Both playground casts (vesta-* and demo-*) sign with the same veranad
+    # account; running two jobs at once races on the account's transaction
+    # sequence number. The shared group name serializes every cast run across
+    # both pipelines. GitHub keeps only ONE queued run per group — start
+    # workflows one at a time rather than firing several at once.
+    concurrency:
+      group: vesta-cast
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Load org configuration
+        run: |
+          CFG=".github/workflows/demo/orgs/${{ inputs.org }}/config.env"
+          if [ ! -f "$CFG" ]; then
+            echo "::error::Unknown org '${{ inputs.org }}' — no $CFG"
+            exit 1
+          fi
+          set -a
+          source "$CFG"
+          set +a
+          while IFS= read -r line; do
+            key="${line%%=*}"
+            echo "${key}=${!key}" >> "$GITHUB_ENV"
+          done < <(grep -E '^[A-Z_]+=' "$CFG")
+          # Resolve the network placeholder in the public host
+          echo "INGRESS_HOST=${INGRESS_HOST//__NETWORK__/${NETWORK}}" >> "$GITHUB_ENV"
+
+      - name: Resolve deployment template
+        run: |
+          sed -e "s/__NETWORK__/${NETWORK}/g" \
+              -e "s/__RELEASE__/${RELEASE_NAME}/g" \
+              -e "s/__HOST__/${INGRESS_HOST}/g" \
+            .github/workflows/demo/deployment.template.yaml > /tmp/deployment-resolved.yaml
+          echo "--- Resolved deployment values ---"
+          cat /tmp/deployment-resolved.yaml
+
+      - name: Parse deployment values
+        run: |
+          CHART_SOURCE=$(yq '.chartSource' /tmp/deployment-resolved.yaml)
+          CHART_VERSION=$(yq '.chartVersion' /tmp/deployment-resolved.yaml)
+          CHART_NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
+          echo "CHART_SOURCE=${CHART_SOURCE}" >> "$GITHUB_ENV"
+          echo "CHART_VERSION=${CHART_VERSION}" >> "$GITHUB_ENV"
+          echo "CHART_NAMESPACE=${CHART_NAMESPACE}" >> "$GITHUB_ENV"
+          echo "Chart: $CHART_SOURCE@$CHART_VERSION -> $CHART_NAMESPACE/$RELEASE_NAME"
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          cat > ~/.kube/config <<'KUBEEOF'
+          ${{ secrets.KUBECONFIG_VERANA_DEV }}
+          KUBEEOF
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5.1.0
+        with:
+          version: 'v1.29.9'
+
+      - name: Install veranad
+        if: inputs.step != 'deploy'
+        run: |
+          curl -sfL "https://github.com/verana-labs/verana-node/releases/download/${VERANAD_VERSION}/veranad-linux-amd64" \
+            -o /usr/local/bin/veranad
+          chmod +x /usr/local/bin/veranad
+          veranad version
+
+      - name: Import account from mnemonic
+        if: inputs.step != 'deploy'
+        run: |
+          MNEMONIC="${{ secrets.PLAYGROUND_MNEMONIC }}"
+          if [ -z "$MNEMONIC" ]; then
+            echo "::error::Secret PLAYGROUND_MNEMONIC is not set (required for provisioning)"
+            exit 1
+          fi
+          echo "$MNEMONIC" | veranad keys add "$USER_ACC" --recover --keyring-backend test
+
+      # -----------------------------------------------------------------------
+      # DEPLOY: install/upgrade the vs-agent via Helm
+      # -----------------------------------------------------------------------
+      - name: Deploy vs-agent via Helm
+        if: inputs.step == 'deploy' || inputs.step == 'all'
+        run: |
+          yq 'del(.chartSource, .chartVersion)' /tmp/deployment-resolved.yaml > /tmp/helm-values.yaml
+          yq -i '.didcommLabel = env(SERVICE_NAME)' /tmp/helm-values.yaml
+          yq -i '.didcommInvitationImageUrl = env(SERVICE_LOGO_URL)' /tmp/helm-values.yaml
+          echo "--- Helm values ---"
+          cat /tmp/helm-values.yaml
+          helm upgrade --install "$RELEASE_NAME" "$CHART_SOURCE" \
+            --version "$CHART_VERSION" \
+            --namespace "$CHART_NAMESPACE" --create-namespace \
+            --values /tmp/helm-values.yaml \
+            --wait --timeout 300s
+
+      # -----------------------------------------------------------------------
+      # PROVISION: credentials, permissions, registries via the Admin APIs
+      # -----------------------------------------------------------------------
+      - name: Provision
+        if: (inputs.step == 'provision' || inputs.step == 'all') && env.PROVISION_SCRIPT != ''
+        run: |
+          export NAMESPACE="$CHART_NAMESPACE"
+          export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/demo"
+          export VESTA_DIR="${GITHUB_WORKSPACE}/.github/workflows/vesta"
+          export FORCE_REFRESH="${{ inputs.force_refresh }}"
+          bash "${CAST_DIR}/scripts/${PROVISION_SCRIPT}"
+
+      # -----------------------------------------------------------------------
+      # SUMMARY
+      # -----------------------------------------------------------------------
+      - name: Summary
+        if: always()
+        run: |
+          echo "## ${{ inputs.org }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${INGRESS_HOST:-}" ]; then
+            echo "- **VS Agent:** https://${INGRESS_HOST}/.well-known/did.json" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "- **Step:** ${{ inputs.step }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Network:** ${NETWORK:-unknown}" >> "$GITHUB_STEP_SUMMARY"

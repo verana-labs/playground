@@ -1,0 +1,57 @@
+# Playground demo cast vs-agent deployment — Helm chart values template
+#
+# One template for every demo cast member. The demo-00_core workflow
+# substitutes __RELEASE__, __HOST__ and __NETWORK__ from the org's config.env
+# before installing. Hosts follow <org>.playground.<network>.verana.network.
+#
+# The demo cast runs the oidc4vc-enabled vs-agent build so the DemoCredential
+# is served over both rails: AnonCreds/DIDComm (Track N wallets) and
+# OpenID4VCI/OpenID4VP (Track B wallets) — spec §4 v3 launch note.
+chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
+chartVersion: v1.11.1
+
+global:
+  domain: playground.__NETWORK__.verana.network
+
+name: __RELEASE__
+replicas: 1
+
+# vs-agent app image tag (defaults to chartVersion when tag is empty)
+image:
+  tag: v1.12.0-oidc4vc.2
+
+adminPort: 3000
+didcommPort: 3001
+eventsBaseUrl: "https://__HOST__"
+publicDidMethod: "webvh"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+ingress:
+  host: "__HOST__"
+  tlsSecret: "__HOST__-cert"
+  public:
+    enableCors: true
+  private:
+    enableCors: true
+    whitelistSourceRange: ""
+    tlsSecret: ""
+    host: ""
+
+extraEnv:
+  - name: ENABLE_PUBLIC_API_SWAGGER
+    value: "true"
+  - name: AGENT_LOG_LEVEL
+    value: "3"
+  - name: USE_CORS
+    value: "true"
+
+storage:
+  size: 1Gi
+  storageClassName: csi-cinder-high-speed

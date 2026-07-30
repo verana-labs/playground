@@ -1,0 +1,31 @@
+name: "Demo 05 · Unaccredited Verifier (demo)"
+
+# Deploys the Unaccredited Verifier (demo): delegated trusted service, deliberately no DemoCredential permission. Requires demo-01.
+# Part of the Playground demo cast CI/CD — see .github/workflows/demo/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  demo-verifier-unaccredited:
+    uses: ./.github/workflows/demo-00_core.yml
+    with:
+      org: demo-verifier-unaccredited
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

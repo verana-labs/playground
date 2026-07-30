@@ -224,7 +224,7 @@ export default async function UserWalletPlayground({
             onDark
             items={[
               { label: "Playground", href: "/" },
-              { label: "Personal wallets", href: "/#personal-wallets" },
+              { label: "Personal wallets", href: "/personal-wallets" },
               { label: w.name },
             ]}
           />

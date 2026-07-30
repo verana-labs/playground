@@ -10,8 +10,8 @@ const COLUMNS: {
     links: [
       { label: "What is Verana", href: "/#what-is-verana" },
       { label: "Learn step by step", href: "/#learn" },
-      { label: "Personal wallets", href: "/#personal-wallets" },
-      { label: "Business wallets", href: "/#business-wallets" },
+      { label: "Personal wallets", href: "/personal-wallets" },
+      { label: "Business wallets", href: "/business-wallets" },
       { label: "About", href: "/about" },
     ],
   },

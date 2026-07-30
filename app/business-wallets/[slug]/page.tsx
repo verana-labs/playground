@@ -64,7 +64,7 @@ export default async function CloudWalletPlayground({
             onDark
             items={[
               { label: "Playground", href: "/" },
-              { label: "Business wallets", href: "/#business-wallets" },
+              { label: "Business wallets", href: "/business-wallets" },
               { label: w.name },
             ]}
           />

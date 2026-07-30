@@ -288,14 +288,15 @@ download_logo_data_uri() {
   local content_type
   content_type=$(grep -i '^content-type:' "$tmp_headers" | tail -1 | tr -d '\r' | sed 's/^[^:]*:[[:space:]]*//' | cut -d';' -f1 | xargs)
 
+  # The ECS schemas validate logos against ^data:image/(png|jpeg|svg+xml);base64,
+  # so anything else (webp included) is rejected at issuance — fail here instead.
   case "$content_type" in
-    image/png|image/jpeg|image/svg+xml|image/webp) ;;
+    image/png|image/jpeg|image/svg+xml) ;;
     *)
       case "$url" in
         *.png)          content_type="image/png" ;;
         *.jpg|*.jpeg)   content_type="image/jpeg" ;;
         *.svg)          content_type="image/svg+xml" ;;
-        *.webp)         content_type="image/webp" ;;
         *)
           err "Could not determine image content type for $url (got: ${content_type:-empty})"
           rm -f "$tmp_body" "$tmp_headers"

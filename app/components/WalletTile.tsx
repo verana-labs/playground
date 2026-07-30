@@ -21,14 +21,14 @@ export default function WalletTile({ w }: { w: Integration }) {
       <div className="mt-3 flex flex-wrap gap-1.5">
         <Chip>{w.track}</Chip>
         {w.license ? <Chip>{w.license}</Chip> : null}
-        {w.badge_loop === "live" ? (
+        {w.demo_loop === "live" ? (
           <Chip tone="verified">
             <span className="inline-flex items-center gap-1">
-              badge loop <Check className="h-3 w-3" aria-hidden />
+              demo loop <Check className="h-3 w-3" aria-hidden />
             </span>
           </Chip>
         ) : (
-          <Chip tone="pending">badge loop coming</Chip>
+          <Chip tone="pending">demo loop coming</Chip>
         )}
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-4">

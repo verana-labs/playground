@@ -4,9 +4,9 @@ kind: user-wallet
 repo: https://github.com/animo/paradym-wallet
 license: Apache-2.0
 track: bridge # OpenID4VC (Credo-TS); Verana trust resolution on OID4VP + OID4VCI
-scenarios: [iso-certification-loop]
+scenarios: [demo-credential-loop]
 download: https://github.com/AirKyzzZ/paradym-wallet-verana/releases/download/verana-2026-07-28/paradym-verana-dev-debug.apk
-badge_loop: coming
+demo_loop: coming
 notes: Verana trust integration in Paradym's SDK trust-mechanism registry (Credo-TS wallet). Badge flow activates when OpenID4VC issuance lands for ECS-Badge.
 logo: ./logo.webp
 demo_video: ./demo.mp4

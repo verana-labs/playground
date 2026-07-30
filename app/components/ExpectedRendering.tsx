@@ -1,34 +1,49 @@
-import { CheckCircle2, XCircle } from "lucide-react";
+import { CheckCircle2, ShieldX, XCircle } from "lucide-react";
 
+// The six DemoCredential scenarios of spec §4 — one verdict line each, in the
+// [UW-POT-2]/[UW-POT-3] wording. Shown as the placeholder "expected in the
+// wallet" rendering until the wallet submits its per-scenario captures.
 export type ExpectedRenderingKind =
-  | "issue"
-  | "present"
-  | "issue-refused"
-  | "present-refused";
+  | "issue-accredited"
+  | "issue-unaccredited"
+  | "issue-untrusted"
+  | "present-accredited"
+  | "present-unaccredited"
+  | "present-untrusted";
 
 const LINES: Record<
   ExpectedRenderingKind,
   { icon: typeof CheckCircle2; tone: string; text: string }
 > = {
-  issue: {
+  "issue-accredited": {
     icon: CheckCircle2,
     tone: "bg-emerald-50 text-emerald-700",
-    text: "✅ Example Issuer (demo) is an authorized issuer of ECS-Badge in the ECS Ecosystem.",
+    text: "✅ Accredited Issuer (demo) is an authorized issuer of DemoCredential in Playground Ecosystem (demo) — accept the offer.",
   },
-  present: {
+  "issue-unaccredited": {
+    icon: XCircle,
+    tone: "bg-red-50 text-red-600",
+    text: "❌ Unaccredited Issuer (demo) is not an authorized issuer of DemoCredential — accepting is blocked.",
+  },
+  "issue-untrusted": {
+    icon: ShieldX,
+    tone: "bg-red-50 text-red-600",
+    text: "❌ Untrusted Service (demo) fails trust resolution — the connection is refused before any offer.",
+  },
+  "present-accredited": {
     icon: CheckCircle2,
     tone: "bg-emerald-50 text-emerald-700",
-    text: "✅ Example Web Verifier (demo) is an authorized verifier of ECS-Badge in the ECS Ecosystem.",
+    text: "✅ Accredited Verifier (demo) is an authorized verifier of DemoCredential in Playground Ecosystem (demo) — share to log in.",
   },
-  "issue-refused": {
+  "present-unaccredited": {
     icon: XCircle,
     tone: "bg-red-50 text-red-600",
-    text: "❌ Umbra Repairs (demo) is not an authorized issuer of ECS-Badge — accepting is blocked.",
+    text: "❌ Unaccredited Verifier (demo) is not an authorized verifier of DemoCredential — sharing is blocked.",
   },
-  "present-refused": {
-    icon: XCircle,
+  "present-untrusted": {
+    icon: ShieldX,
     tone: "bg-red-50 text-red-600",
-    text: "❌ Umbra Repairs (demo) is not an authorized verifier of ECS-Badge — sharing is blocked.",
+    text: "❌ Untrusted Service (demo) fails trust resolution — the connection is refused before any request.",
   },
 };
 

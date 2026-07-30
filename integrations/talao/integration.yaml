@@ -4,10 +4,10 @@ kind: user-wallet
 repo: https://github.com/TalaoDAO/AltMe
 license: Apache-2.0
 track: bridge
-scenarios: [iso-certification-loop]
+scenarios: [demo-credential-loop]
 # TODO(maxime): direct APK release link (rebuild pending after the production-gate fix)
 download: https://github.com/AirKyzzZ/AltMe-verana
-badge_loop: coming
+demo_loop: coming
 notes: Verana trust resolution on the OID4VP accept path with a config-driven TESTNET label.
 logo: ./logo.webp
 demo_video: ./demo.mp4

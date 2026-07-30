@@ -1,6 +1,6 @@
 "use client";
 
-import { RefreshCw } from "lucide-react";
+import { QrCode, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "qrcode";
 
@@ -24,7 +24,10 @@ function UnavailableCard({ onRetry }: { onRetry: () => void }) {
   );
 }
 
+// Collapsed by default (spec §4: a "Show QR" button reveals the QR code and
+// executes the demo); the service link is only fetched once revealed.
 export function ServiceQr({ serviceId, label }: { serviceId: string; label: string }) {
+  const [revealed, setRevealed] = useState(false);
   const [appUrl, setAppUrl] = useState<string | null | undefined>(undefined);
   const [qrDataUrl, setQrDataUrl] = useState<string | undefined>(undefined);
   const [qrFailed, setQrFailed] = useState(false);
@@ -32,6 +35,7 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
 
   useEffect(() => {
+    if (!revealed) return;
     let alive = true;
     setAppUrl(undefined);
     fetch(`/api/pot/${serviceId}`)
@@ -45,7 +49,7 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
     return () => {
       alive = false;
     };
-  }, [serviceId, attempt]);
+  }, [serviceId, attempt, revealed]);
 
   useEffect(() => {
     if (!appUrl) return;
@@ -63,6 +67,19 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
       alive = false;
     };
   }, [appUrl, attempt]);
+
+  if (!revealed) {
+    return (
+      <button
+        type="button"
+        onClick={() => setRevealed(true)}
+        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-5 py-3 text-sm font-medium text-violet-700 transition-colors hover:bg-violet-100"
+      >
+        <QrCode className="h-4 w-4" aria-hidden />
+        Show QR code — {label}
+      </button>
+    );
+  }
 
   if (appUrl === undefined) {
     return (
@@ -100,9 +117,9 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
           {appUrl}
         </a>
         <p className="text-center text-xs text-gray-500">
-          Scan with your <strong className="font-semibold">phone camera</strong>,
-          not your wallet — this opens the demo service in a browser. The service
-          then shows the invitation QR your wallet scans.
+          Scan with your <strong className="font-semibold">wallet</strong> (or
+          phone camera) — this is the service&apos;s live DIDComm invitation.
+          Your wallet trust-resolves the service before anything else happens.
         </p>
       </div>
     </div>

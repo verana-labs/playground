@@ -4,13 +4,29 @@ import { DEMO_SERVICES, getDemoService, serviceDid, serviceDidFor } from "./demo
 afterEach(() => vi.unstubAllGlobals());
 
 describe("demo services", () => {
-  it("knows the main.demos cast and the hosted cloud-stack anchors", () => {
+  it("knows the playground cast, the main.demos cast and the hosted cloud-stack anchors", () => {
     expect(DEMO_SERVICES.map((s) => s.id)).toEqual([
+      "playground-demo",
+      "demo-issuer-accredited", "demo-issuer-unaccredited",
+      "demo-verifier-accredited", "demo-verifier-unaccredited",
+      "demo-untrusted",
       "organization-vs", "issuer-chatbot-vs", "issuer-web-vs",
       "verifier-chatbot-vs", "verifier-web-vs",
       "mosip-organization-vs", "unfold-organization-vs",
     ]);
     expect(getDemoService("nope")).toBeUndefined();
+  });
+
+  it("gives every playground cast demo service its DIDComm invitation link", () => {
+    for (const id of [
+      "demo-issuer-accredited", "demo-issuer-unaccredited",
+      "demo-verifier-accredited", "demo-verifier-unaccredited",
+      "demo-untrusted",
+    ]) {
+      expect(getDemoService(id)?.appUrl).toBe(
+        `https://${id}.playground.testnet.verana.network/invitation`,
+      );
+    }
   });
 
   it("prefers the did:webvh alsoKnownAs", async () => {

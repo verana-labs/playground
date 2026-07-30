@@ -5,7 +5,7 @@ kind: cloud-wallet
 # OSI license (playground/README.md), so this must be declared before merge.
 repo: https://github.com/AirKyzzZ/unfold-verana-integration
 track: bridge # OpenID4VC issuer + verifier, Verana trust resolution inside the OID4VP exchange
-scenarios: [iso-certification-loop]
+scenarios: [demo-credential-loop]
 download: https://api.playground.france-identite.gouv.fr/verana/verana/
 demo_service: unfold-organization-vs
 notes: A live trust-registry verdict inside the OID4VP flow on the shared EU interoperability sandbox - is this issuer accredited, is this verifier authorized.

@@ -6,11 +6,11 @@ kind: user-wallet
 repo: https://github.com/2060-io/hologram-app
 license: Apache-2.0
 track: native # DIDComm-native (full Verifiable Trust integration)
-scenarios: [iso-certification-loop]
+scenarios: [demo-credential-loop]
 # TODO: replace with a direct APK download link; store pages complement it.
 download: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
 playstore: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
 appstore: https://apps.apple.com/cl/app/hologram-messaging/id6474701855
-badge_loop: live # AnonCreds/DIDComm badge loop - the first wallet to complete it
-notes: Reference user wallet. Badge issuance and credential login run over AnonCreds/DIDComm.
+demo_loop: live # DemoCredential scenarios over AnonCreds/DIDComm - the first wallet to complete them
+notes: Reference user wallet. The DemoCredential scenarios run over AnonCreds/DIDComm.
 logo: ./logo.webp

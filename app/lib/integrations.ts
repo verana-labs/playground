@@ -10,6 +10,14 @@ import { parseIntegration } from "./integration-schema";
 
 export type IntegrationKind = "user-wallet" | "cloud-wallet";
 
+export type CaptureKey =
+  | "issue-accredited"
+  | "issue-unaccredited"
+  | "issue-untrusted"
+  | "present-accredited"
+  | "present-unaccredited"
+  | "present-untrusted";
+
 export type Integration = {
   slug: string;
   name: string;
@@ -34,8 +42,12 @@ export type Integration = {
   appstore?: string;
   playstore?: string;
   contact?: string;
-  /** Which parts of the playground template are live for this wallet. */
-  badge_loop?: string;
+  /** Whether the six DemoCredential scenarios are live for this wallet
+   *  (over its track's rail) — spec §4. */
+  demo_loop?: string;
+  /** Per-scenario captures of this wallet's expected behavior; keys are the
+   *  six scenario ids (issue|present × accredited|unaccredited|untrusted). */
+  captures?: Partial<Record<CaptureKey, { src: string; caption?: string }>>;
   /** Cloud wallets: id of the standing demo service it hosts (from the
    *  verana-demos cast), rendered as a live Proof-of-Trust on its page. */
   demo_service?: string;
@@ -92,7 +104,15 @@ export function listIntegrations(): Integration[] {
       appstore: data.appstore,
       playstore: data.playstore,
       contact: data.contact,
-      badge_loop: data.badge_loop ?? "coming",
+      demo_loop: data.demo_loop ?? data.badge_loop ?? "coming",
+      captures: data.captures
+        ? Object.fromEntries(
+            Object.entries(data.captures).flatMap(([k, v]) => {
+              const src = publicAsset(slug, v.src);
+              return src ? [[k, { src, caption: v.caption }]] : [];
+            }),
+          )
+        : undefined,
       demo_service: data.demo_service,
       notes: data.notes,
     });

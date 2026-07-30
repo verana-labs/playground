@@ -94,9 +94,12 @@ function CredMeta({ cred }: { cred: TrustCardCredential }) {
 export default function TrustCard({
   data,
   onClose,
+  expanded = false,
 }: {
   data: TrustCardData;
   onClose?: () => void;
+  /** Render the "Also presents" and "Accreditations" sections open. */
+  expanded?: boolean;
 }) {
   const d = data;
   return (
@@ -245,7 +248,7 @@ export default function TrustCard({
 
       {/* Also presents */}
       {d.others.length > 0 ? (
-        <details className="group/tc mt-3 border-t border-gray-200 pt-2.5">
+        <details open={expanded} className="group/tc mt-3 border-t border-gray-200 pt-2.5">
           <summary className="flex cursor-pointer list-none items-center gap-2 text-xs font-semibold text-amber-700 [&::-webkit-details-marker]:hidden">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
               <circle cx="12" cy="8" r="6" />
@@ -277,7 +280,7 @@ export default function TrustCard({
 
       {/* Accreditations - collapsed by default */}
       {d.accreditations.length > 0 ? (
-        <details className="group/ac mt-2.5 border-t border-gray-200 pt-2.5">
+        <details open={expanded} className="group/ac mt-2.5 border-t border-gray-200 pt-2.5">
           <summary className="flex cursor-pointer list-none items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-gray-500 [&::-webkit-details-marker]:hidden">
             Accreditations
             <span className="rounded-full bg-violet-50 px-2 py-px text-[10px] font-bold text-violet-700">

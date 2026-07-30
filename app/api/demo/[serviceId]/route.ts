@@ -101,9 +101,13 @@ export async function GET(
       proofExchangeId: str(request, "proofExchangeId"),
     });
   } catch {
-    return NextResponse.json(
-      { error: "demo service unreachable" },
-      { status: 503 },
-    );
+    // Admin API unreachable (e.g. local dev outside the cluster): degrade to
+    // the public connection invitation so the QR still renders. In-cluster
+    // deployments serve the full OOB offer/request flows.
+    return NextResponse.json({
+      kind: "invitation",
+      url: service.appUrl ?? null,
+      fallback: true,
+    });
   }
 }

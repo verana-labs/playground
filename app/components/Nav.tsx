@@ -19,32 +19,15 @@ function Logo() {
       className="flex items-center gap-2.5 text-lg font-bold tracking-tight text-gray-900"
       aria-label="Verana Playground home"
     >
-      {/* The purple capsule mark from verana.io (public/logo.svg) */}
-      <svg width="24" height="24" viewBox="0 0 64 64" aria-hidden="true">
-        <defs>
-          <linearGradient
-            id="veranaNavGradient"
-            x1="0"
-            y1="0"
-            x2="64"
-            y2="64"
-            gradientUnits="userSpaceOnUse"
-          >
-            <stop offset="0%" stopColor="#763EF0" />
-            <stop offset="100%" stopColor="#9F7AEA" />
-          </linearGradient>
-        </defs>
-        <rect width="64" height="64" rx="12" fill="url(#veranaNavGradient)" />
-        <g
-          transform="translate(32 33) scale(0.76923) translate(-27 -27)"
-          fill="white"
-        >
-          <path d="M26.9932 51.6972L5.805 11.0977L2.91263 16.2161L0 10.6048L5.98725 0L26.9932 40.2483L47.9993 0L54 10.6217L51.0773 16.2161L48.1849 11.0977L26.9932 51.6972Z" />
-          <path d="M13.696 0L26.9935 25.4637L39.9367 0H13.696Z" />
-        </g>
+      <svg width="20" height="20" viewBox="0 0 54 52" aria-hidden="true">
+        <path
+          fill="#7C3AED"
+          d="M26.9932 51.6972L5.805 11.0977L2.91263 16.2161L0 10.6048L5.98725 0L26.9932 40.2483L47.9993 0L54 10.6217L51.0773 16.2161L48.1849 11.0977L26.9932 51.6972Z"
+        />
+        <path fill="#10B981" d="M13.696 0L26.9935 25.4637L39.9367 0H13.696Z" />
       </svg>
       <span className="hidden sm:inline">
-        Verana <span className="text-emerald-600">Playground</span>
+        Verana <span className="text-violet-600">Playground</span>
       </span>
     </Link>
   );

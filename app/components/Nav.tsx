@@ -6,8 +6,8 @@ import { MobileMenu, UseCasesMenu } from "./NavMenus";
 // wallet anchors · network chip · one CTA: "Add your wallet" → /integrate.
 const NAV = [
   { href: "/#what-is-verana", label: "What is Verana" },
-  { href: "/#user-wallets", label: "User wallets" },
-  { href: "/#cloud-wallets", label: "Cloud wallets" },
+  { href: "/#personal-wallets", label: "Personal wallets" },
+  { href: "/#business-wallets", label: "Business wallets" },
 ];
 
 const USE_CASES = [{ href: "/usecases/vesta", label: "Vesta Appliances" }];

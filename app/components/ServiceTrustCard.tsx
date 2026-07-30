@@ -7,7 +7,7 @@ import { ShieldCheck, ShieldX, Building2, Server } from "lucide-react";
 // identity (ECS-Service claims), and the organization operating it (ECS-Org
 // claims) - resolved live against the network resolver via
 // /api/pot/[serviceId]. First live instance of the uniform Proof-of-Trust
-// pattern (user-wallet guideline §5).
+// pattern (personal-wallet guideline §5).
 
 type Pot = {
   did: string;

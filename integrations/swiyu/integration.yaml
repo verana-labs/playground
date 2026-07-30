@@ -1,6 +1,6 @@
 name: swiyu Wallet
 organization: Swiss Confederation (swiyu open source)
-kind: user-wallet
+kind: personal-wallet
 repo: https://github.com/swiyu-admin-ch/eidch-android-wallet
 license: MIT
 track: bridge

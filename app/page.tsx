@@ -14,7 +14,7 @@ import {
 import { Container, Section, SectionHeading } from "./components/ui";
 import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
 import { ProofOfTrust } from "./components/ProofOfTrust";
-import { userWallets, cloudWallets } from "./lib/integrations";
+import { personalWallets, businessWallets } from "./lib/integrations";
 import { CHAPTERS_NAV } from "./usecases/vesta/chapters";
 import { LINKS, ENDPOINTS } from "./lib/site";
 
@@ -60,8 +60,8 @@ const CAN_DO = [
 ];
 
 export default function Home() {
-  const users = userWallets();
-  const clouds = cloudWallets();
+  const users = personalWallets();
+  const clouds = businessWallets();
   const fidesUsecaseUrl = process.env.NEXT_PUBLIC_FIDES_USECASE_URL;
 
   return (
@@ -206,13 +206,13 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 3 · User wallets */}
-      <Section id="user-wallets" className="border-t border-gray-200">
+      {/* 3 · Personal wallets */}
+      <Section id="personal-wallets" className="border-t border-gray-200">
         <Container wide>
           <SectionHeading
             number={3}
-            title="User wallets"
-            subtitle="Every integrated open-source user wallet gets an identical playground page: receive a badge from Vesta, then log in with it"
+            title="Personal wallets"
+            subtitle="Every integrated open-source personal wallet gets an identical playground page: receive a badge from Vesta, then log in with it"
           />
           <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {users.map((w) => (
@@ -223,13 +223,13 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 4 · Cloud wallets */}
-      <Section id="cloud-wallets" className="border-t border-gray-200 bg-white">
+      {/* 4 · Business wallets */}
+      <Section id="business-wallets" className="border-t border-gray-200 bg-white">
         <Container wide>
           <SectionHeading
             number={4}
-            title="Cloud wallets"
-            subtitle="Every integrated open-source cloud wallet gets an identical playground page: a hosted, Verana-verified demo service you can exercise end to end"
+            title="Business wallets"
+            subtitle="Every integrated open-source business wallet gets an identical playground page: a hosted, Verana-verified demo service you can exercise end to end"
           />
           <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {clouds.map((w) => (
@@ -239,7 +239,7 @@ export default function Home() {
           </div>
           <p className="reveal mt-8 flex items-center gap-2 text-sm text-gray-500">
             <Building2 className="h-4 w-4 text-violet-600" />
-            Cloud wallets host organizations&apos; verifiable services - like the
+            Business wallets host organizations&apos; verifiable services - like the
             Vesta demo cast behind this playground.
           </p>
         </Container>

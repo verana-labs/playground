@@ -1,6 +1,6 @@
 name: MOSIP Inji
 organization: MOSIP
-kind: cloud-wallet
+kind: business-wallet
 repo: https://github.com/verana-labs/mosip-playground
 license: Apache-2.0
 track: sidecar # real Inji components, a vs-agent trust layer alongside them

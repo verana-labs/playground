@@ -131,7 +131,7 @@ export const REPAIR_NETWORK = {
 export const SOLUTION = {
   title: "The solution: become verifiable",
   ctoQuote: {
-    text: "Today, verifiable credential open source software exists for user and cloud wallets, and there is Verana, a public trust infrastructure. We have everything we need to make Vesta and its partner network a network of verifiable organizations, providing verifiable services.",
+    text: "Today, verifiable credential open source software exists for personal and business wallets, and there is Verana, a public trust infrastructure. We have everything we need to make Vesta and its partner network a network of verifiable organizations, providing verifiable services.",
     name: "Marc Keller",
     role: "CTO, Vesta Appliances",
   },
@@ -418,7 +418,7 @@ export const JOURNEY: {
           ],
           links: [
             { label: "Verana app", href: app },
-            { label: "Hologram wallet page", href: "/user-wallets/hologram" },
+            { label: "Hologram wallet page", href: "/personal-wallets/hologram" },
           ],
         },
         {
@@ -443,7 +443,7 @@ export const JOURNEY: {
             "Open the login demo, review the request (who asks, what for), present the badge - you're in.",
           ],
           links: [
-            { label: "User-wallet guideline", href: LINKS.guidelineUserWallet },
+            { label: "Personal-wallet guideline", href: LINKS.guidelineUserWallet },
           ],
         },
       ],
@@ -553,7 +553,7 @@ export const DEMOS = {
   anchor: "section-4",
   title: "Run the demos",
   intro:
-    "Download one of the integrated user wallets to run the demos - every wallet shows the same verdicts, the same way.",
+    "Download one of the integrated personal wallets to run the demos - every wallet shows the same verdicts, the same way.",
   verifyRule:
     "Always verify the certified Organization name and data shown in the Proof-of-Trust card in your wallet before proceeding.",
   badge: {

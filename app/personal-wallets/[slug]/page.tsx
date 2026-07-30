@@ -24,20 +24,20 @@ import {
 import { ProofOfTrust } from "../../components/ProofOfTrust";
 import { ServiceQr } from "../../components/ServiceQr";
 import {
-  userWallets,
+  personalWallets,
   getIntegration,
   type Integration,
 } from "../../lib/integrations";
 import { LINKS } from "../../lib/site";
 
-// Per-user-wallet playground page — the identical template of spec §4:
+// Per-personal-wallet playground page — the identical template of spec §4:
 // breadcrumb · header · what you'll test (Q1/Q2/Q3) · get the wallet
 // (modified APK) · issuer demos (trio) · verifier demos (trio). Every page
 // runs the same six DemoCredential scenarios against the shared Playground
 // demo cast; only the wallet (and its captures) changes.
 
 export function generateStaticParams() {
-  return userWallets().map((w) => ({ slug: w.slug }));
+  return personalWallets().map((w) => ({ slug: w.slug }));
 }
 
 export async function generateMetadata({
@@ -48,7 +48,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const w = getIntegration(slug);
   return {
-    title: w ? `${w.name} playground` : "User wallet",
+    title: w ? `${w.name} playground` : "Personal wallet",
     description: w
       ? `Try ${w.name} against the Verana testnet — six DemoCredential scenarios with live trust resolution.`
       : undefined,
@@ -231,7 +231,7 @@ export default async function UserWalletPlayground({
 }) {
   const { slug } = await params;
   const w = getIntegration(slug);
-  if (!w || w.kind !== "user-wallet") notFound();
+  if (!w || w.kind !== "personal-wallet") notFound();
 
   return (
     <>
@@ -242,7 +242,7 @@ export default async function UserWalletPlayground({
             onDark
             items={[
               { label: "Playground", href: "/" },
-              { label: "User wallets", href: "/#user-wallets" },
+              { label: "Personal wallets", href: "/#personal-wallets" },
               { label: w.name },
             ]}
           />

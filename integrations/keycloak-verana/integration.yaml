@@ -1,6 +1,6 @@
 name: Keycloak DID-bound Login
 organization: Verana Labs
-kind: cloud-wallet
+kind: business-wallet
 repo: https://github.com/AirKyzzZ/verana-keycloak-playground-verana
 # TODO(maxime): declare license
 track: bridge

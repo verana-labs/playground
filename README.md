@@ -3,7 +3,7 @@
 **Try the open trust layer. Live.** — `https://playground.testnet.verana.network`
 
 The interactive site for understanding the Verana concepts (the **Verana
-Explained** Vesta Appliances story) and trying the **integrated user and cloud wallets**,
+Explained** Vesta Appliances story) and trying the **integrated personal and business wallets**,
 everything running against the Verana **testnet** — real registry entries, real
 trust resolution, nothing simulated.
 
@@ -15,10 +15,10 @@ site spec, wallet-integration guidelines, and the Verana Explained story.
 
 ```
 app/                     Next.js 15 (App Router) + Tailwind v4, verana.io design language
-  page.tsx               Home: What is Verana · Learn (Vesta story cards) · User wallets · Cloud wallets
+  page.tsx               Home: What is Verana · Learn (Vesta story cards) · Personal wallets · Business wallets
   explained/             Verana Explained (the Vesta Appliances story, one page per chapter)
-  user-wallets/[slug]/   Per-user-wallet playground (identical template, spec §4)
-  cloud-wallets/[slug]/  Per-cloud-wallet playground (identical template, spec §5)
+  personal-wallets/[slug]/   Per-personal-wallet playground (identical template, spec §4)
+  business-wallets/[slug]/  Per-business-wallet playground (identical template, spec §5)
   integrate/             Add your wallet (guidelines + PR process)
 integrations/            The integration registry: one folder per wallet with integration.yaml
                          (submitted by PR — this is how a wallet gets listed and gets its page)
@@ -27,8 +27,8 @@ integrations/            The integration registry: one folder per wallet with in
 ## Add your wallet
 
 1. Integrate per the guideline for your wallet kind:
-   [user wallets](https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/user-wallet-integration.md) ·
-   [cloud wallets](https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/cloud-wallet-integration.md).
+   [personal wallets](https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/user-wallet-integration.md) ·
+   [business wallets](https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/cloud-wallet-integration.md).
 2. Record the acceptance loop (the ISO Certification loop).
 3. Open a PR adding `integrations/<your-slug>/integration.yaml` (see existing
    entries for the format). Requirements: OSI license; the wallet is obtainable

@@ -7,13 +7,13 @@ import { LINKS } from "../lib/site";
 export const metadata: Metadata = {
   title: "Add your wallet",
   description:
-    "Integrate your open-source user or cloud wallet with Verana and get your own playground page: guidelines, integration.yaml, and the PR process.",
+    "Integrate your open-source user or business wallet with Verana and get your own playground page: guidelines, integration.yaml, and the PR process.",
 };
 
 const YAML_EXAMPLE = `# integrations/<your-slug>/integration.yaml
 name: Your Wallet
 organization: Your Org
-kind: user-wallet          # user-wallet | cloud-wallet
+kind: personal-wallet          # personal-wallet | business-wallet
 repo: https://github.com/your-org/your-wallet
 license: Apache-2.0        # OSI-approved license required
 track: bridge              # user: native | bridge · cloud: native | sidecar | bridge
@@ -51,7 +51,7 @@ export default function Integrate() {
           <div className="grid gap-4 sm:grid-cols-2">
             <a href={LINKS.guidelineUserWallet} target="_blank" rel="noopener noreferrer" className="group rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md">
               <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Guideline</span>
-              <h2 className="mt-2 text-xl font-bold text-gray-900">User wallets</h2>
+              <h2 className="mt-2 text-xl font-bold text-gray-900">Personal wallets</h2>
               <p className="mt-2 text-sm leading-relaxed text-gray-500">
                 Trust resolution (Q1/Q2/Q3), the uniform Proof-of-Trust
                 presentation, tracks (native DIDComm / OID4VC bridge), and the
@@ -63,7 +63,7 @@ export default function Integrate() {
             </a>
             <a href={LINKS.guidelineCloudWallet} target="_blank" rel="noopener noreferrer" className="group rounded-xl border border-gray-200 bg-white p-6 shadow-sm transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md">
               <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Guideline</span>
-              <h2 className="mt-2 text-xl font-bold text-gray-900">Cloud wallets</h2>
+              <h2 className="mt-2 text-xl font-bold text-gray-900">Business wallets</h2>
               <p className="mt-2 text-sm leading-relaxed text-gray-500">
                 Resolvable DIDs (did:web / did:webvh), ECS onboarding, domain
                 credentials, authorized issue/verify, and the patterns (native /

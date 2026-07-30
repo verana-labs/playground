@@ -1,6 +1,6 @@
 name: Sphereon Wallet
 organization: Sphereon
-kind: user-wallet
+kind: personal-wallet
 repo: https://github.com/Sphereon-Opensource/mobile-wallet
 license: Apache-2.0
 track: bridge

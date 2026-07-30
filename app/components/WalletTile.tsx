@@ -8,7 +8,7 @@ import WalletLogo from "./WalletLogo";
  *  track chip · license chip · Get it · Open its playground. */
 export default function WalletTile({ w }: { w: Integration }) {
   const playgroundHref =
-    w.kind === "user-wallet" ? `/user-wallets/${w.slug}` : `/cloud-wallets/${w.slug}`;
+    w.kind === "personal-wallet" ? `/personal-wallets/${w.slug}` : `/business-wallets/${w.slug}`;
   return (
     <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex items-center gap-3">

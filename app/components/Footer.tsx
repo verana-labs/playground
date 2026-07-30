@@ -10,8 +10,8 @@ const COLUMNS: {
     links: [
       { label: "What is Verana", href: "/#what-is-verana" },
       { label: "Learn step by step", href: "/#learn" },
-      { label: "User wallets", href: "/#user-wallets" },
-      { label: "Cloud wallets", href: "/#cloud-wallets" },
+      { label: "Personal wallets", href: "/#personal-wallets" },
+      { label: "Business wallets", href: "/#business-wallets" },
       { label: "About", href: "/about" },
     ],
   },
@@ -19,8 +19,8 @@ const COLUMNS: {
     title: "Integrate",
     links: [
       { label: "Add your wallet", href: "/integrate" },
-      { label: "User-wallet guideline", href: LINKS.guidelineUserWallet, ext: true },
-      { label: "Cloud-wallet guideline", href: LINKS.guidelineCloudWallet, ext: true },
+      { label: "Personal-wallet guideline", href: LINKS.guidelineUserWallet, ext: true },
+      { label: "Business-wallet guideline", href: LINKS.guidelineCloudWallet, ext: true },
       { label: "This site's spec", href: LINKS.spec, ext: true },
       { label: "Source (GitHub)", href: LINKS.repo, ext: true },
     ],

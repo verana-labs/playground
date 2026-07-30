@@ -1,6 +1,6 @@
 name: Procivis One Wallet
 organization: Procivis
-kind: user-wallet
+kind: personal-wallet
 repo: https://github.com/procivis/one-wallet
 license: Apache-2.0
 track: bridge

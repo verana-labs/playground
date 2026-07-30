@@ -1,6 +1,6 @@
 name: Paradym Wallet
 organization: Animo Solutions
-kind: user-wallet
+kind: personal-wallet
 repo: https://github.com/animo/paradym-wallet
 license: Apache-2.0
 track: bridge # OpenID4VC (Credo-TS); Verana trust resolution on OID4VP + OID4VCI

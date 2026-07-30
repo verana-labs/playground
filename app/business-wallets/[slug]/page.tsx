@@ -11,19 +11,19 @@ import {
 import WalletLogo from "../../components/WalletLogo";
 import { ProofOfTrust } from "../../components/ProofOfTrust";
 import {
-  cloudWallets,
-  userWallets,
+  businessWallets,
+  personalWallets,
   getIntegration,
 } from "../../lib/integrations";
 import { getDemoService } from "../../lib/demo-services";
 import { ECS_ECOSYSTEM_DID, ENDPOINTS, LINKS } from "../../lib/site";
 
-// Per-cloud-wallet playground page — the identical template of spec §5:
+// Per-business-wallet playground page — the identical template of spec §5:
 // breadcrumb · header · the hosted demo service · the use case to test ·
 // under the hood. Generated from integration.yaml.
 
 export function generateStaticParams() {
-  return cloudWallets().map((w) => ({ slug: w.slug }));
+  return businessWallets().map((w) => ({ slug: w.slug }));
 }
 
 export async function generateMetadata({
@@ -34,7 +34,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const w = getIntegration(slug);
   return {
-    title: w ? `${w.name} playground` : "Cloud wallet",
+    title: w ? `${w.name} playground` : "Business wallet",
     description: w
       ? `${w.name} on the Verana playground — a hosted verifiable service with live Proof-of-Trust.`
       : undefined,
@@ -48,9 +48,9 @@ export default async function CloudWalletPlayground({
 }) {
   const { slug } = await params;
   const w = getIntegration(slug);
-  if (!w || w.kind !== "cloud-wallet") notFound();
-  const pickers = userWallets();
-  // The standing service this cloud wallet hosts, named by its descriptor
+  if (!w || w.kind !== "business-wallet") notFound();
+  const pickers = personalWallets();
+  // The standing service this business wallet hosts, named by its descriptor
   // (spec §5.3). Unknown ids fall through to the Placeholder branch.
   const demoService = w.demo_service ? getDemoService(w.demo_service) : undefined;
   const liveServiceId = demoService?.id;
@@ -64,7 +64,7 @@ export default async function CloudWalletPlayground({
             onDark
             items={[
               { label: "Playground", href: "/" },
-              { label: "Cloud wallets", href: "/#cloud-wallets" },
+              { label: "Business wallets", href: "/#business-wallets" },
               { label: w.name },
             ]}
           />
@@ -190,12 +190,12 @@ export default async function CloudWalletPlayground({
               <li>3. Present it back to the hosted service&apos;s verifier.</li>
             </ol>
             <p className="ml-11 mt-4 text-sm text-gray-500">
-              Run it with any integrated user wallet:{" "}
+              Run it with any integrated personal wallet:{" "}
               {pickers.map((p, i) => (
                 <span key={p.slug}>
                   {i > 0 ? " · " : ""}
                   <Link
-                    href={`/user-wallets/${p.slug}`}
+                    href={`/personal-wallets/${p.slug}`}
                     className="font-medium text-violet-600 hover:underline"
                   >
                     {p.name}

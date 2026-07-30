@@ -1,6 +1,6 @@
 name: Altme Wallet
 organization: Talao
-kind: user-wallet
+kind: personal-wallet
 repo: https://github.com/TalaoDAO/AltMe
 license: Apache-2.0
 track: bridge

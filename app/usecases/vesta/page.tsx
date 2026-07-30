@@ -26,12 +26,14 @@ export default function VestaChapter1() {
             ]}
           />
           <h1 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl">
-            Verana, explained by Vesta Appliances
+            Learn with Vesta how to make your organization verifiable and
+            trusted
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/80">
-            One continuous story on a single page - starting from the business,
-            not the technology. Meet a company everyone recognizes, watch it
-            join Verana, and take part yourself with a real wallet.
+            Follow Vesta Appliances, a company everyone recognizes, through
+            its full journey: proving its identity, making its services
+            verifiable, and governing trust for its partner network. Then do
+            every step yourself, with a real wallet.
           </p>
         </div>
       </header>

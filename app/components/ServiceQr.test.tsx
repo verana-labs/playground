@@ -56,7 +56,7 @@ describe("ServiceQr", () => {
     expect(link.getAttribute("target")).toBe("_blank");
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
     expect(screen.getByText("wallet")).toBeDefined();
-    expect(fetch).toHaveBeenCalledWith("/api/demo/demo-issuer-accredited");
+    expect(fetch).toHaveBeenCalledWith("/api/demo/demo-issuer-accredited?format=anoncreds");
   });
 
   it("swaps the QR for the presented credential when the verifier flow completes", async () => {

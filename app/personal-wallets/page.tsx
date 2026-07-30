@@ -1,42 +1,38 @@
 import type { Metadata } from "next";
-import { Container, Section } from "../components/ui";
-import WalletTile, { AddYourWalletTile } from "../components/WalletTile";
-import { personalWallets } from "../lib/integrations";
+import { Suspense } from "react";
+import { listPersonalWallets } from "../lib/wallets";
+import PersonalWalletsPlayground from "./PersonalWalletsPlayground";
 
-// Personal wallets index: hero + the integrated-wallet tiles (formerly home
-// section 3). Each tile opens the wallet's identical playground page.
+// The single personal-wallets playground (spec §4, simplified): one page for
+// all wallets, generated from wallets.yaml. The visitor picks a wallet in
+// the download section; the six DemoCredential scenarios run against the
+// same shared services for everyone — only the QR artifact changes with the
+// wallet's credential format (AnonCreds or OpenID4VC SD-JWT).
 
 export const metadata: Metadata = {
   title: "Personal wallets",
   description:
-    "The integrated open-source personal wallets — each with an identical playground page running the six DemoCredential scenarios against the Verana testnet.",
+    "One playground for every integrated personal wallet: pick your wallet, run the six DemoCredential scenarios against the Verana testnet with live trust resolution.",
 };
 
 export default function PersonalWallets() {
-  const wallets = personalWallets();
+  const wallets = listPersonalWallets();
   return (
     <>
       <header className="hero-gradient text-white">
         <div className="mx-auto max-w-4xl px-6 py-14 sm:py-16">
           <h1 className="text-4xl font-bold tracking-tight">Personal wallets</h1>
           <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white/85">
-            Every integrated open-source personal wallet gets an identical
-            playground page: six DemoCredential scenarios with live trust
-            resolution — same logic, same services, only the wallet changes.
+            One playground for every integrated open-source personal wallet:
+            pick your wallet, then run the six DemoCredential scenarios — the
+            same live services for everyone, with the QR codes minted for your
+            wallet&apos;s credential format.
           </p>
         </div>
       </header>
-
-      <Section>
-        <Container wide>
-          <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {wallets.map((w) => (
-              <WalletTile key={w.slug} w={w} />
-            ))}
-            <AddYourWalletTile />
-          </div>
-        </Container>
-      </Section>
+      <Suspense>
+        <PersonalWalletsPlayground wallets={wallets} />
+      </Suspense>
     </>
   );
 }

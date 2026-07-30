@@ -10,20 +10,22 @@ export const metadata: Metadata = {
     "Integrate your open-source user or business wallet with Verana and get your own playground page: guidelines, integration.yaml, and the PR process.",
 };
 
-const YAML_EXAMPLE = `# integrations/<your-slug>/integration.yaml
-name: Your Wallet
-organization: Your Org
-kind: personal-wallet          # personal-wallet | business-wallet
-repo: https://github.com/your-org/your-wallet
-license: Apache-2.0        # OSI-approved license required
-track: bridge              # user: native | bridge · cloud: native | sidecar | bridge
-scenarios: [demo-credential-loop]
-demo_loop: live            # the six DemoCredential scenarios run on your rail
-demo_video: https://…
-download: https://…        # mobile: direct APK (modified build) · web/cloud: URL
-captures:                  # optional: per-scenario captures for your page
-  issue-accredited: { src: ./captures/issue-accredited.webp }
-contact: you@example.org`;
+const YAML_EXAMPLE = `# personal wallet: one entry in wallets.yaml (+ wallets/<id>/ for media)
+- id: your-wallet
+  name: Your Wallet
+  vendor: Your Org
+  icon: ./your-wallet/logo.webp
+  formats: [anoncreds]     # anoncreds | openid4vc-sdjwt (one or both, tested)
+  download: https://…      # direct APK (modified build), or store link if
+  verana_builtin: false    # …Verana support is built into the standard build
+  repo: https://github.com/your-org/your-wallet
+  license: Apache-2.0      # OSI-approved license required
+  captures:                # optional screen captures
+    - { src: ./your-wallet/captures/1.webp, caption: "…" }
+  videos:                  # optional recordings (disclose editing/speed)
+    - { src: ./your-wallet/demo.mp4, note: "Real device. Silent." }
+
+# business wallet: integrations/<slug>/integration.yaml (unchanged)`;
 
 const POT_USAGE_EXAMPLE = `<ProofOfTrust serviceId="…" />
 
@@ -86,14 +88,15 @@ export default function Integrate() {
               <li>
                 <strong className="text-gray-900">2 · Record the acceptance loop</strong>{" "}
                 - one uncut run of the six DemoCredential scenarios against
-                the shared Playground demo cast, per the guideline&apos;s test
-                section. The recording is also the source of your page&apos;s
-                per-scenario captures.
+                the shared Playground demo cast, with AnonCreds and/or
+                OpenID4VC SD-JWT, per the guideline&apos;s test section.
               </li>
               <li>
-                <strong className="text-gray-900">3 · Open a PR</strong> - add your
-                descriptor under <code>integrations/&lt;slug&gt;/</code>{" "}
-                in{" "}
+                <strong className="text-gray-900">3 · Open a PR</strong> - personal
+                wallets: add your entry to <code>wallets.yaml</code> plus{" "}
+                <code>wallets/&lt;id&gt;/</code> (icon, optional captures and
+                videos) · business wallets: add{" "}
+                <code>integrations/&lt;slug&gt;/integration.yaml</code> - in{" "}
                 <a className="text-violet-600 underline" href={LINKS.repo} target="_blank" rel="noopener noreferrer">
                   verana-labs/playground
                 </a>

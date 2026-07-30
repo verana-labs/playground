@@ -201,10 +201,10 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
           {appUrl}
         </a>
         <p className="text-center text-xs text-gray-500">
-          Scan with your <strong className="font-semibold">wallet</strong> (or
-          phone camera) — a live, single-use out-of-band action from this
-          service. Your wallet trust-resolves it and shows the verdict before
-          anything else happens.
+          Scan with your <strong className="font-semibold">wallet</strong> — a
+          live, single-use out-of-band action from this service. Your wallet
+          trust-resolves it and shows the verdict before anything else
+          happens.
         </p>
       </div>
     </div>

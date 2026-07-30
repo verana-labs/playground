@@ -152,10 +152,11 @@ export function ServiceQr({ serviceId, label }: { serviceId: string; label: stri
       <button
         type="button"
         onClick={() => setRevealed(true)}
-        className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-5 py-3 text-sm font-medium text-violet-700 transition-colors hover:bg-violet-100"
+        aria-label={`Show QR code — ${label}`}
+        title={`Show QR code — ${label}`}
+        className="inline-flex items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2.5 text-sm font-medium text-violet-700 transition-colors hover:bg-violet-100"
       >
-        <QrCode className="h-4 w-4" aria-hidden />
-        Show QR code — {label}
+        <QrCode className="h-6 w-6" aria-hidden />
       </button>
     );
   }

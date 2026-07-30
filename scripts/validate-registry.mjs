@@ -8,10 +8,11 @@ for (const slug of readdirSync(dir)) {
   if (!statSync(join(dir, slug)).isDirectory()) continue;
   try {
     const raw = yaml.load(readFileSync(join(dir, slug, "integration.yaml"), "utf8"), { schema: yaml.JSON_SCHEMA });
-    if (!raw?.name || !["user-wallet", "cloud-wallet"].includes(raw.kind))
+    // FIDES vocabulary; the pre-rename values stay accepted (see integration-schema.ts)
+    if (!raw?.name || !["personal-wallet", "business-wallet", "user-wallet", "cloud-wallet"].includes(raw.kind))
       throw new Error("missing name or invalid kind");
-    if (raw.kind === "user-wallet" && !raw.download)
-      throw new Error("user-wallet requires a download link");
+    if (["personal-wallet", "user-wallet"].includes(raw.kind) && !raw.download)
+      throw new Error("personal-wallet requires a download link");
     console.log(`ok ${slug}`);
   } catch (e) {
     console.error(`FAIL ${slug}: ${e.message}`);

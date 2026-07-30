@@ -1,6 +1,6 @@
 // Integration registry loader. Each integration lives in
 // integrations/<slug>/integration.yaml (submitted by PR - see the
-// user/cloud wallet guidelines). The site builds the wallet lists and the
+// user/business wallet guidelines). The site builds the wallet lists and the
 // per-wallet playground pages from these descriptors at build/render time.
 
 import fs from "node:fs";
@@ -8,7 +8,7 @@ import path from "node:path";
 import yaml from "js-yaml";
 import { parseIntegration } from "./integration-schema";
 
-export type IntegrationKind = "user-wallet" | "cloud-wallet";
+export type IntegrationKind = "personal-wallet" | "business-wallet";
 
 export type CaptureKey =
   | "issue-accredited"
@@ -25,7 +25,7 @@ export type Integration = {
   kind: IntegrationKind;
   repo: string;
   license: string;
-  /** user wallets: native | bridge · cloud wallets: native | sidecar | bridge */
+  /** personal wallets: native | bridge · business wallets: native | sidecar | bridge */
   track: string;
   scenarios: string[];
   demo_video?: string;
@@ -36,8 +36,8 @@ export type Integration = {
    *  expected wallet rendering"). */
   screenshots?: { src: string; caption?: string }[];
   fides?: string;
-  /** Mobile user wallet: direct APK link (stores may complement). Web wallet
-   *  or cloud wallet: URL. */
+  /** Mobile personal wallet: direct APK link (stores may complement). Web wallet
+   *  or business wallet: URL. */
   download?: string;
   /** The standard published build supports Verana out of the box — no
    *  modified APK needed. */
@@ -51,7 +51,7 @@ export type Integration = {
   /** Per-scenario captures of this wallet's expected behavior; keys are the
    *  six scenario ids (issue|present × accredited|unaccredited|untrusted). */
   captures?: Partial<Record<CaptureKey, { src: string; caption?: string }>>;
-  /** Cloud wallets: id of the standing demo service it hosts (from the
+  /** Business wallets: id of the standing demo service it hosts (from the
    *  verana-demos cast), rendered as a live Proof-of-Trust on its page. */
   demo_service?: string;
   notes?: string;
@@ -125,12 +125,12 @@ export function listIntegrations(): Integration[] {
   return out;
 }
 
-export function userWallets(): Integration[] {
-  return listIntegrations().filter((i) => i.kind === "user-wallet");
+export function personalWallets(): Integration[] {
+  return listIntegrations().filter((i) => i.kind === "personal-wallet");
 }
 
-export function cloudWallets(): Integration[] {
-  return listIntegrations().filter((i) => i.kind === "cloud-wallet");
+export function businessWallets(): Integration[] {
+  return listIntegrations().filter((i) => i.kind === "business-wallet");
 }
 
 export function getIntegration(slug: string): Integration | undefined {

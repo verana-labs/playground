@@ -1,6 +1,6 @@
 name: EUDIW Unfold
 organization: France Identite (Unfold Playground)
-kind: cloud-wallet
+kind: business-wallet
 # TODO(maxime): the repo carries no LICENSE file - the listing gate requires an
 # OSI license (playground/README.md), so this must be declared before merge.
 repo: https://github.com/AirKyzzZ/unfold-verana-integration

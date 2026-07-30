@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { listIntegrations, userWallets } from "./integrations";
+import { listIntegrations, personalWallets } from "./integrations";
 import { parseIntegration } from "./integration-schema";
 
 describe("integration registry", () => {
@@ -10,7 +10,7 @@ describe("integration registry", () => {
   });
 
   it("classifies kinds", () => {
-    for (const w of userWallets()) expect(w.kind).toBe("user-wallet");
+    for (const w of personalWallets()) expect(w.kind).toBe("personal-wallet");
   });
 });
 
@@ -28,7 +28,7 @@ describe("descriptor validation", () => {
   it("accepts the hologram descriptor shape", () => {
     expect(() =>
       parseIntegration(
-        { name: "H", organization: "2060", kind: "user-wallet", track: "native",
+        { name: "H", organization: "2060", kind: "personal-wallet", track: "native",
           license: "Apache-2.0", repo: "https://github.com/2060-io/hologram-app",
           download: "https://example.com", scenarios: ["iso-certification-loop"],
           badge_loop: "live" },
@@ -37,18 +37,18 @@ describe("descriptor validation", () => {
     ).not.toThrow();
   });
 
-  it("requires a download link for a user-wallet", () => {
-    expect(() => parseIntegration({ name: "X", kind: "user-wallet" }, "x")).toThrow(/download/);
+  it("requires a download link for a personal-wallet", () => {
+    expect(() => parseIntegration({ name: "X", kind: "personal-wallet" }, "x")).toThrow(/download/);
   });
 
-  it("accepts a cloud-wallet without a download link", () => {
-    expect(() => parseIntegration({ name: "X", kind: "cloud-wallet" }, "x")).not.toThrow();
+  it("accepts a business-wallet without a download link", () => {
+    expect(() => parseIntegration({ name: "X", kind: "business-wallet" }, "x")).not.toThrow();
   });
 
   it("accepts a fides use-case URL", () => {
     expect(() =>
       parseIntegration(
-        { name: "X", kind: "cloud-wallet", fides: "https://fides.community/x" },
+        { name: "X", kind: "business-wallet", fides: "https://fides.community/x" },
         "x",
       ),
     ).not.toThrow();
@@ -56,7 +56,7 @@ describe("descriptor validation", () => {
 
   it("rejects a non-URL fides value", () => {
     expect(() =>
-      parseIntegration({ name: "X", kind: "cloud-wallet", fides: "not-a-url" }, "x"),
+      parseIntegration({ name: "X", kind: "business-wallet", fides: "not-a-url" }, "x"),
     ).toThrow(/fides/);
   });
 });

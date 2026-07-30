@@ -22,22 +22,23 @@ import {
   type ExpectedRenderingKind,
 } from "../../components/ExpectedRendering";
 import { ProofOfTrust } from "../../components/ProofOfTrust";
+import ServiceTrustCard from "../../components/ServiceTrustCard";
 import { ServiceQr } from "../../components/ServiceQr";
 import {
-  userWallets,
+  personalWallets,
   getIntegration,
   type Integration,
 } from "../../lib/integrations";
 import { LINKS } from "../../lib/site";
 
-// Per-user-wallet playground page — the identical template of spec §4:
+// Per-personal-wallet playground page — the identical template of spec §4:
 // breadcrumb · header · what you'll test (Q1/Q2/Q3) · get the wallet
 // (modified APK) · issuer demos (trio) · verifier demos (trio). Every page
 // runs the same six DemoCredential scenarios against the shared Playground
 // demo cast; only the wallet (and its captures) changes.
 
 export function generateStaticParams() {
-  return userWallets().map((w) => ({ slug: w.slug }));
+  return personalWallets().map((w) => ({ slug: w.slug }));
 }
 
 export async function generateMetadata({
@@ -48,7 +49,7 @@ export async function generateMetadata({
   const { slug } = await params;
   const w = getIntegration(slug);
   return {
-    title: w ? `${w.name} playground` : "User wallet",
+    title: w ? `${w.name} playground` : "Personal wallet",
     description: w
       ? `Try ${w.name} against the Verana testnet — six DemoCredential scenarios with live trust resolution.`
       : undefined,
@@ -152,6 +153,40 @@ const VERIFIER_SCENARIOS: Scenario[] = [
   },
 ];
 
+/** Issuer demo card: one card per service — the QR symbol (click to reveal
+ *  the live QR) and the service's Proof-of-Trust, expanded by default (the
+ *  same compact card as the Vesta story). */
+function IssuerScenarioCard({ s, w }: { s: Scenario; w: Integration }) {
+  const live = !s.needsRail || w.demo_loop === "live";
+  return (
+    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+      <div className="flex flex-wrap items-center gap-2">
+        <h3 className="font-bold text-gray-900">{s.title}</h3>
+        <Chip tone={s.trusted ? "verified" : "default"}>
+          {s.trusted ? "TRUSTED" : "UNTRUSTED"}
+        </Chip>
+        {s.trusted ? (
+          <Chip tone={s.accredited ? "verified" : "default"}>
+            {s.accredited ? "accredited" : "not accredited"}
+          </Chip>
+        ) : null}
+      </div>
+      <p className="mt-2 text-sm leading-relaxed text-gray-500">{s.blurb}</p>
+      <div className="mt-4 space-y-3">
+        {live ? (
+          <ServiceQr serviceId={s.serviceId} label={s.title} />
+        ) : (
+          <Placeholder title="Scenario coming for this wallet">
+            This wallet does not run the DemoCredential flow on its rail yet —
+            trust resolution demos already work.
+          </Placeholder>
+        )}
+        <ServiceTrustCard serviceId={s.serviceId} />
+      </div>
+    </div>
+  );
+}
+
 function ScenarioCard({ s, w }: { s: Scenario; w: Integration }) {
   const capture = w.captures?.[s.key];
   const live = !s.needsRail || w.demo_loop === "live";
@@ -231,7 +266,7 @@ export default async function UserWalletPlayground({
 }) {
   const { slug } = await params;
   const w = getIntegration(slug);
-  if (!w || w.kind !== "user-wallet") notFound();
+  if (!w || w.kind !== "personal-wallet") notFound();
 
   return (
     <>
@@ -242,7 +277,7 @@ export default async function UserWalletPlayground({
             onDark
             items={[
               { label: "Playground", href: "/" },
-              { label: "User wallets", href: "/#user-wallets" },
+              { label: "Personal wallets", href: "/#personal-wallets" },
               { label: w.name },
             ]}
           />
@@ -348,6 +383,10 @@ export default async function UserWalletPlayground({
           <div>
             <StepHeading n={2} title="Get the wallet" />
             <div className="ml-11 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="mb-4 flex items-center gap-3">
+                <WalletLogo w={w} size="tile" />
+                <span className="font-semibold text-gray-900">{w.name}</span>
+              </div>
               {w.verana_builtin ? (
                 <p className="text-sm leading-relaxed text-gray-600">
                   {w.name} supports Verana{" "}
@@ -421,7 +460,7 @@ export default async function UserWalletPlayground({
             </p>
             <div className="ml-11 mt-4 space-y-4">
               {ISSUER_SCENARIOS.map((s) => (
-                <ScenarioCard key={s.key} s={s} w={w} />
+                <IssuerScenarioCard key={s.key} s={s} w={w} />
               ))}
             </div>
           </div>

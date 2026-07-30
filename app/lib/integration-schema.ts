@@ -4,7 +4,17 @@ export const IntegrationSchema = z
   .object({
     name: z.string().min(1),
     organization: z.string().min(1).optional(),
-    kind: z.enum(["user-wallet", "cloud-wallet"]),
+    // FIDES vocabulary: personal-wallet | business-wallet. The pre-rename
+    // values (user-wallet, cloud-wallet) stay accepted and are normalized.
+    kind: z
+      .enum(["personal-wallet", "business-wallet", "user-wallet", "cloud-wallet"])
+      .transform((k) =>
+        k === "user-wallet"
+          ? ("personal-wallet" as const)
+          : k === "cloud-wallet"
+            ? ("business-wallet" as const)
+            : k,
+      ),
     repo: z.string().url().optional(),
     license: z.string().min(1).optional(),
     track: z.string().optional(),
@@ -48,11 +58,11 @@ export const IntegrationSchema = z
   })
   .passthrough()
   .superRefine((d, ctx) => {
-    if (d.kind === "user-wallet" && !d.download) {
+    if (d.kind === "personal-wallet" && !d.download) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["download"],
-        message: "user-wallet requires a download link",
+        message: "personal-wallet requires a download link",
       });
     }
   });

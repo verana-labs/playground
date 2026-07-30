@@ -5,7 +5,7 @@ export type DemoService = { id: string; label: string; host: string;
   appUrl?: string; did?: string; role: "anchor" | "issuer" | "verifier" | "untrusted" };
 
 // The Playground demo cast (spec §4/§6): the same six services behind every
-// user-wallet playground page, provisioned by .github/workflows/demo-*.
+// personal-wallet playground page, provisioned by .github/workflows/demo-*.
 // appUrl is each vs-agent's DIDComm out-of-band invitation link.
 const castInvite = (slug: string) => `https://${slug}.${CAST}/invitation`;
 

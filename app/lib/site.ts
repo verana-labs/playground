@@ -5,7 +5,7 @@ export const SITE_URL = "https://playground.testnet.verana.network";
 export const SITE_NAME = "Verana Playground";
 export const SITE_TAGLINE = "Try the open trust layer. Live.";
 export const SITE_DESCRIPTION =
-  "The Verana Playground: understand the Verana concepts through the Vesta Appliances story, and try the integrated user and cloud wallets - everything live on the Verana testnet, nothing simulated.";
+  "The Verana Playground: understand the Verana concepts through the Vesta Appliances story, and try the integrated personal and business wallets - everything live on the Verana testnet, nothing simulated.";
 
 /** Testnet endpoints (playground/README.md - shared reference). */
 export const ENDPOINTS = {
@@ -33,9 +33,9 @@ export const LINKS = {
   repo: "https://github.com/verana-labs/playground",
   spec: "https://github.com/verana-labs/verana-spec/tree/main/playground",
   guidelineUserWallet:
-    "https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/user-wallet-integration.md",
+    "https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/personal-wallet-integration.md",
   guidelineCloudWallet:
-    "https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/cloud-wallet-integration.md",
+    "https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/business-wallet-integration.md",
   vtSpecV3: "https://verana-labs.github.io/verifiable-trust-spec/index-v3.html",
   vprSpecV3:
     "https://verana-labs.github.io/verifiable-trust-vpr-spec/index-v3.html",

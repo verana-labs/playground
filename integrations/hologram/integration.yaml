@@ -1,8 +1,8 @@
-# Verana Playground integration descriptor - see the user-wallet guideline:
+# Verana Playground integration descriptor - see the personal-wallet guideline:
 # https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/user-wallet-integration.md
 name: Hologram Messaging
 organization: "2060"
-kind: user-wallet
+kind: personal-wallet
 repo: https://github.com/2060-io/hologram-app
 license: Apache-2.0
 track: native # DIDComm-native (full Verifiable Trust integration)
@@ -12,5 +12,5 @@ download: https://play.google.com/store/apps/details?id=io.twentysixty.mobileage
 playstore: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
 appstore: https://apps.apple.com/cl/app/hologram-messaging/id6474701855
 demo_loop: live # DemoCredential scenarios over AnonCreds/DIDComm - the first wallet to complete them
-notes: Reference user wallet. The DemoCredential scenarios run over AnonCreds/DIDComm.
+notes: Reference personal wallet. The DemoCredential scenarios run over AnonCreds/DIDComm.
 logo: ./logo.webp

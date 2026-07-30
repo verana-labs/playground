@@ -388,10 +388,28 @@ discover_ecs_vtjsc() {
   echo "$schema_id"
 }
 
-# Discover the ECS-Badge (BadgeCredential) schema ID from the ECS trust
-# registry. The ECS TR does not publish a badge VTJSC VP, so this walks the
-# indexer: active trust registries owned by the ECS TR DID, then their active
-# schemas, looking for title "BadgeCredential".
+# Return the ECS trust registry id, anchored on the ECS-Organization schema
+# (discovered from the ECS TR DID document). The plain tr/v1/list endpoint
+# paginates newest-first, so the ECS registry never shows up there.
+# Usage: discover_ecs_tr_id
+discover_ecs_tr_id() {
+  local org_schema_id tr_id
+  org_schema_id=$(discover_ecs_vtjsc "$ECS_TR_PUBLIC_URL" "organization" | sed -n '2p')
+  if [ -z "$org_schema_id" ]; then
+    err "Could not discover the ECS-Organization schema"
+    return 1
+  fi
+  tr_id=$(curl -sf "${INDEXER_URL}/verana/cs/v1/get/${org_schema_id}" | jq -r '.schema.tr_id // empty')
+  if [ -z "$tr_id" ]; then
+    err "Could not resolve the ECS trust registry id from schema ${org_schema_id}"
+    return 1
+  fi
+  echo "$tr_id"
+}
+
+# Discover the ECS-Badge (BadgeCredential) schema ID: find the ECS trust
+# registry via discover_ecs_tr_id, then look for the BadgeCredential title
+# among its active schemas (the ECS TR publishes no badge VTJSC VP).
 # Override with BADGE_SCHEMA_ID env var to skip discovery.
 # Usage: discover_ecs_badge_schema_id
 discover_ecs_badge_schema_id() {
@@ -401,36 +419,19 @@ discover_ecs_badge_schema_id() {
   fi
 
   log "Discovering ECS-Badge schema via indexer..."
-  local ecs_host="${ECS_TR_PUBLIC_URL#https://}"
+  local tr_id badge_id
+  tr_id=$(discover_ecs_tr_id) || return 1
 
-  local tr_body
-  tr_body=$(curl -sf "${INDEXER_URL}/verana/tr/v1/list?only_active=true")
-  if [ -z "$tr_body" ]; then
-    err "Indexer trust-registry query failed"
+  badge_id=$(curl -sf "${INDEXER_URL}/verana/cs/v1/list?tr_id=${tr_id}&only_active=true" \
+    | jq -r '.schemas[]? | select((.json_schema | fromjson? | .title // "") == "BadgeCredential") | .id' \
+    | head -1)
+  if [ -z "$badge_id" ]; then
+    err "No BadgeCredential schema found in ECS trust registry ${tr_id}"
     return 1
   fi
 
-  local tr_ids tr_id badge_id
-  tr_ids=$(echo "$tr_body" | jq -r --arg host "$ecs_host" \
-    '.trust_registries[]? | select(.did | endswith($host)) | .id')
-  if [ -z "$tr_ids" ]; then
-    err "No active trust registry found for ${ecs_host}"
-    return 1
-  fi
-
-  for tr_id in $tr_ids; do
-    badge_id=$(curl -sf "${INDEXER_URL}/verana/cs/v1/list?tr_id=${tr_id}&only_active=true" \
-      | jq -r '.schemas[]? | select((.json_schema | fromjson? | .title // "") == "BadgeCredential") | .id' \
-      | head -1)
-    if [ -n "$badge_id" ]; then
-      ok "ECS-Badge schema: CS=$badge_id (TR=$tr_id)"
-      echo "$badge_id"
-      return 0
-    fi
-  done
-
-  err "No BadgeCredential schema found under the ECS trust registry"
-  return 1
+  ok "ECS-Badge schema: CS=$badge_id (TR=$tr_id)"
+  echo "$badge_id"
 }
 
 # Discover the active root permission (ECOSYSTEM type) for a given schema.

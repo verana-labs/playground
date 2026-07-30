@@ -1,5 +1,5 @@
 // Personal wallets configuration loader. All personal wallets live in one
-// file — personal-wallets.yaml — with media under wallets/<id>/ (synced to
+// file - personal-wallets.yaml - with media under wallets/<id>/ (synced to
 // public/wallets/<id>/ by scripts/sync-media.mjs). The single
 // /personal-wallets page (picker, download section, captures, QR format)
 // is generated from it.
@@ -12,7 +12,7 @@ import { z } from "zod";
 export const CREDENTIAL_FORMATS = ["anoncreds", "openid4vc-sdjwt"] as const;
 export type CredentialFormat = (typeof CREDENTIAL_FORMATS)[number];
 
-// The six demo scenarios of the single personal-wallets page — capture keys.
+// The six demo scenarios of the single personal-wallets page - capture keys.
 export const SCENARIO_KEYS = [
   "issue-accredited",
   "issue-unaccredited",
@@ -92,7 +92,7 @@ export function listPersonalWallets(): PersonalWallet[] {
     const issues = parsed.error.issues
       .map((i) => `${i.path.join(".") || "root"}: ${i.message}`)
       .join("; ");
-    throw new Error(`personal-wallets.yaml invalid — ${issues}`);
+    throw new Error(`personal-wallets.yaml invalid - ${issues}`);
   }
   cache = parsed.data.wallets.map((w) => {
     const videoSrc = publicAsset(w.video?.src);

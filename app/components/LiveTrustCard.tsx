@@ -25,7 +25,7 @@ type PotApiResponse = {
 const text = (v: unknown): string | null =>
   typeof v === "string" && v ? v : null;
 
-/** Human-ish issuer label from a did:web(vh) — its host part. */
+/** Human-ish issuer label from a did:web(vh) - its host part. */
 const didHost = (did?: string | null) =>
   did?.split(":").pop() ?? "unknown issuer";
 

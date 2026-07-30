@@ -21,7 +21,7 @@ export const IntegrationSchema = z
     scenarios: z.array(z.string()).optional(),
     download: z.string().url().optional(),
     // True when the wallet's standard published build supports Verana out of
-    // the box — no modified APK needed; store installs work as-is.
+    // the box - no modified APK needed; store installs work as-is.
     verana_builtin: z.boolean().optional(),
     playstore: z.string().url().optional(),
     appstore: z.string().url().optional(),
@@ -75,7 +75,7 @@ export function parseIntegration(raw: unknown, slug: string): IntegrationData {
     const issues = result.error.issues
       .map((i) => `${i.path.join(".") || "root"}: ${i.message}`)
       .join("; ");
-    throw new Error(`integrations/${slug}/integration.yaml invalid — ${issues}`);
+    throw new Error(`integrations/${slug}/integration.yaml invalid - ${issues}`);
   }
   return result.data;
 }

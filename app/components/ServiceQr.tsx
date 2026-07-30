@@ -16,7 +16,7 @@ type ProofStatus = {
   claims?: { name: string; value: string }[];
 };
 
-/** What the verifier received — shown in place of the QR once the wallet
+/** What the verifier received - shown in place of the QR once the wallet
  *  has presented the DemoCredential. */
 function PresentedCredential({ proof }: { proof: ProofStatus }) {
   return (
@@ -41,8 +41,8 @@ function PresentedCredential({ proof }: { proof: ProofStatus }) {
       ) : null}
       <p className="mt-3 text-center text-xs text-emerald-700/80">
         {proof.verified
-          ? "Cryptographically verified by the service — you're in, no password, no account."
-          : "Presentation received — verification still pending on the service."}
+          ? "Cryptographically verified by the service - you're in, no password, no account."
+          : "Presentation received - verification still pending on the service."}
       </p>
     </div>
   );
@@ -66,7 +66,7 @@ function UnavailableCard({ onRetry }: { onRetry: () => void }) {
 
 // Collapsed by default (spec §4: a "Show QR" button reveals the QR code and
 // executes the demo). Revealing fetches /api/demo/<id>, which mints a fresh
-// live action for this visitor — an OOB credential offer (issuers) or OOB
+// live action for this visitor - an OOB credential offer (issuers) or OOB
 // presentation request (verifiers), or the plain connection invitation for
 // the untrusted service.
 export function ServiceQr({
@@ -76,7 +76,7 @@ export function ServiceQr({
 }: {
   serviceId: string;
   label: string;
-  /** Credential format of the selected wallet — decides the minted QR. */
+  /** Credential format of the selected wallet - decides the minted QR. */
   format?: string;
 }) {
   const [revealed, setRevealed] = useState(false);
@@ -135,7 +135,7 @@ export function ServiceQr({
           }
         }
       } catch {
-        // keep polling — transient errors are expected while the pod scales
+        // keep polling - transient errors are expected while the pod scales
       }
       if (alive) timer = setTimeout(poll, 3000);
     };
@@ -168,8 +168,8 @@ export function ServiceQr({
       <button
         type="button"
         onClick={() => setRevealed(true)}
-        aria-label={`Show QR code — ${label}`}
-        title={`Show QR code — ${label}`}
+        aria-label={`Show QR code - ${label}`}
+        title={`Show QR code - ${label}`}
         className="inline-flex items-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3 py-2.5 text-sm font-medium text-violet-700 transition-colors hover:bg-violet-100"
       >
         <QrCode className="h-6 w-6" aria-hidden />
@@ -184,7 +184,7 @@ export function ServiceQr({
   if (unsupported) {
     return (
       <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-5 py-4 text-xs text-gray-500">
-        The OpenID4VC rail for the demo services is being enabled — this
+        The OpenID4VC rail for the demo services is being enabled - this
         scenario reaches OpenID4VC wallets soon.
       </div>
     );
@@ -226,7 +226,7 @@ export function ServiceQr({
           {appUrl}
         </a>
         <p className="text-center text-xs text-gray-500">
-          Scan with your <strong className="font-semibold">wallet</strong> — a
+          Scan with your <strong className="font-semibold">wallet</strong> - a
           live, single-use out-of-band action from this service. Your wallet
           trust-resolves it and shows the verdict before anything else
           happens.

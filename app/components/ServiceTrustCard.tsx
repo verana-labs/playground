@@ -26,7 +26,7 @@ type Pot = {
 };
 
 // Shape of /api/pot/[serviceId]: the resolution lives under `pot`, and the
-// ECS claims inside pot.credentials — not at the top level.
+// ECS claims inside pot.credentials - not at the top level.
 type PotApiResponse = {
   did?: string | null;
   pot?: {

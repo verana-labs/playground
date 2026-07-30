@@ -16,7 +16,7 @@ export type TrustCardCredential = {
   /** Inherited from the parent service's DID (Verifiable Trust spec). */
   inherited?: boolean;
   /** false = presented but NOT verified by trust resolution (e.g. on an
-   *  untrusted service) — renders a grey bubble, never a green one. */
+   *  untrusted service) - renders a grey bubble, never a green one. */
   verified?: boolean;
 };
 

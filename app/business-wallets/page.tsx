@@ -10,7 +10,7 @@ import { businessWallets } from "../lib/integrations";
 export const metadata: Metadata = {
   title: "Business wallets",
   description:
-    "The integrated open-source business wallets — each with an identical playground page: a hosted, Verana-verified demo service you can exercise end to end.",
+    "The integrated open-source business wallets - each with an identical playground page: a hosted, Verana-verified demo service you can exercise end to end.",
 };
 
 export default function BusinessWallets() {
@@ -33,8 +33,8 @@ export default function BusinessWallets() {
         <Container wide>
           <p className="reveal max-w-3xl text-base leading-relaxed text-gray-600">
             A business wallet is the organization-side wallet: it hosts an
-            organization&apos;s services — support agents, credential issuers,
-            login portals — and gives each of them a verifiable identity.
+            organization&apos;s services - support agents, credential issuers,
+            login portals - and gives each of them a verifiable identity.
             Integrating Verana means the hosted service becomes a{" "}
             <strong className="font-semibold text-gray-900">
               Verifiable Service
@@ -66,7 +66,7 @@ export default function BusinessWallets() {
                 Be trust-resolvable
               </h3>
               <p className="mt-1.5 text-sm leading-relaxed text-gray-500">
-                Anyone — a personal wallet, another service — resolves the DID
+                Anyone - a personal wallet, another service - resolves the DID
                 against the public registry and sees the Proof-of-Trust before
                 connecting. TRUSTED is earned from the credential chain, never
                 just claimed.
@@ -81,7 +81,7 @@ export default function BusinessWallets() {
               </h3>
               <p className="mt-1.5 text-sm leading-relaxed text-gray-500">
                 With ISSUER or VERIFIER accreditations in an ecosystem, the
-                hosted service offers credentials and requests presentations —
+                hosted service offers credentials and requests presentations - 
                 and every peer&apos;s wallet checks those accreditations before
                 accepting or sharing.
               </p>
@@ -91,7 +91,7 @@ export default function BusinessWallets() {
             Three integration tracks: <strong className="font-medium text-gray-700">native</strong>{" "}
             (your stack speaks Verifiable Trust directly),{" "}
             <strong className="font-medium text-gray-700">sidecar</strong> (run{" "}
-            vs-agent alongside your stack — it handles DIDs, DIDComm, Linked
+            vs-agent alongside your stack - it handles DIDs, DIDComm, Linked
             VPs and registry operations), or{" "}
             <strong className="font-medium text-gray-700">bridge</strong>{" "}
             (keep your OpenID4VC stack, add trust resolution). Each integrated

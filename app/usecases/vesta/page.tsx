@@ -10,6 +10,10 @@ import {
   KeyRound,
   Landmark,
   LockKeyhole,
+  ExternalLink,
+  SquareCheckBig,
+  Check,
+  X,
   Network,
   PhoneOff,
   QrCode,
@@ -305,7 +309,7 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
                     rel="noopener noreferrer"
                     className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                   >
-                    {l.label} ↗
+                    {l.label} <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
                   </a>
                 ),
               )}
@@ -479,7 +483,7 @@ export default function Explained() {
                 <Chip key={st}>{st}</Chip>
               ))}
               <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                ✓ {REPAIR_NETWORK.badgeFullName} badge
+                <Check className="h-3 w-3" aria-hidden /> {REPAIR_NETWORK.badgeFullName} badge
               </span>
             </div>
             <p className="mx-auto mt-5 max-w-2xl text-center text-sm italic leading-relaxed text-gray-500">
@@ -821,7 +825,7 @@ export default function Explained() {
                         rel="noopener noreferrer"
                         className="shrink-0 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                       >
-                        Open in Verana ↗
+                        Open in Verana <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
                       </a>
                     </div>
                   </div>
@@ -881,7 +885,7 @@ export default function Explained() {
                     rel="noopener noreferrer"
                     className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                   >
-                    Open in Verana ↗
+                    Open in Verana <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
                   </a>
                 </div>
               </div>
@@ -912,7 +916,7 @@ export default function Explained() {
                     title={`Need ${need.n} of 5 from Marc's checklist`}
                     className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700"
                   >
-                    ☑
+                    <SquareCheckBig className="h-3.5 w-3.5" aria-hidden />
                   </span>
                 </div>
                 <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
@@ -996,7 +1000,11 @@ export default function Explained() {
                           : "bg-emerald-50 text-emerald-700"
                       }`}
                     >
-                      {o.tone === "red" ? "✗" : "✓"}
+                      {o.tone === "red" ? (
+                        <X className="h-3.5 w-3.5" aria-hidden />
+                      ) : (
+                        <Check className="h-3.5 w-3.5" aria-hidden />
+                      )}
                     </span>
                     <span>
                       <span className="font-semibold text-gray-900">
@@ -1069,7 +1077,7 @@ export default function Explained() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              verana-spec / playground / verana-explained ↗
+              verana-spec / playground / verana-explained <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
             </a>
           </p>
         </Container>

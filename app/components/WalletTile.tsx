@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Check, Plus } from "lucide-react";
 import type { Integration } from "../lib/integrations";
 import { Chip } from "./ui";
 import WalletLogo from "./WalletLogo";
@@ -22,7 +22,11 @@ export default function WalletTile({ w }: { w: Integration }) {
         <Chip>{w.track}</Chip>
         {w.license ? <Chip>{w.license}</Chip> : null}
         {w.badge_loop === "live" ? (
-          <Chip tone="verified">badge loop ✓</Chip>
+          <Chip tone="verified">
+            <span className="inline-flex items-center gap-1">
+              badge loop <Check className="h-3 w-3" aria-hidden />
+            </span>
+          </Chip>
         ) : (
           <Chip tone="pending">badge loop coming</Chip>
         )}

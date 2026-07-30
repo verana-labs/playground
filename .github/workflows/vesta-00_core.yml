@@ -33,6 +33,13 @@ jobs:
   run:
     name: "${{ inputs.org }}"
     runs-on: ubuntu-latest
+    # All cast jobs sign with the same veranad account; running two at once
+    # races on the account's transaction sequence number. This serializes
+    # every vesta-* run. Note GitHub keeps only ONE queued run per group —
+    # start workflows one at a time rather than firing several at once.
+    concurrency:
+      group: vesta-cast
+      cancel-in-progress: false
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0

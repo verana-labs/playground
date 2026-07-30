@@ -71,7 +71,7 @@ const QUESTIONS = [
   {
     icon: FileSearch,
     chip: "Q3 · on every presentation request",
-    title: "Is it authorized to verify this credential?",
+    title: "Is it accredited to request the presentation of this credential?",
     body: "Before you can share, the wallet checks the verifier's accreditation for the requested schema.",
   },
 ] as const;

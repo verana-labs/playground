@@ -535,7 +535,7 @@ export const JOURNEY: {
             "Scan a technician's badge with your wallet: the issuer chain ends at the Vesta Repair Network seal.",
           ],
           links: [
-            { label: "Run the demos", href: "/usecases/vesta#section-4" },
+            { label: "Run the demos", href: "/usecases/vesta/demos" },
           ],
         },
       ],

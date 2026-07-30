@@ -15,7 +15,7 @@ import { Container, Section, SectionHeading } from "./components/ui";
 import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
 import { ProofOfTrust } from "./components/ProofOfTrust";
 import { userWallets, cloudWallets } from "./lib/integrations";
-import { SECTIONS_NAV } from "./usecases/vesta/content";
+import { CHAPTERS_NAV } from "./usecases/vesta/chapters";
 import { LINKS, ENDPOINTS } from "./lib/site";
 
 // The story sections (spec §3.2), deep-linking into /usecases/vesta anchors.
@@ -182,10 +182,10 @@ export default function Home() {
             subtitle="Verana, explained by Vesta Appliances - one continuous story, from business problem to full circle, and you take part with your own wallet"
           />
           <div className="reveal-stagger grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {SECTIONS_NAV.map((s) => (
+            {CHAPTERS_NAV.map((s) => (
               <Link
                 key={s.n}
-                href={`/usecases/vesta#${s.anchor}`}
+                href={s.href}
                 className="group flex flex-col rounded-xl border border-gray-200 bg-gray-50 p-5 transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
               >
                 <div className="flex items-center justify-between">
@@ -195,7 +195,7 @@ export default function Home() {
                 </div>
                 <h3 className="mt-3 font-semibold text-gray-900">{s.title}</h3>
                 <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
-                  {s.oneLiner}
+                  {s.intro}
                 </p>
                 <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
                   Read the section →

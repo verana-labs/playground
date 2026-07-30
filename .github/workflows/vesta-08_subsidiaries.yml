@@ -41,8 +41,14 @@ jobs:
       force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit
 
+  # Runs after Iberia, never in parallel: both sign with the same veranad
+  # account, and concurrent broadcasts race on its transaction sequence.
   vesta-nordics:
-    if: inputs.subsidiary != 'vesta-iberia'
+    needs: vesta-iberia
+    if: >-
+      !cancelled() &&
+      inputs.subsidiary != 'vesta-iberia' &&
+      (needs.vesta-iberia.result == 'success' || needs.vesta-iberia.result == 'skipped')
     uses: ./.github/workflows/vesta-00_core.yml
     with:
       org: vesta-nordics

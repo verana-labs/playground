@@ -27,6 +27,7 @@ import {
 import { Container, Section, SectionHeading, Breadcrumb, Chip } from "../../components/ui";
 import ServiceTrustCard from "../../components/ServiceTrustCard";
 import StoryDiagram from "../../components/StoryDiagram";
+import PageNav, { type PageNavItem } from "./PageNav";
 import {
   CLOSING,
   COMPANY,
@@ -53,6 +54,20 @@ export const metadata: Metadata = {
 // --------------------------------------------- shared bits
 
 const NEED_SHORT = ["Identity", "Services", "Badges", "ISO 9001", "Network"];
+
+const PAGE_NAV: PageNavItem[] = [
+  ...SECTIONS_NAV.map((s) => ({
+    id: s.anchor,
+    label: `${s.n} · ${s.title}`,
+    children:
+      s.anchor === "section-3"
+        ? JOURNEY.needs.map((n) => ({
+            id: n.id,
+            label: `3.${n.n} ${n.title}`,
+          }))
+        : undefined,
+  })),
+];
 
 const SERVICE_ICONS = { bot: Bot, badge: BadgeCheck, key: KeyRound } as const;
 const PROBLEM_ICONS = {
@@ -387,6 +402,14 @@ export default function Explained() {
           </nav>
         </div>
       </header>
+
+      <div className="mx-auto flex w-full max-w-[88rem] gap-10 xl:px-8">
+        <aside className="hidden w-[240px] shrink-0 xl:block">
+          <div className="sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto py-10 pl-2">
+            <PageNav items={PAGE_NAV} />
+          </div>
+        </aside>
+        <div className="min-w-0 flex-1">
 
       {/* §1 · Meet Vesta Appliances - marketing article, no protocol */}
       <Section id="section-1">
@@ -1106,6 +1129,8 @@ export default function Explained() {
           </p>
         </Container>
       </Section>
+        </div>
+      </div>
     </>
   );
 }

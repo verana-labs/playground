@@ -404,9 +404,20 @@ export default function PersonalWalletsPlayground({
                   <span className="block text-xl font-bold tracking-tight text-gray-900">
                     {wallet.name}
                   </span>
-                  <span className="block text-sm text-gray-500">
-                    {wallet.vendor}
-                  </span>
+                  {wallet.website ? (
+                    <a
+                      href={wallet.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="block text-sm text-gray-500 hover:text-violet-700 hover:underline"
+                    >
+                      {wallet.vendor}
+                    </a>
+                  ) : (
+                    <span className="block text-sm text-gray-500">
+                      {wallet.vendor}
+                    </span>
+                  )}
                 </span>
                 <span className="ml-auto flex flex-wrap gap-1.5">
                   {wallet.formats.map((f) => (

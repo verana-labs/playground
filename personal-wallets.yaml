@@ -23,6 +23,7 @@
 #   download        direct APK (modified build) or the store/web link when
 #                   verana_builtin
 #   playstore/appstore/web   complementary install links
+#   website         vendor website; the vendor name links to it (new tab)
 #   repo, license, contact, notes
 #   captures        up to ONE screen capture per demo scenario (optional),
 #                   keyed by scenario id (issue-accredited,
@@ -43,6 +44,7 @@ wallets:
     download: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
     playstore: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
     appstore: https://apps.apple.com/cl/app/hologram-messaging/id6474701855
+    website: https://2060.io
     repo: https://github.com/2060-io/hologram-app
     license: Apache-2.0
     notes: Reference personal wallet. The DemoCredential scenarios run over AnonCreds/DIDComm.
@@ -53,6 +55,7 @@ wallets:
     icon: ./paradym/logo.webp
     formats: [openid4vc-sdjwt]
     download: https://github.com/AirKyzzZ/paradym-wallet-verana/releases/download/verana-2026-07-28/paradym-verana-dev-debug.apk
+    website: https://animo.id
     repo: https://github.com/animo/paradym-wallet
     license: Apache-2.0
     notes: Verana trust integration in Paradym's SDK trust-mechanism registry (Credo-TS wallet).
@@ -76,6 +79,7 @@ wallets:
     icon: ./procivis/logo.webp
     formats: [openid4vc-sdjwt]
     download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/tag/verana-2026-07-26
+    website: https://www.procivis.ch
     repo: https://github.com/procivis/one-wallet
     license: Apache-2.0
     notes: Q1+Q2/Q3 in the Rust core with typed verdicts and a trust dossier in the wallet UI.
@@ -99,6 +103,7 @@ wallets:
     icon: ./sphereon/logo.webp
     formats: [openid4vc-sdjwt]
     download: https://github.com/AirKyzzZ/sphereon-mobile-wallet-verana/releases/download/verana-2026-07-28/sphereon-verana-dev-debug.apk
+    website: https://sphereon.com
     repo: https://github.com/Sphereon-Opensource/mobile-wallet
     license: Apache-2.0
     notes: Verana trust card on contact creation for did:webvh-identified verifiers.
@@ -122,6 +127,7 @@ wallets:
     icon: ./swiyu/logo.webp
     formats: [openid4vc-sdjwt]
     download: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-07-26/swiyu-verana-fabrice-arm64-debug.apk
+    website: https://www.eid.admin.ch
     repo: https://github.com/swiyu-admin-ch/eidch-android-wallet
     license: MIT
     notes: Strict Q1+Q2 before acceptance, device-verified, with a full evidence dossier.
@@ -145,6 +151,7 @@ wallets:
     icon: ./talao/logo.webp
     formats: [openid4vc-sdjwt]
     download: https://github.com/AirKyzzZ/AltMe-verana
+    website: https://talao.io
     repo: https://github.com/TalaoDAO/AltMe
     license: Apache-2.0
     notes: Verana trust resolution on the OID4VP accept path with a config-driven TESTNET label.

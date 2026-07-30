@@ -41,6 +41,8 @@ const WalletSchema = z.object({
   appstore: z.string().url().optional(),
   web: z.string().url().optional(),
   repo: z.string().url().optional(),
+  // Vendor website; when present the vendor name links to it (new tab).
+  website: z.string().url().optional(),
   license: z.string().optional(),
   contact: z.string().optional(),
   notes: z.string().optional(),

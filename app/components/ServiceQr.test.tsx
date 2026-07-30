@@ -59,6 +59,38 @@ describe("ServiceQr", () => {
     expect(fetch).toHaveBeenCalledWith("/api/demo/demo-issuer-accredited");
   });
 
+  it("swaps the QR for the presented credential when the verifier flow completes", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes("/proof/")) {
+          return ok({
+            state: "done",
+            verified: true,
+            claims: [
+              { name: "name", value: "Playground Visitor" },
+              { name: "demoId", value: "demo-12345678" },
+            ],
+          });
+        }
+        return ok({
+          kind: "presentation-request",
+          url: "https://demo-verifier-accredited.playground.testnet.verana.network/s?id=wxyz7890",
+          proofExchangeId: "proof-1",
+        });
+      }),
+    );
+
+    renderRevealed("demo-verifier-accredited", "Accredited Verifier (demo)");
+
+    expect(await screen.findByText("DemoCredential presented")).toBeDefined();
+    expect(screen.getByText("demo-12345678")).toBeDefined();
+    expect(screen.getByText(/Cryptographically verified/)).toBeDefined();
+    expect(fetch).toHaveBeenCalledWith("/api/demo/demo-verifier-accredited/proof/proof-1");
+    expect(screen.queryByAltText("Accredited Verifier (demo) QR")).toBeNull();
+  });
+
   it("renders the unavailable card with retry when the fetch fails", async () => {
     vi.stubGlobal("fetch", vi.fn(() => Promise.reject(new Error("network down"))));
 

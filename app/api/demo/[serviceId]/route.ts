@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { getDemoService } from "@/app/lib/demo-services";
+import { adminBase, adminJson, CAST_DOMAIN, VTJSC_URL } from "@/app/lib/demo-admin";
 
 // Live demo-action link for a Playground cast service (spec §4): what the
 // wallet actually scans. Issuers mint an OOB CREDENTIAL OFFER and verifiers
@@ -9,31 +10,6 @@ import { getDemoService } from "@/app/lib/demo-services";
 // connection invitation: its lesson (Q1) happens before any exchange exists.
 
 export const dynamic = "force-dynamic";
-
-const CAST =
-  process.env.CAST_BASE_DOMAIN ?? "playground.testnet.verana.network";
-// Admin API of a cast vs-agent — in-cluster service DNS by default; {id} is
-// replaced by the service id (= Helm release = k8s Service name).
-const ADMIN_TEMPLATE =
-  process.env.DEMO_ADMIN_BASE_TEMPLATE ?? "http://{id}:3000";
-// The ecosystem VTJSC of the DemoCredential, published by the anchor.
-const VTJSC_URL =
-  process.env.DEMO_VTJSC_URL ??
-  `https://playground-demo.${CAST}/vt/schemas-demo-credential-jsc.json`;
-
-const TIMEOUT_MS = 15_000;
-
-const adminBase = (id: string) => ADMIN_TEMPLATE.replace("{id}", id);
-
-async function adminJson(url: string, init?: RequestInit): Promise<unknown> {
-  const res = await fetch(url, {
-    ...init,
-    signal: AbortSignal.timeout(TIMEOUT_MS),
-    cache: "no-store",
-  });
-  if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
-  return res.json();
-}
 
 async function demoCredDefId(admin: string): Promise<string | null> {
   const types = await adminJson(`${admin}/v1/credential-types`);
@@ -54,12 +30,13 @@ async function demoCredDefId(admin: string): Promise<string | null> {
   return typeof id === "string" ? id : null;
 }
 
-function oobUrl(body: unknown): string | null {
+function str(body: unknown, key: string): string | null {
   if (!body || typeof body !== "object") return null;
-  const { shortUrl, url } = body as { shortUrl?: unknown; url?: unknown };
-  if (typeof shortUrl === "string") return shortUrl;
-  return typeof url === "string" ? url : null;
+  const value = (body as Record<string, unknown>)[key];
+  return typeof value === "string" ? value : null;
 }
+
+const oobUrl = (body: unknown) => str(body, "shortUrl") ?? str(body, "url");
 
 export async function GET(
   _req: Request,
@@ -72,7 +49,7 @@ export async function GET(
 
   // Only the Playground cast has reachable admin APIs; anything else (and
   // the untrusted service, by design) gets its plain connection invitation.
-  const isCast = service.host.endsWith(CAST);
+  const isCast = service.host.endsWith(CAST_DOMAIN);
   if (!isCast || service.role === "untrusted" || service.role === "anchor") {
     return NextResponse.json({
       kind: "invitation",
@@ -100,7 +77,11 @@ export async function GET(
           ],
         }),
       });
-      return NextResponse.json({ kind: "credential-offer", url: oobUrl(offer) });
+      return NextResponse.json({
+        kind: "credential-offer",
+        url: oobUrl(offer),
+        credentialExchangeId: str(offer, "credentialExchangeId"),
+      });
     }
 
     // verifier: OOB presentation request for the DemoCredential
@@ -117,6 +98,7 @@ export async function GET(
     return NextResponse.json({
       kind: "presentation-request",
       url: oobUrl(request),
+      proofExchangeId: str(request, "proofExchangeId"),
     });
   } catch {
     return NextResponse.json(

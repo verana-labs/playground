@@ -31,7 +31,7 @@ export default function ChapterFooter({ current }: { current: number }) {
             </Link>
           ) : (
             <Link
-              href="/#personal-wallets"
+              href="/personal-wallets"
               className="btn-gradient inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold"
             >
               Explore the integrated wallets

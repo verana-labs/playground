@@ -55,19 +55,39 @@ export const metadata: Metadata = {
 
 const NEED_SHORT = ["Identity", "Services", "Badges", "ISO 9001", "Network"];
 
-const PAGE_NAV: PageNavItem[] = [
-  ...SECTIONS_NAV.map((s) => ({
-    id: s.anchor,
-    label: `${s.n} · ${s.title}`,
-    children:
-      s.anchor === "section-3"
-        ? JOURNEY.needs.map((n) => ({
-            id: n.id,
-            label: `3.${n.n} ${n.title}`,
-          }))
-        : undefined,
-  })),
-];
+const PAGE_NAV: PageNavItem[] = SECTIONS_NAV.map((s) => ({
+  id: s.anchor,
+  label: `${s.n} · ${s.title}`,
+  children:
+    s.anchor === "section-1"
+      ? [
+          { id: "section-1-product", label: "The product line" },
+          { id: "section-1-factory", label: "The factory" },
+          { id: "section-1-network", label: "The certified repair network" },
+          { id: "section-1-services", label: "Online services" },
+          { id: "section-1-problems", label: "The problems" },
+          { id: "section-1-ceo", label: "The word of the CEO" },
+        ]
+      : s.anchor === "section-2"
+        ? [
+            { id: "section-2-needs", label: "What Marc needs" },
+            { id: "section-2-verana", label: "Let's build on Verana" },
+            { id: "section-2-join", label: "Ecosystems Vesta joins" },
+            { id: "section-2-build", label: "Ecosystems Vesta builds" },
+          ]
+        : s.anchor === "section-3"
+          ? JOURNEY.needs.map((n) => ({
+              id: n.id,
+              label: `3.${n.n} ${n.title}`,
+            }))
+          : s.anchor === "section-4"
+            ? [
+                { id: "section-4-badge", label: "Obtain an ECS-Badge" },
+                { id: "section-4-login", label: "Log in with the badge" },
+                { id: "section-4-directory", label: "Search the directory" },
+              ]
+            : undefined,
+}));
 
 const SERVICE_ICONS = { bot: Bot, badge: BadgeCheck, key: KeyRound } as const;
 const PROBLEM_ICONS = {
@@ -451,7 +471,7 @@ export default function Explained() {
           </div>
 
           {/* The product line */}
-          <div>
+          <div id="section-1-product">
             <SubHeading>The product line</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {COMPANY.productLine}
@@ -472,7 +492,7 @@ export default function Explained() {
           </div>
 
           {/* The factory */}
-          <div className="mt-12">
+          <div id="section-1-factory" className="mt-12">
             <SubHeading>The factory</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {COMPANY.factoryText}
@@ -493,7 +513,7 @@ export default function Explained() {
           </div>
 
           {/* The certified repair network */}
-          <div className="mt-12">
+          <div id="section-1-network" className="mt-12">
             <SubHeading>{REPAIR_NETWORK.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-500">
               {REPAIR_NETWORK.blurb}
@@ -515,7 +535,7 @@ export default function Explained() {
           </div>
 
           {/* Online services */}
-          <div className="mt-12">
+          <div id="section-1-services" className="mt-12">
             <SubHeading>Online services</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {COMPANY.servicesIntro}
@@ -565,7 +585,7 @@ export default function Explained() {
           </div>
 
           {/* The problems, and what they cost the brand */}
-          <div className="mt-12">
+          <div id="section-1-problems" className="mt-12">
             <SubHeading>The problems, and what they cost the brand</SubHeading>
 
             <p className="mt-6 text-sm font-bold uppercase tracking-wider text-red-500">
@@ -640,7 +660,7 @@ export default function Explained() {
           </div>
 
           {/* The word of the CEO */}
-          <div className="mt-12">
+          <div id="section-1-ceo" className="mt-12">
             <SubHeading>The word of the CEO</SubHeading>
             <figure className="mt-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm sm:p-10">
               <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
@@ -720,7 +740,7 @@ export default function Explained() {
           </figure>
 
           {/* What Marc needs: the mission checklist */}
-          <div className="mb-14">
+          <div id="section-2-needs" className="mb-14">
             <SubHeading>{SOLUTION.needsTitle}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {SOLUTION.needsIntro}
@@ -758,7 +778,7 @@ export default function Explained() {
           </div>
 
           {/* What is Verana? */}
-          <div>
+          <div id="section-2-verana">
             <SubHeading>{SOLUTION.pillarsTitle}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {SOLUTION.pillarsIntro}
@@ -790,7 +810,7 @@ export default function Explained() {
           </div>
 
           {/* The ecosystems Vesta wants to join */}
-          <div className="mt-14">
+          <div id="section-2-join" className="mt-14">
             <SubHeading>{SOLUTION.ecosystemsTitle}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {SOLUTION.ecosystemsIntro}
@@ -858,7 +878,7 @@ export default function Explained() {
           </div>
 
           {/* The ecosystems Vesta wants to build */}
-          <div className="mt-14">
+          <div id="section-2-build" className="mt-14">
             <SubHeading>{ECOSYSTEM_BUILD.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {ECOSYSTEM_BUILD.intro}
@@ -994,7 +1014,7 @@ export default function Explained() {
           </p>
 
           {/* Demo 1 · Obtain an ECS-Badge */}
-          <div>
+          <div id="section-4-badge">
             <SubHeading>{DEMOS.badge.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.badge.intro}
@@ -1030,7 +1050,7 @@ export default function Explained() {
           </div>
 
           {/* Demo 2 · Log in with the badge */}
-          <div className="mt-14">
+          <div id="section-4-login" className="mt-14">
             <SubHeading>{DEMOS.login.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.login.intro}
@@ -1073,7 +1093,7 @@ export default function Explained() {
           </div>
 
           {/* Demo 3 · Directory search */}
-          <div className="mt-14">
+          <div id="section-4-directory" className="mt-14">
             <SubHeading>{DEMOS.directory.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.directory.intro}

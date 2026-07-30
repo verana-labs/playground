@@ -177,8 +177,8 @@ export const NODES: SceneNode[] = [
   },
   {
     id: "umbra",
-    x: 850,
-    y: 240,
+    x: 560,
+    y: 330,
     icon: "wrench",
     tone: "red",
     appears: "3.0",
@@ -253,6 +253,34 @@ export const NODES: SceneNode[] = [
     verifiedAt: "3.6",
   },
   {
+    id: "subIberia",
+    x: 850,
+    y: 240,
+    icon: "stamp",
+    tone: "blue",
+    appears: "3.7",
+    label: "Vesta Iberia",
+    sub: "(demo) · subsidiary issuer",
+    did: "did:webvh:QmPLACEHOLDER…:vesta-iberia.demos.testnet.verana.network",
+    serviceType: "Authorized Repairer issuance service",
+    operator: "Vesta Iberia (demo) · subsidiary of Vesta Appliances",
+    verifiedAt: "3.7",
+  },
+  {
+    id: "subNordics",
+    x: 700,
+    y: 240,
+    icon: "stamp",
+    tone: "blue",
+    appears: "3.7",
+    label: "Vesta Nordics",
+    sub: "(demo) · subsidiary issuer",
+    did: "did:webvh:QmPLACEHOLDER…:vesta-nordics.demos.testnet.verana.network",
+    serviceType: "Authorized Repairer issuance service",
+    operator: "Vesta Nordics (demo) · subsidiary of Vesta Appliances",
+    verifiedAt: "3.7",
+  },
+  {
     id: "vestaEco",
     x: 850,
     y: 90,
@@ -290,7 +318,7 @@ export const EDGES: SceneEdge[] = [
   { id: "e-vesta-portal-svc", from: "vesta", to: "portal", appears: "3.5b", label: "issues ECS-Service", tone: "emerald", labelT: 0.55 },
   { id: "e-customer-support", from: "customer", to: "support", appears: "3.0", label: "contacts support…", tone: "gray", dashed: true, curve: 40, labelT: 0.45 },
   { id: "e-customer-fake", from: "customer", to: "fakeSupport", appears: "3.0", label: "…or the fake one? can't tell", tone: "red", dashed: true, curve: -20, labelT: 0.5 },
-  { id: "e-umbra-customer", from: "umbra", to: "customer", appears: "3.0", label: "rings the doorbell", tone: "red", dashed: true, labelT: 0.5 },
+  { id: "e-umbra-customer", from: "umbra", to: "customer", appears: "3.0", label: "rings the doorbell", tone: "red", dashed: true, curve: 30, labelT: 0.4 },
   // Need 1 - a verifiable identity for the organization
   { id: "e-ecs-orgIssuer", from: "ecs", to: "orgIssuer", appears: "3.2", label: "accredits", tone: "violet" },
   { id: "e-orgIssuer-vesta", from: "orgIssuer", to: "vesta", appears: "3.2", label: "issues ECS-Org", tone: "emerald", curve: -40, labelT: 0.4 },
@@ -302,8 +330,10 @@ export const EDGES: SceneEdge[] = [
   { id: "e-normacert-vesta", from: "normacert", to: "vesta", appears: "3.6", label: "issues ISO 9001 (demo)", tone: "emerald", curve: 40, labelT: 0.45 },
   // Need 5 - Vesta's own ecosystem
   { id: "e-vesta-eco", from: "vesta", to: "vestaEco", appears: "3.7", label: "creates & governs", tone: "violet", curve: -60, labelT: 0.5 },
-  { id: "e-eco-zenith", from: "vestaEco", to: "zenith", appears: "3.7", label: "issues Authorized Repairer", tone: "emerald", labelT: 0.5 },
-  { id: "e-umbra-claim", from: "umbra", to: "vestaEco", appears: "3.8", label: "claims - no credential: red", tone: "red", dashed: true, curve: 35, labelT: 0.5 },
+  { id: "e-eco-subIberia", from: "vestaEco", to: "subIberia", appears: "3.7", label: "accredits", tone: "violet" },
+  { id: "e-eco-subNordics", from: "vestaEco", to: "subNordics", appears: "3.7", label: "accredits", tone: "violet", labelT: 0.55 },
+  { id: "e-subIberia-zenith", from: "subIberia", to: "zenith", appears: "3.7", label: "issues Authorized Repairer", tone: "emerald", labelT: 0.5 },
+  { id: "e-umbra-claim", from: "umbra", to: "vestaEco", appears: "3.8", label: "claims - no credential: red", tone: "red", dashed: true, curve: -45, labelT: 0.35 },
 ];
 
 export const BADGES: SceneBadge[] = [
@@ -449,7 +479,7 @@ export const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "Authorized Repairer",
       tone: "emerald",
-      issuedBy: "Vesta Appliances",
+      issuedBy: "Vesta Iberia (demo, Vesta subsidiary)",
       ecosystem: "Vesta Repair Network",
       appears: "3.7",
     },
@@ -479,6 +509,38 @@ export const CREDENTIALS: Record<string, NodeCredential[]> = {
       appears: "3.6",
       inherited: true,
       note: "Inherited from the parent service: the credential lives on Vesta's Organization DID and surfaces on every Vesta service.",
+    },
+  ],
+  subIberia: [
+    {
+      name: "ECS-Organization",
+      tone: "blue",
+      issuedBy: "Helvetia Trust Services (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.7",
+    },
+    {
+      name: "ECS-Service",
+      tone: "violet",
+      issuedBy: "Self-issued (controller: Vesta Iberia)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.7",
+    },
+  ],
+  subNordics: [
+    {
+      name: "ECS-Organization",
+      tone: "blue",
+      issuedBy: "Helvetia Trust Services (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.7",
+    },
+    {
+      name: "ECS-Service",
+      tone: "violet",
+      issuedBy: "Self-issued (controller: Vesta Nordics)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.7",
     },
   ],
   normacert: [
@@ -518,6 +580,22 @@ export type Accreditation = {
 };
 
 export const ACCREDITATIONS: Record<string, Accreditation[]> = {
+  subIberia: [
+    {
+      role: "ISSUER",
+      schema: "Authorized Repairer",
+      context: "Vesta Repair Network · subsidiary of Vesta Appliances",
+      appears: "3.7",
+    },
+  ],
+  subNordics: [
+    {
+      role: "ISSUER",
+      schema: "Authorized Repairer",
+      context: "Vesta Repair Network · subsidiary of Vesta Appliances",
+      appears: "3.7",
+    },
+  ],
   normacert: [
     {
       role: "ISSUER",
@@ -617,6 +695,21 @@ export const STAGE_VIEW: Partial<
     viewBox: "20 30 780 520",
     maxWidth: "max-w-3xl",
   },
+  "3.7": {
+    only: [
+      "vesta",
+      "ecs",
+      "orgIssuer",
+      "portal",
+      "iso",
+      "normacert",
+      "vestaEco",
+      "subIberia",
+      "subNordics",
+      "zenith",
+    ],
+    viewBox: "20 30 950 520",
+  },
 };
 
 /** Stages whose meaning is a *change* to existing elements rather than a new
@@ -626,7 +719,7 @@ export const STAGE_CHANGES: Partial<
 > = {
   "3.1": { nodes: ["vesta"], note: "Vesta's DID is born" },
   "3.3": { nodes: ["vesta"], note: "the check turns green" },
-  "3.7": { nodes: ["umbra"], note: "the last problem gets its answer" },
+  "3.7": { note: "Vesta becomes an ecosystem: its subsidiaries issue, anyone verifies" },
   "3.5": { nodes: ["vesta"], note: "new accreditation on Vesta - click it to see it" },
   "3.5b": { nodes: ["portal"], note: "a new verifiable login service - click it to see its accreditation" },
   "3.8": { note: "full circle: anyone can tell" },

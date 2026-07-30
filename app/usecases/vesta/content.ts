@@ -480,17 +480,6 @@ export const JOURNEY: {
             "Present ECS-Org over the DIDComm session when asked to identify; receive ISO 9001 on the Organization DID.",
           ],
         },
-        {
-          id: "3.6b",
-          stage: "3.6",
-          noDiagram: true,
-          title: "The Proof-of-Trust gets richer",
-          kind: "watch",
-          story:
-            "Now, when someone connects to a Vesta service, receives a credential from it, or presents a credential to it, the Proof-of-Trust shows - in addition to the Organization and Service identity - the ISO 9001 credential.",
-          liveService: "organization-vs",
-          liveNote: CAST_NOTE,
-        },
       ],
     },
     {
@@ -507,7 +496,7 @@ export const JOURNEY: {
           title: "The Vesta Repair Network",
           kind: "watch",
           story:
-            "Vesta publishes a one-page governance framework and creates its ecosystem with a single credential schema: Authorized Repairer. The design choice that matters: issuance is governed - only Vesta and its subsidiaries issue. Verification is open - anyone checks, no permission needed. Then Vesta onboards Zenith Repairs, itself a verifiable organization (it walked the same journey: anchor, KYB, ECS-Service - the pattern replicates; that is the point): Vesta identifies Zenith by the ECS-Org credential on its DID and issues Authorized Repairer to Zenith's organization DID.",
+            "Vesta publishes a one-page governance framework and creates its ecosystem with a single credential schema: Authorized Repairer. The design choice that matters: issuance is governed - only Vesta and its subsidiaries issue - and verification is open: anyone checks, no permission needed. Vesta accredits two subsidiary issuers, Vesta Iberia and Vesta Nordics. Then Zenith Repairs joins, itself a verifiable organization (it walked the same journey: anchor, KYB, ECS-Service - the pattern replicates; that is the point): Vesta Iberia identifies Zenith by the ECS-Org credential on its DID and issues Authorized Repairer to Zenith's organization DID.",
           underHood: [
             "Create New Trust Registry (+ EGF document) → Create New Credential Schema (issuer mode ECOSYSTEM, verifier mode OPEN) → Create Root Permission. Three transactions, and Vesta is an ecosystem.",
             "Governed issuance does not mean a single issuer: Vesta can register several entities (for example its subsidiaries) as issuers of the Authorized Repairer schema by granting them ISSUER permissions under its root.",

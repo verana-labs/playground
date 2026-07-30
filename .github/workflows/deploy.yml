@@ -2,6 +2,22 @@ name: Deploy Playground
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "public/**"
+      - "package.json"
+      - "package-lock.json"
+      - "Dockerfile"
+      - "next.config.ts"
+      - "postcss.config.mjs"
+      - "tsconfig.json"
+      - ".github/workflows/deploy.yml"
+
+concurrency:
+  group: deploy-playground
+  cancel-in-progress: true
 
 jobs:
   deploy-playground:

@@ -218,10 +218,7 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
     <div className="space-y-6">
       <div>
         <div className="flex flex-wrap items-center gap-3">
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
-            {sub.id}
-          </span>
-          <h3 className="text-xl font-bold text-gray-900">{sub.title}</h3>
+          <h4 className="text-xl font-bold text-gray-900">{sub.title}</h4>
           <KindChip kind={sub.kind} />
         </div>
         <p className="mt-4 max-w-3xl text-gray-600">{sub.story}</p>
@@ -904,12 +901,21 @@ export default function Explained() {
           <div className="space-y-20">
             {JOURNEY.needs.map((need) => (
               <div key={need.id} id={need.id} className="scroll-mt-24">
-                <div className="text-center">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-4 py-1.5 text-sm font-bold text-emerald-800">
-                    ☑ Need {need.n} of 5 · {need.title}
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-600 text-base font-bold text-white">
+                    3.{need.n}
+                  </span>
+                  <h3 className="text-2xl font-bold text-gray-900">
+                    {need.title}
+                  </h3>
+                  <span
+                    title={`Need ${need.n} of 5 from Marc's checklist`}
+                    className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-xs font-bold text-emerald-700"
+                  >
+                    ☑
                   </span>
                 </div>
-                <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+                <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
                   {need.intro}
                 </p>
                 <div className="mt-8 space-y-14">

@@ -529,7 +529,7 @@ export const JOURNEY: {
             caption: "The technician at your door, proving they're from an authorized repairer - trust before you open.",
           },
           underHood: [
-            "Zenith self-accredits as an ECS-Badge issuer (the same move Vesta made in 3.4) and issues badges to its employees.",
+            "Zenith self-accredits as an ECS-Badge issuer (the same move Vesta made in 3.3) and issues badges to its employees.",
             "The Vesta login service's verifier policy accepts ECS-Badge from Vesta's anchor DID (employees) or from any issuer DID presenting a valid Authorized Repairer credential (partner employees). Two rules cover the whole network.",
             "The customer's wallet resolves the badge issuer's DID: Zenith's chain shows ECS-Org, ECS-Service, and Authorized Repairer under the Vesta Repair Network - the seal.",
           ],

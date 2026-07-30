@@ -350,7 +350,7 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
       {newLabels.length > 0 ? (
         <figcaption className="mt-2 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3 text-xs text-gray-500">
           <span className="font-semibold text-violet-600">
-            New in {stage}:
+            New in this step:
           </span>
           {newLabels.map((l) => (
             <span

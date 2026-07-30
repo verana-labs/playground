@@ -8,6 +8,7 @@
 #   none     — no permission by design (the trusted-but-unaccredited services)
 set -eo pipefail
 source "${VESTA_DIR}/common.sh"
+source "${CAST_DIR}/scripts/lib.sh"
 trap stop_port_forwards EXIT
 set_network_vars "${NETWORK:-testnet}"
 
@@ -48,4 +49,17 @@ case "${DEMO_PERM:-none}" in
     ;;
 esac
 
-ok "${SERVICE_NAME} provisioned (DEMO_PERM=${DEMO_PERM:-none})"
+# AnonCreds cred def for the DemoCredential (DEMO_CREDDEF=true on the two
+# issuer services — the unaccredited one needs it too, so it can MAKE the
+# offer the wallet then refuses on Q2). The cred def references the
+# ecosystem VTJSC per [VT-CRED-ANON]; the AnonCreds schema is resolved from
+# the anchor (its issuer), where demo-01 registered it.
+if [ "${DEMO_CREDDEF:-false}" = "true" ]; then
+  VTJSC_URL=$(discover_ecs_vtjsc "https://${ANCHOR_HOST}" "demo-credential" | sed -n '1p')
+  [ -n "$VTJSC_URL" ] || { err "Could not discover the DemoCredential VTJSC from ${ANCHOR_HOST}"; exit 1; }
+  ANCHOR_DID=$(get_webvh_did_from_host "$ANCHOR_HOST")
+  [ -n "$ANCHOR_DID" ] || { err "Could not read the anchor DID from ${ANCHOR_HOST}"; exit 1; }
+  ensure_credential_type "$API" "$VTJSC_URL" "$ANCHOR_DID"
+fi
+
+ok "${SERVICE_NAME} provisioned (DEMO_PERM=${DEMO_PERM:-none}, DEMO_CREDDEF=${DEMO_CREDDEF:-false})"

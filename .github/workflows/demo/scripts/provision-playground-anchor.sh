@@ -5,6 +5,7 @@
 # schema, root permission and VTJSC. Shares common.sh with the vesta cast.
 set -eo pipefail
 source "${VESTA_DIR}/common.sh"
+source "${CAST_DIR}/scripts/lib.sh"
 trap stop_port_forwards EXIT
 set_network_vars "${NETWORK:-testnet}"
 
@@ -28,6 +29,13 @@ obtain_service_credential "$API" "$API" "$AGENT_DID" self
 SCHEMA_JSON=$(jq -c '.' "${CAST_DIR}/schemas/${SCHEMA_FILE}")
 TR_ID=$(ensure_trust_registry "$AGENT_DID" "https://${INGRESS_HOST}" "$EGF_DOC_URL")
 CS_ID=$(ensure_schema_with_root "$TR_ID" "$SCHEMA_JSON" "$AGENT_DID")
-ensure_jsc "$API" "$CUSTOM_SCHEMA_BASE_ID" "$CS_ID" > /dev/null
+VTJSC_URL=$(ensure_jsc "$API" "$CUSTOM_SCHEMA_BASE_ID" "$CS_ID")
+
+# AnonCreds for the DemoCredential (dual rail): register the schema + cred
+# def on the anchor, linked to the ecosystem VTJSC. The anonCredsSchema
+# resource must be hosted HERE (the VTJSC issuer's host) — that is where
+# verifiers resolve the schema from jsonSchemaCredentialId at
+# presentation-request time.
+ensure_credential_type "$API" "$VTJSC_URL"
 
 ok "Playground Demo anchor provisioned: TR=$TR_ID, CS=$CS_ID"

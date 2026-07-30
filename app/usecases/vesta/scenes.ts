@@ -197,6 +197,16 @@ export const NODES: SceneNode[] = [
     sub: "checks before connecting",
   },
   {
+    id: "techWallet",
+    x: 660,
+    y: 560,
+    icon: "wallet",
+    tone: "emerald",
+    appears: "3.8",
+    label: "Technician's wallet",
+    sub: "Zenith employee",
+  },
+  {
     id: "ecs",
     x: 120,
     y: 90,
@@ -333,6 +343,9 @@ export const EDGES: SceneEdge[] = [
   { id: "e-eco-subIberia", from: "vestaEco", to: "subIberia", appears: "3.7", label: "accredits", tone: "violet" },
   { id: "e-eco-subNordics", from: "vestaEco", to: "subNordics", appears: "3.7", label: "accredits", tone: "violet", labelT: 0.55 },
   { id: "e-subIberia-zenith", from: "subIberia", to: "zenith", appears: "3.7", label: "issues Authorized Repairer", tone: "emerald", labelT: 0.5 },
+  { id: "e-zenith-techWallet", from: "zenith", to: "techWallet", appears: "3.8", label: "issues ECS-Badge", tone: "emerald", labelT: 0.5 },
+  { id: "e-techWallet-portal", from: "techWallet", to: "portal", appears: "3.8", label: "presents badge → login", tone: "emerald", labelT: 0.5 },
+  { id: "e-customer-scan", from: "customer", to: "techWallet", appears: "3.8", label: "scans: sees the Vesta seal", tone: "emerald", dashed: true, curve: -35, labelT: 0.45 },
   { id: "e-umbra-claim", from: "umbra", to: "vestaEco", appears: "3.8", label: "claims - no credential: red", tone: "red", dashed: true, curve: -45, labelT: 0.35 },
 ];
 
@@ -352,6 +365,7 @@ export const BADGES: SceneBadge[] = [
   { id: "b-iso", node: "vesta", dx: 44, dy: 34, text: "ISO 9001 (demo)", tone: "amber", appears: "3.6" },
   // Need 5 - full circle
   { id: "b-authorized-zenith", node: "zenith", dx: 0, dy: -40, text: "Authorized Repairer", tone: "emerald", appears: "3.7" },
+  { id: "b-badge-techWallet", node: "techWallet", dx: 0, dy: -40, text: "ECS-Badge", tone: "emerald", appears: "3.8" },
   { id: "b-ok-zenith", node: "zenith", dx: 34, dy: -24, text: "✓", tone: "emerald", appears: "3.8" },
   { id: "b-no-umbra", node: "umbra", dx: 34, dy: -24, text: "✗", tone: "red", appears: "3.8" },
 ];
@@ -559,6 +573,16 @@ export const CREDENTIALS: Record<string, NodeCredential[]> = {
       appears: "3.6",
     },
   ],
+  techWallet: [
+    {
+      name: "ECS-Badge",
+      tone: "emerald",
+      issuedBy: "Zenith Repairs (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.8",
+      note: "Held by a Zenith technician in their Personal Wallet. The issuer's chain carries the Authorized Repairer credential.",
+    },
+  ],
   wallet: [
     {
       name: "ECS-Badge",
@@ -656,6 +680,8 @@ export const NODE_NOTES: Record<string, string> = {
     "Claims to be Vesta-authorized - but no Authorized Repairer credential exists for its DID: red verdict.",
   customer:
     "A person - holds credentials in a Personal Wallet rather than presenting service credentials.",
+  techWallet:
+    "A Zenith technician's Personal Wallet - it holds the badge shown at the portal and at the front door.",
   ecs: "A trust ecosystem (registry root) - and a verifiable service itself: it governs the essential credential schemas and accredits issuers.",
   iso: "A trust ecosystem (demo) - and a verifiable service itself: it governs the ISO 9001 credential schema; accredited certification bodies issue it.",
   vestaEco:
@@ -710,6 +736,18 @@ export const STAGE_VIEW: Partial<
     ],
     viewBox: "20 30 950 520",
   },
+  "3.8": {
+    only: [
+      "vestaEco",
+      "subIberia",
+      "zenith",
+      "techWallet",
+      "portal",
+      "customer",
+    ],
+    viewBox: "380 25 590 635",
+    maxWidth: "max-w-3xl",
+  },
 };
 
 /** Stages whose meaning is a *change* to existing elements rather than a new
@@ -722,7 +760,7 @@ export const STAGE_CHANGES: Partial<
   "3.7": { note: "Vesta becomes an ecosystem: its subsidiaries issue, anyone verifies" },
   "3.5": { nodes: ["vesta"], note: "new accreditation on Vesta - click it to see it" },
   "3.5b": { nodes: ["portal"], note: "a new verifiable login service - click it to see its accreditation" },
-  "3.8": { note: "full circle: anyone can tell" },
+  "3.8": { note: "the Authorized Repairer credential at work: portal login, and the front door" },
 };
 
 /** Resolve a node's label/sub at a given stage (latest override ≤ stage). */

@@ -386,7 +386,7 @@ function NodeDetail({
   const others = creds.filter(
     (c) => c.name !== "ECS-Service" && c.name !== "ECS-Organization",
   );
-  const isPerson = id === "customer" || id === "wallet";
+  const isPerson = id === "customer" || id === "wallet" || id === "techWallet";
   const verified = !!node.verifiedAt && stageIndex(node.verifiedAt) <= idx;
   const data: TrustCardData = {
     name: label ?? id,

@@ -514,22 +514,31 @@ export const JOURNEY: {
         {
           id: "3.8",
           stage: "3.8",
-          title: "Full circle - anyone can tell",
-          kind: "hands-on",
+          title: "Authorized Repairer login - and at the front door",
+          kind: "watch",
           story:
-            "The Section 1 picture returns, with verdicts. Resolve Zenith's service with your wallet: green - ECS-Org, ECS-Service, Authorized Repairer, chain verified to the Vesta Repair Network. Then Umbra Repairs, which still claims to be authorized: red - no credential Vesta ever issued exists for its DID, and the claim cannot be forged. Brand impersonation fails structurally. And if a partner goes rogue, Vesta revokes - re-resolution drops the credential from every card.",
+            "The Authorized Repairer credential now works everywhere trust is needed:",
+          points: [
+            "Zenith Repairs issues ECS-Badges to its employees - each technician holds one in their Personal Wallet.",
+            "Zenith employees can now log in to the Vesta portal: when they present their ECS-Badge, Vesta knows the badge was issued by Zenith Repairs - and allows access, because Zenith Repairs presents an Authorized Repairer credential.",
+            "At the door, the worker presents their badge to the customer; the customer scans it and sees the Vesta Authorized Repairer seal.",
+          ],
           image: {
             src: "/images/zenith.webp",
             alt: "A Zenith Repairs technician at the door, showing a green trust check on their phone",
             caption: "The technician at your door, proving they're from an authorized repairer - trust before you open.",
           },
           underHood: [
-            "Verification mode OPEN: any wallet checks a repairer claim without asking anyone's permission - only issuance is gated.",
-            "Revocation: Revoke Permission + re-resolution removes the credential from every card and from future discovery results.",
+            "Zenith self-accredits as an ECS-Badge issuer (the same move Vesta made in 3.5) and issues badges to its employees.",
+            "The Vesta login service's verifier policy accepts ECS-Badge from Vesta's anchor DID (employees) or from any issuer DID presenting a valid Authorized Repairer credential (partner employees). Two rules cover the whole network.",
+            "The customer's wallet resolves the badge issuer's DID: Zenith's chain shows ECS-Org, ECS-Service, and Authorized Repairer under the Vesta Repair Network - the seal.",
           ],
           reproduce: [
-            "Resolve Zenith's demo service with your wallet: Authorized Repairer appears with its chain to the Vesta Repair Network.",
-            "Resolve Umbra's demo service: red verdict - the claim has no chain.",
+            "Get a badge from Zenith Repairs and try the Vesta portal login (see Run the demos below).",
+            "Scan a technician's badge with your wallet: the issuer chain ends at the Vesta Repair Network seal.",
+          ],
+          links: [
+            { label: "Run the demos", href: "/usecases/vesta#section-4" },
           ],
         },
       ],

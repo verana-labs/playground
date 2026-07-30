@@ -17,11 +17,7 @@ import {
 } from "../../components/ui";
 import WalletLogo from "../../components/WalletLogo";
 import WalletEvidence from "../../components/WalletEvidence";
-import {
-  ExpectedRendering,
-  type ExpectedRenderingKind,
-} from "../../components/ExpectedRendering";
-import { ProofOfTrust } from "../../components/ProofOfTrust";
+import { type ExpectedRenderingKind } from "../../components/ExpectedRendering";
 import ServiceTrustCard from "../../components/ServiceTrustCard";
 import { ServiceQr } from "../../components/ServiceQr";
 import {
@@ -153,10 +149,11 @@ const VERIFIER_SCENARIOS: Scenario[] = [
   },
 ];
 
-/** Issuer demo card: one card per service — the QR symbol (click to reveal
- *  the live QR) and the service's Proof-of-Trust, expanded by default (the
- *  same compact card as the Vesta story). */
-function IssuerScenarioCard({ s, w }: { s: Scenario; w: Integration }) {
+/** Demo card (issuer and verifier trios): one card per service — the QR
+ *  symbol (click to reveal the live QR) and the service's Proof-of-Trust,
+ *  expanded by default (the same compact card as the Vesta story). For
+ *  verifiers, the QR flips into the presented credential once shared. */
+function ScenarioCard({ s, w }: { s: Scenario; w: Integration }) {
   const live = !s.needsRail || w.demo_loop === "live";
   return (
     <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
@@ -182,67 +179,6 @@ function IssuerScenarioCard({ s, w }: { s: Scenario; w: Integration }) {
           </Placeholder>
         )}
         <ServiceTrustCard serviceId={s.serviceId} />
-      </div>
-    </div>
-  );
-}
-
-function ScenarioCard({ s, w }: { s: Scenario; w: Integration }) {
-  const capture = w.captures?.[s.key];
-  const live = !s.needsRail || w.demo_loop === "live";
-  return (
-    <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-      <div className="flex flex-wrap items-center gap-2">
-        <h3 className="font-bold text-gray-900">{s.title}</h3>
-        <Chip tone={s.trusted ? "verified" : "default"}>
-          {s.trusted ? "TRUSTED" : "UNTRUSTED"}
-        </Chip>
-        {s.trusted ? (
-          <Chip tone={s.accredited ? "verified" : "default"}>
-            {s.accredited ? "accredited" : "not accredited"}
-          </Chip>
-        ) : null}
-      </div>
-      <p className="mt-2 text-sm leading-relaxed text-gray-500">{s.blurb}</p>
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <div className="space-y-3">
-          {capture ? (
-            <figure className="rounded-xl border border-gray-200 bg-gray-50 p-2">
-              {/* eslint-disable-next-line @next/next/no-img-element -- integrator-submitted capture served from public/ */}
-              <img
-                src={capture.src}
-                alt={capture.caption ?? `${w.name} — ${s.title}`}
-                loading="lazy"
-                className="mx-auto max-h-96 w-auto rounded-lg"
-              />
-              {capture.caption ? (
-                <figcaption className="mt-1.5 text-center text-xs text-gray-500">
-                  {capture.caption}
-                </figcaption>
-              ) : null}
-            </figure>
-          ) : (
-            <ExpectedRendering kind={s.key} />
-          )}
-        </div>
-        <div className="space-y-3">
-          {live ? (
-            <ServiceQr serviceId={s.serviceId} label={s.title} />
-          ) : (
-            <Placeholder title="Scenario coming for this wallet">
-              This wallet does not run the DemoCredential flow on its rail yet
-              — trust resolution demos already work.
-            </Placeholder>
-          )}
-          <details className="rounded-xl border border-gray-200 bg-white p-4">
-            <summary className="cursor-pointer select-none text-sm font-medium text-gray-700 transition-colors hover:text-violet-700">
-              Live Proof-of-Trust of this service
-            </summary>
-            <div className="mt-3">
-              <ProofOfTrust serviceId={s.serviceId} />
-            </div>
-          </details>
-        </div>
       </div>
     </div>
   );
@@ -460,7 +396,7 @@ export default async function UserWalletPlayground({
             </p>
             <div className="ml-11 mt-4 space-y-4">
               {ISSUER_SCENARIOS.map((s) => (
-                <IssuerScenarioCard key={s.key} s={s} w={w} />
+                <ScenarioCard key={s.key} s={s} w={w} />
               ))}
             </div>
           </div>

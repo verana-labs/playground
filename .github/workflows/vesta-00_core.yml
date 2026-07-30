@@ -96,9 +96,9 @@ jobs:
       - name: Import account from mnemonic
         if: inputs.step != 'deploy'
         run: |
-          MNEMONIC="${{ secrets.VS_DEMO_MNEMONIC }}"
+          MNEMONIC="${{ secrets.PLAYGROUND_MNEMONIC }}"
           if [ -z "$MNEMONIC" ]; then
-            echo "::error::Secret VS_DEMO_MNEMONIC is not set (required for provisioning)"
+            echo "::error::Secret PLAYGROUND_MNEMONIC is not set (required for provisioning)"
             exit 1
           fi
           echo "$MNEMONIC" | veranad keys add "$USER_ACC" --recover --keyring-backend test

@@ -56,12 +56,14 @@ they never link an organization credential of their own.
 |---|---|---|
 | `KUBECONFIG_VERANA_DEV` | 00 | already used by `deploy.yml` (same cluster as verana-demos) |
 | `K8S_NAMESPACE` | 00 | already used by `deploy.yml`; all cast agents deploy there |
-| `VS_DEMO_MNEMONIC` | 00 | funded testnet account (same as verana-demos); controls all cast registries/permissions |
+| `PLAYGROUND_MNEMONIC` | 00 | dedicated funded testnet account for the playground cast; controls all cast registries/permissions |
 | `ECS_ECOSYSTEM_MNEMONIC` | 02 only | must recover the ECS trust registry controller (`verana19yvkutae4g3gkkakrpnt0wf70hwa2vq4qs5e43`) |
 
-The `VS_DEMO_MNEMONIC` account needs uvna for the on-chain transactions —
-top up at https://faucet-vs.testnet.verana.network/invitation if a run fails
-on `check_balance`.
+`PLAYGROUND_MNEMONIC` is deliberately its own account (not the verana-demos
+one). Generate it with `veranad keys add playground --keyring-backend test`
+(save the mnemonic as the secret) and fund it with uvna at
+https://faucet-vs.testnet.verana.network/invitation — runs fail on
+`check_balance` with that faucet link when the balance is empty.
 
 **DNS + TLS.** Wildcard records must point at the cluster ingress:
 `*.playground.testnet.verana.network` **and**

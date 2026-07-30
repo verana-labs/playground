@@ -1,0 +1,31 @@
+name: "Vesta 09 · Zenith Repairs"
+
+# Deploys Zenith: ECS credentials, Authorized Repairer from Vesta Iberia, ECS-Badge issuer.
+# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  zenith:
+    uses: ./.github/workflows/vesta-00_core.yml
+    with:
+      org: zenith
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

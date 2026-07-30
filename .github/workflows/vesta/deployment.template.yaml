@@ -1,0 +1,50 @@
+# Vesta cast vs-agent deployment — Helm chart values template
+#
+# One template for every cast member. The vesta-00_core workflow substitutes
+# __RELEASE__, __HOST__ and __NETWORK__ from the org's config.env before
+# installing. Hosts follow <org>.playground.<network>.verana.network and
+# <subservice>.<org>.playground.<network>.verana.network.
+chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
+chartVersion: v1.11.0
+
+global:
+  domain: playground.__NETWORK__.verana.network
+
+name: __RELEASE__
+replicas: 1
+
+adminPort: 3000
+didcommPort: 3001
+eventsBaseUrl: "https://__HOST__"
+publicDidMethod: "webvh"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+ingress:
+  host: "__HOST__"
+  tlsSecret: "__HOST__-cert"
+  public:
+    enableCors: true
+  private:
+    enableCors: true
+    whitelistSourceRange: ""
+    tlsSecret: ""
+    host: ""
+
+extraEnv:
+  - name: ENABLE_PUBLIC_API_SWAGGER
+    value: "true"
+  - name: AGENT_LOG_LEVEL
+    value: "3"
+  - name: USE_CORS
+    value: "true"
+
+storage:
+  size: 1Gi
+  storageClassName: csi-cinder-high-speed

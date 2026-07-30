@@ -1,0 +1,34 @@
+{
+  "$id": "https://repair-network.vesta.playground.testnet.verana.network/schemas/authorized-repairer.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AuthorizedRepairerCredential",
+  "description": "Accreditation of an organization as an Authorized Repairer of the Vesta Repair Network (demo).",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID of the accredited organization"
+        },
+        "name": {
+          "type": "string",
+          "description": "Legal name of the accredited organization"
+        },
+        "region": {
+          "type": "string",
+          "description": "Region the accreditation covers"
+        },
+        "since": {
+          "type": "string",
+          "description": "Year the organization joined the network"
+        }
+      },
+      "required": [
+        "name",
+        "region"
+      ]
+    }
+  }
+}

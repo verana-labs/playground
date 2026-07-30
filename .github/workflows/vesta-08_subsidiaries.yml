@@ -1,0 +1,51 @@
+name: "Vesta 08 · Subsidiaries (Iberia + Nordics)"
+
+# Deploys the two Vesta subsidiaries and accredits them as Authorized
+# Repairer issuers under the Vesta Repair Network registry.
+# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      subsidiary:
+        description: "Which subsidiary to deploy"
+        required: true
+        type: choice
+        options:
+          - both
+          - vesta-iberia
+          - vesta-nordics
+        default: both
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  vesta-iberia:
+    if: inputs.subsidiary != 'vesta-nordics'
+    uses: ./.github/workflows/vesta-00_core.yml
+    with:
+      org: vesta-iberia
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit
+
+  vesta-nordics:
+    if: inputs.subsidiary != 'vesta-iberia'
+    uses: ./.github/workflows/vesta-00_core.yml
+    with:
+      org: vesta-nordics
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

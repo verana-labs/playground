@@ -1,0 +1,31 @@
+name: "Vesta 07 · Vesta Portal (login)"
+
+# Deploys the login portal (delegated service) with a VERIFIER permission on ECS-Badge.
+# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  vesta-portal:
+    uses: ./.github/workflows/vesta-00_core.yml
+    with:
+      org: vesta-portal
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

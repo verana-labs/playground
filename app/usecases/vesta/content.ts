@@ -282,9 +282,6 @@ export type JourneyNeed = {
   steps: SubStep[];
 };
 
-const CAST_NOTE =
-  "The dedicated Vesta demo cast (separate vs-agent instances per participant) is being deployed; until then, the verana-demos anchor stands in on this live card.";
-
 /** §3 · Marc's journey - one subsection per checklist need. */
 export const JOURNEY: {
   n: number;

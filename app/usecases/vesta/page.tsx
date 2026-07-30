@@ -52,6 +52,8 @@ export const metadata: Metadata = {
 
 // --------------------------------------------- shared bits
 
+const NEED_SHORT = ["Identity", "Services", "Badges", "ISO 9001", "Network"];
+
 const SERVICE_ICONS = { bot: Bot, badge: BadgeCheck, key: KeyRound } as const;
 const PROBLEM_ICONS = {
   phone: PhoneOff,
@@ -193,12 +195,9 @@ function RepairNetworkDiagram() {
 
 function SubHeading({ children }: { children: React.ReactNode }) {
   return (
-    <div className="text-center">
-      <h3 className="text-2xl font-bold tracking-tight text-gray-900">
-        {children}
-      </h3>
-      <div aria-hidden className="mx-auto mt-2 h-1 w-10 rounded-full bg-violet-600" />
-    </div>
+    <h3 className="text-[1.65rem] font-extrabold tracking-tight text-[#0f1222]">
+      {children}
+    </h3>
   );
 }
 
@@ -356,35 +355,118 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
 export default function Explained() {
   return (
     <>
-      <header className="hero-gradient text-white">
-        <div className="mx-auto max-w-4xl px-6 py-14 sm:py-16">
-          <Breadcrumb
-            onDark
-            items={[
-              { label: "Playground", href: "/" },
-              { label: "Use Cases" },
-              { label: "Vesta Appliances" },
-            ]}
-          />
-          <h1 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl">
-            Verana, explained by Vesta Appliances
-          </h1>
-          <p className="mt-5 max-w-2xl text-lg text-white/80">
-            One continuous story on a single page - starting from the business,
-            not the technology. Meet a company everyone recognizes, watch it
-            join Verana, and take part yourself with a real wallet.
-          </p>
-          <nav className="mt-8 flex flex-wrap gap-2">
-            {SECTIONS_NAV.map((s) => (
+      <header>
+        <div className="relative flex min-h-[520px] items-end overflow-hidden bg-[#0b0a10]">
+          {VESTA_ASSETS.fakeVan ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={VESTA_ASSETS.fakeVan}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          ) : null}
+          <div aria-hidden className="scene-scrim absolute inset-0" />
+          <div className="absolute inset-x-0 top-0 z-10 px-6 pt-5 sm:px-10">
+            <Breadcrumb
+              onDark
+              items={[
+                { label: "Playground", href: "/" },
+                { label: "Use Cases" },
+                { label: "Vesta Appliances" },
+              ]}
+            />
+          </div>
+          <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-12 pt-28 sm:px-10">
+            <p className="text-[11.5px] font-extrabold tracking-[0.26em] text-[#cfc2ff]">
+              USE CASE - THE VESTA STORY
+            </p>
+            <h1 className="mt-4 max-w-3xl text-4xl font-extrabold leading-[1.03] tracking-tight text-white md:text-[3.4rem]">
+              This van is <em className="not-italic text-[#cfc2ff]">not</em>{" "}
+              from Vesta.
+            </h1>
+            <p className="mt-4 max-w-xl text-lg leading-relaxed text-[#d9d5e8]">
+              Same logo, same promise, ringing real doorbells. Follow Vesta
+              Appliances from impostor problem to provable trust, then run
+              every step with a real wallet.
+            </p>
+            <div className="mt-7 flex flex-wrap gap-3">
               <a
-                key={s.anchor}
-                href={`#${s.anchor}`}
-                className="rounded-full bg-white/15 px-3.5 py-1.5 text-sm font-medium text-white backdrop-blur transition-colors hover:bg-white/25"
+                href="#section-1"
+                className="btn-gradient inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold"
               >
-                {s.n} · {s.title}
+                Start the story
               </a>
-            ))}
-          </nav>
+              <a
+                href="#section-4"
+                className="inline-flex items-center gap-2 rounded-xl border border-white/45 bg-white/10 px-6 py-3 font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
+              >
+                Run the demos
+              </a>
+            </div>
+          </div>
+          <div className="glass-panel float-slow absolute bottom-10 right-10 z-10 hidden w-[300px] rotate-[1.8deg] rounded-2xl p-4 xl:block">
+            <code className="block break-all font-mono text-[9.5px] text-[#8a8da1]">
+              did:webvh:QmPLACEHOLDER…:vesta-anchor.demos…
+            </code>
+            <div className="mt-2.5 flex gap-2.5">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                <Check className="h-3 w-3" aria-hidden />
+              </span>
+              <span>
+                <b className="block text-xs text-[#0f1222]">
+                  Vesta Organization Trust Anchor
+                </b>
+                <span className="text-[10px] text-[#8a8da1]">
+                  Service · ECS-Service
+                </span>
+              </span>
+            </div>
+            <div className="mt-2.5 flex gap-2.5">
+              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+                <Check className="h-3 w-3" aria-hidden />
+              </span>
+              <span>
+                <b className="block text-xs text-[#0f1222]">
+                  Vesta Appliances SA, Geneva
+                </b>
+                <span className="text-[10px] text-[#8a8da1]">
+                  Operated by · ECS-Organization
+                </span>
+              </span>
+            </div>
+            <span className="mt-3 inline-flex rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-extrabold tracking-wide text-white">
+              TRUSTED
+            </span>
+          </div>
+        </div>
+        {/* Path ribbon */}
+        <div className="border-b border-[#efeef6] bg-[#fcfcff]">
+          <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-6 py-3.5 sm:px-10">
+            <span className="text-[11.5px] font-extrabold tracking-[0.1em] text-violet-700">
+              THE VESTA STORY
+            </span>
+            <nav className="flex flex-wrap gap-1.5">
+              {SECTIONS_NAV.map((s) => (
+                <a
+                  key={s.anchor}
+                  href={`#${s.anchor}`}
+                  className="rounded-full border border-[#ecebf4] bg-white px-3 py-1 text-xs font-bold text-[#4c5065] shadow-sm transition-colors hover:border-violet-300 hover:text-violet-700"
+                >
+                  {s.n} · {s.title}
+                </a>
+              ))}
+            </nav>
+            <span className="ml-auto inline-flex items-center gap-2 text-xs font-bold text-[#42465a]">
+              <span
+                aria-hidden
+                className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-[#ffb020] to-[#ff8a3d] text-[13px] font-black text-white shadow-[0_6px_14px_rgb(255,138,61,0.4)]"
+              >
+                ★
+              </span>
+              Finish and earn a real ECS-Badge
+            </span>
+          </div>
         </div>
       </header>
 
@@ -430,7 +512,7 @@ export default function Explained() {
           {/* The product line */}
           <div>
             <SubHeading>The product line</SubHeading>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {COMPANY.productLine}
             </p>
             {VESTA_ASSETS.lineup ? (
@@ -439,7 +521,7 @@ export default function Explained() {
                 <img
                   src={VESTA_ASSETS.lineup}
                   alt="The Vesta product range: washing machine, oven, dryer"
-                  className="w-full rounded-2xl object-cover"
+                  className="photo-frame w-full object-cover"
                 />
                 <figcaption className="mt-2 text-center text-xs text-gray-400">
                   {VESTA_ASSETS.lineupCaption}
@@ -451,7 +533,7 @@ export default function Explained() {
           {/* The factory */}
           <div className="mt-12">
             <SubHeading>The factory</SubHeading>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {COMPANY.factoryText}
             </p>
             {VESTA_ASSETS.hero ? (
@@ -460,7 +542,7 @@ export default function Explained() {
                 <img
                   src={VESTA_ASSETS.hero}
                   alt="The Vesta Appliances assembly line"
-                  className="w-full rounded-2xl object-cover"
+                  className="photo-frame w-full object-cover"
                 />
                 <figcaption className="mt-2 text-center text-xs text-gray-400">
                   {VESTA_ASSETS.heroCaption}
@@ -472,7 +554,7 @@ export default function Explained() {
           {/* The certified repair network */}
           <div className="mt-12">
             <SubHeading>{REPAIR_NETWORK.title}</SubHeading>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-sm leading-relaxed text-gray-500">
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-500">
               {REPAIR_NETWORK.blurb}
             </p>
             <div className="mt-6">
@@ -486,7 +568,7 @@ export default function Explained() {
                 <Check className="h-3 w-3" aria-hidden /> {REPAIR_NETWORK.badgeFullName} badge
               </span>
             </div>
-            <p className="mx-auto mt-5 max-w-2xl text-center text-sm italic leading-relaxed text-gray-500">
+            <p className="mt-5 max-w-3xl text-sm italic leading-relaxed text-gray-500">
               {REPAIR_NETWORK.closing}
             </p>
           </div>
@@ -494,7 +576,7 @@ export default function Explained() {
           {/* Online services */}
           <div className="mt-12">
             <SubHeading>Online services</SubHeading>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {COMPANY.servicesIntro}
             </p>
             <div className="mt-6 flex flex-col items-center">
@@ -699,7 +781,7 @@ export default function Explained() {
           {/* What Marc needs: the mission checklist */}
           <div className="mb-14">
             <SubHeading>{SOLUTION.needsTitle}</SubHeading>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {SOLUTION.needsIntro}
             </p>
             <ul className="reveal-stagger mx-auto mt-6 grid max-w-3xl gap-3">
@@ -737,7 +819,7 @@ export default function Explained() {
           {/* What is Verana? */}
           <div>
             <SubHeading>{SOLUTION.pillarsTitle}</SubHeading>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {SOLUTION.pillarsIntro}
             </p>
             <div className="reveal-stagger mt-6 grid gap-4 sm:grid-cols-3">
@@ -769,7 +851,7 @@ export default function Explained() {
           {/* The ecosystems Vesta wants to join */}
           <div className="mt-14">
             <SubHeading>{SOLUTION.ecosystemsTitle}</SubHeading>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {SOLUTION.ecosystemsIntro}
             </p>
             <div className="reveal-stagger mt-6 grid gap-4 sm:grid-cols-2">
@@ -837,7 +919,7 @@ export default function Explained() {
           {/* The ecosystems Vesta wants to build */}
           <div className="mt-14">
             <SubHeading>{ECOSYSTEM_BUILD.title}</SubHeading>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {ECOSYSTEM_BUILD.intro}
             </p>
             <div className="mx-auto mt-6 max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -902,11 +984,35 @@ export default function Explained() {
             title={JOURNEY.title}
             subtitle={JOURNEY.intro}
           />
+          {/* Checkpoint strip - the five needs as stations */}
+          <div className="mb-14 flex max-w-3xl items-center">
+            {JOURNEY.needs.map((need, i) => (
+              <div key={need.id} className="contents">
+                <a
+                  href={`#${need.id}`}
+                  className="group flex min-w-[76px] flex-col items-center gap-1.5"
+                >
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full border-2 border-[#e4e2f0] bg-white text-sm font-extrabold text-violet-700 shadow-sm transition-all group-hover:border-violet-400 group-hover:shadow-[0_8px_18px_rgb(109,40,217,0.25)]">
+                    {need.n}
+                  </span>
+                  <span className="text-[10px] font-bold uppercase tracking-wide text-[#8a8da1] group-hover:text-violet-700">
+                    {NEED_SHORT[i]}
+                  </span>
+                </a>
+                {i < JOURNEY.needs.length - 1 ? (
+                  <span
+                    aria-hidden
+                    className="mt-[-18px] h-[2px] flex-1 bg-[repeating-linear-gradient(90deg,#d9d7ea_0_7px,transparent_7px_13px)]"
+                  />
+                ) : null}
+              </div>
+            ))}
+          </div>
           <div className="space-y-20">
             {JOURNEY.needs.map((need) => (
               <div key={need.id} id={need.id} className="scroll-mt-24">
                 <div className="flex flex-wrap items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-violet-600 text-base font-bold text-white">
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#6d28d9] to-[#8b5cf6] text-base font-bold text-white shadow-[0_8px_18px_rgb(109,40,217,0.35)]">
                     3.{need.n}
                   </span>
                   <h3 className="text-2xl font-bold text-gray-900">
@@ -949,7 +1055,7 @@ export default function Explained() {
           {/* Demo 1 · Obtain an ECS-Badge */}
           <div>
             <SubHeading>{DEMOS.badge.title}</SubHeading>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.badge.intro}
             </p>
             <div className="reveal-stagger mt-6 grid gap-4 sm:grid-cols-3">
@@ -985,7 +1091,7 @@ export default function Explained() {
           {/* Demo 2 · Log in with the badge */}
           <div className="mt-14">
             <SubHeading>{DEMOS.login.title}</SubHeading>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.login.intro}
             </p>
             <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -1028,7 +1134,7 @@ export default function Explained() {
           {/* Demo 3 · Directory search */}
           <div className="mt-14">
             <SubHeading>{DEMOS.directory.title}</SubHeading>
-            <p className="mx-auto mt-3 max-w-2xl text-center text-[1.02rem] leading-relaxed text-gray-600">
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.directory.intro}
             </p>
             <div className="reveal-stagger mx-auto mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">

@@ -88,7 +88,7 @@ function MobileMenu() {
 
 export default function Nav() {
   return (
-    <header className="sticky top-0 z-40 border-b border-gray-200 bg-white/85 backdrop-blur">
+    <header className="sticky top-0 z-40 border-b border-[#efeef6] bg-white/70 backdrop-blur-md">
       <nav className="mx-auto flex h-16 max-w-6xl items-center gap-3 px-4 sm:gap-4 sm:px-6">
         <Logo />
         <ul className="ml-4 hidden items-center gap-5 lg:flex">

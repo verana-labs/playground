@@ -26,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
-      <body className="flex min-h-screen flex-col bg-gray-50 text-gray-900 antialiased">
+      <body className="flex min-h-screen flex-col bg-[#fcfcff] text-gray-900 antialiased">
         <Reveal />
         <Nav />
         <main className="flex-1">{children}</main>

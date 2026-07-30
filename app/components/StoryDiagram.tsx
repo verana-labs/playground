@@ -170,7 +170,7 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
 
   return (
     <figure
-      className={`rounded-2xl border border-gray-200 bg-white p-3 shadow-sm sm:p-5 ${
+      className={`glass-panel rounded-[22px] p-3 sm:p-5 ${
         view?.maxWidth ? `${view.maxWidth} mx-auto` : ""
       }`}
     >

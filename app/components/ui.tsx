@@ -48,17 +48,17 @@ export function SectionHeading({
   subtitle?: React.ReactNode;
 }) {
   return (
-    <div className="mb-8">
-      <div className="mb-2 flex items-center gap-3">
-        {number !== undefined ? (
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
-            {number}
-          </span>
-        ) : null}
-        <h2 className="text-2xl font-bold text-gray-900 sm:text-3xl">{title}</h2>
-      </div>
+    <div className="mb-10">
+      {number !== undefined ? (
+        <div className="text-xs font-extrabold uppercase tracking-[0.14em] text-violet-700">
+          Section {number}
+        </div>
+      ) : null}
+      <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0f1222] md:text-4xl">
+        {title}
+      </h2>
       {subtitle ? (
-        <p className={`text-gray-500 ${number !== undefined ? "ml-12" : ""}`}>
+        <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-[#4c5065]">
           {subtitle}
         </p>
       ) : null}
@@ -80,7 +80,7 @@ export function Button({
 }) {
   const cls =
     variant === "primary"
-      ? "inline-flex items-center justify-center gap-2 rounded-xl bg-violet-600 px-5 py-2.5 font-medium text-white transition-colors hover:bg-violet-700"
+      ? "btn-gradient inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 font-semibold"
       : "inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-5 py-2.5 font-medium text-gray-700 transition-colors hover:border-violet-300 hover:text-violet-700";
   if (external) {
     return (

@@ -355,118 +355,35 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
 export default function Explained() {
   return (
     <>
-      <header>
-        <div className="relative flex min-h-[520px] items-end overflow-hidden bg-[#0b0a10]">
-          {VESTA_ASSETS.fakeVan ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src={VESTA_ASSETS.fakeVan}
-              alt=""
-              aria-hidden
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          ) : null}
-          <div aria-hidden className="scene-scrim absolute inset-0" />
-          <div className="absolute inset-x-0 top-0 z-10 px-6 pt-5 sm:px-10">
-            <Breadcrumb
-              onDark
-              items={[
-                { label: "Playground", href: "/" },
-                { label: "Use Cases" },
-                { label: "Vesta Appliances" },
-              ]}
-            />
-          </div>
-          <div className="relative z-10 mx-auto w-full max-w-6xl px-6 pb-12 pt-28 sm:px-10">
-            <p className="text-[11.5px] font-extrabold tracking-[0.26em] text-[#cfc2ff]">
-              USE CASE - THE VESTA STORY
-            </p>
-            <h1 className="mt-4 max-w-3xl text-4xl font-extrabold leading-[1.03] tracking-tight text-white md:text-[3.4rem]">
-              This van is <em className="not-italic text-[#cfc2ff]">not</em>{" "}
-              from Vesta.
-            </h1>
-            <p className="mt-4 max-w-xl text-lg leading-relaxed text-[#d9d5e8]">
-              Same logo, same promise, ringing real doorbells. Follow Vesta
-              Appliances from impostor problem to provable trust, then run
-              every step with a real wallet.
-            </p>
-            <div className="mt-7 flex flex-wrap gap-3">
+      <header className="hero-gradient text-white">
+        <div className="mx-auto max-w-4xl px-6 py-14 sm:py-16">
+          <Breadcrumb
+            onDark
+            items={[
+              { label: "Playground", href: "/" },
+              { label: "Use Cases" },
+              { label: "Vesta Appliances" },
+            ]}
+          />
+          <h1 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl">
+            Verana, explained by Vesta Appliances
+          </h1>
+          <p className="mt-5 max-w-2xl text-lg text-white/80">
+            One continuous story on a single page - starting from the business,
+            not the technology. Meet a company everyone recognizes, watch it
+            join Verana, and take part yourself with a real wallet.
+          </p>
+          <nav className="mt-8 flex flex-wrap gap-2">
+            {SECTIONS_NAV.map((s) => (
               <a
-                href="#section-1"
-                className="btn-gradient inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold"
+                key={s.anchor}
+                href={`#${s.anchor}`}
+                className="rounded-full bg-white/15 px-3.5 py-1.5 text-sm font-medium text-white backdrop-blur transition-colors hover:bg-white/25"
               >
-                Start the story
+                {s.n} · {s.title}
               </a>
-              <a
-                href="#section-4"
-                className="inline-flex items-center gap-2 rounded-xl border border-white/45 bg-white/10 px-6 py-3 font-semibold text-white backdrop-blur transition-colors hover:bg-white/20"
-              >
-                Run the demos
-              </a>
-            </div>
-          </div>
-          <div className="glass-panel float-slow absolute bottom-10 right-10 z-10 hidden w-[300px] rotate-[1.8deg] rounded-2xl p-4 xl:block">
-            <code className="block break-all font-mono text-[9.5px] text-[#8a8da1]">
-              did:webvh:QmPLACEHOLDER…:vesta-anchor.demos…
-            </code>
-            <div className="mt-2.5 flex gap-2.5">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                <Check className="h-3 w-3" aria-hidden />
-              </span>
-              <span>
-                <b className="block text-xs text-[#0f1222]">
-                  Vesta Organization Trust Anchor
-                </b>
-                <span className="text-[10px] text-[#8a8da1]">
-                  Service · ECS-Service
-                </span>
-              </span>
-            </div>
-            <div className="mt-2.5 flex gap-2.5">
-              <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
-                <Check className="h-3 w-3" aria-hidden />
-              </span>
-              <span>
-                <b className="block text-xs text-[#0f1222]">
-                  Vesta Appliances SA, Geneva
-                </b>
-                <span className="text-[10px] text-[#8a8da1]">
-                  Operated by · ECS-Organization
-                </span>
-              </span>
-            </div>
-            <span className="mt-3 inline-flex rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-extrabold tracking-wide text-white">
-              TRUSTED
-            </span>
-          </div>
-        </div>
-        {/* Path ribbon */}
-        <div className="border-b border-[#efeef6] bg-[#fcfcff]">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-x-4 gap-y-2 px-6 py-3.5 sm:px-10">
-            <span className="text-[11.5px] font-extrabold tracking-[0.1em] text-violet-700">
-              THE VESTA STORY
-            </span>
-            <nav className="flex flex-wrap gap-1.5">
-              {SECTIONS_NAV.map((s) => (
-                <a
-                  key={s.anchor}
-                  href={`#${s.anchor}`}
-                  className="rounded-full border border-[#ecebf4] bg-white px-3 py-1 text-xs font-bold text-[#4c5065] shadow-sm transition-colors hover:border-violet-300 hover:text-violet-700"
-                >
-                  {s.n} · {s.title}
-                </a>
-              ))}
-            </nav>
-            <span className="ml-auto inline-flex items-center gap-2 text-xs font-bold text-[#42465a]">
-              <span
-                aria-hidden
-                className="flex h-6 w-6 items-center justify-center rounded-lg bg-gradient-to-br from-[#ffb020] to-[#ff8a3d] text-[13px] font-black text-white shadow-[0_6px_14px_rgb(255,138,61,0.4)]"
-              >
-                ★
-              </span>
-              Finish and earn a real ECS-Badge
-            </span>
-          </div>
+            ))}
+          </nav>
         </div>
       </header>
 

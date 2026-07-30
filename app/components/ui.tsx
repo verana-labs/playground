@@ -40,18 +40,21 @@ export function Section({
  *  a violet number circle, bold title, gray subtitle. */
 export function SectionHeading({
   number,
+  eyebrow,
   title,
   subtitle,
 }: {
   number?: number | string;
+  /** Custom kicker text; replaces the default "Section N". */
+  eyebrow?: string;
   title: React.ReactNode;
   subtitle?: React.ReactNode;
 }) {
   return (
     <div className="mb-10">
-      {number !== undefined ? (
+      {eyebrow !== undefined || number !== undefined ? (
         <div className="text-xs font-extrabold uppercase tracking-[0.14em] text-violet-700">
-          Section {number}
+          {eyebrow ?? `Section ${number}`}
         </div>
       ) : null}
       <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-[#0f1222] md:text-4xl">

@@ -8,7 +8,7 @@ import {
   FileSearch,
   ShieldQuestion,
 } from "lucide-react";
-import { Container, Section, Chip } from "../components/ui";
+import { Container, Section, SectionHeading, Chip } from "../components/ui";
 import { ServiceQr } from "../components/ServiceQr";
 import LiveTrustCard from "../components/LiveTrustCard";
 import type {
@@ -169,17 +169,6 @@ function WalletIcon({
   );
 }
 
-function StepHeading({ n, title }: { n: number; title: string }) {
-  return (
-    <div className="mb-4 flex items-center gap-3">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
-        {n}
-      </span>
-      <h2 className="text-lg font-bold text-gray-900">{title}</h2>
-    </div>
-  );
-}
-
 function ScenarioCapture({
   capture,
   walletName,
@@ -326,14 +315,12 @@ export default function PersonalWalletsPlayground({
       <Container className="space-y-10">
         {/* 1 · What you'll test - the Q1/Q2/Q3 mental model */}
         <div>
-          <StepHeading n={1} title="What you'll test" />
-          <p className="ml-11 text-sm leading-relaxed text-gray-500">
-            A Verana-integrated wallet answers three questions for you, at the
-            right moments - before you connect, before you accept, before you
-            share. The six demos below make each answer visible, in green and
-            in red.
-          </p>
-          <div className="ml-11 mt-4 grid gap-4 md:grid-cols-3">
+          <SectionHeading
+            number={1}
+            title="What you'll test"
+            subtitle="A Verana-integrated wallet answers three questions for you, at the right moments - before you connect, before you accept, before you share. The six demos below make each answer visible, in green and in red."
+          />
+          <div className="grid gap-4 md:grid-cols-3">
             {QUESTIONS.map((q) => (
               <div
                 key={q.chip}
@@ -352,7 +339,7 @@ export default function PersonalWalletsPlayground({
               </div>
             ))}
           </div>
-          <p className="ml-11 mt-4 text-sm leading-relaxed text-gray-500">
+          <p className="mt-4 text-sm leading-relaxed text-gray-500">
             Every demo service below is operated by the{" "}
             <strong className="font-semibold text-gray-700">
               Playground Organization (demo)
@@ -369,8 +356,8 @@ export default function PersonalWalletsPlayground({
 
         {/* 2 · Get the wallet - pick, then install */}
         <div>
-          <StepHeading n={2} title="Get the wallet" />
-          <div className="ml-11 space-y-4">
+          <SectionHeading number={2} title="Get the wallet" />
+          <div className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {wallets.map((w) => (
                 <button
@@ -535,16 +522,21 @@ export default function PersonalWalletsPlayground({
 
         {/* 3 · Issuer demos */}
         <div>
-          <StepHeading n={3} title="Issuer demos - three services, three verdicts" />
-          <p className="ml-11 text-sm leading-relaxed text-gray-500">
-            Three issuer services offer you the DemoCredential over{" "}
-            <strong className="font-medium text-gray-700">
-              {FORMAT_LABEL[format]}
-            </strong>
-            . Only one offer should ever reach your wallet&apos;s accept
-            button.
-          </p>
-          <div className="ml-11 mt-4 space-y-4">
+          <SectionHeading
+            number={3}
+            title="Issuer demos - three services, three verdicts"
+            subtitle={
+              <>
+                Three issuer services offer you the DemoCredential over{" "}
+                <strong className="font-medium text-gray-700">
+                  {FORMAT_LABEL[format]}
+                </strong>
+                . Only one offer should ever reach your wallet&apos;s accept
+                button.
+              </>
+            }
+          />
+          <div className="space-y-4">
             {ISSUER_SCENARIOS.map((s) => (
               <ScenarioCard
                 key={s.key}
@@ -559,13 +551,12 @@ export default function PersonalWalletsPlayground({
 
         {/* 4 · Verifier demos */}
         <div>
-          <StepHeading n={4} title="Verifier demos - log in with your DemoCredential" />
-          <p className="ml-11 text-sm leading-relaxed text-gray-500">
-            Three verifier services ask you to present the DemoCredential you
-            received above. Only one request should ever reach your
-            wallet&apos;s share button.
-          </p>
-          <div className="ml-11 mt-4 space-y-4">
+          <SectionHeading
+            number={4}
+            title="Verifier demos - log in with your DemoCredential"
+            subtitle="Three verifier services ask you to present the DemoCredential you received above. Only one request should ever reach your wallet's share button."
+          />
+          <div className="space-y-4">
             {VERIFIER_SCENARIOS.map((s) => (
               <ScenarioCard
                 key={s.key}

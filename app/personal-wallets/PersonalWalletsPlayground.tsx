@@ -478,11 +478,11 @@ export default function PersonalWalletsPlayground({
           This page is generated from{" "}
           <a
             className="text-violet-600 underline"
-            href="https://github.com/verana-labs/playground/blob/main/wallets.yaml"
+            href="https://github.com/verana-labs/playground/blob/main/personal-wallets.yaml"
             target="_blank"
             rel="noopener noreferrer"
           >
-            <code>wallets.yaml</code>
+            <code>personal-wallets.yaml</code>
           </a>{" "}
           — to list your wallet, test the loop with AnonCreds and/or OpenID4VC
           SD-JWT and open a PR with your entry, icon, and optional captures

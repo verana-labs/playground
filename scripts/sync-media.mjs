@@ -1,5 +1,5 @@
 // Publishes wallet media to public/wallets/<slug>/ so Next can serve it:
-// - wallets/<slug>/ (personal wallets — media next to their wallets.yaml entry)
+// - wallets/<slug>/ (personal wallets — media next to their personal-wallets.yaml entry)
 // - integrations/<slug>/ (business wallets — descriptor + media side by side)
 
 import fs from "node:fs";

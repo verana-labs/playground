@@ -5,9 +5,9 @@ import { describe, expect, it } from "vitest";
 import { listPersonalWallets, WalletsFileSchema } from "./wallets";
 
 describe("personal wallets configuration", () => {
-  it("wallets.yaml parses against the schema", () => {
+  it("personal-wallets.yaml parses against the schema", () => {
     const raw = yaml.load(
-      fs.readFileSync(path.join(process.cwd(), "wallets.yaml"), "utf8"),
+      fs.readFileSync(path.join(process.cwd(), "personal-wallets.yaml"), "utf8"),
     );
     expect(() => WalletsFileSchema.parse(raw)).not.toThrow();
   });

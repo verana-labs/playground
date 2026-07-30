@@ -1,5 +1,5 @@
 // Personal wallets configuration loader. All personal wallets live in one
-// file — wallets.yaml — with media under wallets/<id>/ (synced to
+// file — personal-wallets.yaml — with media under wallets/<id>/ (synced to
 // public/wallets/<id>/ by scripts/sync-media.mjs). The single
 // /personal-wallets page (picker, download section, captures, QR format)
 // is generated from it.
@@ -66,7 +66,7 @@ let cache: PersonalWallet[] | null = null;
 
 export function listPersonalWallets(): PersonalWallet[] {
   if (cache) return cache;
-  const file = path.join(process.cwd(), "wallets.yaml");
+  const file = path.join(process.cwd(), "personal-wallets.yaml");
   if (!fs.existsSync(file)) {
     cache = [];
     return cache;
@@ -77,7 +77,7 @@ export function listPersonalWallets(): PersonalWallet[] {
     const issues = parsed.error.issues
       .map((i) => `${i.path.join(".") || "root"}: ${i.message}`)
       .join("; ");
-    throw new Error(`wallets.yaml invalid — ${issues}`);
+    throw new Error(`personal-wallets.yaml invalid — ${issues}`);
   }
   cache = parsed.data.wallets.map((w) => ({
     ...w,

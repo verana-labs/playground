@@ -38,6 +38,7 @@ jobs:
             exit 1
           fi
           echo "$MNEMONIC" | veranad keys add "$USER_ACC" --recover --keyring-backend test
+          echo "Imported account address: $(veranad keys show "$USER_ACC" -a --keyring-backend test)"
 
       - name: Grant accreditations
         run: |

@@ -20,21 +20,28 @@ ok "Helvetia DID: $HELVETIA_DID"
 ORG_SCHEMA_ID=$(discover_ecs_vtjsc "$ECS_TR_PUBLIC_URL" "organization" | sed -n '2p')
 [ -n "$ORG_SCHEMA_ID" ] || { err "Could not discover the ECS-Organization schema"; exit 1; }
 
+# Guard: only the ECS root permission grantee can validate accreditations on
+# the ECS-Organization schema (issuer-mode ECOSYSTEM). Fail fast with the
+# expected address instead of burning fees on a doomed transaction.
+ACC_ADDR=$(veranad keys show "$USER_ACC" -a --keyring-backend test)
+ROOT_GRANTEE=$(curl -sf "${INDEXER_URL}/verana/perm/v1/list?schema_id=${ORG_SCHEMA_ID}" \
+  | jq -r '.permissions[]? | select(.type == "ECOSYSTEM" and .perm_state == "ACTIVE") | .grantee' | head -1)
+ok "Imported account: $ACC_ADDR"
+ok "ECS root permission grantee: $ROOT_GRANTEE"
+if [ -n "$ROOT_GRANTEE" ] && [ "$ACC_ADDR" != "$ROOT_GRANTEE" ]; then
+  err "Secret ECS_ECOSYSTEM_MNEMONIC recovers ${ACC_ADDR},"
+  err "but the ECS trust registry is controlled by ${ROOT_GRANTEE}."
+  err "Set the secret to the mnemonic of the controller account and re-run."
+  exit 1
+fi
+
 if EXISTING=$(find_active_issuer_perm "$ORG_SCHEMA_ID" "$HELVETIA_DID"); then
   ok "Helvetia already holds an active ISSUER permission on ECS-Organization: $EXISTING"
 else
+  # ECOSYSTEM mode rejects direct create-perm; the permission VP flow
+  # (start + validate, reusing any previously started VP) is the way.
   log "Granting Helvetia an ISSUER permission on ECS-Organization (schema $ORG_SCHEMA_ID)..."
-  check_balance "$USER_ACC"
-  EFFECTIVE_FROM=$(future_timestamp 15)
-  if PERM=$(submit_tx "create_permission" "permission_id" \
-      veranad tx perm create-perm "$ORG_SCHEMA_ID" issuer "$HELVETIA_DID" \
-      --effective-from "$EFFECTIVE_FROM"); then
-    sleep 21
-    ok "Helvetia accredited: ISSUER permission $PERM"
-  else
-    warn "Direct create-perm failed — falling back to the permission VP flow"
-    ensure_validated_issuer_perm "$ORG_SCHEMA_ID" "$HELVETIA_DID"
-  fi
+  ensure_validated_issuer_perm "$ORG_SCHEMA_ID" "$HELVETIA_DID"
 fi
 
 # ---------------------------------------------------------------------------

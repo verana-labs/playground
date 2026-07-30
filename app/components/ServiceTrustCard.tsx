@@ -25,6 +25,51 @@ type Pot = {
   } | null;
 };
 
+// Shape of /api/pot/[serviceId]: the resolution lives under `pot`, and the
+// ECS claims inside pot.credentials — not at the top level.
+type PotApiResponse = {
+  did?: string | null;
+  pot?: {
+    trustStatus?: string;
+    state?: string;
+    credentials?: { ecsType?: string; claims?: Record<string, unknown> }[];
+  } | null;
+};
+
+const text = (v: unknown): string | null =>
+  typeof v === "string" && v ? v : null;
+
+function toPot(body: PotApiResponse | null): Pot | null {
+  if (!body?.did || !body.pot) return null;
+  const state = body.pot.trustStatus ?? body.pot.state;
+  // UNVERIFIED (resolver unreachable) is "could not verify", not untrusted.
+  if (!state || state === "UNVERIFIED") return null;
+  const creds = body.pot.credentials ?? [];
+  const svc = creds.find((c) => c.ecsType === "ECS-SERVICE")?.claims;
+  const org = creds.find(
+    (c) => c.ecsType === "ECS-ORG" || c.ecsType === "ECS-PERSONA",
+  )?.claims;
+  return {
+    did: body.did,
+    trustStatus: state,
+    service: svc
+      ? {
+          name: text(svc.name),
+          type: text(svc.type),
+          description: text(svc.description),
+        }
+      : null,
+    org: org
+      ? {
+          name: text(org.name),
+          countryCode: text(org.countryCode),
+          registryId: text(org.registryId),
+          address: text(org.address),
+        }
+      : null,
+  };
+}
+
 /** ISO 3166-1 alpha-2 country code as an emoji flag (e.g. "CH" -> 🇨🇭). */
 function countryFlag(code: string): string | null {
   if (!/^[A-Za-z]{2}$/.test(code)) return null;
@@ -46,8 +91,8 @@ export default function ServiceTrustCard({ serviceId }: { serviceId: string }) {
 
   useEffect(() => {
     fetch(`/api/pot/${serviceId}`)
-      .then((res) => (res.ok ? (res.json() as Promise<Pot>) : null))
-      .then(setPot)
+      .then((res) => (res.ok ? (res.json() as Promise<PotApiResponse>) : null))
+      .then((body) => setPot(toPot(body)))
       .catch(() => setPot(null));
   }, [serviceId]);
 

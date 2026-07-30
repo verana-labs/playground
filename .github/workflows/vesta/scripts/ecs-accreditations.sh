@@ -57,10 +57,12 @@ else
     ok "ECS-Badge root permission already exists: $ROOT"
   else
     # The on-chain registry DID (did:webvh with SCID) — the served did.json id
-    # is did:web, so take the DID from the indexer instead.
-    ECS_DID=$(curl -sf "${INDEXER_URL}/verana/tr/v1/list?only_active=true" \
-      | jq -r --arg host "${ECS_TR_PUBLIC_URL#https://}" \
-        '[.trust_registries[]? | select(.did | endswith($host))] | first | .did // empty')
+    # is did:web, so take the DID from the indexer's trust registry record.
+    ECS_TR_ID=$(discover_ecs_tr_id) || ECS_TR_ID=""
+    ECS_DID=""
+    if [ -n "$ECS_TR_ID" ]; then
+      ECS_DID=$(curl -sf "${INDEXER_URL}/verana/tr/v1/get/${ECS_TR_ID}" | jq -r '.trust_registry.did // empty')
+    fi
     [ -n "$ECS_DID" ] || { warn "Could not resolve the ECS registry DID — skipping badge root permission"; exit 0; }
     log "Creating root permission for ECS-Badge (schema $BADGE_ID, DID $ECS_DID)..."
     check_balance "$USER_ACC"

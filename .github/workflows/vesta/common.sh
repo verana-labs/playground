@@ -806,9 +806,11 @@ ensure_jsc() {
 # ---------------------------------------------------------------------------
 
 # Check if a LinkedVerifiablePresentation already exists in a DID document.
-# Linked credential VPs use the '<base>-c-vp' fragment on every vs-agent
-# generation (the earlier '-jsc-vp' pattern here never matched, so the skip
-# logic always re-issued).
+# Provisioned linked credential VPs use the 'vpr-schemas-<base>-c-vp'
+# fragment on every vs-agent generation. The 'schemas-' prefix is required:
+# a bare '<base>-c-vp' pattern also matches the SELF-GENERATED placeholder
+# VPs from agent init ('vpr-ecs-service-c-vp', 'vpr-ecs-org-c-vp'), which
+# made the skip logic treat unprovisioned agents as already provisioned.
 # Usage: has_linked_vp <public_url> <schema_base_id>
 has_linked_vp() {
   local public_url=$1
@@ -822,7 +824,7 @@ has_linked_vp() {
     --arg sbi "$schema_base_id" \
     '.service[] |
      select(.type == "LinkedVerifiablePresentation") |
-     select(.id | test($sbi + "-c-vp")) |
+     select(.id | test("schemas-" + $sbi + "-c-vp")) |
      .id' 2>/dev/null | head -1)
 
   [ -n "$match" ]

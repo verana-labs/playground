@@ -10,7 +10,7 @@ export default function WalletTile({ w }: { w: Integration }) {
   const playgroundHref =
     w.kind === "personal-wallet" ? `/personal-wallets/${w.slug}` : `/business-wallets/${w.slug}`;
   return (
-    <div className="flex flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+    <div className="flex h-full flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex items-center gap-3">
         <WalletLogo w={w} size="tile" />
         <div className="min-w-0">
@@ -18,7 +18,7 @@ export default function WalletTile({ w }: { w: Integration }) {
           <p className="truncate text-sm text-gray-500">{w.organization}</p>
         </div>
       </div>
-      <div className="mt-3 flex flex-wrap gap-1.5">
+      <div className="mt-3 mb-4 flex flex-wrap gap-1.5">
         <Chip>{w.track}</Chip>
         {w.license ? <Chip>{w.license}</Chip> : null}
         {w.demo_loop === "live" ? (
@@ -31,7 +31,7 @@ export default function WalletTile({ w }: { w: Integration }) {
           <Chip tone="pending">demo loop coming</Chip>
         )}
       </div>
-      <div className="mt-4 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-4">
+      <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-gray-100 pt-4">
         {w.download ? (
           <a
             href={w.download}
@@ -68,7 +68,7 @@ export function AddYourWalletTile() {
   return (
     <Link
       href="/integrate"
-      className="group flex flex-col items-start justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-white p-5 transition-colors hover:border-violet-400"
+      className="group flex h-full flex-col items-start justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-white p-5 transition-colors hover:border-violet-400"
     >
       <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50 text-violet-700">
         <Plus className="h-5 w-5" />

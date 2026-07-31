@@ -238,7 +238,9 @@ export default function Home() {
             title="Personal wallets"
             subtitle="One playground for every integrated open-source personal wallet: pick your wallet and run the six DemoCredential scenarios"
           />
-          <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {/* items-start: these tiles are a single centered row, so letting the grid
+              stretch them to the taller AddYourWalletTile floats their content mid-card. */}
+          <div className="reveal-stagger grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {users.map((w) => (
               <PersonalWalletHomeTile key={w.id} w={w} />
             ))}

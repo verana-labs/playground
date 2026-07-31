@@ -87,7 +87,9 @@ describe("ServiceQr", () => {
     expect(await screen.findByText("DemoCredential presented")).toBeDefined();
     expect(screen.getByText("demo-12345678")).toBeDefined();
     expect(screen.getByText(/Cryptographically verified/)).toBeDefined();
-    expect(fetch).toHaveBeenCalledWith("/api/demo/demo-verifier-accredited/proof/proof-1");
+    expect(fetch).toHaveBeenCalledWith(
+      "/api/demo/demo-verifier-accredited/proof/proof-1?rail=didcomm",
+    );
     expect(screen.queryByAltText("Accredited Verifier (demo) QR")).toBeNull();
   });
 

@@ -4,14 +4,16 @@ import { adminBase, adminJson, CAST_DOMAIN } from "@/app/lib/demo-admin";
 
 // Status of an issuance flow started from an issuer demo card: the page
 // polls this to swap the single-use QR for a delivered/declined message once
-// the wallet has answered the offer. Proxies the issuer vs-agent's admin
-// API (GET /v1/credential-exchanges/{id}). Untrusted minters (the badge
+// the wallet has answered the offer. Proxies the issuer vs-agent's admin API
+// on either rail: DIDComm credential exchanges (default,
+// GET /v1/credential-exchanges/{id}) or OID4VCI issuance sessions
+// (?rail=oid4vc, GET /v1/oid4vc/offers/{id}). Untrusted minters (the badge
 // impostor, the untrusted issuer) count too.
 
 export const dynamic = "force-dynamic";
 
 export async function GET(
-  _req: Request,
+  req: Request,
   {
     params,
   }: {
@@ -19,6 +21,7 @@ export async function GET(
   },
 ) {
   const { serviceId, credentialExchangeId } = await params;
+  const rail = new URL(req.url).searchParams.get("rail") ?? "didcomm";
   const service = getDemoService(serviceId);
   if (
     !service ||
@@ -28,6 +31,20 @@ export async function GET(
     return NextResponse.json({ error: "unknown service" }, { status: 404 });
 
   try {
+    if (rail === "oid4vc") {
+      const body = await adminJson(
+        `${adminBase(serviceId)}/v1/oid4vc/offers/${encodeURIComponent(credentialExchangeId)}`,
+      );
+      const record = (body ?? {}) as { state?: unknown; error?: unknown };
+      const state = typeof record.state === "string" ? record.state : null;
+      return NextResponse.json({
+        state,
+        done: state === "Completed" || state === "CredentialsPartiallyIssued",
+        declined: state === "Error",
+        error: typeof record.error === "string" ? record.error : null,
+      });
+    }
+
     const body = await adminJson(
       `${adminBase(serviceId)}/v1/credential-exchanges/${encodeURIComponent(credentialExchangeId)}`,
     );

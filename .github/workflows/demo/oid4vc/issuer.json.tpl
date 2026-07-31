@@ -1,6 +1,6 @@
 {
   "issuer": {
-    "id": "demo",
+    "id": "demo-did",
     "displayName": "__SERVICE_NAME__",
     "metadataSigner": "did",
     "signing": {

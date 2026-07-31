@@ -1,12 +1,17 @@
 #!/usr/bin/env bash
-# Render the openid4vc.json for one demo cast member (stdout).
+# Render the openid4vc.json for one cast member (stdout). Shared by both
+# casts: the templates come from ${CAST_DIR}/oid4vc/, so the demo cast and
+# the vesta cast each bring their own credential configurations.
 #
 # Expected environment:
-#   OID4VC_ROLE   issuer | verifier (which template to render)
-#   SERVICE_NAME  display/common name of this service
-#   NETWORK       testnet | devnet
-#   NAMESPACE     k8s namespace of the cast (verifier role only)
-#   CAST_DIR      absolute path of .github/workflows/demo
+#   OID4VC_ROLE            issuer | verifier (which template to render)
+#   SERVICE_NAME           display/common name of this service
+#   NETWORK                testnet | devnet
+#   NAMESPACE              k8s namespace of the cast (verifier role only)
+#   CAST_DIR               absolute path of the cast dir (.../demo or .../vesta)
+#   OID4VC_ISSUER_RELEASES space-separated issuer release names whose signing
+#                          fingerprints the verifier pins (verifier role only;
+#                          defaults to the demo cast issuer pair)
 #
 # For the verifier role, the issuers' development-signing leaf fingerprints
 # are read live from each issuer agent's internal admin API
@@ -17,7 +22,7 @@ set -eo pipefail
 log() { echo -e "\033[1;34m> $1\033[0m" >&2; }
 err() { echo -e "\033[1;31mERR $1\033[0m" >&2; }
 
-ISSUER_RELEASES="demo-issuer-accredited demo-issuer-unaccredited"
+ISSUER_RELEASES="${OID4VC_ISSUER_RELEASES:-demo-issuer-accredited demo-issuer-unaccredited}"
 
 TPL="${CAST_DIR}/oid4vc/${OID4VC_ROLE}.json.tpl"
 [ -f "$TPL" ] || { err "Unknown OID4VC_ROLE '${OID4VC_ROLE}' - no $TPL"; exit 1; }

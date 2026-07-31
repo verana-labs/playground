@@ -34,6 +34,17 @@ const BADGE_IDENTITY: Record<
   },
 };
 
+/** The same badge identity as an OID4VC claims object (SD-JWT rail). Unlike
+ *  AnonCreds, SD-JWT credentials need not carry every schema attribute, so
+ *  the empty placeholder claims are dropped. */
+export function badgeOid4vcClaims(serviceId: string): Record<string, string> {
+  return Object.fromEntries(
+    badgeDemoClaims(serviceId)
+      .filter((c) => c.value !== "")
+      .map((c) => [c.name, c.value]),
+  );
+}
+
 export function badgeDemoClaims(
   serviceId: string,
 ): { name: string; value: string }[] {

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import {
   Award,
   BadgeCheck,
@@ -14,7 +15,6 @@ import {
   X,
   Network,
   PhoneOff,
-  QrCode,
   Search,
   ShieldCheck,
   Quote,
@@ -25,6 +25,8 @@ import {
 import { Container, Section, SectionHeading, Chip } from "../../components/ui";
 import ServiceTrustCard from "../../components/ServiceTrustCard";
 import { DidBadge } from "../../components/Did";
+import { listPersonalWallets } from "../../lib/wallets";
+import DemoWalletFlow, { type BadgeOffer } from "./DemoWalletFlow";
 import StoryDiagram from "../../components/StoryDiagram";
 import {
   CLOSING,
@@ -947,40 +949,18 @@ export function Section4() {
             {DEMOS.verifyRule}
           </p>
 
-          {/* Demo 1 · Obtain an ECS-Badge */}
+          {/* Demo 1 · Obtain an ECS-Badge - pick a wallet, install it, scan */}
           <div>
             <SubHeading>{DEMOS.badge.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.badge.intro}
             </p>
-            <div className="reveal-stagger mt-6 grid gap-4 sm:grid-cols-3">
-              {DEMOS.badge.offers.map((o) => (
-                <div
-                  key={o.org}
-                  className={`flex flex-col rounded-2xl border bg-white p-5 shadow-sm ${
-                    o.tone === "red" ? "border-red-100" : "border-gray-200"
-                  }`}
-                >
-                  <div className="font-semibold text-gray-900">{o.org}</div>
-                  <p
-                    className={`mt-2 flex-1 text-sm leading-relaxed ${
-                      o.tone === "red" ? "text-red-600" : "text-gray-500"
-                    }`}
-                  >
-                    {o.expect}
-                  </p>
-                  <div className="mt-4 flex items-center justify-between gap-2 border-t border-gray-100 pt-4">
-                    <span
-                      aria-hidden
-                      className="flex h-16 w-16 items-center justify-center rounded-xl border-2 border-dashed border-gray-300 text-gray-300"
-                    >
-                      <QrCode className="h-7 w-7" />
-                    </span>
-                    <Chip tone="pending">demo coming</Chip>
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Suspense>
+              <DemoWalletFlow
+                wallets={listPersonalWallets()}
+                offers={DEMOS.badge.offers as unknown as BadgeOffer[]}
+              />
+            </Suspense>
           </div>
 
           {/* Demo 2 · Log in with the badge */}

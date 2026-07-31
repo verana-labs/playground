@@ -14,7 +14,9 @@ const castInvite = (slug: string) => `https://${slug}.${CAST}/invitation`;
 // The live Vesta cast (spec §5): one vs-agent per participant, deployed by
 // .github/workflows/vesta-*.
 export const DEMO_SERVICES: DemoService[] = [
-  { id: "vesta", label: "Vesta Appliances (demo)", host: VESTA_CAST.vesta.host, did: VESTA_CAST.vesta.did, appUrl: invite(VESTA_CAST.vesta.host), role: "anchor" },
+  // Vesta is the organization anchor AND an ECS-Badge issuer; role "issuer"
+  // lets /api/demo mint badge offers from it.
+  { id: "vesta", label: "Vesta Appliances (demo)", host: VESTA_CAST.vesta.host, did: VESTA_CAST.vesta.did, appUrl: invite(VESTA_CAST.vesta.host), role: "issuer" },
   { id: "helvetia-trust", label: "Helvetia Trust Services (demo)", host: VESTA_CAST.helvetia.host, did: VESTA_CAST.helvetia.did, role: "issuer" },
   { id: "vesta-portal", label: "Vesta Portal (demo)", host: VESTA_CAST.portal.host, did: VESTA_CAST.portal.did, appUrl: invite(VESTA_CAST.portal.host), role: "verifier" },
   { id: "vesta-repair-network", label: "Vesta Repair Network (demo)", host: VESTA_CAST.repairNetwork.host, did: VESTA_CAST.repairNetwork.did, role: "anchor" },

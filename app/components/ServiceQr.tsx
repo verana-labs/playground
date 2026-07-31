@@ -72,11 +72,15 @@ export function ServiceQr({
   serviceId,
   label,
   format = "anoncreds",
+  credential,
 }: {
   serviceId: string;
   label: string;
   /** Credential format of the selected wallet - decides the minted QR. */
   format?: string;
+  /** Which credential the demo mints (default: the DemoCredential);
+   *  "ecs-badge" mints the Vesta chapter-4 badge offer. */
+  credential?: string;
 }) {
   const [revealed, setRevealed] = useState(false);
   const [appUrl, setAppUrl] = useState<string | null | undefined>(undefined);
@@ -116,7 +120,11 @@ export function ServiceQr({
     setUnsupported(false);
     setProofId(null);
     setProof(null);
-    fetch(`/api/demo/${serviceId}?format=${encodeURIComponent(format)}`)
+    fetch(
+      `/api/demo/${serviceId}?format=${encodeURIComponent(format)}${
+        credential ? `&credential=${encodeURIComponent(credential)}` : ""
+      }`,
+    )
       .then((res) => (res.ok ? (res.json() as Promise<DemoApiResponse>) : null))
       .then((body) => {
         if (!alive) return;
@@ -134,7 +142,7 @@ export function ServiceQr({
     return () => {
       alive = false;
     };
-  }, [serviceId, attempt, revealed, format]);
+  }, [serviceId, attempt, revealed, format, credential]);
 
   // Verifier flows: poll the presentation status so the QR flips into the
   // presented credential the moment the wallet shares it.

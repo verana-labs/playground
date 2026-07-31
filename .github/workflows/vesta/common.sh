@@ -801,6 +801,43 @@ ensure_jsc() {
   get_jsc_url "$admin_api" "$schema_id"
 }
 
+# Ensure the agent has an AnonCreds credential type (needed to mint DIDComm
+# credential offers to personal wallets). Matched by name. The agent derives
+# the attributes from the referenced VTJSC (the API accepts either a
+# relatedJsonSchemaCredentialId or an explicit attribute list, not both).
+# Usage: ensure_anoncreds_credential_type <admin_api> <name> <version> <related_jsc_url>
+ensure_anoncreds_credential_type() {
+  local admin_api=$1
+  local name=$2
+  local version=$3
+  local jsc_url=$4
+
+  local existing
+  existing=$(curl -sf "${admin_api}/v1/credential-types" \
+    | jq -r --arg n "$name" '.[]? | select(.name == $n) | .id' | head -1)
+  if [ -n "$existing" ]; then
+    ok "Credential type '$name' already exists — skipping"
+    return 0
+  fi
+
+  log "Creating AnonCreds credential type '$name'..."
+  local body http
+  body=$(jq -n \
+    --arg n "$name" \
+    --arg v "$version" \
+    --arg r "$jsc_url" \
+    '{name: $n, version: $v, relatedJsonSchemaCredentialId: $r}')
+  http=$(curl -s -o /tmp/ct_resp.json -w '%{http_code}' \
+    -X POST "${admin_api}/v1/credential-types" \
+    -H 'Content-Type: application/json' \
+    -d "$body")
+  if [ "$http" -ge 400 ]; then
+    err "Failed to create credential type '$name' (HTTP $http): $(cat /tmp/ct_resp.json)"
+    return 1
+  fi
+  ok "Credential type '$name' created"
+}
+
 # ---------------------------------------------------------------------------
 # Credential issuance helpers
 # ---------------------------------------------------------------------------

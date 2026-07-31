@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { getDemoService } from "@/app/lib/demo-services";
 import { adminBase, adminJson, CAST_DOMAIN, VTJSC_URL } from "@/app/lib/demo-admin";
+import {
+  BADGE_CREDENTIAL_TYPE_NAME,
+  badgeDemoClaims,
+} from "@/app/lib/demo-badge";
 
 // Live demo-action link for a Playground cast service (spec §4): what the
 // wallet actually scans. Issuers mint an OOB CREDENTIAL OFFER and verifiers
@@ -30,6 +34,20 @@ async function demoCredDefId(admin: string): Promise<string | null> {
   return typeof id === "string" ? id : null;
 }
 
+// The ECS-Badge credential type provisioned on the badge issuers (Vesta,
+// Zenith) by the vesta-* workflows - matched by name.
+async function badgeCredDefId(admin: string): Promise<string | null> {
+  const types = await adminJson(`${admin}/v1/credential-types`);
+  if (!Array.isArray(types)) return null;
+  const match = types.find(
+    (t) =>
+      t && typeof t === "object" &&
+      (t as { name?: unknown }).name === BADGE_CREDENTIAL_TYPE_NAME,
+  );
+  const id = (match as { id?: unknown } | undefined)?.id;
+  return typeof id === "string" ? id : null;
+}
+
 function str(body: unknown, key: string): string | null {
   if (!body || typeof body !== "object") return null;
   const value = (body as Record<string, unknown>)[key];
@@ -48,8 +66,10 @@ export async function GET(
   { params }: { params: Promise<{ serviceId: string }> },
 ) {
   const { serviceId } = await params;
-  const format =
-    new URL(req.url).searchParams.get("format") ?? "anoncreds";
+  const search = new URL(req.url).searchParams;
+  const format = search.get("format") ?? "anoncreds";
+  // "demo-credential" (default) or "ecs-badge" (the Vesta chapter-4 demo).
+  const credential = search.get("credential") ?? "demo-credential";
   const service = getDemoService(serviceId);
   if (!service)
     return NextResponse.json({ error: "unknown service" }, { status: 404 });
@@ -70,6 +90,11 @@ export async function GET(
   // authorization request via the agents' OID4VC plugin endpoints. Until the
   // cast agents carry the plugin configuration, this degrades to
   // {kind: "unsupported"} and the page shows a coming-soon placeholder.
+  // The ECS-Badge runs on the AnonCreds/DIDComm rail today.
+  if (credential === "ecs-badge" && format !== "anoncreds") {
+    return NextResponse.json({ kind: "unsupported", format, credential });
+  }
+
   if (format === "openid4vc-sdjwt" || format === "oid4vc") {
     try {
       if (service.role === "issuer") {
@@ -114,22 +139,25 @@ export async function GET(
 
   try {
     if (service.role === "issuer") {
-      const credentialDefinitionId = await demoCredDefId(admin);
+      const badge = credential === "ecs-badge";
+      const credentialDefinitionId = badge
+        ? await badgeCredDefId(admin)
+        : await demoCredDefId(admin);
       if (!credentialDefinitionId)
         return NextResponse.json(
-          { error: "no DemoCredential credential type on this issuer" },
+          { error: `no ${badge ? "ECS-Badge" : "DemoCredential"} credential type on this issuer` },
           { status: 503 },
         );
+      const claims = badge
+        ? badgeDemoClaims(serviceId.toUpperCase().slice(0, 6))
+        : [
+            { name: "name", value: "Playground Visitor" },
+            { name: "demoId", value: `demo-${crypto.randomUUID().slice(0, 8)}` },
+          ];
       const offer = await adminJson(`${admin}/v1/invitation/credential-offer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          credentialDefinitionId,
-          claims: [
-            { name: "name", value: "Playground Visitor" },
-            { name: "demoId", value: `demo-${crypto.randomUUID().slice(0, 8)}` },
-          ],
-        }),
+        body: JSON.stringify({ credentialDefinitionId, claims }),
       });
       return NextResponse.json({
         kind: "credential-offer",

@@ -35,20 +35,6 @@
 #                   conditions (speed, editing)
 
 wallets:
-  - id: hologram
-    name: Hologram Messaging
-    vendor: "2060"
-    icon: ./hologram/logo.webp
-    formats: [anoncreds]
-    verana_builtin: true
-    download: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
-    playstore: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
-    appstore: https://apps.apple.com/cl/app/hologram-messaging/id6474701855
-    website: https://2060.io
-    repo: https://github.com/2060-io/hologram-app
-    license: Apache-2.0
-    notes: Reference personal wallet. The DemoCredential scenarios run over AnonCreds/DIDComm.
-
   - id: paradym
     name: Paradym Wallet
     vendor: Animo Solutions
@@ -96,6 +82,20 @@ wallets:
     video:
       src: ./procivis/demo.mp4
       note: Real device, three segments concatenated, 1.75x speed. Silent.
+
+  - id: hologram
+    name: Hologram Messaging
+    vendor: "2060"
+    icon: ./hologram/logo.webp
+    formats: [anoncreds]
+    verana_builtin: true
+    download: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
+    playstore: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
+    appstore: https://apps.apple.com/cl/app/hologram-messaging/id6474701855
+    website: https://2060.io
+    repo: https://github.com/2060-io/hologram-app
+    license: Apache-2.0
+    notes: Reference personal wallet. The DemoCredential scenarios run over AnonCreds/DIDComm.
 
   - id: sphereon
     name: Sphereon Wallet

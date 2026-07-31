@@ -576,26 +576,34 @@ export const DEMOS = {
     "Download one of the integrated personal wallets to run the demos - every wallet shows the same verdicts, the same way.",
   verifyRule:
     "Always verify the certified Organization name and data shown in the Proof-of-Trust card in your wallet before proceeding.",
+  chooseWallet: {
+    title: "Choose a wallet",
+    intro:
+      "Pick one of the integrated personal wallets and install it - the demo QR codes below are minted for your wallet.",
+  },
   badge: {
     title: "Obtain an ECS-Badge",
     intro: "Request a badge and watch your wallet check the issuer first:",
     offers: [
       {
         org: "From Vesta",
+        serviceId: "vesta",
         expect:
           "Green Proof-of-Trust: Vesta Appliances, certified organization, authorized ECS-Badge issuer. Accept the badge.",
         tone: "emerald",
       },
       {
         org: "From Zenith Repairs",
+        serviceId: "zenith",
         expect:
           "Green Proof-of-Trust: Zenith Repairs, certified organization presenting its Authorized Repairer credential. Accept the badge.",
         tone: "emerald",
       },
       {
-        org: "From an organization that is not an Authorized Repairer",
+        org: "From Umbra Repairs - not an Authorized Repairer",
+        serviceId: "umbra",
         expect:
-          "Your wallet warns you: the issuer is not what it claims. Red verdict - do not accept.",
+          "Umbra is not a member of the Vesta Repair Network. Interesting to accept the badge - and to see what happens when you try to use it to enter the Vesta portal.",
         tone: "red",
       },
     ],

@@ -207,7 +207,7 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
                   d={g.d}
                   fill="none"
                   stroke={c.stroke}
-                  strokeWidth={isNew(e) ? 2.2 : 1.5}
+                  strokeWidth={(isNew(e) ? 2.2 : 1.5) * (e.width ?? 1)}
                   strokeOpacity={isNew(e) ? 0.95 : 0.55}
                   strokeDasharray={e.dashed ? "5 4" : undefined}
                   markerEnd={`url(#sd-arrow-${stage}-${e.tone})`}
@@ -277,10 +277,14 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
                   strokeDasharray={n.dashed ? "4 3" : undefined}
                 />
                 <g
-                  transform={`translate(${n.x - 10}, ${n.y - 10})`}
+                  transform={`translate(${n.x - (r < 20 ? 8 : 10)}, ${n.y - (r < 20 ? 8 : 10)})`}
                   style={{ color: c.stroke }}
                 >
-                  <Icon width={20} height={20} strokeWidth={1.8} />
+                  <Icon
+                    width={r < 20 ? 16 : 20}
+                    height={r < 20 ? 16 : 20}
+                    strokeWidth={1.8}
+                  />
                 </g>
                 {label ? (
                   <>
@@ -386,7 +390,11 @@ function NodeDetail({
   const others = creds.filter(
     (c) => c.name !== "ECS-Service" && c.name !== "ECS-Organization",
   );
-  const isPerson = id === "customer" || id === "wallet" || id === "techWallet";
+  const isPerson =
+    id === "customer" ||
+    id === "wallet" ||
+    id === "techWallet" ||
+    id.startsWith("emp");
   const verified = !!node.verifiedAt && stageIndex(node.verifiedAt) <= idx;
   const data: TrustCardData = {
     name: label ?? id,

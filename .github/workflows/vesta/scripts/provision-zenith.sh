@@ -43,6 +43,9 @@ fi
 # ECS-Badge issuer capability for technician badges
 BADGE_ID=$(discover_ecs_badge_schema_id)
 ensure_open_perm "$BADGE_ID" issuer "$AGENT_DID"
-ensure_jsc "$API" "badge" "$BADGE_ID" > /dev/null
+BADGE_JSC_URL=$(ensure_jsc "$API" "badge" "$BADGE_ID")
+
+# AnonCreds credential type so the agent can mint badge offers to wallets
+ensure_anoncreds_credential_type "$API" "ECS-Badge" "1.0" "$BADGE_JSC_URL"
 
 ok "Zenith provisioned: authorized repairer + technician badge issuer."

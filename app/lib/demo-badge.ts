@@ -1,0 +1,57 @@
+// ECS-Badge demo constants: the claims minted into a visitor's badge offer
+// (Run the demos, chapter 4). The photo is a small generated avatar - badge
+// claims are strings, and the wallet renders the data URI.
+
+export const BADGE_CREDENTIAL_TYPE_NAME = "ECS-Badge";
+
+export const BADGE_DEMO_AVATAR =
+  "data:image/png;base64,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";
+
+// Per-issuer badge identity: the holder name says who issued it, so the
+// badges are recognizable in the wallet; the badge number is random per
+// scan.
+const BADGE_IDENTITY: Record<
+  string,
+  { prefix: string; name: string; title: string; department: string }
+> = {
+  vesta: {
+    prefix: "VESTA",
+    name: "Vesta Employee",
+    title: "Employee (demo)",
+    department: "Customer Support",
+  },
+  zenith: {
+    prefix: "ZENITH",
+    name: "Zenith Repairs Employee",
+    title: "Certified Technician (demo)",
+    department: "Field Service",
+  },
+  umbra: {
+    prefix: "UMBRA",
+    name: "Umbra Repairs Employee",
+    title: "Technician",
+    department: "Repairs",
+  },
+};
+
+export function badgeDemoClaims(
+  serviceId: string,
+): { name: string; value: string }[] {
+  const identity = BADGE_IDENTITY[serviceId] ?? {
+    prefix: serviceId.toUpperCase().slice(0, 6),
+    name: "Playground Visitor",
+    title: "Employee (demo)",
+    department: "Demo",
+  };
+  const badgeNumber = `${identity.prefix}-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+  return [
+    { name: "badgeNumber", value: badgeNumber },
+    { name: "name", value: identity.name },
+    { name: "photo", value: BADGE_DEMO_AVATAR },
+    { name: "title", value: identity.title },
+    { name: "department", value: identity.department },
+    { name: "birthDate", value: "" },
+    { name: "biometricPattern", value: "" },
+    { name: "biometricPatternScheme", value: "" },
+  ];
+}

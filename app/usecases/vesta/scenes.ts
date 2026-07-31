@@ -82,6 +82,8 @@ export type SceneEdge = {
   curve?: number;
   /** Label position along the edge, 0..1 (default 0.5). */
   labelT?: number;
+  /** Stroke width multiplier (default 1) - e.g. 0.7 for minor edges. */
+  width?: number;
 };
 
 export type SceneBadge = {
@@ -211,6 +213,42 @@ export const NODES: SceneNode[] = [
     label: "Technician's wallet",
     sub: "Zenith employee",
   },
+  // Three employees appear only in 3.4, receiving their ECS-Badges from
+  // the freshly accredited Vesta issuer.
+  {
+    id: "emp1",
+    r: 15,
+    x: 150,
+    y: 455,
+    icon: "user",
+    tone: "emerald",
+    appears: "3.4",
+    until: "3.5",
+    label: "Employee",
+  },
+  {
+    id: "emp2",
+    r: 15,
+    x: 300,
+    y: 470,
+    icon: "user",
+    tone: "emerald",
+    appears: "3.4",
+    until: "3.5",
+    label: "Employee",
+    sub: "badges land in their Personal Wallets",
+  },
+  {
+    id: "emp3",
+    r: 15,
+    x: 450,
+    y: 455,
+    icon: "user",
+    tone: "emerald",
+    appears: "3.4",
+    until: "3.5",
+    label: "Employee",
+  },
   {
     id: "ecs",
     x: 120,
@@ -331,6 +369,9 @@ export const EDGES: SceneEdge[] = [
   { id: "e-vesta-badgeSvc", from: "vesta", to: "badgeSvc", appears: "3.0", label: "runs its services", tone: "gray", labelT: 0.55 },
   { id: "e-vesta-portal", from: "vesta", to: "portal", appears: "3.0", until: "3.5", tone: "gray" },
   { id: "e-vesta-portal-svc", from: "vesta", to: "portal", appears: "3.5", label: "issues ECS-Service", tone: "emerald", labelT: 0.55 },
+  { id: "e-vesta-emp1", from: "vesta", to: "emp1", appears: "3.4", until: "3.5", width: 0.7, tone: "emerald" },
+  { id: "e-vesta-emp2", from: "vesta", to: "emp2", appears: "3.4", until: "3.5", width: 0.7, label: "issues ECS-Badge", tone: "emerald", labelT: 0.55 },
+  { id: "e-vesta-emp3", from: "vesta", to: "emp3", appears: "3.4", until: "3.5", width: 0.7, tone: "emerald" },
   { id: "e-customer-support", from: "customer", to: "support", appears: "3.0", label: "contacts support…", tone: "gray", dashed: true, curve: 40, labelT: 0.45 },
   { id: "e-customer-fake", from: "customer", to: "fakeSupport", appears: "3.0", label: "…or the fake one? can't tell", tone: "red", dashed: true, curve: -20, labelT: 0.5 },
   { id: "e-umbra-customer", from: "umbra", to: "customer", appears: "3.0", label: "rings the doorbell", tone: "red", dashed: true, curve: 30, labelT: 0.4 },
@@ -578,6 +619,36 @@ export const CREDENTIALS: Record<string, NodeCredential[]> = {
       appears: "3.6",
     },
   ],
+  emp1: [
+    {
+      name: "ECS-Badge",
+      tone: "emerald",
+      issuedBy: "Vesta Appliances (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.4",
+      note: "Held by a Vesta employee in their Personal Wallet.",
+    },
+  ],
+  emp2: [
+    {
+      name: "ECS-Badge",
+      tone: "emerald",
+      issuedBy: "Vesta Appliances (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.4",
+      note: "Held by a Vesta employee in their Personal Wallet.",
+    },
+  ],
+  emp3: [
+    {
+      name: "ECS-Badge",
+      tone: "emerald",
+      issuedBy: "Vesta Appliances (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.4",
+      note: "Held by a Vesta employee in their Personal Wallet.",
+    },
+  ],
   techWallet: [
     {
       name: "ECS-Badge",
@@ -712,8 +783,8 @@ export const STAGE_VIEW: Partial<
     maxWidth: "max-w-2xl",
   },
   "3.4": {
-    only: ["vesta", "ecs", "orgIssuer"],
-    viewBox: "20 30 460 350",
+    only: ["vesta", "ecs", "orgIssuer", "emp1", "emp2", "emp3"],
+    viewBox: "20 30 460 530",
     maxWidth: "max-w-2xl",
   },
   "3.5": {
@@ -763,7 +834,10 @@ export const STAGE_CHANGES: Partial<
   "3.1": { nodes: ["vesta"], note: "Vesta's DID is born" },
   "3.3": { nodes: ["vesta"], note: "the check turns green" },
   "3.7": { note: "Vesta becomes an ecosystem: its subsidiaries issue, anyone verifies" },
-  "3.4": { nodes: ["vesta"], note: "new accreditation on Vesta - click it to see it" },
+  "3.4": {
+    nodes: ["vesta", "emp1", "emp2", "emp3"],
+    note: "new accreditation on Vesta - and every employee receives a badge",
+  },
   "3.5": { nodes: ["portal"], note: "a new verifiable login service - click it to see its accreditation" },
   "3.8": { note: "the Authorized Repairer credential at work: portal login, and the front door" },
 };

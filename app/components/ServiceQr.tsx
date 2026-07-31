@@ -9,6 +9,8 @@ type DemoApiResponse = {
   url?: string | null;
   proofExchangeId?: string | null;
   credentialExchangeId?: string | null;
+  verificationSessionId?: string | null;
+  issuanceSessionId?: string | null;
 };
 
 type CredentialStatus = {
@@ -160,6 +162,8 @@ export function ServiceQr({
   const [proof, setProof] = useState<ProofStatus | null>(null);
   const [credId, setCredId] = useState<string | null>(null);
   const [credStatus, setCredStatus] = useState<CredentialStatus | null>(null);
+  // Which rail minted the action - decides the status endpoint polled.
+  const [rail, setRail] = useState<"didcomm" | "oid4vc">("didcomm");
   const [attempt, setAttempt] = useState(0);
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
   const rootRef = useRef<HTMLDivElement | null>(null);
@@ -207,8 +211,9 @@ export function ServiceQr({
           return;
         }
         setAppUrl(body?.url ?? null);
-        setProofId(body?.proofExchangeId ?? null);
-        setCredId(body?.credentialExchangeId ?? null);
+        setRail(body?.kind?.startsWith("oid4vc") ? "oid4vc" : "didcomm");
+        setProofId(body?.proofExchangeId ?? body?.verificationSessionId ?? null);
+        setCredId(body?.credentialExchangeId ?? body?.issuanceSessionId ?? null);
       })
       .catch(() => {
         if (alive) setAppUrl(null);
@@ -227,7 +232,7 @@ export function ServiceQr({
     let timer: ReturnType<typeof setTimeout> | undefined;
     const poll = async () => {
       try {
-        const res = await fetch(`/api/demo/${serviceId}/proof/${proofId}`);
+        const res = await fetch(`/api/demo/${serviceId}/proof/${proofId}?rail=${rail}`);
         if (res.ok) {
           const body = (await res.json()) as ProofStatus;
           if (!alive) return;
@@ -246,7 +251,7 @@ export function ServiceQr({
       alive = false;
       if (timer) clearTimeout(timer);
     };
-  }, [revealed, proofId, presented, serviceId, attempt]);
+  }, [revealed, proofId, presented, serviceId, attempt, rail]);
 
   // Issuer flows: poll the credential-exchange status so the single-use QR
   // flips into the delivered/declined outcome once the wallet answered.
@@ -257,7 +262,7 @@ export function ServiceQr({
     let timer: ReturnType<typeof setTimeout> | undefined;
     const poll = async () => {
       try {
-        const res = await fetch(`/api/demo/${serviceId}/credential/${credId}`);
+        const res = await fetch(`/api/demo/${serviceId}/credential/${credId}?rail=${rail}`);
         if (res.ok) {
           const body = (await res.json()) as CredentialStatus;
           if (!alive) return;
@@ -276,7 +281,7 @@ export function ServiceQr({
       alive = false;
       if (timer) clearTimeout(timer);
     };
-  }, [revealed, credId, credSettled, serviceId, attempt]);
+  }, [revealed, credId, credSettled, serviceId, attempt, rail]);
 
   useEffect(() => {
     if (!appUrl) return;

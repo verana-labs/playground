@@ -31,8 +31,8 @@ env:
   # OpenID4VC-enabled build for orgs with OID4VC_ROLE set (image bundles the
   # openid4vc plugin; the chart version carries the oid4vc.config support).
   OID4VC_IMAGE_REPOSITORY: veranalabs/vs-agent-openid4vc
-  OID4VC_IMAGE_TAG: v1.12.0-oidc4vc.5
-  OID4VC_CHART_VERSION: v1.12.0-oidc4vc.5
+  OID4VC_IMAGE_TAG: v1.12.0-oidc4vc.6
+  OID4VC_CHART_VERSION: v1.12.0-oidc4vc.6
 
 jobs:
   run:

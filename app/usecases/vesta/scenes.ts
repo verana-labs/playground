@@ -7,6 +7,7 @@
 // of Marc's checklist; the §1 world returns verified with verdicts at 3.8.
 
 import { VESTA_CAST } from "../../lib/vesta-cast";
+import { shortDid } from "../../lib/did";
 
 export const STAGES = [
   "3.0",
@@ -112,10 +113,13 @@ export const NODES: SceneNode[] = [
     verifiedAt: "3.3",
     toneByStage: { "3.1": "blue" },
     labelByStage: {
-      "3.1": { label: "Unverifiable Organization", sub: "did:webvh:…vesta" },
+      "3.1": {
+        label: "Unverifiable Organization",
+        sub: shortDid(VESTA_CAST.vesta.did),
+      },
       "3.2": {
         label: "Vesta Appliances",
-        sub: "Organization anchor · did:webvh:…vesta",
+        sub: shortDid(VESTA_CAST.vesta.did),
       },
     },
   },

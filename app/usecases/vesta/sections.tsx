@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { Container, Section, SectionHeading, Chip } from "../../components/ui";
 import ServiceTrustCard from "../../components/ServiceTrustCard";
+import { DidBadge } from "../../components/Did";
 import StoryDiagram from "../../components/StoryDiagram";
 import {
   CLOSING,
@@ -238,9 +239,16 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
           <div className="text-xs font-semibold uppercase tracking-wide text-gray-500">
             {sub.code.label}
           </div>
-          <code className="mt-2 block break-all font-mono text-sm text-violet-700">
-            {sub.code.value}
-          </code>
+          {sub.code.value.startsWith("did:") ? (
+            <DidBadge
+              did={sub.code.value}
+              className="mt-2 flex text-sm text-violet-700"
+            />
+          ) : (
+            <code className="mt-2 block break-all font-mono text-sm text-violet-700">
+              {sub.code.value}
+            </code>
+          )}
           {sub.code.note ? (
             <p className="mt-2 text-xs text-gray-400">{sub.code.note}</p>
           ) : null}
@@ -778,12 +786,10 @@ export function Section2() {
                       {e.why}
                     </p>
                     <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3">
-                      <code
-                        className="min-w-0 flex-1 truncate font-mono text-[11px] text-gray-400"
-                        title={e.did}
-                      >
-                        {e.did}
-                      </code>
+                      <DidBadge
+                        did={e.did}
+                        className="min-w-0 flex-1 text-[11px] text-gray-400"
+                      />
                       <a
                         href={e.veranaUrl}
                         target="_blank"
@@ -831,12 +837,10 @@ export function Section2() {
                 {ECOSYSTEM_BUILD.card.why}
               </p>
               <div className="mt-4 space-y-2 border-t border-gray-100 pt-3">
-                <code
-                  className="block truncate font-mono text-[11px] text-gray-400"
-                  title={ECOSYSTEM_BUILD.card.did}
-                >
-                  {ECOSYSTEM_BUILD.card.did}
-                </code>
+                <DidBadge
+                  did={ECOSYSTEM_BUILD.card.did}
+                  className="flex text-[11px] text-gray-400"
+                />
                 <div className="flex flex-wrap items-center gap-2">
                   <a
                     href={`/usecases/vesta/journey#need-${ECOSYSTEM_BUILD.card.need}`}

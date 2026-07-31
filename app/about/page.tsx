@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Container, Section, Breadcrumb } from "../components/ui";
 import { LINKS, ENDPOINTS, ECS_ECOSYSTEM_DID } from "../lib/site";
+import { DidBadge } from "../components/Did";
 
 export const metadata: Metadata = {
   title: "About",
@@ -41,7 +42,7 @@ export default function About() {
             referring to ISO standards are &ldquo;ISO 9001-<em>style</em>{" "}
             (demo)&rdquo; and imply no real certification. The trusted ECS
             ecosystem anchor used by this site is{" "}
-            <code className="break-all text-xs">{ECS_ECOSYSTEM_DID}</code>.
+            <DidBadge did={ECS_ECOSYSTEM_DID} className="text-xs" />.
           </p>
           <h2>Protocol version</h2>
           <p>

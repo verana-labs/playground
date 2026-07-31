@@ -9,6 +9,7 @@ import {
   Placeholder,
 } from "../../components/ui";
 import WalletLogo from "../../components/WalletLogo";
+import { DidBadge } from "../../components/Did";
 import { ProofOfTrust } from "../../components/ProofOfTrust";
 import {
   businessWallets,
@@ -245,15 +246,19 @@ export default async function CloudWalletPlayground({
                     Registry links
                   </p>
                   <ul className="space-y-1.5 text-sm">
-                    <li>
+                    <li className="flex flex-wrap items-center gap-1.5">
                       <span className="text-gray-500">ECS Ecosystem: </span>
+                      <DidBadge
+                        did={ECS_ECOSYSTEM_DID}
+                        className="min-w-0 text-xs text-gray-600"
+                      />
                       <a
                         href={`${ENDPOINTS.resolver}/v1/trust/resolve?did=${encodeURIComponent(ECS_ECOSYSTEM_DID)}&detail=full`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="break-all font-mono text-xs text-violet-600 hover:underline"
+                        className="text-xs text-violet-600 hover:underline"
                       >
-                        {ECS_ECOSYSTEM_DID}
+                        resolve
                       </a>
                     </li>
                     <li>

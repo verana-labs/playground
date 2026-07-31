@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ShieldCheck, ShieldX, Building2, Server } from "lucide-react";
+import { DidBadge } from "./Did";
 
 // Compact Proof-of-Trust for one demo service: trust status, the service
 // identity (ECS-Service claims), and the organization operating it (ECS-Org
@@ -78,13 +79,6 @@ function countryFlag(code: string): string | null {
   );
 }
 
-function shortDid(did: string, max = 40): string {
-  if (did.length <= max) return did;
-  const head = Math.ceil((max - 3) * 0.55);
-  const tail = max - 3 - head;
-  return `${did.slice(0, head)}...${did.slice(-tail)}`;
-}
-
 export default function ServiceTrustCard({ serviceId }: { serviceId: string }) {
   // undefined = loading, null = unavailable
   const [pot, setPot] = useState<Pot | null | undefined>(undefined);
@@ -130,12 +124,7 @@ export default function ServiceTrustCard({ serviceId }: { serviceId: string }) {
             Untrusted
           </span>
         )}
-        <span
-          className="truncate font-mono text-[10px] text-gray-600"
-          title={pot.did}
-        >
-          {shortDid(pot.did)}
-        </span>
+        <DidBadge did={pot.did} className="min-w-0 text-[10px] text-gray-600" />
       </div>
 
       <div className="grid gap-4 px-4 py-3 sm:grid-cols-2">

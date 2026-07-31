@@ -2,7 +2,6 @@
   "issuer": {
     "id": "demo",
     "displayName": "__SERVICE_NAME__",
-    "metadataSigner": "did",
     "signing": {
       "development": {
         "enabled": true,

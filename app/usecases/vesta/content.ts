@@ -7,6 +7,11 @@
 // Participants tree → Join from the branch you want to join under.
 
 import { ENDPOINTS, LINKS } from "../../lib/site";
+import {
+  VESTA_CAST,
+  TRUST_REGISTRY_IDS,
+  trustRegistryUrl,
+} from "../../lib/vesta-cast";
 import type { Stage } from "./scenes";
 
 const app = ENDPOINTS.frontend;
@@ -218,8 +223,8 @@ export const ECOSYSTEM_CHOICES = [
     label: "the identity card",
     about:
       "A trust ecosystem that governs the essential credential schemas. Its accredited issuers provide recognized KYB (Know-Your-Business) services: they verify an organization once, then issue it a certified ECS-Organization credential. Services carry ECS-Service credentials describing what they are and who operates them.",
-    did: "did:webvh:QmPLACEHOLDER…:ecs-ecosystem.testnet.verana.network",
-    veranaUrl: app, // TODO: deep link to the trust-registry page
+    did: VESTA_CAST.ecs.did,
+    veranaUrl: trustRegistryUrl(TRUST_REGISTRY_IDS.ecs),
     why: "one KYB with a recognized issuer, and Vesta's identity becomes provable everywhere: this is what turns the check green, and the foundation everything else builds on.",
   },
   {
@@ -229,8 +234,8 @@ export const ECOSYSTEM_CHOICES = [
     name: "ISO Certification Ecosystem",
     label: "(demo) · the certificate becomes proof",
     why: "Today Vesta's ISO 9001 certificate is a PDF nobody can verify. As a credential on Vesta's verified identity, it becomes proof that customers and partners see on every Vesta service.",
-    did: "did:webvh:QmPLACEHOLDER…:iso-certification.testnet.verana.network",
-    veranaUrl: app, // TODO: deep link to the trust-registry page
+    did: VESTA_CAST.iso.did,
+    veranaUrl: trustRegistryUrl(TRUST_REGISTRY_IDS.iso),
   },
 ] as const;
 
@@ -246,8 +251,8 @@ export const ECOSYSTEM_BUILD = {
     about:
       "Vesta's own trust ecosystem, with a single credential schema: Authorized Repairer. Issuance is governed (only Vesta and its subsidiaries issue) and verification is open (anyone checks, no permission needed). The paper Vesta Certified Repair Company badge from Section 1 becomes verifiable, revocable proof.",
     why: "brand protection as a structural property. Real partners turn green, impostors turn red, and a partner that goes rogue can be revoked.",
-    did: "did:webvh:QmPLACEHOLDER…:repair-network.vesta.example (created in Marc\u2019s journey)",
-    veranaUrl: app, // TODO: deep link once created
+    did: VESTA_CAST.repairNetwork.did,
+    veranaUrl: trustRegistryUrl(TRUST_REGISTRY_IDS.repairNetwork),
   },
 };
 
@@ -315,9 +320,9 @@ export const JOURNEY: {
             "Marc deploys a vs-agent, an open source Business Wallet natively integrated with the public Verana infrastructure. Upon deployment, a decentralized identifier (DID) is generated for Vesta: the identifier everything else attaches to. It proves nothing yet; it is the empty identity card.",
           code: {
             label: "The DID generated for Vesta",
-            value:
-              "did:webvh:QmPLACEHOLDER…:vesta-anchor.demos.testnet.verana.network",
-            note: "Placeholder until the dedicated Vesta cast is deployed.",
+            value: VESTA_CAST.vesta.did,
+            note:
+              "The live DID of Vesta's Business Wallet on the Verana testnet - resolve it yourself.",
           },
           underHood: [
             "The vs-agent generates the DID (did:webvh recommended) and publishes its DID Document with a DIDComm endpoint at https://<host>/.well-known/did.json.",
@@ -338,6 +343,9 @@ export const JOURNEY: {
           stage: "3.2",
           title: "KYB with an accredited issuer",
           kind: "watch",
+          liveService: "vesta",
+          liveNote:
+            "Live from the testnet: Vesta's Business Wallet, resolved through the network resolver - the same check any wallet runs.",
           story:
             "Marc connects to the Verana ECS Ecosystem and chooses an accredited issuer to obtain an Organization credential for Vesta:",
           points: [
@@ -426,6 +434,9 @@ export const JOURNEY: {
           stage: "3.5",
           title: "A verifiable login service, accredited to verify badges",
           kind: "watch",
+          liveService: "vesta-portal",
+          liveNote:
+            "Live: the Vesta portal - a verifiable service in its own right, delegated by the anchor.",
           story:
             "Vesta deploys a new Business Wallet for the login service, and issues it an ECS-Service credential - so the login service is verifiable in its own right (Vesta can do this: it is an accredited ECS-Service issuer). The service is accredited for ECS-Badge verification, and access is configured to only accept badges whose issuer is the DID of the Vesta Organization trust anchor. The same badge can also work at the door:",
           points: [
@@ -461,6 +472,9 @@ export const JOURNEY: {
           stage: "3.6",
           title: "ISO 9001, without re-certifying",
           kind: "watch",
+          liveService: "normacert",
+          liveNote:
+            "Live: NormaCert (demo), the accredited certification body behind Vesta's ISO 9001-style credential.",
           story:
             "Vesta is certified ISO 9001 since 2003. Its certification body, NormaCert (demo), was recently accredited as an issuer of the ISO 9001 credential in the ISO Certification Ecosystem (demo). Good news for Vesta: now that the company holds its Organization credential, it applies to the ISO Certification Ecosystem as a holder of the ISO 9001 credential, selecting NormaCert as its issuer:",
           points: [
@@ -492,6 +506,9 @@ export const JOURNEY: {
           stage: "3.7",
           title: "The Vesta Repair Network",
           kind: "watch",
+          liveService: "zenith",
+          liveNote:
+            "Live: Zenith Repairs (demo) - a verifiable organization holding Authorized Repairer from Vesta Iberia.",
           story:
             "Vesta publishes a one-page governance framework and creates its ecosystem with a single credential schema: Authorized Repairer. The design choice that matters: issuance is governed - only Vesta and its subsidiaries issue - and verification is open: anyone checks, no permission needed. Vesta accredits two subsidiary issuers, Vesta Iberia and Vesta Nordics. Then Zenith Repairs joins, itself a verifiable organization (it walked the same journey: anchor, KYB, ECS-Service - the pattern replicates; that is the point): Vesta Iberia identifies Zenith by the ECS-Org credential on its DID and issues Authorized Repairer to Zenith's organization DID.",
           underHood: [
@@ -513,6 +530,9 @@ export const JOURNEY: {
           stage: "3.8",
           title: "Authorized Repairer login - and at the front door",
           kind: "watch",
+          liveService: "umbra",
+          liveNote:
+            "Live: Umbra Repairs, the impostor - the resolver finds no verifiable identity behind the name.",
           story:
             "The Authorized Repairer credential now works everywhere trust is needed:",
           points: [

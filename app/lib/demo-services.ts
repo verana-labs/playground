@@ -32,6 +32,8 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "demo-issuer-unaccredited", label: "Unaccredited Issuer (demo)", host: `demo-issuer-unaccredited.${CAST}`, appUrl: castInvite("demo-issuer-unaccredited"), role: "issuer" },
   { id: "demo-verifier-accredited", label: "Accredited Verifier (demo)", host: `demo-verifier-accredited.${CAST}`, appUrl: castInvite("demo-verifier-accredited"), role: "verifier" },
   { id: "demo-verifier-unaccredited", label: "Unaccredited Verifier (demo)", host: `demo-verifier-unaccredited.${CAST}`, appUrl: castInvite("demo-verifier-unaccredited"), role: "verifier" },
+  { id: "demo-issuer-untrusted", label: "Untrusted Issuer (demo)", host: `demo-issuer-untrusted.${CAST}`, appUrl: castInvite("demo-issuer-untrusted"), role: "untrusted" },
+  { id: "demo-verifier-untrusted", label: "Untrusted Verifier (demo)", host: `demo-verifier-untrusted.${CAST}`, appUrl: castInvite("demo-verifier-untrusted"), role: "untrusted" },
   { id: "demo-untrusted", label: "Untrusted Service (demo)", host: `demo-untrusted.${CAST}`, appUrl: castInvite("demo-untrusted"), role: "untrusted" },
   { id: "organization-vs", label: "Verana Example Organization (demo)", host: `organization-vs.${BASE}`, role: "anchor" },
   { id: "issuer-chatbot-vs", label: "Example Issuer Chatbot (demo)", host: `issuer-chatbot-vs.${BASE}`, role: "issuer" },

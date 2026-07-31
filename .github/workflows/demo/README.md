@@ -17,7 +17,14 @@ delegated sub-services; the fifth is deliberately unprovisioned:
 | demo-03 | `demo-issuer-unaccredited` | TRUSTED | none, by design |
 | demo-04 | `demo-verifier-accredited` | TRUSTED | VERIFIER (open) |
 | demo-05 | `demo-verifier-unaccredited` | TRUSTED | none, by design |
-| demo-06 | `demo-untrusted` | UNTRUSTED | n/a — deploy-only, serves both trios |
+| demo-06 | `demo-untrusted` | UNTRUSTED | n/a — deploy-only, superseded by demo-07/08 |
+| demo-07 | `demo-issuer-untrusted` | UNTRUSTED | n/a — deploy-only, issuer side |
+| demo-08 | `demo-verifier-untrusted` | UNTRUSTED | n/a — deploy-only, verifier side |
+
+Seven agents, one per case a wallet has to render: the anchor, then a trusted
+trio each side (accredited/authorized, trusted but without the permission,
+untrusted). `demo-06` predates the split and served both trios at once; tear it
+down once `demo-07` and `demo-08` are up.
 
 ## Running
 
@@ -32,7 +39,7 @@ group):
 2. `demo-01` — anchor: ECS-Org (from Helvetia) + self ECS-Service + trust
    registry + DemoCredential schema + root permission + VTJSC.
 3. `demo-02` … `demo-05` — delegated services + their `DEMO_PERM`.
-4. `demo-06` — deploy-only.
+4. `demo-06` … `demo-08` — deploy-only.
 
 Secrets: `PLAYGROUND_MNEMONIC`, `KUBECONFIG_VERANA_DEV`, `K8S_NAMESPACE`
 (same as the vesta cast). `common.sh` is shared from

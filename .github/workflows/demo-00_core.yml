@@ -63,7 +63,7 @@ jobs:
           while IFS= read -r line; do
             key="${line%%=*}"
             echo "${key}=${!key}" >> "$GITHUB_ENV"
-          done < <(grep -E '^[A-Z_]+=' "$CFG")
+          done < <(grep -E '^[A-Z0-9_]+=' "$CFG")
           # Resolve the network placeholder in the public host
           echo "INGRESS_HOST=${INGRESS_HOST//__NETWORK__/${NETWORK}}" >> "$GITHUB_ENV"
 

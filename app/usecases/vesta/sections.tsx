@@ -964,8 +964,9 @@ export function Section4() {
             </Suspense>
           </div>
 
-          {/* Demo 1 · Obtain an ECS-Badge */}
-          <div className="mt-14">
+          {/* Demo 1 · Obtain an ECS-Badge - #demo-badge is deep-linked from
+              the chapter-3 badge steps (3.4 and 3.8). */}
+          <div id="demo-badge" className="mt-14 scroll-mt-24">
             <SubHeading>{DEMOS.badge.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.badge.intro}

@@ -17,6 +17,11 @@ import type { Stage } from "./scenes";
 const app = ENDPOINTS.frontend;
 const resolver = ENDPOINTS.resolver;
 
+// Deep link to a credential schema's public participants tree in the Verana
+// app. Live testnet schema ids: ECS-Organization 168, ECS-Service 170,
+// ECS-Badge 250, ISO 9001 (demo) 251, Authorized Repairer 252.
+const participants = (schemaId: number) => `${app}/participants/${schemaId}`;
+
 /** Generated brand assets (open item 8): web-optimized WebP in
  *  public/images/ (PNG originals kept alongside). Set a path to null to fall
  *  back to the SVG/initials placeholder. */
@@ -359,7 +364,7 @@ export const JOURNEY: {
             "The credential is issued over DIDComm and published by the Business Wallet as a Linked VP (#vpr-schemas-org-vtc-vp).",
           ],
           reproduce: [
-            `Create a testnet account, get VNA from the faucet, and open the Verana app: ${app}.`,
+            "Create a testnet account, get VNA from the faucet, and open the Verana app (links below).",
             "Discover & Join → ECS Ecosystem → Organization credential schema → Participants.",
             "In the permission tree, pick an active Issuer branch and click Join: you apply as Holder under that issuer, and it becomes your validator. Enter your Business Wallet's DID and submit.",
             "Complete the KYB exchange with the issuer's service over DIDComm; on validation, the ECS-Organization credential lands in your Business Wallet.",
@@ -367,6 +372,7 @@ export const JOURNEY: {
           links: [
             { label: "Verana app", href: app },
             { label: "Faucet", href: ENDPOINTS.faucet },
+            { label: "ECS-Organization participants", href: participants(168) },
           ],
         },
       ],
@@ -393,6 +399,10 @@ export const JOURNEY: {
           reproduce: [
             "In the app: ECS Ecosystem → Service credential schema → Participants → join the tree on the issuer side for your DID.",
             "Issue the ECS-Service credential to yourself via the vs-agent Admin API and link it (the verana-demos scripts wrap this).",
+          ],
+          links: [
+            { label: "ECS-Service participants", href: participants(170) },
+            { label: "verana-demos examples", href: LINKS.veranaDemos },
           ],
         },
       ],
@@ -421,12 +431,12 @@ export const JOURNEY: {
             "Issuance runs over AnonCreds/DIDComm for now (Hologram first); the employee's Personal Wallet verifies the issuer is trusted and authorized to issue ECS-Badge (Q2) before accepting.",
           ],
           reproduce: [
-            `See Vesta's participant entry on the ECS-Badge schema in the Verana app: ${app} (deep link comes with the Vesta cast).`,
-            "Open the badge issuer invitation with your wallet and accept the badge after the wallet's issuer check.",
+            "See Vesta's participant entry on the ECS-Badge schema in the Verana app - the issuer tree is public (link below).",
+            "Get your own badge in Run the demos below: reveal the Vesta offer, and accept it after your wallet's issuer check.",
           ],
           links: [
-            { label: "Verana app", href: app },
-            { label: "Hologram wallet page", href: "/personal-wallets/hologram" },
+            { label: "ECS-Badge participants", href: participants(250) },
+            { label: "Get a badge (Run the demos)", href: "/usecases/vesta/demos#demo-badge" },
           ],
         },
         {
@@ -451,9 +461,10 @@ export const JOURNEY: {
           reproduce: [
             "Deploy a vs-agent for the login service; from the anchor, issue it an ECS-Service credential and link it.",
             "Join the ECS-Badge schema tree as VERIFIER for the login service's DID.",
-            "Open the login demo, review the request (who asks, what for), present the badge - you're in.",
+            "The portal login demo is coming to Run the demos: review the request (who asks, what for), present the badge - you're in.",
           ],
           links: [
+            { label: "ECS-Badge participants", href: participants(250) },
             { label: "Personal-wallet guideline", href: LINKS.guidelineUserWallet },
           ],
         },
@@ -487,8 +498,11 @@ export const JOURNEY: {
             "Identification by ECS-Org presentation over DIDComm: reusable organizational identity - the ECS layer is the KYB other ecosystems build on.",
           ],
           reproduce: [
-            `In ${app}: Discover & Join → ISO Certification Ecosystem (demo) → ISO 9001 schema → Participants → Join under NormaCert (demo).`,
+            "In the Verana app: Discover & Join → ISO Certification Ecosystem (demo) → ISO 9001 schema → Participants → Join under NormaCert (demo).",
             "Present ECS-Org over the DIDComm session when asked to identify; receive ISO 9001 on the Organization DID.",
+          ],
+          links: [
+            { label: "ISO 9001 participants", href: participants(251) },
           ],
         },
       ],
@@ -518,12 +532,15 @@ export const JOURNEY: {
             "Extension: Zenith can in turn issue technician badges to its employees, so the technician at your door can prove they're from an authorized repairer.",
           ],
           reproduce: [
-            `In ${app}: My Ecosystems → create a trust registry (name + governance-framework document).`,
+            "In the Verana app: My Ecosystems → create a trust registry (name + governance-framework document).",
             "Add the “Authorized Repairer” credential schema: issuance mode ECOSYSTEM, verification mode OPEN. Create the root permission.",
             "From Zenith's account: open the new ecosystem → Authorized Repairer schema → Participants → Join under Vesta's root.",
             "From Vesta's side: the application appears in Pending Tasks - verify Zenith's ECS-Org presentation, validate, issue.",
           ],
-          links: [{ label: "Verana app", href: app }],
+          links: [
+            { label: "Verana app", href: app },
+            { label: "Authorized Repairer participants", href: participants(252) },
+          ],
         },
         {
           id: "3.8",
@@ -555,7 +572,8 @@ export const JOURNEY: {
             "Scan a technician's badge with your wallet: the issuer chain ends at the Vesta Repair Network seal.",
           ],
           links: [
-            { label: "Run the demos", href: "/usecases/vesta/demos" },
+            { label: "Get a badge (Run the demos)", href: "/usecases/vesta/demos#demo-badge" },
+            { label: "Authorized Repairer participants", href: participants(252) },
           ],
         },
       ],

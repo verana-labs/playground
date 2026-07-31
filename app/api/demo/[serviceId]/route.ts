@@ -75,15 +75,32 @@ export async function GET(
   if (!service)
     return NextResponse.json({ error: "unknown service" }, { status: 404 });
 
+  // The unprovisioned-but-minting pair (spec §4): untrusted on Q1, yet they
+  // DO mint real OID4VC artifacts, so a Track-B wallet can receive an offer
+  // or request from a service it cannot trust-resolve and refuse it.
+  const UNTRUSTED_MINTERS: Record<string, "issuer" | "verifier"> = {
+    "demo-issuer-untrusted": "issuer",
+    "demo-verifier-untrusted": "verifier",
+  };
+  const wantsOid4vc = format === "openid4vc-sdjwt" || format === "oid4vc";
+  const mintRole =
+    service.role === "untrusted"
+      ? UNTRUSTED_MINTERS[serviceId]
+      : service.role === "issuer" || service.role === "verifier"
+        ? service.role
+        : undefined;
+
   // Only the Playground cast has reachable admin APIs; anything else (and,
-  // outside the badge demo, the untrusted service) gets its plain connection
-  // invitation. For the badge demo the untrusted impostor DOES mint offers:
-  // the wallet flags them red, and the portal refuses the badge at login.
+  // outside the badge demo and the OID4VC minting pair above, the untrusted
+  // services) gets its plain connection invitation - on AnonCreds the Q1
+  // refusal happens at connect, so the invitation IS the demo. For the badge
+  // demo the untrusted impostor DOES mint offers: the wallet flags them red,
+  // and the portal refuses the badge at login.
   const isCast = service.host.endsWith(CAST_DOMAIN);
   if (
     !isCast ||
     service.role === "anchor" ||
-    (service.role === "untrusted" && !isBadge)
+    (service.role === "untrusted" && !isBadge && !(wantsOid4vc && mintRole))
   ) {
     return NextResponse.json({
       kind: "invitation",
@@ -102,9 +119,9 @@ export async function GET(
     return NextResponse.json({ kind: "unsupported", format, credential });
   }
 
-  if (format === "openid4vc-sdjwt" || format === "oid4vc") {
+  if (wantsOid4vc) {
     try {
-      if (service.role === "issuer") {
+      if (mintRole === "issuer") {
         const offer = await adminJson(`${admin}/v1/oid4vc/offers`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -144,6 +144,13 @@ jobs:
             --namespace "$CHART_NAMESPACE" --create-namespace \
             --values /tmp/helm-values.yaml \
             --wait --timeout 300s
+          if [ -n "${OID4VC_ROLE:-}" ]; then
+            # The agent reads the oid4vc ConfigMap once at boot, and helm only
+            # rolls the pod when its template changes - so a config-only change
+            # needs an explicit restart to take effect.
+            kubectl rollout restart statefulset "$RELEASE_NAME" -n "$CHART_NAMESPACE"
+            kubectl rollout status statefulset "$RELEASE_NAME" -n "$CHART_NAMESPACE" --timeout=300s
+          fi
 
       # -----------------------------------------------------------------------
       # PROVISION: credentials, permissions, registries via the Admin APIs

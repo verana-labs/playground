@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Download, QrCode } from "lucide-react";
+import { Download, QrCode } from "lucide-react";
 import type { PersonalWallet } from "../../lib/wallets";
 import { ServiceQr } from "../../components/ServiceQr";
 import { Chip } from "../../components/ui";
@@ -185,15 +185,6 @@ export function WalletChooser({ wallets }: { wallets: PersonalWallet[] }) {
             </a>
           ) : null}
         </div>
-        <p className="mt-3 text-sm text-gray-500">
-          <Link
-            href={`/personal-wallets?wallet=${wallet.id}`}
-            className="font-medium text-violet-700 hover:underline"
-          >
-            Full wallet details and the DemoCredential scenarios
-            <ArrowRight className="ml-0.5 inline h-3.5 w-3.5 align-[-2px]" aria-hidden />
-          </Link>
-        </p>
       </div>
     </div>
   );

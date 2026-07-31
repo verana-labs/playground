@@ -99,11 +99,12 @@ function CredMeta({ cred }: { cred: TrustCardCredential }) {
 export default function TrustCard({
   data,
   onClose,
-  expanded = false,
+  expanded = true,
 }: {
   data: TrustCardData;
   onClose?: () => void;
-  /** Render the "Also presents" and "Accreditations" sections open. */
+  /** Render the "Also presents" and "Accreditations" sections open (default);
+   *  pass false to start them collapsed. */
   expanded?: boolean;
 }) {
   const d = data;

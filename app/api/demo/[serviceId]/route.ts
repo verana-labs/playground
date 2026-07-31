@@ -4,6 +4,7 @@ import { adminBase, adminJson, CAST_DOMAIN, VTJSC_URL } from "@/app/lib/demo-adm
 import {
   BADGE_CREDENTIAL_TYPE_NAME,
   badgeDemoClaims,
+  badgeOid4vcClaims,
 } from "@/app/lib/demo-badge";
 
 // Live demo-action link for a Playground cast service (spec §4): what the
@@ -60,6 +61,10 @@ const oobUrl = (body: unknown) => str(body, "shortUrl") ?? str(body, "url");
 const OID4VC_CRED_CONFIG =
   process.env.DEMO_OID4VC_CRED_CONFIG ?? "demo-credential";
 const OID4VC_POLICY = process.env.DEMO_OID4VC_POLICY ?? "demo-credential";
+// ... and on the Vesta cast badge agents (vesta, zenith, umbra, the portal).
+const OID4VC_BADGE_CONFIG =
+  process.env.DEMO_OID4VC_BADGE_CONFIG ?? "ecs-badge";
+const OID4VC_BADGE_POLICY = process.env.DEMO_OID4VC_BADGE_POLICY ?? "ecs-badge";
 
 export async function GET(
   req: Request,
@@ -83,9 +88,10 @@ export async function GET(
     "demo-verifier-untrusted": "verifier",
   };
   const wantsOid4vc = format === "openid4vc-sdjwt" || format === "oid4vc";
+  // Umbra, the badge impostor, mints badge offers despite its untrusted role.
   const mintRole =
     service.role === "untrusted"
-      ? UNTRUSTED_MINTERS[serviceId]
+      ? (UNTRUSTED_MINTERS[serviceId] ?? (isBadge ? "issuer" : undefined))
       : service.role === "issuer" || service.role === "verifier"
         ? service.role
         : undefined;
@@ -111,14 +117,9 @@ export async function GET(
   const admin = adminBase(serviceId);
 
   // OpenID4VC SD-JWT rail: mint an OID4VCI credential offer / OID4VP
-  // authorization request via the agents' OID4VC plugin endpoints. Until the
-  // cast agents carry the plugin configuration, this degrades to
-  // {kind: "unsupported"} and the page shows a coming-soon placeholder.
-  // The ECS-Badge runs on the AnonCreds/DIDComm rail today.
-  if (credential === "ecs-badge" && format !== "anoncreds") {
-    return NextResponse.json({ kind: "unsupported", format, credential });
-  }
-
+  // authorization request via the agents' OID4VC plugin endpoints. On agents
+  // without the plugin configuration this degrades to {kind: "unsupported"}
+  // and the page shows a coming-soon placeholder.
   if (wantsOid4vc) {
     try {
       if (mintRole === "issuer") {
@@ -126,11 +127,15 @@ export async function GET(
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            credentialConfigurationId: OID4VC_CRED_CONFIG,
-            claims: {
-              name: "Playground Visitor",
-              demoId: `demo-${crypto.randomUUID().slice(0, 8)}`,
-            },
+            credentialConfigurationId: isBadge
+              ? OID4VC_BADGE_CONFIG
+              : OID4VC_CRED_CONFIG,
+            claims: isBadge
+              ? badgeOid4vcClaims(serviceId)
+              : {
+                  name: "Playground Visitor",
+                  demoId: `demo-${crypto.randomUUID().slice(0, 8)}`,
+                },
           }),
         });
         const url =
@@ -145,7 +150,9 @@ export async function GET(
       const request = await adminJson(`${admin}/v1/oid4vc/verifier/requests`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ policyId: OID4VC_POLICY }),
+        body: JSON.stringify({
+          policyId: isBadge ? OID4VC_BADGE_POLICY : OID4VC_POLICY,
+        }),
       });
       const url =
         str(request, "authorizationRequest") ??

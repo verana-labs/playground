@@ -12,9 +12,8 @@ import { Chip } from "../../components/ui";
 // query param: WalletChooser (pick one of the integrated personal wallets
 // from personal-wallets.yaml and install it - same buttons as the
 // /personal-wallets page) and BadgeOffers (the "Obtain an ECS-Badge" demo -
-// live OOB credential offers revealed one at a time). The ECS-Badge runs on
-// the AnonCreds/DIDComm rail (Hologram first); wallets on other rails get a
-// pointer to the DemoCredential playground.
+// live offers revealed one at a time, minted on the rail the selected wallet
+// speaks: AnonCreds/DIDComm for Hologram, OpenID4VC SD-JWT otherwise).
 
 export type BadgeOffer = {
   org: string;
@@ -203,7 +202,13 @@ export function BadgeOffers({
   const [activeOffer, setActiveOffer] = useState<string | null>(null);
   if (!wallet) return null;
 
-  const badgeReady = wallet.formats.includes("anoncreds");
+  // The badge is minted on whichever rail the wallet speaks, AnonCreds first
+  // (Hologram's native rail).
+  const badgeFormat = wallet.formats.includes("anoncreds")
+    ? "anoncreds"
+    : wallet.formats.includes("openid4vc-sdjwt")
+      ? "openid4vc-sdjwt"
+      : null;
 
   return (
     <div className="mt-6 space-y-6">
@@ -224,11 +229,11 @@ export function BadgeOffers({
               {o.expect}
             </p>
             <div className="mt-4 border-t border-gray-100 pt-4">
-              {!badgeReady ? (
+              {!badgeFormat ? (
                 <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-xs leading-relaxed text-gray-500">
-                  The ECS-Badge demo runs over AnonCreds/DIDComm today, which{" "}
-                  {wallet.name} does not support yet. Pick Hologram above, or
-                  run the{" "}
+                  The ECS-Badge demo does not support {wallet.name}&apos;s
+                  credential formats yet. Pick another wallet above, or run
+                  the{" "}
                   <Link
                     href={`/personal-wallets?wallet=${wallet.id}`}
                     className="font-medium text-violet-700 hover:underline"
@@ -241,7 +246,7 @@ export function BadgeOffers({
                 <ServiceQr
                   serviceId={o.serviceId}
                   label={o.org}
-                  format="anoncreds"
+                  format={badgeFormat}
                   credential="ecs-badge"
                   bare
                 />
@@ -263,10 +268,15 @@ export function BadgeOffers({
       </div>
       <p className="text-xs text-gray-400">
         Each QR is minted live by the issuing service when you reveal it - a
-        single-use out-of-band DIDComm action for your wallet.
+        single-use credential offer for your wallet.
       </p>
-      {!badgeReady ? null : (
-        <Chip tone="verified">Works with {wallet.name} - AnonCreds/DIDComm</Chip>
+      {!badgeFormat ? null : (
+        <Chip tone="verified">
+          Works with {wallet.name} -{" "}
+          {badgeFormat === "anoncreds"
+            ? "AnonCreds/DIDComm"
+            : "OpenID4VC SD-JWT"}
+        </Chip>
       )}
     </div>
   );

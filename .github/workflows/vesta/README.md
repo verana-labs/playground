@@ -73,10 +73,13 @@ Certificates come from cert-manager (`letsencrypt-prod`) per host.
 
 ## Run order
 
-First bootstrap: run **01 → 02 → 03 → 04 → 05 → 06 → 07 → 08 → 09 → 10** with
-step `all`. The numbering encodes the dependencies (02 needs Helvetia's DID
-document; 03/04/05/08/09 need Helvetia issuing; 05 links the certificate on
-the anchor from 03; 08 needs the schema from 06; 09 needs Iberia from 08).
+First bootstrap: run **01 → 02 → 03 → 04 → 05 → 06 → 08 → 09 → 10 → 07** with
+step `all`. The numbering encodes the provisioning dependencies (02 needs
+Helvetia's DID document; 03/04/05/08/09 need Helvetia issuing; 05 links the
+certificate on the anchor from 03; 08 needs the schema from 06; 09 needs
+Iberia from 08). The portal (07) runs last: its OID4VC deploy pins the badge
+issuers' signing fingerprints, so vesta (03) and zenith (09) must already run
+the openid4vc image (see below); nothing else depends on 07.
 
 Every workflow is idempotent: permissions, registries, schemas and VTJSCs are
 looked up before they are created, and credentials are skipped when the DID
@@ -84,6 +87,24 @@ document already presents the linked VP. Use the `force_refresh` input to
 re-issue credentials after changing claims (name, logo, address) in an org's
 `config.env`. The `step` input splits a run into `deploy` (Helm only) and
 `provision` (Admin APIs + chain only).
+
+## OpenID4VC rail (SD-JWT badges for non-DIDComm wallets)
+
+The four services a personal wallet touches carry `OID4VC_ROLE` in their
+`config.env` - vesta, zenith and umbra as `issuer`, the portal as `verifier`.
+For those, the deploy switches to the `vs-agent-openid4vc` image/chart pinned
+in `vesta-00_core.yml` and injects `oid4vc/issuer.json.tpl` or
+`verifier.json.tpl` (ECS-Badge configuration; canonical `vct` and the badge
+VTJSC live on the vesta anchor). The render script is shared with the demo
+cast (`demo/scripts/render-oid4vc-config.sh`); the portal's
+`OID4VC_ISSUER_RELEASES="vesta zenith"` names the issuers whose
+development-signing fingerprints it pins at render time - both must already
+run the openid4vc image or the deploy fails. Umbra mints real SD-JWT badge
+offers too, claiming the same `vct` and VTJSC: the impostor's claims only
+fail at trust resolution, exactly like its AnonCreds offers.
+
+Enabling the rail on an already-bootstrapped cast: re-run **03 → 09 → 10 →
+07** with step `deploy`.
 
 ## What CI/CD deliberately does not do
 

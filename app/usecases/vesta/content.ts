@@ -603,7 +603,7 @@ export const DEMOS = {
         org: "From Umbra Repairs - not an Authorized Repairer",
         serviceId: "umbra",
         expect:
-          "Red Proof-of-Trust: Umbra cannot prove who it is. Accept the badge anyway if you like - the Vesta portal will refuse it at login.",
+          "Umbra is not a member of the Vesta Repair Network. Interesting to accept the badge - and to see what happens when you try to use it to enter the Vesta portal.",
         tone: "red",
       },
     ],

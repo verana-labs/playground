@@ -2,6 +2,7 @@
   "verifier": {
     "id": "demo",
     "displayName": "__SERVICE_NAME__",
+    "requestSigner": "did",
     "signing": {
       "development": {
         "enabled": true,

@@ -1,6 +1,7 @@
 "use client";
 
 import { Check, ChevronDown, X } from "lucide-react";
+import { DidBadge } from "./Did";
 
 // The reusable Verana trust card, "chain" design: DID → Service check →
 // Operated-by check → verdict, then collapsed "Also presents" and
@@ -122,9 +123,7 @@ export default function TrustCard({
           aria-hidden
         />
         {d.did ? (
-          <code className="min-w-0 flex-1 truncate font-mono text-[10.5px] text-gray-500" title={d.did}>
-            {d.did}
-          </code>
+          <DidBadge did={d.did} className="min-w-0 flex-1 text-[10.5px] text-gray-500" />
         ) : (
           <span className="min-w-0 flex-1 truncate text-sm font-semibold text-gray-900">
             {d.name}

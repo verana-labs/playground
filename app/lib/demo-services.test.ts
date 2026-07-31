@@ -4,8 +4,11 @@ import { DEMO_SERVICES, getDemoService, serviceDid, serviceDidFor } from "./demo
 afterEach(() => vi.unstubAllGlobals());
 
 describe("demo services", () => {
-  it("knows the playground cast, the main.demos cast and the hosted cloud-stack anchors", () => {
+  it("knows the Vesta cast, the planned demo cast, the main.demos cast and the hosted cloud-stack anchors", () => {
     expect(DEMO_SERVICES.map((s) => s.id)).toEqual([
+      "vesta", "helvetia-trust", "vesta-portal", "vesta-repair-network",
+      "iso-certification", "normacert", "vesta-iberia", "vesta-nordics",
+      "zenith", "umbra",
       "playground-demo",
       "demo-issuer-accredited", "demo-issuer-unaccredited",
       "demo-verifier-accredited", "demo-verifier-unaccredited",
@@ -15,6 +18,17 @@ describe("demo services", () => {
       "mosip-organization-vs", "unfold-organization-vs",
     ]);
     expect(getDemoService("nope")).toBeUndefined();
+  });
+
+  it("carries the live Vesta cast DIDs so resolution needs no discovery fetch", () => {
+    for (const id of ["vesta", "helvetia-trust", "vesta-portal", "zenith", "umbra"]) {
+      const s = getDemoService(id);
+      expect(s?.did).toMatch(/^did:webvh:Qm/);
+      expect(s?.host).toContain("playground.testnet.verana.network");
+    }
+    expect(getDemoService("vesta")?.appUrl).toBe(
+      "https://vesta.playground.testnet.verana.network/invitation",
+    );
   });
 
   it("gives every playground cast demo service its DIDComm invitation link", () => {

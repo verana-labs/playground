@@ -17,9 +17,9 @@ export const ENDPOINTS = {
   faucet: "https://faucet-vs.testnet.verana.network",
 } as const;
 
-/** The trusted ECS Ecosystem anchor (from verana-labs/verana-demos). */
+/** The Verana testnet ECS Ecosystem trust registry (the trust anchor). */
 export const ECS_ECOSYSTEM_DID =
-  "did:webvh:QmPXNqN9qj5eeFviA7d1ToPUPiN8KZcn2QwSWFjZXx4dZS:organization-vs.main.demos.testnet.verana.network";
+  "did:webvh:QmcTCdA8z7cs7BwCKyrrJrTTmvff3wmxSn7WUZtP2iAM7T:ecs-trust-registry.testnet.verana.network";
 
 export const NETWORK_NAME = "TESTNET";
 export const NETWORK_PRODUCTION = false;

@@ -1,15 +1,32 @@
+import { VESTA_CAST } from "./vesta-cast";
+
 const BASE = process.env.DEMOS_BASE_DOMAIN ?? "main.demos.testnet.verana.network";
 const CAST = process.env.CAST_BASE_DOMAIN ?? "playground.testnet.verana.network";
 
 export type DemoService = { id: string; label: string; host: string;
   appUrl?: string; did?: string; role: "anchor" | "issuer" | "verifier" | "untrusted" };
 
-// The Playground demo cast (spec §4/§6): the same six services behind every
-// personal-wallet playground page, provisioned by .github/workflows/demo-*.
-// appUrl is each vs-agent's DIDComm out-of-band invitation link.
+// appUrl is a vs-agent's DIDComm out-of-band invitation link, set on the
+// services a personal wallet connects to.
+const invite = (host: string) => `https://${host}/invitation`;
 const castInvite = (slug: string) => `https://${slug}.${CAST}/invitation`;
 
+// The live Vesta cast (spec §5): one vs-agent per participant, deployed by
+// .github/workflows/vesta-*.
 export const DEMO_SERVICES: DemoService[] = [
+  { id: "vesta", label: "Vesta Appliances (demo)", host: VESTA_CAST.vesta.host, did: VESTA_CAST.vesta.did, appUrl: invite(VESTA_CAST.vesta.host), role: "anchor" },
+  { id: "helvetia-trust", label: "Helvetia Trust Services (demo)", host: VESTA_CAST.helvetia.host, did: VESTA_CAST.helvetia.did, role: "issuer" },
+  { id: "vesta-portal", label: "Vesta Portal (demo)", host: VESTA_CAST.portal.host, did: VESTA_CAST.portal.did, appUrl: invite(VESTA_CAST.portal.host), role: "verifier" },
+  { id: "vesta-repair-network", label: "Vesta Repair Network (demo)", host: VESTA_CAST.repairNetwork.host, did: VESTA_CAST.repairNetwork.did, role: "anchor" },
+  { id: "iso-certification", label: "ISO Certification Ecosystem (demo)", host: VESTA_CAST.iso.host, did: VESTA_CAST.iso.did, role: "anchor" },
+  { id: "normacert", label: "NormaCert (demo)", host: VESTA_CAST.normacert.host, did: VESTA_CAST.normacert.did, role: "issuer" },
+  { id: "vesta-iberia", label: "Vesta Iberia (demo)", host: VESTA_CAST.iberia.host, did: VESTA_CAST.iberia.did, role: "issuer" },
+  { id: "vesta-nordics", label: "Vesta Nordics (demo)", host: VESTA_CAST.nordics.host, did: VESTA_CAST.nordics.did, role: "issuer" },
+  { id: "zenith", label: "Zenith Repairs (demo)", host: VESTA_CAST.zenith.host, did: VESTA_CAST.zenith.did, appUrl: invite(VESTA_CAST.zenith.host), role: "issuer" },
+  { id: "umbra", label: "Umbra Repairs", host: VESTA_CAST.umbra.host, did: VESTA_CAST.umbra.did, appUrl: invite(VESTA_CAST.umbra.host), role: "untrusted" },
+  // Planned personal-wallet demo cast (spec §4/§6) still referenced by the
+  // personal-wallets playground page; remap those flows onto the Vesta cast
+  // (badge issuers, portal login, Umbra) in a follow-up, then retire these.
   { id: "playground-demo", label: "Playground Demo", host: `playground-demo.${CAST}`, role: "anchor" },
   { id: "demo-issuer-accredited", label: "Accredited Issuer (demo)", host: `demo-issuer-accredited.${CAST}`, appUrl: castInvite("demo-issuer-accredited"), role: "issuer" },
   { id: "demo-issuer-unaccredited", label: "Unaccredited Issuer (demo)", host: `demo-issuer-unaccredited.${CAST}`, appUrl: castInvite("demo-issuer-unaccredited"), role: "issuer" },

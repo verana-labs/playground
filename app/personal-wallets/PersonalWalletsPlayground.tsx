@@ -101,11 +101,11 @@ const ISSUER_SCENARIOS: Scenario[] = [
   },
   {
     key: "issue-untrusted",
-    serviceId: "demo-untrusted",
-    title: "Untrusted Service (demo)",
+    serviceId: "demo-issuer-untrusted",
+    title: "Untrusted Issuer (demo)",
     trusted: false,
     blurb:
-      "Fails trust resolution outright - no verifiable identity, no operator. Your wallet refuses the connection before any offer can reach you.",
+      "Fails trust resolution outright - no verifiable identity, no operator. Its very real credential offer reaches your wallet, and your wallet refuses it at Q1, before anything about you is shared.",
   },
 ];
 
@@ -130,11 +130,11 @@ const VERIFIER_SCENARIOS: Scenario[] = [
   },
   {
     key: "present-untrusted",
-    serviceId: "demo-untrusted",
-    title: "Untrusted Service (demo)",
+    serviceId: "demo-verifier-untrusted",
+    title: "Untrusted Verifier (demo)",
     trusted: false,
     blurb:
-      "The same untrusted service, now trying to request a presentation. It never gets that far: the connection is refused at trust resolution.",
+      "The untrusted counterpart on the verifier side: it asks you to present your DemoCredential, trust resolution fails, and your wallet refuses to share - your data never leaves.",
   },
 ];
 

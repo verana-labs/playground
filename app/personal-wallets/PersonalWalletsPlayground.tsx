@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import {
   Download,
   FileBadge,
@@ -351,6 +352,19 @@ export default function PersonalWalletsPlayground({
             and its single <em>DemoCredential</em> schema - real registry
             entries, resolved live on the Verana testnet. The same services
             for every wallet; only the QR format changes.
+          </p>
+          <p className="mt-3 text-sm leading-relaxed text-gray-500">
+            Behind each demo, credential issuance and presentation requests
+            are handled by{" "}
+            <Link
+              href="/business-wallets/vs-agent"
+              className="text-violet-600 underline"
+            >
+              vs-agent
+            </Link>
+            , the open source business wallet provided by the Verana
+            Foundation: the same software any organization can deploy to run
+            its own verifiable services.
           </p>
         </div>
 

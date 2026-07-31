@@ -7,6 +7,10 @@ on:
     paths:
       - "app/**"
       - "public/**"
+      - "personal-wallets.yaml"
+      - "wallets/**"
+      - "integrations/**"
+      - "scripts/**"
       - "package.json"
       - "package-lock.json"
       - "Dockerfile"

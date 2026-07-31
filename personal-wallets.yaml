@@ -168,3 +168,13 @@ wallets:
     video:
       src: ./talao/demo.mp4
       note: Real device, human-paced. Silent.
+  - id: eudi
+    name: EUDI Wallet (reference)
+    vendor: European Commission
+    icon: ./eudi/logo.svg
+    formats: [openid4vc-sdjwt]
+    download: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui/releases/download/Wallet/Demo_Version%3D2026.07.39-Demo_Build%3D39/2026.07.39-Demo.apk
+    website: https://ec.europa.eu
+    repo: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui
+    license: EUPL-1.2
+    notes: The European Commission's reference Android wallet (Kotlin, Jetpack Compose). The download is the upstream demo build as published; Verana trust resolution is not in it yet.

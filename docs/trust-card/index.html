@@ -1,0 +1,664 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Verana Trust Card — v3</title>
+<!--
+  Verana trust card, v3. Framework-free port of the design set, for hosts that are not
+  React: the vs-agent default web, docs, anywhere a plain page has to show a verdict.
+  The playground itself already renders this design through app/components/TrustCard.tsx.
+
+  The rule the design encodes: a claim earns the face of the card only if a person can
+  act on it. All 18 required ECS attributes are present either way — v3 only changes
+  where they sit. Face: logoUri, name, description, countryCode, address, registryId,
+  minimumAgeRequired, termsAndConditionsUri, privacyPolicyUri, *DigestSri. One tap down,
+  under CREDENTIAL DETAIL: type, legalJurisdiction, id, descriptionFormat, registryUri,
+  organizationKind, lei, and the raw digest strings.
+
+  Three details that are easy to get wrong and are deliberate here:
+    - the age is a gate, not a label, so it sits with terms and privacy, as a chip;
+    - descriptions are link-stripped and the card says how many it removed, because
+      descriptionFormat may be markdown and a link there is phishing served by the
+      trust component itself;
+    - the flag is drawn as SVG, never an emoji: regional-indicator pairs fall back
+      inconsistently across Android versions and OEM builds.
+
+  Usage: renderTrustCard(el, data). Data is the ECS normalizer shape
+  (packages/sdk/src/trust/ecs.ts), which reads both v3 and v4 claim names.
+-->
+<style>
+  :root { color-scheme: light dark; }
+  body { margin: 0; padding: 2.5rem 1rem; background: #f4f4f5;
+    font: 16px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  .vtc-stack { display: grid; gap: 3rem; justify-items: center; }
+
+  .vtc { --ink: #111827; --sub: #6b7280; --faint: #9ca3af; --line: #e5e7eb; --card: #fff;
+    --ok: #059669; --ok-soft: #ecfdf5; --warn: #d97706; --warn-soft: #fffbeb;
+    --warn-line: #fde68a; --bad: #dc2626; --bad-soft: #fef2f2; --brand: #7c3aed;
+    --brand-soft: #ede9fe; --chip: #f3f4f6;
+    width: 100%; max-width: 30rem; color: var(--ink); }
+
+  .vtc-title { font-size: .82rem; font-weight: 800; letter-spacing: .07em;
+    text-transform: uppercase; margin: 0 0 1rem .25rem; }
+  .vtc-title span { color: var(--sub); }
+
+  .vtc-card { background: var(--card); border: 1px solid var(--line);
+    border-radius: 1.75rem; padding: 1.75rem 1.6rem; }
+
+  .vtc-did { display: flex; align-items: center; gap: .7rem; margin-bottom: 1.5rem; }
+  .vtc-dot { width: .7rem; height: .7rem; border-radius: 50%; background: var(--ok); flex: none; }
+  .vtc-dot[data-tone="warn"] { background: #d97706; }
+  .vtc-dot[data-tone="bad"] { background: var(--bad); }
+  .vtc-dot[data-tone="none"] { background: var(--faint); }
+  .vtc-testnet { flex: none; border: 1.5px solid var(--warn-line); color: var(--warn);
+    border-radius: .45rem; padding: .08rem .4rem; font-size: .68rem; font-weight: 800;
+    letter-spacing: .08em; }
+  .vtc-did code { flex: 1; min-width: 0; font: 15px/1.3 ui-monospace, SFMono-Regular, Menlo, monospace;
+    color: var(--sub); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  /* rows: ring + rail on the left, content on the right */
+  .vtc-row { display: grid; grid-template-columns: 3.2rem 1fr; position: relative; }
+  .vtc-row + .vtc-row { margin-top: 1.4rem; }
+  .vtc-row::before { content: ""; position: absolute; left: 1.52rem; top: 3.2rem; bottom: -1.4rem;
+    width: 2.5px; border-radius: 2px; background: var(--rail, var(--ok)); }
+  .vtc-row:last-of-type::before { bottom: .4rem; }
+  .vtc-ring { width: 3.05rem; height: 3.05rem; border-radius: 50%; border: 2.5px solid var(--ok);
+    background: var(--ok-soft); color: var(--ok); display: grid; place-items: center; z-index: 1; }
+  .vtc-ring[data-state="bad"] { border-color: var(--bad); background: var(--bad-soft); color: var(--bad); }
+  .vtc-ring[data-state="none"] { border-color: var(--line); background: var(--chip); color: var(--faint); }
+
+  .vtc-kicker { display: flex; align-items: center; gap: .55rem; font-size: .8rem; font-weight: 800;
+    letter-spacing: .09em; color: var(--sub); text-transform: uppercase; padding-top: .35rem; }
+  .vtc-newlink { background: var(--brand-soft); color: var(--brand); border-radius: 999px;
+    padding: .1rem .55rem; font-size: .72rem; font-weight: 800; letter-spacing: .02em;
+    text-transform: none; }
+
+  .vtc-idty { display: grid; grid-template-columns: 3.6rem 1fr; gap: .95rem; margin-top: .55rem; }
+  .vtc-tile { position: relative; width: 3.6rem; height: 3.6rem; border-radius: 1rem;
+    display: grid; place-items: center; color: #fff; font-weight: 800; font-size: 1.1rem;
+    letter-spacing: .02em; }
+  .vtc-tile img { width: 100%; height: 100%; border-radius: 1rem; object-fit: cover; }
+  .vtc-tile::after { content: ""; position: absolute; right: -.3rem; bottom: -.3rem;
+    width: 1.4rem; height: 1.4rem; border-radius: 50%; background: var(--card);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23059669' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m5 12 5 5L20 7'/%3E%3C/svg%3E");
+    background-size: .85rem; background-repeat: no-repeat; background-position: center; }
+
+  .vtc-name { font-size: 1.42rem; font-weight: 800; letter-spacing: -.015em; line-height: 1.2;
+    display: flex; align-items: center; gap: .55rem; flex-wrap: wrap; }
+  .vtc-name[data-tone="bad"] { color: var(--bad); font-size: 1.28rem; }
+  .vtc-name[data-tone="none"] { color: var(--sub); font-size: 1.1rem; font-weight: 700; }
+  .vtc-desc { color: #374151; margin-top: .3rem; }
+  .vtc-desc[data-tone="sub"] { color: var(--sub); }
+  .vtc-stripped { color: var(--faint); margin-top: .5rem; font-size: .95rem; }
+
+  .vtc-reg { display: inline-flex; align-items: baseline; gap: .6rem; background: var(--chip);
+    border: 1px solid var(--line); border-radius: .7rem; padding: .38rem .85rem; margin-top: .7rem; }
+  .vtc-reg b { font-size: .78rem; font-weight: 700; letter-spacing: .07em; color: var(--sub); }
+  .vtc-reg code { font: 15px ui-monospace, SFMono-Regular, Menlo, monospace; font-weight: 600; }
+
+  .vtc-verdict { display: inline-flex; align-items: center; gap: .7rem; margin-top: 1.5rem;
+    border: 2.5px solid var(--ok); border-radius: 1rem; padding: .55rem 1.5rem .55rem .6rem;
+    font-size: 1.5rem; font-weight: 800; letter-spacing: .01em; color: var(--ok); }
+  .vtc-verdict[data-v="PARTIAL"] { border-color: var(--warn); color: var(--warn); }
+  .vtc-verdict[data-v="UNTRUSTED"] { border-color: var(--bad); color: var(--bad); }
+  .vtc-verdict[data-v="UNVERIFIED"] { border-color: var(--line); color: var(--sub); font-size: 1.15rem;
+    padding-right: 1.1rem; }
+  .vtc-note { color: var(--sub); margin: .9rem 0 0; max-width: 34ch; }
+  .vtc-note[data-tone="bad"] { color: var(--bad); }
+  .vtc-note[data-tone="warn"] { color: var(--warn); }
+
+  /* [UW-POT-2] / [UW-POT-3]: the Q2 or Q3 verdict, in words, above the accept action */
+  .vtc-ask { border: 1.5px solid var(--ok); background: var(--ok-soft); border-radius: 1.1rem;
+    padding: 1.1rem 1.2rem; margin-top: 1.4rem; }
+  .vtc-ask[data-ok="no"] { border-color: var(--bad); background: var(--bad-soft); }
+  .vtc-ask[data-ok="moot"] { border-color: var(--warn-line); background: var(--warn-soft); }
+  .vtc-ask h3 { font-size: .8rem; font-weight: 800; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--sub); margin: 0 0 .55rem; }
+  .vtc-ask-cred { font-size: 1.15rem; font-weight: 800; letter-spacing: -.01em; }
+  .vtc-ask-line { display: flex; gap: .55rem; margin-top: .7rem; color: var(--ink); }
+  .vtc-ask-line span:first-child { flex: none; color: var(--ok); }
+  .vtc-ask[data-ok="no"] .vtc-ask-line span:first-child { color: var(--bad); }
+  .vtc-ask[data-ok="moot"] .vtc-ask-line:first-of-type span:first-child { color: var(--warn); }
+  .vtc-ask-moot { color: var(--warn); font-weight: 600; }
+  .vtc-ask-line em { font-style: normal; font-weight: 700; }
+
+  .vtc-actions { display: flex; gap: .65rem; margin-top: 1.4rem; }
+  .vtc-btn { flex: 1; text-align: center; border-radius: .9rem; padding: .8rem .5rem;
+    font-weight: 800; border: 1.5px solid var(--line); background: var(--card); }
+  .vtc-btn[data-kind="accept"] { background: var(--ink); color: var(--card); border-color: var(--ink); }
+  .vtc-btn[data-kind="accept"][data-disabled] { background: var(--chip); color: var(--faint);
+    border-color: var(--line); }
+  .vtc-unsafe { display: block; text-align: center; margin-top: .8rem; color: var(--faint);
+    font-size: .9rem; text-decoration: underline; }
+
+  .vtc-skel { height: .85rem; border-radius: 999px; background: var(--chip); }
+  .vtc-cond { border: 1px solid var(--line); border-radius: 1.1rem; padding: 1.1rem 1.2rem;
+    margin-top: 1.5rem; }
+  .vtc-cond[data-gate] { border-color: var(--warn-line); background: var(--warn-soft); }
+  .vtc-cond h3 { font-size: .82rem; font-weight: 800; letter-spacing: .09em; margin: 0 0 .8rem;
+    text-transform: uppercase; }
+  .vtc-cond[data-gate] h3 { color: var(--warn); }
+  .vtc-line { display: flex; align-items: center; gap: .65rem; padding: .35rem 0; }
+  .vtc-line a { color: var(--brand); font-weight: 700; text-decoration: none; }
+  .vtc-line a:hover { text-decoration: underline; }
+  .vtc-age { border: 1.5px solid var(--warn-line); color: var(--warn); border-radius: .55rem;
+    padding: .15rem .55rem; font-weight: 800; font-size: .95rem; flex: none; }
+  .vtc-intact { margin-left: auto; color: var(--ok); font-weight: 700; white-space: nowrap; }
+  .vtc-intact[data-missing] { color: var(--faint); font-weight: 500; font-style: italic; }
+
+  .vtc-fold { border-top: 1px solid var(--line); }
+  .vtc-fold summary { list-style: none; cursor: pointer; display: flex; align-items: center;
+    gap: .6rem; padding: 1.05rem .15rem; font-size: .86rem; font-weight: 800; letter-spacing: .08em;
+    text-transform: uppercase; }
+  .vtc-fold summary::-webkit-details-marker { display: none; }
+  .vtc-chevron { margin-left: auto; color: var(--faint); transition: transform .15s; }
+  .vtc-fold[open] .vtc-chevron { transform: rotate(180deg); }
+  .vtc-count { background: var(--brand-soft); color: var(--brand); border-radius: 999px;
+    padding: .1rem .6rem; font-size: .82rem; font-weight: 800; letter-spacing: 0; }
+  .vtc-fold-body { padding: 0 .15rem 1.1rem; color: var(--sub); }
+  .vtc-fold-body > div { padding: .22rem 0; }
+  .vtc-also summary { color: #c2410c; text-transform: none; letter-spacing: 0; font-size: 1.05rem; }
+  .vtc-static { border-top: 1px solid var(--line); padding: 1.05rem .15rem; }
+  .vtc-static-head { display: flex; align-items: center; gap: .6rem; font-size: .86rem;
+    font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+
+  .vtc-open { display: inline-flex; align-items: center; gap: .45rem; border-top: 1px solid var(--line);
+    width: 100%; padding-top: 1.05rem; color: var(--brand); font-weight: 800; text-decoration: none; }
+  .vtc-open:hover { text-decoration: underline; }
+
+
+  @media (prefers-color-scheme: dark) {
+    body { background: #09090b; }
+    .vtc { --ink: #f9fafb; --sub: #9ca3af; --faint: #6b7280; --line: #1f2937; --card: #111827;
+           --ok-soft: #022c22; --warn-soft: #292014; --warn-line: #a16207; --bad-soft: #2a1113;
+           --brand-soft: #2e1065; --chip: #1f2937; }
+    .vtc-desc { color: #d1d5db; }
+  }
+</style>
+
+<div class="vtc-stack" id="vtc-stack"></div>
+
+
+<script>
+  const NS = "http://www.w3.org/2000/svg";
+
+  // Drawn, never typed: emoji regional indicators fall back inconsistently across
+  // Android versions and OEM builds. Only the flags the demo set needs are drawn;
+  // anything else degrades to the country code rather than to a broken glyph.
+  const FLAGS = {
+    CH: '<rect width="20" height="20" rx="3" fill="#DA291C"/><path d="M8.6 4h2.8v4.6H16v2.8h-4.6V16H8.6v-4.6H4V8.6h4.6z" fill="#fff"/>',
+    KY: '<rect width="20" height="20" rx="3" fill="#00247D"/><path d="M0 0h10v7H0z" fill="#012169"/><path d="M0 0l10 7M10 0L0 7" stroke="#fff" stroke-width="1.4"/><path d="M5 0v7M0 3.5h10" stroke="#fff" stroke-width="2.2"/><path d="M5 0v7M0 3.5h10" stroke="#C8102E" stroke-width="1.2"/>',
+  };
+  const flagSvg = (cc) => {
+    const key = String(cc ?? "").toUpperCase();
+    if (!FLAGS[key]) return key ? `<span class="vtc-cc">${esc(key)}</span>` : "";
+    return `<svg viewBox="0 0 20 20" width="26" height="26" aria-label="${esc(key)}" role="img">${FLAGS[key]}</svg>`;
+  };
+
+  const veranaMark = (size = 30) => `
+    <svg viewBox="0 0 64 64" width="${size}" height="${size}" aria-hidden style="flex:none">
+      <defs><linearGradient id="vtc-g${size}" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#763EF0"/><stop offset="100%" stop-color="#9F7AEA"/>
+      </linearGradient></defs>
+      <rect width="64" height="64" rx="14" fill="url(#vtc-g${size})"/>
+      <g transform="translate(12.3 13.1) scale(0.7407)" fill="#fff">
+        <path d="M26.9932 51.6972L5.805 11.0977L2.91263 16.2161L0 10.6048L5.98725 0L26.9932 40.2483L47.9993 0L54 10.6217L51.0773 16.2161L48.1849 11.0977L26.9932 51.6972Z"/>
+        <path d="M13.696 0L26.9935 25.4637L39.9367 0H13.696Z"/>
+      </g></svg>`;
+
+  const ICON = {
+    check: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5L20 7"/></svg>',
+    cross: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>',
+    clock: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    query: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9.2 9a3 3 0 1 1 4 2.8c-.9.4-1.2 1.1-1.2 2"/><circle cx="12" cy="17.6" r="1.15" fill="currentColor" stroke="none"/></svg>',
+    doc: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>',
+    shield: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.5-3 7.7-7 9-4-1.3-7-4.5-7-9V6z"/></svg>',
+    award: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="9" r="5"/><path d="m8.5 13.5-1 7 4.5-2.5 4.5 2.5-1-7"/></svg>',
+    chevron: '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
+    arrow: '<svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M9 7h8v8"/></svg>',
+  };
+
+  const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
+
+  // Every URI is attacker-controlled: it arrives inside a credential issued by the
+  // counterparty. Escaping the markup is not enough — `javascript:` survives it.
+  const httpUrl = (u) => {
+    try { const p = new URL(String(u));
+      return p.protocol === "https:" || p.protocol === "http:" ? p.href : ""; } catch { return ""; }
+  };
+
+  const initials = (n = "") =>
+    n.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?";
+
+  function tile(name, logo) {
+    const src = httpUrl(logo?.uri);
+    const bg = logo?.tint ?? "#3f3f46";
+    return src
+      ? `<span class="vtc-tile"><img src="${esc(src)}" alt=""></span>`
+      : `<span class="vtc-tile" style="background:${esc(bg)}">${esc(initials(name))}</span>`;
+  }
+
+  const RING = { ok: ICON.check, bad: ICON.cross, none: ICON.query };
+
+  function identity(kicker, chip, name, tone, logo, lines) {
+    return `
+      <div class="vtc-row">
+        <span class="vtc-ring" data-state="${esc(tone)}">${RING[tone] ?? ICON.check}</span>
+        <div>
+          <div class="vtc-kicker">${esc(kicker)}
+            ${chip ? `<span class="vtc-newlink">${esc(chip)}</span>` : ""}</div>
+          ${tone !== "ok"
+            ? `<div style="margin-top:.4rem">${name
+                ? `<div class="vtc-name" data-tone="${tone === "bad" ? "bad" : "none"}">${esc(name)}</div>` : ""}${lines}</div>`
+            : `<div class="vtc-idty">${tile(name, logo)}<div>
+                 <div class="vtc-name">${esc(name)}${logo?.flag ? flagSvg(logo.flag) : ""}</div>
+                 ${lines}</div></div>`}
+        </div>
+      </div>`;
+  }
+
+  // [UW-POT-2]/[UW-POT-3]. A failed Q2 or Q3 must never leave accept as the default,
+  // so the block and the button pair are rendered together.
+  function ask(a) {
+    if (!a) return "";
+    const verb = a.kind === "offer" ? "authorized issuer" : "authorized verifier";
+    const moot = a.ok === "moot";
+    const granted = a.ok === true || moot;
+    // Q1 failing is not a warning to click past: [UW-TEST] 3 and 6 say the request is never
+    // surfaced at all, so there is no override to offer. A failed Q2/Q3 under a verified
+    // identity is the case [UW-POT-2] demotes behind an explicit unsafe step.
+    const override = a.ok === false && !a.q1Failed;
+    return `
+      <div class="vtc-ask" data-ok="${moot ? "moot" : a.ok ? "yes" : "no"}">
+        <h3>${a.kind === "offer" ? "Offers you" : "Asks you for"}</h3>
+        <div class="vtc-ask-cred">${esc(a.credential)}</div>
+        <div class="vtc-ask-line"><span>${granted ? ICON.check : ICON.cross}</span>
+          <span><em>${esc(a.party)}</em> is ${granted ? "an" : "not an"} ${verb} of
+            <em>${esc(a.credential)}</em> in <em>${esc(a.ecosystem)}</em></span></div>
+        ${moot ? `<div class="vtc-ask-line"><span>${ICON.cross}</span>
+          <span class="vtc-ask-moot">…but nothing verifies who holds that DID, so the
+            accreditation carries no weight.</span></div>` : ""}
+      </div>
+      <div class="vtc-actions">
+        <div class="vtc-btn">${a.kind === "offer" ? "Decline" : "Stop"}</div>
+        <div class="vtc-btn" data-kind="accept"${a.ok === true ? "" : " data-disabled"}>${
+          a.kind === "offer" ? "Accept card" : "Share"}</div>
+      </div>
+      ${override ? `<span class="vtc-unsafe">${
+        a.kind === "offer" ? "Accept anyway (unsafe)" : "Share anyway (unsafe)"}</span>` : ""}`;
+  }
+
+  function conditions(svc) {
+    const gate = svc.minimumAgeRequired > 0;
+    const row = (icon, label, asset) => {
+      const href = httpUrl(asset?.uri);
+      if (!href) return "";
+      const state = asset.digest
+        ? `<span class="vtc-intact">${ICON.check.replace("19", "15").replace("19", "15")} intact</span>`
+        : `<span class="vtc-intact" data-missing>no digest</span>`;
+      return `<div class="vtc-line">${icon}
+        <a href="${esc(href)}" target="_blank" rel="noopener noreferrer">${label}</a>${state}</div>`;
+    };
+    if (svc.minimumAgeRequired == null && !svc.terms && !svc.privacy) return "";
+    return `
+      <div class="vtc-cond"${gate ? " data-gate" : ""}>
+        <h3>Conditions of connecting</h3>
+        ${svc.minimumAgeRequired == null ? "" : gate
+          ? `<div class="vtc-line"><span class="vtc-age">${esc(svc.minimumAgeRequired)}+</span>
+             <span>This service requires you to be at least ${esc(svc.minimumAgeRequired)} to connect</span></div>`
+          : `<div class="vtc-line" style="color:var(--sub)">${ICON.clock}<span>No age restriction</span></div>`}
+        ${row(ICON.doc, "Terms &amp; conditions", svc.terms)}
+        ${row(ICON.shield, "Privacy policy", svc.privacy)}
+      </div>`;
+  }
+
+  let FOLDS_OPEN = false;
+  const fold = (head, count, rows, cls = "") =>
+    !rows?.length ? "" : `
+      <details class="vtc-fold ${cls}"${FOLDS_OPEN ? " open" : ""}><summary>${head}
+        ${count == null ? "" : `<span class="vtc-count">${esc(count)}</span>`}
+        <span class="vtc-chevron">${ICON.chevron}</span></summary>
+        <div class="vtc-fold-body">${rows.map((r) => `<div>${esc(r)}</div>`).join("")}</div></details>`;
+
+  /**
+   * @param {HTMLElement} el
+   * @param {{title:string, subtitle:string, did?:string, verdict:"TRUSTED"|"PARTIAL"|"UNTRUSTED",
+   *          note?:string, service:object, organization:object, claim?:object,
+   *          alsoPresents?:string[], accreditations?:string[], accreditationsNote?:string,
+   *          credentialDetail?:string[], link?:{label:string,url:string}}} d
+   */
+  function renderTrustCard(el, d) {
+    if (d.verdict === "RESOLVING") {
+      el.className = "vtc";
+      el.innerHTML = `
+        <div class="vtc-title">${esc(d.title)} <span>· ${esc(d.subtitle)}</span></div>
+        <div class="vtc-card">
+          <div class="vtc-did"><span class="vtc-dot" data-tone="none"></span>
+            <code>${esc(d.did)}</code>
+            ${d.testnet ? `<span class="vtc-testnet">TESTNET</span>` : ""}${veranaMark(30)}</div>
+          ${["Service", "Operated by"].map((k) => `
+            <div class="vtc-row" style="--rail:var(--line)">
+              <span class="vtc-ring" data-state="none">${ICON.query}</span>
+              <div><div class="vtc-kicker">${k}</div>
+                <div class="vtc-skel" style="width:62%;margin:.85rem 0 .5rem"></div>
+                <div class="vtc-skel" style="width:40%"></div></div>
+            </div>`).join("")}
+          <div class="vtc-verdict" data-v="UNVERIFIED">${veranaMark(28)}CHECKING…</div>
+          <div class="vtc-note">${esc(d.note)}</div>
+        </div>`;
+      return;
+    }
+    FOLDS_OPEN = d.openFolds === true;
+    const svc = d.service ?? {};
+    const org = d.organization ?? {};
+    const bad = d.verdict !== "TRUSTED";
+    const dotTone = { TRUSTED: "ok", PARTIAL: "warn", UNTRUSTED: "bad", UNVERIFIED: "none" }[d.verdict];
+    const link = httpUrl(d.link?.url);
+
+    el.className = "vtc";
+    const RAIL = {
+      TRUSTED: "var(--ok)",
+      PARTIAL: "linear-gradient(var(--ok), var(--warn))",
+      UNTRUSTED: "var(--bad)",
+      UNVERIFIED: "var(--line)",
+    };
+    el.style.setProperty("--rail", RAIL[d.verdict] ?? "var(--ok)");
+    const tone = (part) => (part.notChecked ? "none" : part.failed ? "bad" : "ok");
+    el.innerHTML = `
+      <div class="vtc-title">${esc(d.title)} <span>· ${esc(d.subtitle)}</span></div>
+      <div class="vtc-card">
+        ${d.did ? `<div class="vtc-did">
+          <span class="vtc-dot" data-tone="${esc(dotTone)}"></span>
+          <code>${esc(d.did)}</code>
+          ${d.testnet ? `<span class="vtc-testnet">TESTNET</span>` : ""}
+          ${veranaMark(30)}</div>` : ""}
+
+        ${identity("Service", null, svc.name, tone(svc), svc.logo, `
+          ${svc.description ? `<div class="vtc-desc"${
+            tone(svc) === "ok" ? "" : ' data-tone="sub"'}>${esc(svc.description)}</div>` : ""}
+          ${svc.linksRemoved ? `<div class="vtc-stripped">${esc(svc.linksRemoved)} link${
+            svc.linksRemoved > 1 ? "s" : ""} removed from this description before display</div>` : ""}`)}
+
+        ${identity("Operated by", null, org.name, tone(org), { ...org.logo, flag: org.countryCode }, `
+          ${org.description ? `<div class="vtc-desc" data-tone="sub">${esc(org.description)}</div>` : ""}
+          ${org.address ? `<div class="vtc-desc">${esc(org.address)}</div>` : ""}
+          ${org.registryId ? `<div class="vtc-reg"><b>REG</b><code>${esc(org.registryId)}</code></div>` : ""}`)}
+
+        ${d.claim ? identity("Claims to be", d.claim.chip, d.claim.headline, "bad", null,
+          `<div class="vtc-desc" data-tone="sub">${esc(d.claim.explanation)}</div>`) : ""}
+
+        <div class="vtc-verdict" data-v="${esc(d.verdict)}">${veranaMark(28)}${esc(d.verdict)}</div>
+        ${d.note ? `<div class="vtc-note"${d.noteTone ? ` data-tone="${esc(d.noteTone)}"` : ""}>${esc(d.note)}</div>` : ""}
+
+        ${ask(d.ask)}
+        ${conditions(svc)}
+        <div style="height:1.4rem"></div>
+
+        ${fold(`<span style="display:flex;align-items:center;gap:.55rem">${ICON.award}Also presents: ${
+          esc(d.alsoPresents?.join(" · ") ?? "")}</span>`, null, d.alsoPresents, "vtc-also")}
+
+        ${d.accreditationsNote
+          ? `<div class="vtc-static"><div class="vtc-static-head">Accreditations
+               <span class="vtc-count">0</span></div>
+             <div style="color:var(--sub);margin-top:.5rem">${esc(d.accreditationsNote)}</div></div>`
+          : fold("Accreditations", d.accreditations?.length, d.accreditations)}
+
+        ${fold("Credential detail", d.credentialDetail?.length, d.credentialDetail)}
+
+        ${link ? `<a class="vtc-open" href="${esc(link)}" target="_blank" rel="noopener noreferrer">
+          ${esc(d.link.label)} ${ICON.arrow}</a>` : ""}
+      </div>`;
+  }
+
+  window.renderTrustCard = renderTrustCard;
+
+  const DETAIL_18 = [
+    "ECS-SERVICE · id, name, type, description, descriptionFormat, logoUri, logoDigestSri",
+    "ECS-SERVICE · minimumAgeRequired, termsAndConditionsUri, termsAndConditionsDigestSri",
+    "ECS-SERVICE · privacyPolicyUri, privacyPolicyDigestSri",
+    "ECS-ORGANIZATION · id, name, logoUri, logoDigestSri, registryId, address",
+    "ECS-ORGANIZATION · countryCode, registryUri, legalJurisdiction, organizationKind, lei",
+  ];
+
+  const STATES = [
+    {
+      title: "Trusted", subtitle: "the face: only what a person can act on",
+      did: "did:webvh:QmT4vPz…9XkR:vesta-anchor…verana.net…",
+      verdict: "TRUSTED",
+      note: "Both identity credentials verified against the Verana public registry",
+      service: {
+        name: "Vesta Organization Trust Anchor",
+        description: "The service publishing Vesta’s organizational credentials.",
+        minimumAgeRequired: 0,
+        logo: { tint: "#0f9488" },
+        terms: { uri: "https://vesta.demos.testnet.verana.network/terms", digest: "sha384-oqVuATXR" },
+        privacy: { uri: "https://vesta.demos.testnet.verana.network/privacy", digest: "sha384-Kd91mLpQ" },
+      },
+      organization: {
+        name: "Vesta Appliances SA", countryCode: "CH",
+        address: "Rue du Rhône 14, 1204 Geneva", registryId: "CHE-123.456.789",
+        logo: { tint: "#1d4ed8" },
+      },
+      alsoPresents: ["ISO 9001 (demo)"],
+      accreditations: ["ISSUER · ECS-Service · Playground Ecosystem", "ISSUER · ECS-Organization · Helvetia Trust Services"],
+      credentialDetail: DETAIL_18,
+      link: { label: "Open this DID in Verana", url: "https://verana.io" },
+    },
+    {
+      title: "Age gate", subtitle: "a condition, not a label",
+      did: "did:webvh:QmL9pTn…5WcX:gaia-registry…verana.ne…",
+      verdict: "TRUSTED",
+      note: "Both identity credentials verified",
+      service: {
+        name: "Gaia Registry",
+        description: "Create your Metaverse ID. Protect your identity with biometrics and recover it if you lose your phone.",
+        linksRemoved: 2,
+        minimumAgeRequired: 16,
+        logo: { tint: "#9a3412" },
+        terms: { uri: "https://gaia.demos.testnet.verana.network/terms", digest: "sha384-a1b2c3" },
+        privacy: { uri: "https://gaia.demos.testnet.verana.network/privacy", digest: "sha384-d4e5f6" },
+      },
+      organization: {
+        name: "Gaia Identity SA", countryCode: "CH",
+        address: "Gotthardstrasse 26, 6300 Zug", registryId: "CHE-442.918.003",
+        logo: { tint: "#1d4ed8" },
+      },
+      link: { label: "Open this DID in Verana", url: "https://verana.io" },
+    },
+    {
+      title: "Partial", subtitle: "real company, false accreditation claim",
+      did: "did:webvh:QmR8kLm…2FpQ:umbra-repairs…verana.ne…",
+      verdict: "PARTIAL",
+      note: "A real, identified company. Its claim to be Vesta-authorized is not.",
+      service: {
+        name: "Umbra Repairs Booking",
+        description: "Book an appliance repair. Same-day service in Zug and Zurich.",
+        logo: { tint: "#78716c" },
+      },
+      organization: {
+        name: "Umbra Repairs GmbH", countryCode: "CH",
+        address: "Bahnhofstrasse 3, 6300 Zug", registryId: "CHE-555.222.111",
+        logo: { tint: "#57534e" },
+      },
+      claim: {
+        chip: "new link",
+        headline: "A Vesta-authorized repairer — no such credential exists",
+        explanation: "Vesta Appliances SA has issued no Authorized Repairer credential to this DID in the Vesta Repair Network.",
+      },
+      accreditationsNote: "Nothing in the Vesta Repair Network names this DID.",
+      link: { label: "Check the Vesta Repair Network in Verana", url: "https://verana.io" },
+    },
+    {
+      title: "Credential detail", subtitle: "one tap down, nothing hidden",
+      did: "did:webvh:QmT4vPz…9XkR:vesta-anchor…verana.net…",
+      verdict: "TRUSTED", openFolds: true,
+      note: "Both identity credentials verified against the Verana public registry",
+      service: {
+        name: "Vesta Organization Trust Anchor",
+        description: "The service publishing Vesta’s organizational credentials.",
+        minimumAgeRequired: 0, logo: { tint: "#0f9488" },
+        terms: { uri: "https://vesta.demos.testnet.verana.network/terms", digest: "sha384-oqVuATXR" },
+        privacy: { uri: "https://vesta.demos.testnet.verana.network/privacy", digest: "sha384-Kd91mLpQ" },
+      },
+      organization: {
+        name: "Vesta Appliances SA", countryCode: "CH",
+        address: "Rue du Rhône 14, 1204 Geneva", registryId: "CHE-123.456.789",
+        logo: { tint: "#1d4ed8" },
+      },
+      accreditations: ["ISSUER · ECS-Service · Playground Ecosystem", "ISSUER · ECS-Organization · Helvetia Trust Services"],
+      credentialDetail: DETAIL_18,
+      link: { label: "Open this DID in Verana", url: "https://verana.io" },
+    },
+    {
+      title: "Untrusted", subtitle: "a key resolves to a key, not a document",
+      did: "did:key:z6MkhaXgBZD…vLSp",
+      verdict: "UNTRUSTED",
+      note: "Neither identity credential verified. This counterparty cannot present verifiable trust credentials.",
+      noteTone: "bad",
+      service: { failed: true, name: "No ECS-Service credential presented",
+        description: "This DID method resolves to a key, not a DID Document, so it can carry no linked presentations." },
+      organization: { failed: true, name: "No ECS-Organization credential presented",
+        description: "Nothing on the registry names an operator." },
+      link: { label: "Open this DID in Verana", url: "https://verana.io" },
+    },
+    {
+      title: "Unverified", subtitle: "not a verdict — the resolver was unreachable",
+      did: "did:webvh:QmT4vPz…9XkR:vesta-anchor…verana.net…",
+      verdict: "UNVERIFIED",
+      note: "The Verana resolver could not be reached. This counterparty is neither trusted nor untrusted.",
+      service: { notChecked: true, description: "Not checked" },
+      organization: { notChecked: true, description: "Not checked" },
+    },
+    {
+      title: "Resolving", subtitle: "one of the four states, not a spinner",
+      did: "did:webvh:QmT4vPz…9XkR:demo-issuer-accredited…", verdict: "RESOLVING", testnet: true,
+      note: "Checking the Verana public registry…",
+    },
+    {
+      title: "Offer · Q2 pass", subtitle: "an accredited issuer of this schema",
+      did: "did:webvh:QmT4vPz…9XkR:demo-issuer-accredited…", verdict: "TRUSTED", testnet: true,
+      note: "Both identity credentials verified against the Verana public registry",
+      service: { name: "Accredited Issuer Booking", description: "Playground demo service, issuer rail.",
+        minimumAgeRequired: 0, logo: { tint: "#0f9488" },
+        terms: { uri: "https://playground.demos.testnet.verana.network/terms", digest: "sha384-oqVuATXR" },
+        privacy: { uri: "https://playground.demos.testnet.verana.network/privacy", digest: "sha384-Kd91mLpQ" } },
+      organization: { name: "Accredited Issuer (demo)", countryCode: "CH",
+        address: "Bahnhofstrasse 1, 6300 Zug", registryId: "CHE-100.200.300",
+        logo: { tint: "#1d4ed8" } },
+      ask: { kind: "offer", ok: true, credential: "DemoCredential",
+        party: "Accredited Issuer (demo)", ecosystem: "Playground Ecosystem (demo)" },
+      link: { label: "Open this DID in Verana", url: "https://verana.io" },
+    },
+    {
+      title: "Offer · Q2 fail", subtitle: "identified, but not accredited to issue this",
+      did: "did:webvh:QmR8kLm…2FpQ:demo-issuer-unaccredited…", verdict: "TRUSTED", testnet: true,
+      note: "Both identity credentials verified against the Verana public registry",
+      service: { name: "Unaccredited Issuer Booking", description: "Playground demo service, issuer rail.",
+        minimumAgeRequired: 0, logo: { tint: "#78716c" },
+        terms: { uri: "https://playground.demos.testnet.verana.network/terms", digest: "sha384-oqVuATXR" },
+        privacy: { uri: "https://playground.demos.testnet.verana.network/privacy", digest: "sha384-Kd91mLpQ" } },
+      organization: { name: "Unaccredited Issuer (demo)", countryCode: "CH",
+        address: "Bahnhofstrasse 1, 6300 Zug", registryId: "CHE-100.200.300",
+        logo: { tint: "#1d4ed8" } },
+      ask: { kind: "offer", ok: false, credential: "DemoCredential",
+        party: "Unaccredited Issuer (demo)", ecosystem: "Playground Ecosystem (demo)" },
+      accreditationsNote: "No ISSUER permission for DemoCredential in this ecosystem.",
+      link: { label: "Check the ecosystem in Verana", url: "https://verana.io" },
+    },
+    {
+      title: "Request · Q3 pass", subtitle: "an authorized verifier of this schema",
+      did: "did:webvh:QmW2nHt…7BvZ:demo-verifier-accredited…", verdict: "TRUSTED", testnet: true,
+      note: "Both identity credentials verified against the Verana public registry",
+      service: { name: "Accredited Verifier Booking", description: "Playground demo service, verifier rail.",
+        minimumAgeRequired: 0, logo: { tint: "#0f9488" },
+        terms: { uri: "https://playground.demos.testnet.verana.network/terms", digest: "sha384-oqVuATXR" },
+        privacy: { uri: "https://playground.demos.testnet.verana.network/privacy", digest: "sha384-Kd91mLpQ" } },
+      organization: { name: "Accredited Verifier (demo)", countryCode: "CH",
+        address: "Bahnhofstrasse 1, 6300 Zug", registryId: "CHE-100.200.300",
+        logo: { tint: "#1d4ed8" } },
+      ask: { kind: "request", ok: true, credential: "DemoCredential",
+        party: "Accredited Verifier (demo)", ecosystem: "Playground Ecosystem (demo)" },
+      link: { label: "Open this DID in Verana", url: "https://verana.io" },
+    },
+    {
+      title: "Request · Q3 fail", subtitle: "identified, but not authorized to ask for this",
+      did: "did:webvh:QmL9pTn…5WcX:demo-verifier-unaccredited…", verdict: "TRUSTED", testnet: true,
+      note: "Both identity credentials verified against the Verana public registry",
+      service: { name: "Unaccredited Verifier Booking", description: "Playground demo service, verifier rail.",
+        minimumAgeRequired: 0, logo: { tint: "#78716c" },
+        terms: { uri: "https://playground.demos.testnet.verana.network/terms", digest: "sha384-oqVuATXR" },
+        privacy: { uri: "https://playground.demos.testnet.verana.network/privacy", digest: "sha384-Kd91mLpQ" } },
+      organization: { name: "Unaccredited Verifier (demo)", countryCode: "CH",
+        address: "Bahnhofstrasse 1, 6300 Zug", registryId: "CHE-100.200.300",
+        logo: { tint: "#1d4ed8" } },
+      ask: { kind: "request", ok: false, credential: "DemoCredential",
+        party: "Unaccredited Verifier (demo)", ecosystem: "Playground Ecosystem (demo)" },
+      accreditationsNote: "No VERIFIER permission for DemoCredential in this ecosystem.",
+      link: { label: "Check the ecosystem in Verana", url: "https://verana.io" },
+    },
+    {
+      title: "Offer · Q1 fail, Q2 pass", subtitle: "accredited, but nobody knows who they are",
+      did: "did:key:z6MkhaXgBZD…vLSp",
+      verdict: "UNTRUSTED", testnet: true,
+      note: "Neither identity credential verified. Nothing names who operates this issuer.",
+      noteTone: "bad",
+      service: { failed: true, name: "No ECS-Service credential presented",
+        description: "No verified claims, so none are shown." },
+      organization: { failed: true, name: "No ECS-Organization credential presented",
+        description: "Nothing on the registry names an operator." },
+      ask: { kind: "offer", ok: "moot", q1Failed: true, credential: "DemoCredential",
+        party: "This DID", ecosystem: "Playground Ecosystem (demo)" },
+      link: { label: "Check the ecosystem in Verana", url: "https://verana.io" },
+    },
+    {
+      title: "Offer · Q1 fail, Q2 fail", subtitle: "unidentified and unaccredited",
+      did: "did:key:z6MkrJVnaZk…8HpQ",
+      verdict: "UNTRUSTED", testnet: true,
+      note: "Neither identity credential verified. Nothing names who operates this issuer.",
+      noteTone: "bad",
+      service: { failed: true, name: "No ECS-Service credential presented",
+        description: "No verified claims, so none are shown." },
+      organization: { failed: true, name: "No ECS-Organization credential presented",
+        description: "Nothing on the registry names an operator." },
+      ask: { kind: "offer", ok: false, q1Failed: true, credential: "DemoCredential",
+        party: "This DID", ecosystem: "Playground Ecosystem (demo)" },
+      accreditationsNote: "No ISSUER permission for DemoCredential in this ecosystem.",
+      link: { label: "Check the ecosystem in Verana", url: "https://verana.io" },
+    },
+    {
+      title: "Request · Q1 fail, Q3 pass", subtitle: "authorized, but nobody knows who they are",
+      did: "did:key:z6MkfTqNwZs…3RvL",
+      verdict: "UNTRUSTED", testnet: true,
+      note: "Neither identity credential verified. Nothing names who operates this verifier.",
+      noteTone: "bad",
+      service: { failed: true, name: "No ECS-Service credential presented",
+        description: "No verified claims, so none are shown." },
+      organization: { failed: true, name: "No ECS-Organization credential presented",
+        description: "Nothing on the registry names an operator." },
+      ask: { kind: "request", ok: "moot", q1Failed: true, credential: "DemoCredential",
+        party: "This DID", ecosystem: "Playground Ecosystem (demo)" },
+      link: { label: "Check the ecosystem in Verana", url: "https://verana.io" },
+    },
+    {
+      title: "Request · Q1 fail, Q3 fail", subtitle: "unidentified and unauthorized",
+      did: "did:key:z6MkpXcVdBt…9YnW",
+      verdict: "UNTRUSTED", testnet: true,
+      note: "Neither identity credential verified. Nothing names who operates this verifier.",
+      noteTone: "bad",
+      service: { failed: true, name: "No ECS-Service credential presented",
+        description: "No verified claims, so none are shown." },
+      organization: { failed: true, name: "No ECS-Organization credential presented",
+        description: "Nothing on the registry names an operator." },
+      ask: { kind: "request", ok: false, q1Failed: true, credential: "DemoCredential",
+        party: "This DID", ecosystem: "Playground Ecosystem (demo)" },
+      accreditationsNote: "No VERIFIER permission for DemoCredential in this ecosystem.",
+      link: { label: "Check the ecosystem in Verana", url: "https://verana.io" },
+    },
+  ];
+
+  const stack = document.getElementById("vtc-stack");
+  for (const state of STATES) {
+    const el = document.createElement("div");
+    stack.append(el);
+    renderTrustCard(el, state);
+  }
+</script>

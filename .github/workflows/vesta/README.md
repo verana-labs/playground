@@ -90,8 +90,10 @@ re-issue credentials after changing claims (name, logo, address) in an org's
 - **Personal wallet flows** (employee/technician badge offers, portal login,
   the door scan) are runtime DIDComm flows served by the deployed agents and
   the playground demos — not provisioning.
-- **Umbra stays unverifiable.** Do not add a provisioning script for it; the
-  red path in the demos depends on its trust resolution failing.
+- **Umbra stays unverifiable.** Its provisioning creates only an unanchored
+  ECS-Badge credential type (so it can make unauthorized badge offers) —
+  never give it credentials, permissions, or linked VPs: the red path in the
+  demos depends on its trust resolution failing.
 
 ## After a bootstrap
 

@@ -598,7 +598,7 @@ export const DEMOS = {
         org: "From Umbra Repairs - not an Authorized Repairer",
         serviceId: "umbra",
         expect:
-          "Your wallet warns you: the issuer is not what it claims. Red verdict - do not accept.",
+          "Red Proof-of-Trust: Umbra cannot prove who it is. Accept the badge anyway if you like - the Vesta portal will refuse it at login.",
         tone: "red",
       },
     ],

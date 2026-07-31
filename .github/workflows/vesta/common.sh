@@ -802,15 +802,17 @@ ensure_jsc() {
 }
 
 # Ensure the agent has an AnonCreds credential type (needed to mint DIDComm
-# credential offers to personal wallets). Matched by name. The agent derives
-# the attributes from the referenced VTJSC (the API accepts either a
-# relatedJsonSchemaCredentialId or an explicit attribute list, not both).
-# Usage: ensure_anoncreds_credential_type <admin_api> <name> <version> <related_jsc_url>
+# credential offers to personal wallets). Matched by name. Pass a VTJSC URL
+# to derive the attributes from the anchored schema, or an explicit
+# comma-separated attribute list for an unanchored type (the impostor's
+# badge) — the API accepts one or the other, not both.
+# Usage: ensure_anoncreds_credential_type <admin_api> <name> <version> <related_jsc_url|""> [attrs_csv]
 ensure_anoncreds_credential_type() {
   local admin_api=$1
   local name=$2
   local version=$3
   local jsc_url=$4
+  local attrs_csv=${5:-}
 
   local existing
   existing=$(curl -sf "${admin_api}/v1/credential-types" \
@@ -822,11 +824,19 @@ ensure_anoncreds_credential_type() {
 
   log "Creating AnonCreds credential type '$name'..."
   local body http
-  body=$(jq -n \
-    --arg n "$name" \
-    --arg v "$version" \
-    --arg r "$jsc_url" \
-    '{name: $n, version: $v, relatedJsonSchemaCredentialId: $r}')
+  if [ -n "$jsc_url" ]; then
+    body=$(jq -n \
+      --arg n "$name" \
+      --arg v "$version" \
+      --arg r "$jsc_url" \
+      '{name: $n, version: $v, relatedJsonSchemaCredentialId: $r}')
+  else
+    body=$(jq -n \
+      --arg n "$name" \
+      --arg v "$version" \
+      --argjson a "$(echo "$attrs_csv" | jq -R 'split(",")')" \
+      '{name: $n, version: $v, attributes: $a}')
+  fi
   http=$(curl -s -o /tmp/ct_resp.json -w '%{http_code}' \
     -X POST "${admin_api}/v1/credential-types" \
     -H 'Content-Type: application/json' \

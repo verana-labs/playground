@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowRight, Download } from "lucide-react";
+import { ArrowRight, Download, QrCode } from "lucide-react";
 import type { PersonalWallet } from "../../lib/wallets";
 import { ServiceQr } from "../../components/ServiceQr";
 import { Chip } from "../../components/ui";
@@ -62,6 +62,8 @@ export default function DemoWalletFlow({
   const [selectedId, setSelectedId] = useState<string>(
     wallets.some((w) => w.id === initial) ? (initial as string) : wallets[0]?.id,
   );
+  // One QR at a time: revealing an offer hides the others.
+  const [activeOffer, setActiveOffer] = useState<string | null>(null);
   const wallet = useMemo(
     () => wallets.find((w) => w.id === selectedId) ?? wallets[0],
     [wallets, selectedId],
@@ -69,6 +71,7 @@ export default function DemoWalletFlow({
 
   const select = (id: string) => {
     setSelectedId(id);
+    setActiveOffer(null);
     router.replace(`${pathname}?wallet=${id}`, { scroll: false });
   };
 
@@ -179,14 +182,7 @@ export default function DemoWalletFlow({
               {o.expect}
             </p>
             <div className="mt-4 border-t border-gray-100 pt-4">
-              {badgeReady ? (
-                <ServiceQr
-                  serviceId={o.serviceId}
-                  label={o.org}
-                  format="anoncreds"
-                  credential="ecs-badge"
-                />
-              ) : (
+              {!badgeReady ? (
                 <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-4 py-3 text-xs leading-relaxed text-gray-500">
                   The ECS-Badge demo runs over AnonCreds/DIDComm today, which{" "}
                   {wallet.name} does not support yet. Pick Hologram above, or
@@ -199,20 +195,33 @@ export default function DemoWalletFlow({
                   </Link>{" "}
                   with {wallet.name}.
                 </div>
+              ) : activeOffer === o.serviceId ? (
+                <ServiceQr
+                  serviceId={o.serviceId}
+                  label={o.org}
+                  format="anoncreds"
+                  credential="ecs-badge"
+                  bare
+                />
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setActiveOffer(o.serviceId)}
+                  className="flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed border-gray-300 px-4 py-6 text-gray-400 transition-colors hover:border-violet-300 hover:text-violet-600"
+                >
+                  <QrCode className="h-10 w-10" aria-hidden />
+                  <span className="text-xs font-medium">
+                    Click to reveal the QR code
+                  </span>
+                </button>
               )}
             </div>
-            {o.tone === "red" && badgeReady ? (
-              <p className="mt-2 text-[11px] leading-relaxed text-gray-400">
-                Scanning connects you to the impostor - your wallet shows the
-                red verdict before anything is exchanged.
-              </p>
-            ) : null}
           </div>
         ))}
       </div>
       <p className="text-xs text-gray-400">
-        Each QR is minted live by the issuing service the moment it scrolls
-        into view - an out-of-band DIDComm credential offer for your wallet.
+        Each QR is minted live by the issuing service when you reveal it - a
+        single-use out-of-band DIDComm action for your wallet.
       </p>
       {!badgeReady ? null : (
         <Chip tone="verified">Works with {wallet.name} - AnonCreds/DIDComm</Chip>

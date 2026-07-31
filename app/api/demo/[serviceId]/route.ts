@@ -70,14 +70,21 @@ export async function GET(
   const format = search.get("format") ?? "anoncreds";
   // "demo-credential" (default) or "ecs-badge" (the Vesta chapter-4 demo).
   const credential = search.get("credential") ?? "demo-credential";
+  const isBadge = credential === "ecs-badge";
   const service = getDemoService(serviceId);
   if (!service)
     return NextResponse.json({ error: "unknown service" }, { status: 404 });
 
-  // Only the Playground cast has reachable admin APIs; anything else (and
-  // the untrusted service, by design) gets its plain connection invitation.
+  // Only the Playground cast has reachable admin APIs; anything else (and,
+  // outside the badge demo, the untrusted service) gets its plain connection
+  // invitation. For the badge demo the untrusted impostor DOES mint offers:
+  // the wallet flags them red, and the portal refuses the badge at login.
   const isCast = service.host.endsWith(CAST_DOMAIN);
-  if (!isCast || service.role === "untrusted" || service.role === "anchor") {
+  if (
+    !isCast ||
+    service.role === "anchor" ||
+    (service.role === "untrusted" && !isBadge)
+  ) {
     return NextResponse.json({
       kind: "invitation",
       url: service.appUrl ?? null,
@@ -138,18 +145,17 @@ export async function GET(
   }
 
   try {
-    if (service.role === "issuer") {
-      const badge = credential === "ecs-badge";
-      const credentialDefinitionId = badge
+    if (service.role === "issuer" || (isBadge && service.role === "untrusted")) {
+      const credentialDefinitionId = isBadge
         ? await badgeCredDefId(admin)
         : await demoCredDefId(admin);
       if (!credentialDefinitionId)
         return NextResponse.json(
-          { error: `no ${badge ? "ECS-Badge" : "DemoCredential"} credential type on this issuer` },
+          { error: `no ${isBadge ? "ECS-Badge" : "DemoCredential"} credential type on this issuer` },
           { status: 503 },
         );
-      const claims = badge
-        ? badgeDemoClaims(serviceId.toUpperCase().slice(0, 6))
+      const claims = isBadge
+        ? badgeDemoClaims(serviceId)
         : [
             { name: "name", value: "Playground Visitor" },
             { name: "demoId", value: `demo-${crypto.randomUUID().slice(0, 8)}` },

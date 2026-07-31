@@ -73,6 +73,7 @@ export function ServiceQr({
   label,
   format = "anoncreds",
   credential,
+  bare = false,
 }: {
   serviceId: string;
   label: string;
@@ -81,6 +82,9 @@ export function ServiceQr({
   /** Which credential the demo mints (default: the DemoCredential);
    *  "ecs-badge" mints the Vesta chapter-4 badge offer. */
   credential?: string;
+  /** Render only the QR itself - no card wrapper, no URL, no caption.
+   *  Used when the QR sits inside the caller's own card. */
+  bare?: boolean;
 }) {
   const [revealed, setRevealed] = useState(false);
   const [appUrl, setAppUrl] = useState<string | null | undefined>(undefined);
@@ -209,6 +213,15 @@ export function ServiceQr({
     );
   } else if (!appUrl || qrFailed) {
     content = <UnavailableCard onRetry={retry} />;
+  } else if (bare) {
+    content = (
+      <div className="flex justify-center">
+        <div className="flex h-40 w-40 shrink-0 items-center justify-center rounded-xl border border-gray-100 bg-white p-2">
+          {/* eslint-disable-next-line @next/next/no-img-element -- generated data: URI, not a static asset next/image can optimize */}
+          <img src={qrDataUrl} alt={`${label} QR`} className="h-full w-full" />
+        </div>
+      </div>
+    );
   } else {
     content = (
       <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">

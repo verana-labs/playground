@@ -40,10 +40,24 @@ Secrets: `PLAYGROUND_MNEMONIC`, `KUBECONFIG_VERANA_DEV`, `K8S_NAMESPACE`
 
 ## Dual rail
 
-The cast runs the oidc4vc-enabled build `veranalabs/vs-agent:v1.12.0-oidc4vc.2`
-(`deployment.template.yaml` → `image.tag`): the DemoCredential is served over
-AnonCreds/DIDComm (Track N wallets — Hologram) and OpenID4VCI/OpenID4VP
-(Track B wallets).
+The DemoCredential is served over AnonCreds/DIDComm (Track N wallets, Hologram)
+and OpenID4VCI/OpenID4VP SD-JWT (Track B wallets):
+
+- The anchor and `demo-untrusted` run the plain image
+  (`deployment.template.yaml` defaults).
+- The four issuer/verifier services set `OID4VC_ROLE` in their `config.env`,
+  which switches them to `veranalabs/vs-agent-openid4vc` + the oid4vc-enabled
+  chart and injects their `openid4vc.json` (rendered from
+  `oid4vc/<role>.json.tpl` by `scripts/render-oid4vc-config.sh`).
+- Development signing is used: each agent self-generates its P-256 leaf and
+  publishes the key to its DID document. Verifier configs pin the issuers'
+  leaf fingerprints, read live from each issuer's
+  `GET /v1/oid4vc/certificates` at deploy time - so **deploy the issuers
+  (demo-02, demo-03) before the verifiers (demo-04, demo-05)** whenever the
+  oid4vc setup changes.
+- Both rails share the ecosystem VTJSC and one canonical `vct` URL; a
+  presentation is accepted only when the Verana resolver returns
+  TRUSTED_AUTHORIZED for the credential's issuer.
 
 ## Monitoring invariant
 

@@ -28,6 +28,11 @@ on:
 env:
   NETWORK: testnet
   VERANAD_VERSION: v0.9.5
+  # OpenID4VC-enabled build for orgs with OID4VC_ROLE set (image bundles the
+  # openid4vc plugin; the chart version carries the oid4vc.config support).
+  OID4VC_IMAGE_REPOSITORY: veranalabs/vs-agent-openid4vc
+  OID4VC_IMAGE_TAG: v1.12.0-oidc4vc.3
+  OID4VC_CHART_VERSION: v1.12.0-oidc4vc.3
 
 jobs:
   run:
@@ -75,6 +80,9 @@ jobs:
         run: |
           CHART_SOURCE=$(yq '.chartSource' /tmp/deployment-resolved.yaml)
           CHART_VERSION=$(yq '.chartVersion' /tmp/deployment-resolved.yaml)
+          if [ -n "${OID4VC_ROLE:-}" ]; then
+            CHART_VERSION="${OID4VC_CHART_VERSION}"
+          fi
           CHART_NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
           echo "CHART_SOURCE=${CHART_SOURCE}" >> "$GITHUB_ENV"
           echo "CHART_VERSION=${CHART_VERSION}" >> "$GITHUB_ENV"
@@ -120,8 +128,17 @@ jobs:
           yq 'del(.chartSource, .chartVersion)' /tmp/deployment-resolved.yaml > /tmp/helm-values.yaml
           yq -i '.didcommLabel = env(SERVICE_NAME)' /tmp/helm-values.yaml
           yq -i '.didcommInvitationImageUrl = env(SERVICE_LOGO_URL)' /tmp/helm-values.yaml
-          echo "--- Helm values ---"
-          cat /tmp/helm-values.yaml
+          if [ -n "${OID4VC_ROLE:-}" ]; then
+            export NAMESPACE="$CHART_NAMESPACE"
+            export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/demo"
+            OID4VC_CONFIG_JSON=$(bash "${CAST_DIR}/scripts/render-oid4vc-config.sh")
+            export OID4VC_CONFIG_JSON
+            yq -i '.image.repository = env(OID4VC_IMAGE_REPOSITORY)' /tmp/helm-values.yaml
+            yq -i '.image.tag = env(OID4VC_IMAGE_TAG)' /tmp/helm-values.yaml
+            yq -i '.oid4vc.config = strenv(OID4VC_CONFIG_JSON)' /tmp/helm-values.yaml
+          fi
+          echo "--- Helm values (oid4vc config elided) ---"
+          yq 'del(.oid4vc)' /tmp/helm-values.yaml
           helm upgrade --install "$RELEASE_NAME" "$CHART_SOURCE" \
             --version "$CHART_VERSION" \
             --namespace "$CHART_NAMESPACE" --create-namespace \

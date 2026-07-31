@@ -576,6 +576,11 @@ export const DEMOS = {
     "Download one of the integrated personal wallets to run the demos - every wallet shows the same verdicts, the same way.",
   verifyRule:
     "Always verify the certified Organization name and data shown in the Proof-of-Trust card in your wallet before proceeding.",
+  chooseWallet: {
+    title: "Choose a wallet",
+    intro:
+      "Pick one of the integrated personal wallets and install it - the demo QR codes below are minted for your wallet.",
+  },
   badge: {
     title: "Obtain an ECS-Badge",
     intro: "Request a badge and watch your wallet check the issuer first:",

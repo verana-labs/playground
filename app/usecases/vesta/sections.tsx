@@ -26,7 +26,11 @@ import { Container, Section, SectionHeading, Chip } from "../../components/ui";
 import ServiceTrustCard from "../../components/ServiceTrustCard";
 import { DidBadge } from "../../components/Did";
 import { listPersonalWallets } from "../../lib/wallets";
-import DemoWalletFlow, { type BadgeOffer } from "./DemoWalletFlow";
+import {
+  BadgeOffers,
+  WalletChooser,
+  type BadgeOffer,
+} from "./DemoWalletFlow";
 import StoryDiagram from "../../components/StoryDiagram";
 import {
   CLOSING,
@@ -949,14 +953,25 @@ export function Section4() {
             {DEMOS.verifyRule}
           </p>
 
-          {/* Demo 1 · Obtain an ECS-Badge - pick a wallet, install it, scan */}
+          {/* Choose a wallet - picker + install, mirrors /personal-wallets */}
           <div>
+            <SubHeading>{DEMOS.chooseWallet.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.chooseWallet.intro}
+            </p>
+            <Suspense>
+              <WalletChooser wallets={listPersonalWallets()} />
+            </Suspense>
+          </div>
+
+          {/* Demo 1 · Obtain an ECS-Badge */}
+          <div className="mt-14">
             <SubHeading>{DEMOS.badge.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.badge.intro}
             </p>
             <Suspense>
-              <DemoWalletFlow
+              <BadgeOffers
                 wallets={listPersonalWallets()}
                 offers={DEMOS.badge.offers as unknown as BadgeOffer[]}
               />

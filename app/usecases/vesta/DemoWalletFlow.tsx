@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Download, QrCode } from "lucide-react";
@@ -8,12 +8,13 @@ import type { PersonalWallet } from "../../lib/wallets";
 import { ServiceQr } from "../../components/ServiceQr";
 import { Chip } from "../../components/ui";
 
-// The chapter-4 wallet flow: pick one of the integrated personal wallets
-// (from personal-wallets.yaml, same list as /personal-wallets), install it,
-// then run the "Obtain an ECS-Badge" demo - live OOB credential offers from
-// Vesta and Zenith, and Umbra's untrusted invitation for the red path.
-// The ECS-Badge runs on the AnonCreds/DIDComm rail (Hologram first); wallets
-// on other rails get a pointer to the DemoCredential playground.
+// The chapter-4 wallet flow, split in two sections that share the ?wallet=
+// query param: WalletChooser (pick one of the integrated personal wallets
+// from personal-wallets.yaml and install it - same buttons as the
+// /personal-wallets page) and BadgeOffers (the "Obtain an ECS-Badge" demo -
+// live OOB credential offers revealed one at a time). The ECS-Badge runs on
+// the AnonCreds/DIDComm rail (Hologram first); wallets on other rails get a
+// pointer to the DemoCredential playground.
 
 export type BadgeOffer = {
   org: string;
@@ -21,6 +22,24 @@ export type BadgeOffer = {
   expect: string;
   tone: "emerald" | "red";
 };
+
+function useSelectedWallet(wallets: PersonalWallet[]) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const initial = searchParams.get("wallet");
+  const selectedId = wallets.some((w) => w.id === initial)
+    ? (initial as string)
+    : wallets[0]?.id;
+  const wallet = wallets.find((w) => w.id === selectedId) ?? wallets[0];
+
+  const select = (id: string) => {
+    router.replace(`${pathname}?wallet=${id}`, { scroll: false });
+  };
+
+  return { wallet, select };
+}
 
 function WalletIcon({ w, size = 40 }: { w: PersonalWallet; size?: number }) {
   if (w.icon) {
@@ -47,41 +66,15 @@ function WalletIcon({ w, size = 40 }: { w: PersonalWallet; size?: number }) {
   );
 }
 
-export default function DemoWalletFlow({
-  wallets,
-  offers,
-}: {
-  wallets: PersonalWallet[];
-  offers: BadgeOffer[];
-}) {
-  const router = useRouter();
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
-
-  const initial = searchParams.get("wallet");
-  const [selectedId, setSelectedId] = useState<string>(
-    wallets.some((w) => w.id === initial) ? (initial as string) : wallets[0]?.id,
-  );
-  // One QR at a time: revealing an offer hides the others.
-  const [activeOffer, setActiveOffer] = useState<string | null>(null);
-  const wallet = useMemo(
-    () => wallets.find((w) => w.id === selectedId) ?? wallets[0],
-    [wallets, selectedId],
-  );
-
-  const select = (id: string) => {
-    setSelectedId(id);
-    setActiveOffer(null);
-    router.replace(`${pathname}?wallet=${id}`, { scroll: false });
-  };
-
+/** Wallet picker + install panel - the download options mirror the
+ *  /personal-wallets page exactly (labels and links from
+ *  personal-wallets.yaml). */
+export function WalletChooser({ wallets }: { wallets: PersonalWallet[] }) {
+  const { wallet, select } = useSelectedWallet(wallets);
   if (!wallet) return null;
 
-  const badgeReady = wallet.formats.includes("anoncreds");
-
   return (
-    <div className="mt-6 space-y-6">
-      {/* Wallet picker */}
+    <div className="mt-6 space-y-4">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {wallets.map((w) => (
           <button
@@ -108,63 +101,121 @@ export default function DemoWalletFlow({
         ))}
       </div>
 
-      {/* Install panel for the selected wallet */}
-      <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-        <div className="flex flex-wrap items-center gap-4">
-          <WalletIcon w={wallet} size={48} />
-          <span className="min-w-0 flex-1">
-            <span className="block text-lg font-bold tracking-tight text-gray-900">
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+        <div className="mb-4 flex flex-wrap items-center gap-4">
+          <WalletIcon w={wallet} size={56} />
+          <span className="min-w-0">
+            <span className="block text-xl font-bold tracking-tight text-gray-900">
               {wallet.name}
             </span>
-            <span className="block text-sm text-gray-500">{wallet.vendor}</span>
-          </span>
-          <span className="flex flex-wrap items-center gap-2">
-            <a
-              href={wallet.download}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-violet-600 px-3.5 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700"
-            >
-              <Download className="h-4 w-4" aria-hidden />
-              {wallet.verana_builtin ? "Get the app" : "Download the APK"}
-            </a>
-            {wallet.appstore && wallet.appstore !== wallet.download ? (
+            {wallet.website ? (
               <a
-                href={wallet.appstore}
+                href={wallet.website}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:border-violet-300 hover:text-violet-700"
+                className="block text-sm text-gray-500 hover:text-violet-700 hover:underline"
               >
-                App Store
+                {wallet.vendor}
               </a>
-            ) : null}
-            {wallet.web ? (
-              <a
-                href={wallet.web}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-xl border border-gray-200 px-3 py-2 text-sm text-gray-600 transition-colors hover:border-violet-300 hover:text-violet-700"
-              >
-                Web wallet
-              </a>
-            ) : null}
+            ) : (
+              <span className="block text-sm text-gray-500">{wallet.vendor}</span>
+            )}
           </span>
         </div>
-        <p className="mt-3 text-sm leading-relaxed text-gray-600">
-          {wallet.verana_builtin
-            ? `${wallet.name} supports Verana out of the box - install the standard build, no special version needed.`
-            : `Install the Verana-integrated build of ${wallet.name} from the download link - store builds may not include the integration.`}{" "}
+        {wallet.verana_builtin ? (
+          <p className="text-sm leading-relaxed text-gray-600">
+            {wallet.name} supports Verana{" "}
+            <strong className="font-semibold text-gray-900">
+              out of the box
+            </strong>{" "}
+            - install the standard build from the links below; no special
+            version needed.
+          </p>
+        ) : (
+          <p className="text-sm leading-relaxed text-gray-600">
+            Download the{" "}
+            <strong className="font-semibold text-gray-900">
+              modified APK
+            </strong>{" "}
+            by clicking the link below - it is the Verana-integrated build of{" "}
+            {wallet.name}, configured for the testnet. Store builds may not
+            include the integration.
+          </p>
+        )}
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <a
+            href={wallet.download}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700"
+          >
+            <Download className="h-4 w-4" />{" "}
+            {wallet.verana_builtin
+              ? "Get the wallet"
+              : "Download the modified APK"}
+          </a>
+          {wallet.playstore ? (
+            <a
+              href={wallet.playstore}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+            >
+              Google Play
+            </a>
+          ) : null}
+          {wallet.appstore ? (
+            <a
+              href={wallet.appstore}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+            >
+              App Store
+            </a>
+          ) : null}
+          {wallet.web ? (
+            <a
+              href={wallet.web}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
+            >
+              Open the web wallet
+            </a>
+          ) : null}
+        </div>
+        <p className="mt-3 text-sm text-gray-500">
           <Link
             href={`/personal-wallets?wallet=${wallet.id}`}
-            className="whitespace-nowrap font-medium text-violet-700 hover:underline"
+            className="font-medium text-violet-700 hover:underline"
           >
-            Full wallet details
+            Full wallet details and the DemoCredential scenarios
             <ArrowRight className="ml-0.5 inline h-3.5 w-3.5 align-[-2px]" aria-hidden />
           </Link>
         </p>
       </div>
+    </div>
+  );
+}
 
-      {/* The three badge offers */}
+/** The three badge offers - QR revealed on click, one at a time. */
+export function BadgeOffers({
+  wallets,
+  offers,
+}: {
+  wallets: PersonalWallet[];
+  offers: BadgeOffer[];
+}) {
+  const { wallet } = useSelectedWallet(wallets);
+  // One QR at a time: revealing an offer hides the others.
+  const [activeOffer, setActiveOffer] = useState<string | null>(null);
+  if (!wallet) return null;
+
+  const badgeReady = wallet.formats.includes("anoncreds");
+
+  return (
+    <div className="mt-6 space-y-6">
       <div className="reveal-stagger grid gap-4 sm:grid-cols-3">
         {offers.map((o) => (
           <div

@@ -17,7 +17,14 @@ delegated sub-services; the fifth is deliberately unprovisioned:
 | demo-03 | `demo-issuer-unaccredited` | TRUSTED | none, by design |
 | demo-04 | `demo-verifier-accredited` | TRUSTED | VERIFIER (open) |
 | demo-05 | `demo-verifier-unaccredited` | TRUSTED | none, by design |
-| demo-06 | `demo-untrusted` | UNTRUSTED | n/a — deploy-only, serves both trios |
+| demo-06 | `demo-untrusted` | UNTRUSTED | n/a — deploy-only, DIDComm only, superseded by 07/08 |
+| demo-07 | `demo-issuer-untrusted` | UNTRUSTED | n/a — deploy-only, `OID4VC_ROLE=issuer` |
+| demo-08 | `demo-verifier-untrusted` | UNTRUSTED | n/a — deploy-only, `OID4VC_ROLE=verifier` |
+
+Seven agents, one per case a wallet has to render: the anchor, then a trio each
+side. `demo-06` predates the OID4VC rail and carries no `OID4VC_ROLE`, so it only
+speaks DIDComm and a Track B wallet has no untrusted counterparty to exercise at
+all. `demo-07` and `demo-08` fix that; tear `demo-06` down once they are up.
 
 ## Running
 
@@ -32,7 +39,8 @@ group):
 2. `demo-01` — anchor: ECS-Org (from Helvetia) + self ECS-Service + trust
    registry + DemoCredential schema + root permission + VTJSC.
 3. `demo-02` … `demo-05` — delegated services + their `DEMO_PERM`.
-4. `demo-06` — deploy-only.
+4. `demo-06` … `demo-08` — deploy-only. Run 07/08 after the accredited
+   issuers, the verifier role reads their fingerprints.
 
 Secrets: `PLAYGROUND_MNEMONIC`, `KUBECONFIG_VERANA_DEV`, `K8S_NAMESPACE`
 (same as the vesta cast). `common.sh` is shared from

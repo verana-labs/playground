@@ -12,7 +12,7 @@ describe("demo services", () => {
       "playground-demo",
       "demo-issuer-accredited", "demo-issuer-unaccredited",
       "demo-verifier-accredited", "demo-verifier-unaccredited",
-      "demo-untrusted",
+      "demo-issuer-untrusted", "demo-verifier-untrusted", "demo-untrusted",
       "organization-vs", "issuer-chatbot-vs", "issuer-web-vs",
       "verifier-chatbot-vs", "verifier-web-vs",
       "mosip-organization-vs", "unfold-organization-vs",
@@ -35,7 +35,7 @@ describe("demo services", () => {
     for (const id of [
       "demo-issuer-accredited", "demo-issuer-unaccredited",
       "demo-verifier-accredited", "demo-verifier-unaccredited",
-      "demo-untrusted",
+      "demo-issuer-untrusted", "demo-verifier-untrusted", "demo-untrusted",
     ]) {
       expect(getDemoService(id)?.appUrl).toBe(
         `https://${id}.playground.testnet.verana.network/invitation`,

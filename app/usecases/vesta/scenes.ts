@@ -82,6 +82,8 @@ export type SceneEdge = {
   curve?: number;
   /** Label position along the edge, 0..1 (default 0.5). */
   labelT?: number;
+  /** Stroke width multiplier (default 1) - e.g. 0.7 for minor edges. */
+  width?: number;
 };
 
 export type SceneBadge = {
@@ -215,6 +217,7 @@ export const NODES: SceneNode[] = [
   // the freshly accredited Vesta issuer.
   {
     id: "emp1",
+    r: 15,
     x: 150,
     y: 455,
     icon: "user",
@@ -225,6 +228,7 @@ export const NODES: SceneNode[] = [
   },
   {
     id: "emp2",
+    r: 15,
     x: 300,
     y: 470,
     icon: "user",
@@ -236,6 +240,7 @@ export const NODES: SceneNode[] = [
   },
   {
     id: "emp3",
+    r: 15,
     x: 450,
     y: 455,
     icon: "user",
@@ -364,9 +369,9 @@ export const EDGES: SceneEdge[] = [
   { id: "e-vesta-badgeSvc", from: "vesta", to: "badgeSvc", appears: "3.0", label: "runs its services", tone: "gray", labelT: 0.55 },
   { id: "e-vesta-portal", from: "vesta", to: "portal", appears: "3.0", until: "3.5", tone: "gray" },
   { id: "e-vesta-portal-svc", from: "vesta", to: "portal", appears: "3.5", label: "issues ECS-Service", tone: "emerald", labelT: 0.55 },
-  { id: "e-vesta-emp1", from: "vesta", to: "emp1", appears: "3.4", until: "3.5", tone: "emerald" },
-  { id: "e-vesta-emp2", from: "vesta", to: "emp2", appears: "3.4", until: "3.5", label: "issues ECS-Badge", tone: "emerald", labelT: 0.55 },
-  { id: "e-vesta-emp3", from: "vesta", to: "emp3", appears: "3.4", until: "3.5", tone: "emerald" },
+  { id: "e-vesta-emp1", from: "vesta", to: "emp1", appears: "3.4", until: "3.5", width: 0.7, tone: "emerald" },
+  { id: "e-vesta-emp2", from: "vesta", to: "emp2", appears: "3.4", until: "3.5", width: 0.7, label: "issues ECS-Badge", tone: "emerald", labelT: 0.55 },
+  { id: "e-vesta-emp3", from: "vesta", to: "emp3", appears: "3.4", until: "3.5", width: 0.7, tone: "emerald" },
   { id: "e-customer-support", from: "customer", to: "support", appears: "3.0", label: "contacts support…", tone: "gray", dashed: true, curve: 40, labelT: 0.45 },
   { id: "e-customer-fake", from: "customer", to: "fakeSupport", appears: "3.0", label: "…or the fake one? can't tell", tone: "red", dashed: true, curve: -20, labelT: 0.5 },
   { id: "e-umbra-customer", from: "umbra", to: "customer", appears: "3.0", label: "rings the doorbell", tone: "red", dashed: true, curve: 30, labelT: 0.4 },
@@ -614,6 +619,36 @@ export const CREDENTIALS: Record<string, NodeCredential[]> = {
       appears: "3.6",
     },
   ],
+  emp1: [
+    {
+      name: "ECS-Badge",
+      tone: "emerald",
+      issuedBy: "Vesta Appliances (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.4",
+      note: "Held by a Vesta employee in their Personal Wallet.",
+    },
+  ],
+  emp2: [
+    {
+      name: "ECS-Badge",
+      tone: "emerald",
+      issuedBy: "Vesta Appliances (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.4",
+      note: "Held by a Vesta employee in their Personal Wallet.",
+    },
+  ],
+  emp3: [
+    {
+      name: "ECS-Badge",
+      tone: "emerald",
+      issuedBy: "Vesta Appliances (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.4",
+      note: "Held by a Vesta employee in their Personal Wallet.",
+    },
+  ],
   techWallet: [
     {
       name: "ECS-Badge",
@@ -723,9 +758,6 @@ export const NODE_NOTES: Record<string, string> = {
     "A person - holds credentials in a Personal Wallet rather than presenting service credentials.",
   techWallet:
     "A Zenith technician's Personal Wallet - it holds the badge shown at the portal and at the front door.",
-  emp1: "A Vesta employee's Personal Wallet - holds the ECS-Badge issued by Vesta Appliances.",
-  emp2: "A Vesta employee's Personal Wallet - holds the ECS-Badge issued by Vesta Appliances.",
-  emp3: "A Vesta employee's Personal Wallet - holds the ECS-Badge issued by Vesta Appliances.",
   ecs: "A trust ecosystem (registry root) - and a verifiable service itself: it governs the essential credential schemas and accredits issuers.",
   iso: "A trust ecosystem (demo) - and a verifiable service itself: it governs the ISO 9001 credential schema; accredited certification bodies issue it.",
   vestaEco:

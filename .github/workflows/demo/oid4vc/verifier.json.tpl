@@ -11,7 +11,7 @@
   },
   "trust": {
     "resolverUrl": "https://resolver.__NETWORK__.verana.network/v1/trust",
-    "timeoutMs": 10000,
+    "timeoutMs": 45000,
     "allowedDidWebHosts": [
       "demo-issuer-accredited.playground.__NETWORK__.verana.network",
       "demo-issuer-unaccredited.playground.__NETWORK__.verana.network"

@@ -1,7 +1,8 @@
 {
   "issuer": {
-    "id": "demo",
+    "id": "demo-did",
     "displayName": "__SERVICE_NAME__",
+    "metadataSigner": "did",
     "signing": {
       "development": {
         "enabled": true,
@@ -17,8 +18,20 @@
       "name": "ECS-Badge",
       "description": "Employee badge of the Vesta cast (ECS BadgeCredential, demo)",
       "vtjscId": "https://vesta.playground.__NETWORK__.verana.network/vt/schemas-badge-jsc.json",
-      "claims": ["badgeNumber", "name", "photo", "title", "department"],
-      "disclosureFrame": ["badgeNumber", "name", "photo", "title", "department"],
+      "claims": [
+        "badgeNumber",
+        "name",
+        "photo",
+        "title",
+        "department"
+      ],
+      "disclosureFrame": [
+        "badgeNumber",
+        "name",
+        "photo",
+        "title",
+        "department"
+      ],
       "ttlSeconds": 2592000
     }
   ],

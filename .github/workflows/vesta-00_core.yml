@@ -32,8 +32,8 @@ env:
   # openid4vc plugin; the chart version carries the oid4vc.config support).
   # Keep in sync with demo-00_core.yml.
   OID4VC_IMAGE_REPOSITORY: veranalabs/vs-agent-openid4vc
-  OID4VC_IMAGE_TAG: v1.12.0-oidc4vc.6
-  OID4VC_CHART_VERSION: v1.12.0-oidc4vc.6
+  OID4VC_IMAGE_TAG: v1.12.0-oidc4vc.7
+  OID4VC_CHART_VERSION: v1.12.0-oidc4vc.7
 
 jobs:
   run:

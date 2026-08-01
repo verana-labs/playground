@@ -10,6 +10,7 @@ import {
   ShieldQuestion,
 } from "lucide-react";
 import { Container, Section, SectionHeading, Chip } from "../components/ui";
+import { LINKS } from "../lib/site";
 import { ServiceQr } from "../components/ServiceQr";
 import LiveTrustCard from "../components/LiveTrustCard";
 import type {
@@ -319,7 +320,22 @@ export default function PersonalWalletsPlayground({
           <SectionHeading
             eyebrow="Purpose"
             title="What you'll test"
-            subtitle="A Verana-integrated wallet answers three questions for you, at the right moments - before you connect, before you accept, before you share. The six demos below make each answer visible, in green and in red."
+            subtitle={
+              <>
+                A{" "}
+                <a
+                  href={LINKS.vuaDefinition}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-violet-700 hover:underline"
+                >
+                  Verifiable User Agent (VUA)
+                </a>{" "}
+                wallet answers three questions for you, at the right moments -
+                before you connect, before you accept, before you share. The
+                six demos below make each answer visible, in green and in red.
+              </>
+            }
           />
           <div className="grid gap-4 md:grid-cols-3">
             {QUESTIONS.map((q) => (

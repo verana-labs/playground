@@ -57,7 +57,7 @@ wallets:
         caption: "An untrusted verifier: self-issued claims withheld, sharing refused"
     video:
       src: ./paradym/demo.mp4
-      note: Real device. Silent.
+      note: Real device, camera scan of the QR codes on this page, live against the demo cast. The six scenarios recorded separately and joined end to end, silent, otherwise unedited.
 
   - id: procivis
     name: Procivis One Wallet

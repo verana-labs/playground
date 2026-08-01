@@ -176,29 +176,56 @@ function ScenarioCapture({
   walletName,
   position,
 }: {
-  capture: { src: string; caption?: string };
+  capture: { src: string; caption?: string; clip?: string };
   walletName: string;
   position: "side" | "bottom";
 }) {
+  // Still and clip sit side by side rather than stacked: both are phone-shaped, so stacking
+  // them doubles the column height and leaves the trust card beside it floating in a void.
+  const media =
+    position === "side"
+      ? "w-full min-w-0"
+      : "mx-auto max-h-72 w-auto max-w-full";
   return (
     <figure
       className={
         position === "side"
-          ? "mx-auto mt-4 w-full max-w-[200px] md:mx-0 md:mt-0"
+          ? `mx-auto mt-4 w-full md:mx-0 md:mt-0 ${
+              capture.clip ? "max-w-[320px]" : "max-w-[200px]"
+            }`
           : "mt-4"
       }
     >
-      {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized captures from wallets/ */}
-      <img
-        src={capture.src}
-        alt={capture.caption ?? `${walletName} capture`}
-        loading="lazy"
-        className={`rounded-xl border border-gray-200 bg-gray-50 ${
-          position === "side"
-            ? "w-full"
-            : "mx-auto max-h-72 w-auto max-w-full"
-        }`}
-      />
+      <div
+        className={
+          capture.clip
+            ? "flex items-start gap-3"
+            : position === "bottom"
+              ? ""
+              : "block"
+        }
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized captures from wallets/ */}
+        <img
+          src={capture.src}
+          alt={capture.caption ?? `${walletName} capture`}
+          loading="lazy"
+          className={`rounded-xl border border-gray-200 bg-gray-50 ${media}`}
+        />
+        {/* No poster: with the still as poster the clip reads as a duplicate of the capture
+            beside it. Its own first frame is the wallet home screen, which says "video". */}
+        {capture.clip ? (
+          <video
+            controls
+            playsInline
+            preload="metadata"
+            aria-label={`${walletName} running this scenario`}
+            className={`rounded-xl border border-gray-200 bg-black ${media}`}
+          >
+            <source src={capture.clip} type="video/mp4" />
+          </video>
+        ) : null}
+      </div>
       {capture.caption ? (
         <figcaption className="mt-1.5 text-center text-xs text-gray-500">
           {capture.caption}
@@ -216,7 +243,7 @@ function ScenarioCard({
 }: {
   s: Scenario;
   format: CredentialFormat;
-  capture?: { src: string; caption?: string };
+  capture?: { src: string; caption?: string; clip?: string };
   walletName: string;
 }) {
   const orientation = useImageOrientation(capture?.src);
@@ -250,7 +277,9 @@ function ScenarioCard({
       <div
         className={
           sideCapture
-            ? "mt-4 md:grid md:grid-cols-[minmax(0,1fr)_200px] md:gap-4"
+            ? capture?.clip
+              ? "mt-4 md:grid md:grid-cols-[minmax(0,1fr)_320px] md:gap-4"
+              : "mt-4 md:grid md:grid-cols-[minmax(0,1fr)_200px] md:gap-4"
             : "mt-4"
         }
       >

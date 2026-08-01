@@ -48,13 +48,28 @@ wallets:
     captures:
       issue-accredited:
         src: ./paradym/screenshots/1.webp
-        caption: "An accredited issuer: identity verified, authorized for this credential, accept enabled"
+        clip: ./paradym/clips/1-issuer-accredited.mp4
+        caption: "Accredited issuer: identity verified, authorized for this credential, accept enabled"
       issue-unaccredited:
         src: ./paradym/screenshots/2.webp
+        clip: ./paradym/clips/2-issuer-unaccredited.mp4
         caption: Identified but not accredited to issue this credential, so accept is blocked
-      present-untrusted:
+      issue-untrusted:
         src: ./paradym/screenshots/3.webp
-        caption: "An untrusted verifier: self-issued claims withheld, sharing refused"
+        clip: ./paradym/clips/3-issuer-untrusted.mp4
+        caption: "Untrusted issuer: self-issued claims withheld, accept blocked"
+      present-accredited:
+        src: ./paradym/screenshots/4.webp
+        clip: ./paradym/clips/4-verifier-accredited.mp4
+        caption: "Accredited verifier: authorized to request this credential, sharing allowed"
+      present-unaccredited:
+        src: ./paradym/screenshots/5.webp
+        clip: ./paradym/clips/5-verifier-unaccredited.mp4
+        caption: Identified but not authorized to ask for this credential, so sharing is refused
+      present-untrusted:
+        src: ./paradym/screenshots/6.webp
+        clip: ./paradym/clips/6-verifier-untrusted.mp4
+        caption: "Untrusted verifier: self-issued claims withheld, sharing refused"
     video:
       src: ./paradym/demo.mp4
       note: Real device, camera scan of the QR codes on this page, live against the demo cast. The six scenarios recorded separately and joined end to end, silent, otherwise unedited.

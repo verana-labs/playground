@@ -1,7 +1,8 @@
 {
   "issuer": {
-    "id": "demo",
+    "id": "demo-did",
     "displayName": "__SERVICE_NAME__",
+    "metadataSigner": "did",
     "signing": {
       "development": {
         "enabled": true,
@@ -17,8 +18,14 @@
       "name": "DemoCredential",
       "description": "The DemoCredential of the Playground Ecosystem (demo)",
       "vtjscId": "https://playground-demo.playground.__NETWORK__.verana.network/vt/schemas-demo-credential-jsc.json",
-      "claims": ["name", "demoId"],
-      "disclosureFrame": ["name", "demoId"],
+      "claims": [
+        "name",
+        "demoId"
+      ],
+      "disclosureFrame": [
+        "name",
+        "demoId"
+      ],
       "ttlSeconds": 2592000
     }
   ],

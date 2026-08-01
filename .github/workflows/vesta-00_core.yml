@@ -141,7 +141,7 @@ jobs:
             export VERANA_ACCOUNT_MNEMONIC="${PLAYGROUND_MNEMONIC}"
             for VAR in VERANA_CHAIN_ID VERANA_RPC_ENDPOINT_URL VERANA_INDEXER_BASE_URL \
                        VERANA_CORPORATION_ID TRUSTED_ECS_ECOSYSTEM_DIDS VERANA_ACCOUNT_MNEMONIC \
-                       UI_NETWORK_BADGE; do
+                       ADMIN_API_AUTH_MODE UI_NETWORK_BADGE; do
               [ -n "${!VAR:-}" ] || continue
               NAME="$VAR" VALUE="${!VAR}" \
                 yq -i '.extraEnv += [{"name": strenv(NAME), "value": strenv(VALUE)}]' /tmp/helm-values.yaml

@@ -47,8 +47,14 @@ const WalletSchema = z.object({
   contact: z.string().optional(),
   notes: z.string().optional(),
   // Up to one screen capture per demo scenario (optional), keyed by the
-  // scenario id; rendered inside the corresponding demo card.
-  captures: z.partialRecord(z.enum(SCENARIO_KEYS), MediaSchema).optional(),
+  // scenario id; rendered inside the corresponding demo card. `clip` is the
+  // optional recording of that same scenario, shown beside its capture.
+  captures: z
+    .partialRecord(
+      z.enum(SCENARIO_KEYS),
+      MediaSchema.extend({ clip: z.string().optional() }),
+    )
+    .optional(),
   // A single optional video, rendered in Get-the-wallet after the download
   // link; note discloses recording conditions (speed, editing).
   video: MediaSchema.optional(),
@@ -63,7 +69,9 @@ export type PersonalWallet = Omit<
   "icon" | "captures" | "video"
 > & {
   icon?: string;
-  captures: Partial<Record<ScenarioKey, { src: string; caption?: string }>>;
+  captures: Partial<
+    Record<ScenarioKey, { src: string; caption?: string; clip?: string }>
+  >;
   video?: { src: string; note?: string };
 };
 
@@ -104,7 +112,9 @@ export function listPersonalWallets(): PersonalWallet[] {
       captures: Object.fromEntries(
         Object.entries(w.captures ?? {}).flatMap(([key, m]) => {
           const src = publicAsset(m.src);
-          return src ? [[key, { src, caption: m.caption }]] : [];
+          return src
+            ? [[key, { src, caption: m.caption, clip: publicAsset(m.clip) }]]
+            : [];
         }),
       ),
       video: videoSrc ? { src: videoSrc, note: w.video?.note } : undefined,

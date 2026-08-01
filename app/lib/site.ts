@@ -37,6 +37,8 @@ export const LINKS = {
   guidelineCloudWallet:
     "https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/business-wallet-integration.md",
   vtSpecV3: "https://verana-labs.github.io/verifiable-trust-spec/index-v3.html",
+  vuaDefinition:
+    "https://verana-labs.github.io/verifiable-trust-spec/#what-is-a-verifiable-user-agent-vua",
   vprSpecV3:
     "https://verana-labs.github.io/verifiable-trust-vpr-spec/index-v3.html",
   veranaDemos: "https://github.com/verana-labs/verana-demos",

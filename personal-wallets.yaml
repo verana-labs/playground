@@ -48,13 +48,13 @@ wallets:
     captures:
       issue-accredited:
         src: ./paradym/screenshots/1.webp
-        caption: An accredited issuer: identity verified, authorized for this credential, accept enabled
+        caption: "An accredited issuer: identity verified, authorized for this credential, accept enabled"
       issue-unaccredited:
         src: ./paradym/screenshots/2.webp
         caption: Identified but not accredited to issue this credential, so accept is blocked
       present-untrusted:
         src: ./paradym/screenshots/3.webp
-        caption: An untrusted verifier: self-issued claims withheld, sharing refused
+        caption: "An untrusted verifier: self-issued claims withheld, sharing refused"
     video:
       src: ./paradym/demo.mp4
       note: Real device. Silent.

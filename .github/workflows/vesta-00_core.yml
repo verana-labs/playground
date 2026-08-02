@@ -133,10 +133,12 @@ jobs:
             yq -i '.image.tag = env(VS_AGENT_IMAGE_TAG)' /tmp/helm-values.yaml
           fi
           # Declared Verana network for the public UI (accreditations, deep
-          # links, header badge). Orgs opt in by declaring VERANA_CHAIN_ID in
-          # their config.env.
-          if [ -n "${VERANA_CHAIN_ID:-}" ]; then
-            for VAR in VERANA_CHAIN_ID VERANA_INDEXER_BASE_URL AGENT_DIDCOMM_VERSIONS UI_NETWORK_BADGE; do
+          # links, header badge). UI_VERANA_* is UI-only: it does not enable
+          # the backend indexer integration, so the cast's manual credential
+          # provisioning keeps working. Orgs opt in by declaring
+          # UI_VERANA_CHAIN_ID in their config.env.
+          if [ -n "${UI_VERANA_CHAIN_ID:-}" ]; then
+            for VAR in UI_VERANA_CHAIN_ID UI_VERANA_INDEXER_BASE_URL UI_NETWORK_BADGE; do
               [ -n "${!VAR:-}" ] || continue
               NAME="$VAR" VALUE="${!VAR}" \
                 yq -i '.extraEnv += [{"name": strenv(NAME), "value": strenv(VALUE)}]' /tmp/helm-values.yaml

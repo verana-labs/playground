@@ -124,8 +124,6 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Deploy vs-agent via Helm
         if: inputs.step == 'deploy' || inputs.step == 'all'
-        env:
-          PLAYGROUND_MNEMONIC: ${{ secrets.PLAYGROUND_MNEMONIC }}
         run: |
           yq 'del(.chartSource, .chartVersion)' /tmp/deployment-resolved.yaml > /tmp/helm-values.yaml
           yq -i '.didcommLabel = env(SERVICE_NAME)' /tmp/helm-values.yaml
@@ -134,14 +132,11 @@ jobs:
           if [ -n "${VS_AGENT_IMAGE_TAG:-}" ]; then
             yq -i '.image.tag = env(VS_AGENT_IMAGE_TAG)' /tmp/helm-values.yaml
           fi
-          # v1.12+ images enforce the Verana network config at boot. Orgs opt in
-          # by declaring VERANA_CHAIN_ID (and friends) in their config.env; the
-          # signing mnemonic is injected from the PLAYGROUND_MNEMONIC secret.
+          # Declared Verana network for the public UI (accreditations, deep
+          # links, header badge). Orgs opt in by declaring VERANA_CHAIN_ID in
+          # their config.env.
           if [ -n "${VERANA_CHAIN_ID:-}" ]; then
-            export VERANA_ACCOUNT_MNEMONIC="${PLAYGROUND_MNEMONIC}"
-            for VAR in VERANA_CHAIN_ID VERANA_RPC_ENDPOINT_URL VERANA_INDEXER_BASE_URL \
-                       VERANA_CORPORATION_ID TRUSTED_ECS_ECOSYSTEM_DIDS VERANA_ACCOUNT_MNEMONIC \
-                       ADMIN_API_AUTH_MODE UI_NETWORK_BADGE; do
+            for VAR in VERANA_CHAIN_ID VERANA_INDEXER_BASE_URL AGENT_DIDCOMM_VERSIONS UI_NETWORK_BADGE; do
               [ -n "${!VAR:-}" ] || continue
               NAME="$VAR" VALUE="${!VAR}" \
                 yq -i '.extraEnv += [{"name": strenv(NAME), "value": strenv(VALUE)}]' /tmp/helm-values.yaml
@@ -156,8 +151,8 @@ jobs:
             yq -i '.image.tag = env(OID4VC_IMAGE_TAG)' /tmp/helm-values.yaml
             yq -i '.oid4vc.config = strenv(OID4VC_CONFIG_JSON)' /tmp/helm-values.yaml
           fi
-          echo "--- Helm values (oid4vc config and mnemonic elided) ---"
-          yq 'del(.oid4vc) | (.extraEnv[] | select(.name == "VERANA_ACCOUNT_MNEMONIC") | .value) = "***"' /tmp/helm-values.yaml
+          echo "--- Helm values (oid4vc config elided) ---"
+          yq 'del(.oid4vc)' /tmp/helm-values.yaml
           helm upgrade --install "$RELEASE_NAME" "$CHART_SOURCE" \
             --version "$CHART_VERSION" \
             --namespace "$CHART_NAMESPACE" --create-namespace \

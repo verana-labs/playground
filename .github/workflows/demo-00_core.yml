@@ -120,6 +120,10 @@ jobs:
           yq 'del(.chartSource, .chartVersion)' /tmp/deployment-resolved.yaml > /tmp/helm-values.yaml
           yq -i '.didcommLabel = env(SERVICE_NAME)' /tmp/helm-values.yaml
           yq -i '.didcommInvitationImageUrl = env(SERVICE_LOGO_URL)' /tmp/helm-values.yaml
+          # Per-org image override (e.g. testing a prerelease vs-agent build).
+          if [ -n "${VS_AGENT_IMAGE_TAG:-}" ]; then
+            yq -i '.image.tag = env(VS_AGENT_IMAGE_TAG)' /tmp/helm-values.yaml
+          fi
           if [ -n "${OID4VC_ROLE:-}" ]; then
             export NAMESPACE="$CHART_NAMESPACE"
             export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/demo"

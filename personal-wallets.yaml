@@ -117,24 +117,39 @@ wallets:
     vendor: Sphereon
     icon: ./sphereon/logo.webp
     formats: [openid4vc-sdjwt]
-    download: https://github.com/AirKyzzZ/sphereon-mobile-wallet-verana/releases/download/verana-2026-07-28/sphereon-verana-dev-debug.apk
+    download: https://github.com/AirKyzzZ/sphereon-mobile-wallet-verana/releases/download/verana-2026-08-03/sphereon-wallet-verana-release-2026-08-03.apk
     website: https://sphereon.com
     repo: https://github.com/Sphereon-Opensource/mobile-wallet
     license: Apache-2.0
-    notes: Verana trust card on contact creation for did:webvh-identified verifiers.
+    notes: Verana trust chain card on the OID4VCI and OID4VP consent screens, Q1 + Q2/Q3 against the live registry (SSI-SDK wallet).
     captures:
       issue-accredited:
-        src: ./sphereon/screenshots/2.webp
-        caption: "Trust details: service and operator"
-      present-accredited:
         src: ./sphereon/screenshots/1.webp
-        caption: Contact created with the Verana trust card
-      present-untrusted:
+        clip: ./sphereon/clips/1-issuer-accredited.mp4
+        caption: "Accredited issuer: identity verified, authorized for this credential, accept enabled"
+      issue-unaccredited:
+        src: ./sphereon/screenshots/2.webp
+        clip: ./sphereon/clips/2-issuer-unaccredited.mp4
+        caption: Identified but not accredited to issue this credential, so accept is blocked
+      issue-untrusted:
         src: ./sphereon/screenshots/3.webp
-        caption: Rogue verifier rendered untrusted
+        clip: ./sphereon/clips/3-untrusted-issuer.mp4
+        caption: "Untrusted issuer: self-issued claims withheld, accept blocked"
+      present-accredited:
+        src: ./sphereon/screenshots/4.webp
+        clip: ./sphereon/clips/4-verifier-accredited.mp4
+        caption: "Accredited verifier: authorized to request this credential, sharing allowed"
+      present-unaccredited:
+        src: ./sphereon/screenshots/5.webp
+        clip: ./sphereon/clips/5-verifier-unaccredited.mp4
+        caption: Identified but not authorized to ask for this credential, so sharing is refused
+      present-untrusted:
+        src: ./sphereon/screenshots/6.webp
+        clip: ./sphereon/clips/6-untrusted-verifier.mp4
+        caption: "Untrusted verifier: self-issued claims withheld, sharing refused"
     video:
       src: ./sphereon/demo.mp4
-      note: Real device, edited at 4x speed. Silent.
+      note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end at 3x speed, silent, otherwise unedited.
 
   - id: swiyu
     name: swiyu Wallet

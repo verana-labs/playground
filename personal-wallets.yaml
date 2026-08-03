@@ -103,14 +103,32 @@ wallets:
     vendor: "2060"
     icon: ./hologram/logo.webp
     formats: [anoncreds]
-    verana_builtin: true
     download: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
     playstore: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
     appstore: https://apps.apple.com/cl/app/hologram-messaging/id6474701855
     website: https://2060.io
     repo: https://github.com/2060-io/hologram-app
     license: Apache-2.0
-    notes: Reference personal wallet. The DemoCredential scenarios run over AnonCreds/DIDComm.
+    notes: Reference personal wallet, DemoCredential scenarios over AnonCreds/DIDComm. Q1 + Q2/Q3 and the trust chain card on both consent screens; the captures below are from that build, which is upstream-pending, so the published store build still resolves Q1 only.
+    captures:
+      issue-accredited:
+        src: ./hologram/screenshots/1.webp
+        caption: "Accredited issuer: identity verified, authorized for this credential, accept enabled"
+      issue-unaccredited:
+        src: ./hologram/screenshots/2.webp
+        caption: Identified but not accredited to issue this credential, so accept is withdrawn
+      issue-untrusted:
+        src: ./hologram/screenshots/3.webp
+        caption: "Untrusted issuer: the refusal happens at connect on the AnonCreds rail"
+      present-accredited:
+        src: ./hologram/screenshots/4.webp
+        caption: "Accredited verifier: authorized to request this credential, sharing allowed"
+      present-unaccredited:
+        src: ./hologram/screenshots/5.webp
+        caption: Identified but not authorized to ask for this credential, so sharing is refused
+      present-untrusted:
+        src: ./hologram/screenshots/6.webp
+        caption: "Untrusted verifier: self-issued claims withheld, sharing refused"
 
   - id: sphereon
     name: Sphereon Wallet

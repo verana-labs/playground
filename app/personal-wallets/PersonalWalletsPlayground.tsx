@@ -13,6 +13,8 @@ import { Container, Section, SectionHeading, Chip } from "../components/ui";
 import { LINKS } from "../lib/site";
 import { ServiceQr } from "../components/ServiceQr";
 import LiveTrustCard from "../components/LiveTrustCard";
+import { ComingSoonPickerTile } from "../components/ComingSoonTile";
+import type { ComingSoonWallet } from "../lib/coming-soon";
 import type {
   CredentialFormat,
   PersonalWallet,
@@ -311,8 +313,10 @@ function ScenarioCard({
 
 export default function PersonalWalletsPlayground({
   wallets,
+  comingSoon = [],
 }: {
   wallets: PersonalWallet[];
+  comingSoon?: ComingSoonWallet[];
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -440,6 +444,9 @@ export default function PersonalWalletsPlayground({
                     </span>
                   </span>
                 </button>
+              ))}
+              {comingSoon.map((w) => (
+                <ComingSoonPickerTile key={w.id} w={w} />
               ))}
             </div>
 

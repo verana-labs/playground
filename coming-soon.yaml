@@ -1,0 +1,189 @@
+# =============================================================================
+# Verana Playground - open-source wallets from the FIDES catalog, not yet integrated
+# =============================================================================
+# These render greyed out inside the normal wallet grids, so a reader sees the
+# whole open-source landscape and which parts of it already speak Verifiable
+# Trust. Moving one from here into an integration is the whole roadmap.
+#
+# Source of truth, re-fetch to refresh:
+#   https://raw.githubusercontent.com/FIDEScommunity/fides-wallet-catalog/main/data/aggregated.json
+# Human-facing: https://fides.community/ecosystem-explorer/personal-wallets/
+#
+# Every repo and license below was verified against the GitHub API on
+# 2026-08-03; entries whose repo could not be verified carry no repo link
+# rather than a guess.
+#
+# Already integrated, so deliberately absent: Sphereon Edge Wallet, Hologram
+# Messaging, Procivis One Wallet, Altme, EUDI Wallet Reference Implementation,
+# Paradym Wallet, SWIYU Wallet, and Inji Certifier (integrations/mosip-inji).
+
+personal:
+  - id: nl-wallet
+    name: NL Wallet
+    vendor: Dutch Government
+    logo: ./coming-soon/nl-wallet.png
+    license: EUPL-1.2
+    website: https://www.nldigitalgovernment.nl/
+    repo: https://github.com/MinBZK/nl-wallet
+
+  - id: bc-wallet
+    name: BC Wallet
+    vendor: Government of British Columbia
+    logo: ./coming-soon/bc-wallet.png
+    license: Apache-2.0
+    website: https://www2.gov.bc.ca/gov/content/governments/government-id/bc-wallet
+    repo: https://github.com/bcgov/bc-wallet-mobile
+    note: Built on Credo, the same stack as Paradym - likely the shortest integration on this list.
+
+  - id: eausweise
+    name: eAusweise
+    vendor: Austrian Government
+    logo: ./coming-soon/eausweise.png
+    license: Apache-2.0
+    website: https://www.id-austria.gv.at/de/verwenden/eausweise
+    repo: https://github.com/a-sit-plus/valera
+
+  - id: yivi
+    name: Yivi
+    vendor: Privacy by Design Foundation
+    logo: ./coming-soon/yivi.png
+    license: GPL-3.0
+    website: https://yivi.app
+    repo: https://github.com/privacybydesign/irmamobile
+    note: Attribute-based credentials (Idemix), not OID4VC - a different rail from every wallet we have integrated so far.
+
+  - id: wwwallet
+    name: wwWallet
+    vendor: wwWallet.org
+    logo: ./coming-soon/wwwallet.png
+    license: BSD-2-Clause
+    website: https://wwwallet.org
+    repo: https://github.com/wwWallet/wallet-frontend
+    note: Browser-only, no app install.
+
+  - id: sprucekit-showcase
+    name: SpruceKit Showcase
+    vendor: Spruce Systems, Inc.
+    logo: ./coming-soon/sprucekit-showcase.png
+    license: Apache-2.0
+    website: https://www.sprucekit.dev/sprucekit-mobile/sprucekit-showcase-app
+    repo: https://github.com/spruceid/sprucekit-mobile
+
+  - id: didroom-wallet
+    name: DIDroom Wallet
+    vendor: Forkbomb
+    logo: ./coming-soon/didroom-wallet.png
+    website: https://forkbomb.solutions/solution/didroom/
+    repo: https://github.com/ForkbombEu/wallet
+
+  - id: authbound-wallet
+    name: Authbound Wallet
+    vendor: Authbound
+    logo: ./coming-soon/authbound-wallet.png
+    license: EUPL-1.2
+    website: https://authbound.io
+    repo: https://github.com/Authbound/eudi-app-android-wallet
+
+  - id: identfy
+    name: Identfy
+    vendor: Izertis S.A.
+    logo: ./coming-soon/identfy.png
+    license: AGPL-3.0
+    website: https://identfy.es/
+    repo: https://github.com/izertis/identfy
+
+  - id: eudi-age-verification
+    name: EUDI Age Verification App
+    vendor: European Commission
+    logo: ./coming-soon/eudi-age-verification.png
+    license: EUPL-1.2
+    repo: https://github.com/eu-digital-identity-wallet/av-app-ios-wallet-ui
+
+  - id: inji-wallet
+    name: Inji Wallet
+    vendor: MOSIP
+    logo: ./coming-soon/inji-wallet.png
+    website: https://docs.mosip.io/inji
+    repo: https://github.com/mosip/inji-wallet
+    note: The holder half of the MOSIP stack whose issuer side is already integrated.
+
+  - id: talao-wallet
+    name: Talao Wallet
+    vendor: Talao
+    logo: ./coming-soon/talao-wallet.png
+    website: https://talao.io
+    repo: https://github.com/TalaoDAO/AltMe
+    note: The enterprise sibling of Altme, from the codebase we already integrated.
+
+  - id: igrant-data-wallet
+    name: Data Wallet
+    vendor: iGrant.io
+    logo: ./coming-soon/igrant-data-wallet.png
+    license: Apache-2.0
+    website: https://igrant.io/datawallet
+
+  - id: national-eudi-wallet
+    name: National EUDI Wallet
+    vendor: German Government
+    website: https://www.sprind.org/en/actions/challenges/eudi-wallet-prototypes
+
+business:
+  - id: eudi-reference-verifier
+    name: EUDI Reference Verifier
+    vendor: European Commission
+    logo: ./coming-soon/eudi-reference-verifier.png
+    license: Apache-2.0
+    website: https://verifier.eudiw.dev/home
+    repo: https://github.com/eu-digital-identity-wallet/eudi-srv-verifier-endpoint
+
+  - id: eudiw-reference-issuer
+    name: EUDIW Reference Issuer
+    vendor: European Commission
+    logo: ./coming-soon/eudiw-reference-issuer.png
+    license: Apache-2.0
+    website: https://issuer.eudiw.dev/
+    repo: https://github.com/eu-digital-identity-wallet/eudi-srv-web-issuing-eudiw-py
+
+  - id: swiyu-generic-issuer
+    name: SWIYU Generic Issuer
+    vendor: Swiss Confederation
+    logo: ./coming-soon/swiyu-generic-issuer.png
+    license: MIT
+    website: https://swiyu-admin-ch.github.io/cookbooks/onboarding-generic-issuer/
+    repo: https://github.com/swiyu-admin-ch/swiyu-issuer
+
+  - id: swiyu-generic-verifier
+    name: SWIYU Generic Verifier
+    vendor: Swiss Confederation
+    logo: ./coming-soon/swiyu-generic-verifier.png
+    license: MIT
+    website: https://swiyu-admin-ch.github.io/cookbooks/onboarding-generic-verifier/
+    repo: https://github.com/swiyu-admin-ch/swiyu-verifier
+
+  - id: inji-verifier
+    name: Inji Verifier
+    vendor: MOSIP
+    logo: ./coming-soon/inji-verifier.png
+    website: https://docs.mosip.io/inji
+    repo: https://github.com/mosip/inji-verify
+
+  - id: didroom
+    name: DIDroom
+    vendor: Forkbomb
+    logo: ./coming-soon/didroom.png
+    website: https://forkbomb.solutions/solution/didroom/
+    repo: https://github.com/ForkbombEu/DIDroom_microservices
+
+  - id: wallet4agent
+    name: Wallet4Agent
+    vendor: Talao
+    logo: ./coming-soon/wallet4agent.png
+    license: Apache-2.0
+    website: https://wallet4agent.com
+    repo: https://github.com/TalaoDAO/connectors
+
+  - id: veres-wallet
+    name: Veres Wallet
+    vendor: Digital Bazaar
+    logo: ./coming-soon/veres-wallet.png
+    website: https://digitalbazaar.com

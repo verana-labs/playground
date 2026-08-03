@@ -24,6 +24,11 @@ on:
         required: false
         default: false
         type: boolean
+      reset_identity:
+        description: "DESTRUCTIVE - delete this org's statefulset and its volume so the agent boots with a brand new DID. Everything bound to the old DID has to be re-provisioned, so run with step=all."
+        required: false
+        default: false
+        type: boolean
 
 env:
   NETWORK: testnet
@@ -110,6 +115,18 @@ jobs:
             exit 1
           fi
           echo "$MNEMONIC" | veranad keys add "$USER_ACC" --recover --keyring-backend test
+
+      # -----------------------------------------------------------------------
+      # RESET: wipe the agent's storage so it mints a fresh DID on next boot
+      # -----------------------------------------------------------------------
+      - name: Reset agent identity
+        if: inputs.reset_identity && (inputs.step == 'deploy' || inputs.step == 'all')
+        run: |
+          echo "::warning::Wiping $RELEASE_NAME storage - it will boot with a new DID"
+          kubectl delete statefulset "$RELEASE_NAME" -n "$CHART_NAMESPACE" --ignore-not-found --wait=true
+          kubectl get pvc -n "$CHART_NAMESPACE" -o name \
+            | grep -E "/(data-)?${RELEASE_NAME}(-[0-9]+)?$" \
+            | xargs -r kubectl delete -n "$CHART_NAMESPACE" --wait=true
 
       # -----------------------------------------------------------------------
       # DEPLOY: install/upgrade the vs-agent via Helm

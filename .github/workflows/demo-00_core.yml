@@ -124,9 +124,10 @@ jobs:
         run: |
           echo "::warning::Wiping $RELEASE_NAME storage - it will boot with a new DID"
           kubectl delete statefulset "$RELEASE_NAME" -n "$CHART_NAMESPACE" --ignore-not-found --wait=true
-          kubectl get pvc -n "$CHART_NAMESPACE" -o name \
-            | grep -E "/(data-)?${RELEASE_NAME}(-[0-9]+)?$" \
-            | xargs -r kubectl delete -n "$CHART_NAMESPACE" --wait=true
+          kubectl delete pvc -n "$CHART_NAMESPACE" --ignore-not-found --wait=true \
+            "${RELEASE_NAME}-vsa-pv" "${RELEASE_NAME}-pg-pv-main" "${RELEASE_NAME}-redis-main"
+          echo "Remaining PVCs:"
+          kubectl get pvc -n "$CHART_NAMESPACE" -o name | grep -F "$RELEASE_NAME" || echo "  none"
 
       # -----------------------------------------------------------------------
       # DEPLOY: install/upgrade the vs-agent via Helm

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminBase, adminJson } from "@/app/lib/demo-admin";
+import { VESTA_CAST } from "@/app/lib/vesta-cast";
 
 // Mint a badge presentation request from the Vesta Portal (chapter-4 demo 2:
 // the mimicked portal login window). DIDComm rail: an attributes-only OOB
@@ -42,17 +43,35 @@ export async function GET(req: Request) {
       });
     }
 
-    const request = await adminJson(
-      `${admin}/v1/invitation/presentation-request`,
-      {
+    const mintDidcomm = (requestedCredential: Record<string, unknown>) =>
+      adminJson(`${admin}/v1/invitation/presentation-request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ref: "portal-login",
-          requestedCredentials: [{ attributes: BADGE_ATTRIBUTES }],
+          requestedCredentials: [
+            { ...requestedCredential, attributes: BADGE_ATTRIBUTES },
+          ],
         }),
-      },
-    );
+      });
+
+    // Preferred: request by schemaName (vs-agent #550) - a badge from ANY
+    // issuer (Vesta, Zenith, Umbra) satisfies it, so all three login
+    // outcomes are demonstrable. Until the portal image ships that
+    // selector, fall back to the canonical badge VTJSC on the Vesta
+    // anchor - which restricts matching to Vesta-issued badges (the
+    // employee path only).
+    let request: unknown;
+    try {
+      request = await mintDidcomm({
+        schemaName: "ECS-Badge",
+        schemaVersion: "1.0",
+      });
+    } catch {
+      request = await mintDidcomm({
+        jsonSchemaCredentialId: `https://${VESTA_CAST.vesta.host}/vt/schemas-badge-jsc.json`,
+      });
+    }
     const url = str(request, "shortUrl") ?? str(request, "url");
     if (!url) throw new Error("no url in response");
     return NextResponse.json({

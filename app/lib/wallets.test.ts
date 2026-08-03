@@ -17,7 +17,10 @@ describe("personal wallets configuration", () => {
     expect(wallets.length).toBeGreaterThan(0);
     const hologram = wallets.find((w) => w.id === "hologram");
     expect(hologram?.formats).toEqual(["anoncreds"]);
-    expect(hologram?.verana_builtin).toBe(true);
+    // Nothing claims verana_builtin today: Hologram's published build resolves Q1 only, so it
+    // cannot tell an accredited issuer from an unaccredited one. Assert the flag on whichever
+    // wallet earns it first.
+    expect(wallets.every((w) => w.verana_builtin !== true)).toBe(true);
     for (const w of wallets) {
       expect(w.formats.length).toBeGreaterThan(0);
       expect(w.download).toMatch(/^https:/);

@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Building2, FileBadge, ScanSearch, ShieldCheck } from "lucide-react";
 import { Container, Section } from "../components/ui";
 import WalletTile, { AddYourWalletTile } from "../components/WalletTile";
+import { ComingSoonWalletTile } from "../components/ComingSoonTile";
 import { businessWallets } from "../lib/integrations";
+import { listComingSoon } from "../lib/coming-soon";
 
 // Business wallets index: hero + the integrated-wallet tiles (formerly home
 // section 4). Each tile opens the wallet's identical playground page.
@@ -111,12 +113,16 @@ export default function BusinessWallets() {
             {wallets.map((w) => (
               <WalletTile key={w.slug} w={w} />
             ))}
+            {listComingSoon("business").map((w) => (
+              <ComingSoonWalletTile key={w.id} w={w} />
+            ))}
             <AddYourWalletTile />
           </div>
           <p className="reveal mt-8 flex items-center gap-2 text-sm text-gray-500">
             <Building2 className="h-4 w-4 text-violet-600" />
             Business wallets host organizations&apos; verifiable services - like
-            the Vesta demo cast behind this playground.
+            the Vesta demo cast behind this playground. Greyed-out tiles are
+            open-source stacks from the FIDES catalog we have not integrated yet.
           </p>
         </Container>
       </Section>

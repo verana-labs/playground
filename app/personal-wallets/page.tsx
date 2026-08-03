@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { Wallet } from "lucide-react";
 import { listPersonalWallets } from "../lib/wallets";
+import { listComingSoon } from "../lib/coming-soon";
 import PersonalWalletsPlayground from "./PersonalWalletsPlayground";
 
 // The single personal-wallets playground (spec §4, simplified): one page for
@@ -37,7 +38,10 @@ export default function PersonalWallets() {
         </div>
       </header>
       <Suspense>
-        <PersonalWalletsPlayground wallets={wallets} />
+        <PersonalWalletsPlayground
+          wallets={wallets}
+          comingSoon={listComingSoon("personal")}
+        />
       </Suspense>
     </>
   );

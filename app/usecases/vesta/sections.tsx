@@ -31,6 +31,7 @@ import {
   WalletChooser,
   type BadgeOffer,
 } from "./DemoWalletFlow";
+import PortalLoginDemo from "./PortalLoginDemo";
 import StoryDiagram from "../../components/StoryDiagram";
 import {
   CLOSING,
@@ -1012,13 +1013,11 @@ export function Section4() {
                   </li>
                 ))}
               </ul>
-              <div className="mt-5 flex items-center justify-between gap-2 border-t border-gray-100 pt-4">
-                <span className="flex items-center gap-2 text-sm text-gray-400">
-                  <KeyRound className="h-4 w-4" aria-hidden /> Vesta portal
-                  login demo
-                </span>
-                <Chip tone="pending">demo coming</Chip>
-              </div>
+            </div>
+            <div className="mx-auto mt-6 max-w-xl">
+              <Suspense>
+                <PortalLoginDemo wallets={listPersonalWallets()} />
+              </Suspense>
             </div>
           </div>
 

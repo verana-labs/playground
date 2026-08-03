@@ -28,12 +28,6 @@ on:
 env:
   NETWORK: testnet
   VERANAD_VERSION: v0.9.5
-  # OpenID4VC-enabled build for orgs with OID4VC_ROLE set (image bundles the
-  # openid4vc plugin; the chart version carries the oid4vc.config support).
-  # Keep in sync with demo-00_core.yml.
-  OID4VC_IMAGE_REPOSITORY: veranalabs/vs-agent-openid4vc
-  OID4VC_IMAGE_TAG: v1.12.0-oidc4vc.7
-  OID4VC_CHART_VERSION: v1.12.0-oidc4vc.7
 
 jobs:
   run:
@@ -80,9 +74,6 @@ jobs:
         run: |
           CHART_SOURCE=$(yq '.chartSource' /tmp/deployment-resolved.yaml)
           CHART_VERSION=$(yq '.chartVersion' /tmp/deployment-resolved.yaml)
-          if [ -n "${OID4VC_ROLE:-}" ]; then
-            CHART_VERSION="${OID4VC_CHART_VERSION}"
-          fi
           CHART_NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
           echo "CHART_SOURCE=${CHART_SOURCE}" >> "$GITHUB_ENV"
           echo "CHART_VERSION=${CHART_VERSION}" >> "$GITHUB_ENV"
@@ -132,25 +123,13 @@ jobs:
           if [ -n "${VS_AGENT_IMAGE_TAG:-}" ]; then
             yq -i '.image.tag = env(VS_AGENT_IMAGE_TAG)' /tmp/helm-values.yaml
           fi
-          # Declared Verana network for the public UI (accreditations, deep
-          # links, header badge). UI_VERANA_* is UI-only: it does not enable
-          # the backend indexer integration, so the cast's manual credential
-          # provisioning keeps working. Orgs opt in by declaring
-          # UI_VERANA_CHAIN_ID in their config.env.
-          if [ -n "${UI_VERANA_CHAIN_ID:-}" ]; then
-            for VAR in UI_VERANA_CHAIN_ID UI_VERANA_INDEXER_BASE_URL UI_NETWORK_BADGE; do
-              [ -n "${!VAR:-}" ] || continue
-              NAME="$VAR" VALUE="${!VAR}" \
-                yq -i '.extraEnv += [{"name": strenv(NAME), "value": strenv(VALUE)}]' /tmp/helm-values.yaml
-            done
-          fi
           if [ -n "${OID4VC_ROLE:-}" ]; then
             export NAMESPACE="$CHART_NAMESPACE"
             export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/vesta"
             OID4VC_CONFIG_JSON=$(bash "${GITHUB_WORKSPACE}/.github/workflows/demo/scripts/render-oid4vc-config.sh")
             export OID4VC_CONFIG_JSON
-            yq -i '.image.repository = env(OID4VC_IMAGE_REPOSITORY)' /tmp/helm-values.yaml
-            yq -i '.image.tag = env(OID4VC_IMAGE_TAG)' /tmp/helm-values.yaml
+            # openid4vc ships in the default image; activate the plugin.
+            yq -i '.oid4vc.plugins = "messaging,chat,openid4vc"' /tmp/helm-values.yaml
             yq -i '.oid4vc.config = strenv(OID4VC_CONFIG_JSON)' /tmp/helm-values.yaml
           fi
           echo "--- Helm values (oid4vc config elided) ---"

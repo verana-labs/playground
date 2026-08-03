@@ -4,11 +4,12 @@
 # substitutes __RELEASE__, __HOST__ and __NETWORK__ from the org's config.env
 # before installing. Hosts follow <org>.playground.<network>.verana.network.
 #
-# The demo cast runs the oidc4vc-enabled vs-agent build so the DemoCredential
-# is served over both rails: AnonCreds/DIDComm (Track N wallets) and
-# OpenID4VCI/OpenID4VP (Track B wallets) — spec §4 v3 launch note.
+# openid4vc ships in the default vs-agent image; orgs with OID4VC_ROLE get
+# the plugin activated via oid4vc.plugins (demo-00_core) so the
+# DemoCredential is served over both rails: AnonCreds/DIDComm (Track N
+# wallets) and OpenID4VCI/OpenID4VP (Track B wallets) — spec §4 v3 launch note.
 chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
-chartVersion: v1.11.1
+chartVersion: v1.12.0-oidc4vc-uiprofile.1
 
 global:
   domain: playground.__NETWORK__.verana.network
@@ -16,9 +17,10 @@ global:
 name: __RELEASE__
 replicas: 1
 
-# vs-agent app image tag (defaults to chartVersion when tag is empty)
+# vs-agent app image (defaults to chartVersion when tag is empty)
 image:
-  tag: v1.12.0-oidc4vc.2
+  repository: veranalabs/vs-agent
+  tag: v1.12.0-oidc4vc-uiprofile.1
 
 adminPort: 3000
 didcommPort: 3001
@@ -51,6 +53,14 @@ extraEnv:
     value: "3"
   - name: USE_CORS
     value: "true"
+  # Declared Verana network for the public UI (accreditations, deep links,
+  # header badge). UI-only: does not enable the backend indexer integration.
+  - name: UI_VERANA_CHAIN_ID
+    value: "vna-__NETWORK__-1"
+  - name: UI_VERANA_INDEXER_BASE_URL
+    value: "https://idx.__NETWORK__.verana.network"
+  - name: UI_NETWORK_BADGE
+    value: "Testnet"
 
 storage:
   size: 1Gi

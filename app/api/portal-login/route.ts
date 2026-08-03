@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { adminBase, adminJson } from "@/app/lib/demo-admin";
+import { VESTA_CAST } from "@/app/lib/vesta-cast";
 
 // Mint a badge presentation request from the Vesta Portal (chapter-4 demo 2:
 // the mimicked portal login window). DIDComm rail: an attributes-only OOB
@@ -42,6 +43,11 @@ export async function GET(req: Request) {
       });
     }
 
+    // Request badges by the canonical badge VTJSC on the Vesta anchor. On
+    // current vs-agent images this restricts matching to Vesta-issued
+    // badges (employee path only over DIDComm); with vs-agent #550 the
+    // same request matches ANY accredited issuer of the VTJSC (Vesta,
+    // Zenith, Umbra) - all three login outcomes, no change needed here.
     const request = await adminJson(
       `${admin}/v1/invitation/presentation-request`,
       {
@@ -49,7 +55,12 @@ export async function GET(req: Request) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ref: "portal-login",
-          requestedCredentials: [{ attributes: BADGE_ATTRIBUTES }],
+          requestedCredentials: [
+            {
+              jsonSchemaCredentialId: `https://${VESTA_CAST.vesta.host}/vt/schemas-badge-jsc.json`,
+              attributes: BADGE_ATTRIBUTES,
+            },
+          ],
         }),
       },
     );

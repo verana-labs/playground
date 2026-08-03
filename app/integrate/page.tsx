@@ -138,7 +138,7 @@ export default function Integrate() {
               Reference rendering
             </p>
             <div className="mt-2">
-              <ProofOfTrust serviceId="organization-vs" />
+              <ProofOfTrust serviceId="demo-issuer-accredited" />
             </div>
             <p className="mt-2 text-xs text-gray-500">
               This is the reference every wallet integration reproduces.

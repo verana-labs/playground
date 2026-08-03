@@ -23,7 +23,6 @@ import {
   Wrench,
 } from "lucide-react";
 import { Container, Section, SectionHeading, Chip } from "../../components/ui";
-import ServiceTrustCard from "../../components/ServiceTrustCard";
 import { DidBadge } from "../../components/Did";
 import { listPersonalWallets } from "../../lib/wallets";
 import {
@@ -340,17 +339,6 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
         </details>
       ) : null}
 
-      {sub.liveService ? (
-        <div>
-          <p className="mb-3 text-sm font-medium text-gray-700">
-            Live right now, resolved against the public registry:
-          </p>
-          <ServiceTrustCard serviceId={sub.liveService} />
-          {sub.liveNote ? (
-            <p className="mt-2 text-xs text-gray-400">{sub.liveNote}</p>
-          ) : null}
-        </div>
-      ) : null}
     </div>
   );
 }

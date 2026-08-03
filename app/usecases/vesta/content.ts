@@ -273,8 +273,6 @@ export type SubStep = {
   underHood?: string[];
   reproduce?: string[];
   links?: { label: string; href: string }[];
-  liveService?: string;
-  liveNote?: string;
   image?: { src: string; alt: string; caption?: string };
   /** Prominent mono display (e.g. the generated DID). */
   code?: { label: string; value: string; note?: string };
@@ -348,9 +346,6 @@ export const JOURNEY: {
           stage: "3.2",
           title: "KYB with an accredited issuer",
           kind: "watch",
-          liveService: "vesta",
-          liveNote:
-            "Live from the testnet: Vesta's Business Wallet, resolved through the network resolver - the same check any wallet runs.",
           story:
             "Marc connects to the Verana ECS Ecosystem and chooses an accredited issuer to obtain an Organization credential for Vesta:",
           points: [
@@ -444,9 +439,6 @@ export const JOURNEY: {
           stage: "3.5",
           title: "A verifiable login service, accredited to verify badges",
           kind: "watch",
-          liveService: "vesta-portal",
-          liveNote:
-            "Live: the Vesta portal - a verifiable service in its own right, delegated by the anchor.",
           story:
             "Vesta deploys a new Business Wallet for the login service, and issues it an ECS-Service credential - so the login service is verifiable in its own right (Vesta can do this: it is an accredited ECS-Service issuer). The service is accredited for ECS-Badge verification, and access is configured to only accept badges whose issuer is the DID of the Vesta Organization trust anchor. The same badge can also work at the door:",
           points: [
@@ -483,9 +475,6 @@ export const JOURNEY: {
           stage: "3.6",
           title: "ISO 9001, without re-certifying",
           kind: "watch",
-          liveService: "normacert",
-          liveNote:
-            "Live: NormaCert (demo), the accredited certification body behind Vesta's ISO 9001-style credential.",
           story:
             "Vesta is certified ISO 9001 since 2003. Its certification body, NormaCert (demo), was recently accredited as an issuer of the ISO 9001 credential in the ISO Certification Ecosystem (demo). Good news for Vesta: now that the company holds its Organization credential, it applies to the ISO Certification Ecosystem as a holder of the ISO 9001 credential, selecting NormaCert as its issuer:",
           points: [
@@ -520,9 +509,6 @@ export const JOURNEY: {
           stage: "3.7",
           title: "The Vesta Repair Network",
           kind: "watch",
-          liveService: "zenith",
-          liveNote:
-            "Live: Zenith Repairs (demo) - a verifiable organization holding Authorized Repairer from Vesta Iberia.",
           story:
             "Vesta publishes a one-page governance framework and creates its ecosystem with a single credential schema: Authorized Repairer. The design choice that matters: issuance is governed - only Vesta and its subsidiaries issue - and verification is open: anyone checks, no permission needed. Vesta accredits two subsidiary issuers, Vesta Iberia and Vesta Nordics. Then Zenith Repairs joins, itself a verifiable organization (it walked the same journey: anchor, KYB, ECS-Service - the pattern replicates; that is the point): Vesta Iberia identifies Zenith by the ECS-Org credential on its DID and issues Authorized Repairer to Zenith's organization DID.",
           underHood: [
@@ -547,9 +533,6 @@ export const JOURNEY: {
           stage: "3.8",
           title: "Authorized Repairer login - and at the front door",
           kind: "watch",
-          liveService: "umbra",
-          liveNote:
-            "Live: Umbra Repairs, the impostor - the resolver finds no verifiable identity behind the name.",
           story:
             "The Authorized Repairer credential now works everywhere trust is needed:",
           points: [
@@ -575,6 +558,15 @@ export const JOURNEY: {
             { label: "Get a badge (Run the demos)", href: "/usecases/vesta/demos#demo-badge" },
             { label: "Authorized Repairer participants", href: participants(252) },
           ],
+        },
+        {
+          id: "3.8-umbra",
+          stage: "3.8",
+          noDiagram: true,
+          title: "What about Umbra Repairs?",
+          kind: "watch",
+          story:
+            "Umbra Repairs is a verifiable organization: it went through KYB and holds its own ECS-Organization and ECS-Service credentials - connect to it and the check is green. But it holds no Authorized Repairer credential, and only the Vesta Repair Network issues those. Trust and authorization are different questions: Umbra can prove who it is, not that it belongs to Vesta's network - its badges are refused at the Vesta portal, and at the front door no Vesta seal appears.",
         },
       ],
     },
@@ -618,10 +610,10 @@ export const DEMOS = {
         tone: "emerald",
       },
       {
-        org: "From Umbra Repairs - not an Authorized Repairer",
+        org: "From Umbra Repairs - certified, but not an Authorized Repairer",
         serviceId: "umbra",
         expect:
-          "Umbra is not a member of the Vesta Repair Network. Interesting to accept the badge - and to see what happens when you try to use it to enter the Vesta portal.",
+          "Green Proof-of-Trust: Umbra Repairs is a certified organization - but it holds no Authorized Repairer credential. Accept the badge if you like: the Vesta portal will refuse it.",
         tone: "red",
       },
     ],

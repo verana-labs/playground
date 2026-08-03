@@ -192,6 +192,13 @@ export const NODES: SceneNode[] = [
     dashed: true,
     label: "Umbra Repairs",
     sub: "claims: “Vesta-authorized”",
+    did: VESTA_CAST.umbra.did,
+    serviceType: "Repair service (demo)",
+    operator: "Umbra Repairs (demo)",
+    verifiedAt: "3.8",
+    labelByStage: {
+      "3.8": { sub: "verifiable - but no Authorized Repairer" },
+    },
   },
   {
     id: "wallet",
@@ -392,7 +399,7 @@ export const EDGES: SceneEdge[] = [
   { id: "e-zenith-techWallet", from: "zenith", to: "techWallet", appears: "3.8", label: "issues ECS-Badge", tone: "emerald", labelT: 0.5 },
   { id: "e-techWallet-portal", from: "techWallet", to: "portal", appears: "3.8", label: "presents badge → login", tone: "emerald", labelT: 0.5 },
   { id: "e-customer-scan", from: "customer", to: "techWallet", appears: "3.8", label: "scans: sees the Vesta seal", tone: "emerald", dashed: true, curve: -35, labelT: 0.45 },
-  { id: "e-umbra-claim", from: "umbra", to: "vestaEco", appears: "3.8", label: "claims - no credential: red", tone: "red", dashed: true, curve: -45, labelT: 0.35 },
+  { id: "e-umbra-claim", from: "umbra", to: "vestaEco", appears: "3.8", label: "no Authorized Repairer: red", tone: "red", dashed: true, curve: -45, labelT: 0.35 },
 ];
 
 export const BADGES: SceneBadge[] = [
@@ -649,6 +656,23 @@ export const CREDENTIALS: Record<string, NodeCredential[]> = {
       note: "Held by a Vesta employee in their Personal Wallet.",
     },
   ],
+  umbra: [
+    {
+      name: "ECS-Service",
+      tone: "emerald",
+      issuedBy: "Self-issued (accredited)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.8",
+    },
+    {
+      name: "ECS-Organization",
+      tone: "emerald",
+      issuedBy: "Helvetia Trust Services (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.8",
+      note: "Umbra is a certified organization - identity is not the problem.",
+    },
+  ],
   techWallet: [
     {
       name: "ECS-Badge",
@@ -753,7 +777,7 @@ export const NODE_NOTES: Record<string, string> = {
   fakeSupport:
     "Claims to be Vesta support - but presents no verifiable credential. Nothing can be proven: red verdict.",
   umbra:
-    "Claims to be Vesta-authorized - but no Authorized Repairer credential exists for its DID: red verdict.",
+    "A verifiable organization - ECS-Organization and ECS-Service check out. But it presents no Authorized Repairer credential, and only the Vesta Repair Network issues those: not a member, no seal.",
   customer:
     "A person - holds credentials in a Personal Wallet rather than presenting service credentials.",
   techWallet:

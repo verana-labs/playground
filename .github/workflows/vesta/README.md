@@ -42,7 +42,7 @@ Orgs live at `<org>.playground.testnet.verana.network`, sub-services at
 | 07 | Vesta Portal | Vesta sub-service | `portal.vesta.playground…` | delegated ECS-Service + VERIFIER on ECS-Badge |
 | 08 | Subsidiaries | Vesta Iberia + Nordics (demo) | `vesta-iberia.playground…`, `vesta-nordics.playground…` | ECS creds + ISSUER on Authorized Repairer |
 | 09 | Zenith Repairs | partner repairer (demo) | `zenith.playground…` | ECS creds + Authorized Repairer (from Iberia) + ECS-Badge issuer |
-| 10 | Umbra Repairs | the impostor (demo) | `umbra.playground…` | nothing on purpose — DID only, no credentials |
+| 10 | Umbra Repairs | the impostor (demo) | `umbra.playground…` | ECS creds + badge issuer — deliberately NO Authorized Repairer |
 
 Delegated sub-services (06, 07) get their ECS-Service credential issued by the
 Vesta anchor and inherit its ECS-Organization per the Verifiable Trust spec —
@@ -111,10 +111,10 @@ Enabling the rail on an already-bootstrapped cast: re-run **03 → 09 → 10 →
 - **Personal wallet flows** (employee/technician badge offers, portal login,
   the door scan) are runtime DIDComm flows served by the deployed agents and
   the playground demos — not provisioning.
-- **Umbra stays unverifiable.** Its provisioning creates only an unanchored
-  ECS-Badge credential type (so it can make unauthorized badge offers) —
-  never give it credentials, permissions, or linked VPs: the red path in the
-  demos depends on its trust resolution failing.
+- **Umbra never gets the Authorized Repairer credential.** It IS a
+  verifiable organization (ECS-Org from Helvetia, self ECS-Service, badge
+  issuer) — the red path in the demos depends on exactly one missing link:
+  no Authorized Repairer, so its badges fail at the portal and earn no seal.
 
 ## After a bootstrap
 

@@ -420,7 +420,11 @@ function NodeDetail({
       .filter((a) => stageIndex(a.appears) <= idx)
       .map(({ role, schema, context }) => ({ role, schema, context })),
     note:
-      creds.length === 0 || id === "ecs" || id === "iso" || id === "vestaEco"
+      creds.length === 0 ||
+      id === "ecs" ||
+      id === "iso" ||
+      id === "vestaEco" ||
+      id === "umbra"
         ? NODE_NOTES[id]
         : undefined,
     resolvedNote:

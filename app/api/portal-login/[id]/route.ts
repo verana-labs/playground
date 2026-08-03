@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { adminBase, adminJson } from "@/app/lib/demo-admin";
 import { resolveTrust } from "@/app/lib/resolver";
 import { SCHEMA_IDS, VESTA_CAST } from "@/app/lib/vesta-cast";
+import { didHost } from "@/app/lib/did";
 
 // Status + access decision for a portal-login presentation (chapter-4 demo
 // 2). Once the wallet presents an ECS-Badge, the portal decides from the
@@ -86,9 +87,18 @@ async function decide(issuerDid: string | null): Promise<{
   company?: string;
 }> {
   if (!issuerDid) return { decision: "denied" };
-  if (issuerDid === VESTA_CAST.vesta.did) return { decision: "employee" };
+  // Robust across did:web / did:webvh alias forms: match cast members by
+  // host, and resolve the canonical (webvh) DID.
+  const host = didHost(issuerDid);
+  if (
+    issuerDid === VESTA_CAST.vesta.did ||
+    (host !== null && host === VESTA_CAST.vesta.host)
+  )
+    return { decision: "employee" };
 
-  const pot = await resolveTrust(issuerDid);
+  const canonical =
+    Object.values(VESTA_CAST).find((m) => m.host === host)?.did ?? issuerDid;
+  const pot = await resolveTrust(canonical);
   const authorizedRepairer = pot.credentials.find(
     (c) =>
       c.schema?.id === SCHEMA_IDS.authorizedRepairer &&
@@ -127,7 +137,7 @@ export async function GET(
         state?: unknown;
         cryptographicVerified?: unknown;
         accepted?: unknown;
-        trust?: { evidence?: { did?: unknown } };
+        trust?: { verdict?: unknown; evidence?: { did?: unknown; note?: unknown } };
         credential?: { disclosedClaims?: unknown };
       };
       const state = typeof record.state === "string" ? record.state : null;
@@ -149,6 +159,12 @@ export async function GET(
         verified: record.cryptographicVerified === true,
         claims,
         issuerDid,
+        trustVerdict:
+          typeof record.trust?.verdict === "string" ? record.trust.verdict : null,
+        trustNote:
+          typeof record.trust?.evidence?.note === "string"
+            ? record.trust.evidence.note
+            : null,
         ...decision,
       });
     }

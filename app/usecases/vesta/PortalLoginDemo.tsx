@@ -20,6 +20,8 @@ type LoginResult = {
   claims?: Claim[];
   decision?: "employee" | "partner" | "denied";
   company?: string;
+  trustVerdict?: string | null;
+  trustNote?: string | null;
 };
 
 const claim = (claims: Claim[] | undefined, name: string) =>
@@ -56,17 +58,27 @@ function DecisionBanner({ result }: { result: LoginResult }) {
       </div>
     );
   }
+  // Distinguish "the badge itself could not be trusted" (transient resolver
+  // failure, unauthorized or untrusted issuer) from the membership rule.
+  const verdict = result.trustVerdict;
+  const reason =
+    verdict === "RESOLVER_UNAVAILABLE"
+      ? "The portal could not reach the trust resolver to verify your badge - try again in a moment."
+      : verdict === "UNTRUSTED"
+        ? "Your badge was issued by an organization that is not a trusted verifiable service."
+        : verdict === "TRUSTED_NOT_AUTHORIZED"
+          ? "Your badge was issued by an organization that is not authorized to issue ECS-Badges."
+          : "Your badge was issued by an organization that does not present a valid Authorized Repairer credential - it is not a member of the Vesta Authorized Repair Network.";
   return (
     <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
       <p className="flex items-center gap-2 font-bold">
         <ShieldX className="h-4 w-4 shrink-0" aria-hidden />
         Access denied
       </p>
-      <p className="mt-1 text-red-600/90">
-        Your badge was issued by an organization that does not present a
-        valid Authorized Repairer credential - it is not a member of the
-        Vesta Authorized Repair Network.
-      </p>
+      <p className="mt-1 text-red-600/90">{reason}</p>
+      {result.trustNote ? (
+        <p className="mt-1.5 text-xs text-red-500/80">{result.trustNote}</p>
+      ) : null}
     </div>
   );
 }

@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { Container, Section, SectionHeading, Chip } from "../../components/ui";
 import { DidBadge } from "../../components/Did";
+import TrustCard from "../../components/TrustCard";
 import { listPersonalWallets } from "../../lib/wallets";
 import {
   BadgeOffers,
@@ -238,6 +239,12 @@ function SubStepBlock({ sub }: { sub: SubStep }) {
           </ul>
         ) : null}
       </div>
+
+      {sub.trustCard ? (
+        <div className="max-w-md">
+          <TrustCard data={sub.trustCard} />
+        </div>
+      ) : null}
 
       {sub.code ? (
         <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5">

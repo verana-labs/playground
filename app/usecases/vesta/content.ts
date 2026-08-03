@@ -13,6 +13,7 @@ import {
   trustRegistryUrl,
 } from "../../lib/vesta-cast";
 import type { Stage } from "./scenes";
+import type { TrustCardData } from "../../components/TrustCard";
 
 const app = ENDPOINTS.frontend;
 const resolver = ENDPOINTS.resolver;
@@ -278,6 +279,8 @@ export type SubStep = {
   code?: { label: string; value: string; note?: string };
   /** Skip the scene diagram for this step (used when a step shares a stage). */
   noDiagram?: boolean;
+  /** Inline Proof-of-Trust card (story data) rendered after the prose. */
+  trustCard?: TrustCardData;
 };
 
 export type JourneyNeed = {
@@ -563,10 +566,32 @@ export const JOURNEY: {
           id: "3.8-umbra",
           stage: "3.8",
           noDiagram: true,
-          title: "What about Umbra Repairs?",
+          title: "How about unauthorized repair companies?",
           kind: "watch",
           story:
-            "Umbra Repairs is a verifiable organization: it went through KYB and holds its own ECS-Organization and ECS-Service credentials - connect to it and the check is green. But it holds no Authorized Repairer credential, and only the Vesta Repair Network issues those. Trust and authorization are different questions: Umbra can prove who it is, not that it belongs to Vesta's network - its badges are refused at the Vesta portal, and at the front door no Vesta seal appears.",
+            "Other companies may pretend to be authorized by Vesta - but pretending is all they can do, because they cannot present what they do not hold. Take Umbra Repairs: a perfectly verifiable organization, with its own ECS-Organization and ECS-Service credentials - here is its Proof-of-Trust:",
+          trustCard: {
+            name: "Umbra Repairs (demo)",
+            did: VESTA_CAST.umbra.did,
+            isService: true,
+            serviceType: "Repair service (demo)",
+            service: {
+              name: "ECS-Service",
+              issuedBy: "Self-issued (accredited)",
+              ecosystem: "Verana ECS Ecosystem",
+            },
+            organization: {
+              name: "ECS-Organization",
+              orgName: "Umbra Repairs (demo)",
+              issuedBy: "Helvetia Trust Services (demo)",
+              ecosystem: "Verana ECS Ecosystem",
+            },
+            trusted: true,
+            impostor: true,
+            others: [],
+            accreditations: [],
+            note: "It does not present the required Authorized Repairer credential - only the Vesta Repair Network issues it, and it never accredited Umbra. Certified organization, wrong network: its badges are refused at the Vesta portal, and no Vesta seal appears at the door.",
+          },
         },
       ],
     },

@@ -43,35 +43,27 @@ export async function GET(req: Request) {
       });
     }
 
-    const mintDidcomm = (requestedCredential: Record<string, unknown>) =>
-      adminJson(`${admin}/v1/invitation/presentation-request`, {
+    // Request badges by the canonical badge VTJSC on the Vesta anchor. On
+    // current vs-agent images this restricts matching to Vesta-issued
+    // badges (employee path only over DIDComm); with vs-agent #550 the
+    // same request matches ANY accredited issuer of the VTJSC (Vesta,
+    // Zenith, Umbra) - all three login outcomes, no change needed here.
+    const request = await adminJson(
+      `${admin}/v1/invitation/presentation-request`,
+      {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           ref: "portal-login",
           requestedCredentials: [
-            { ...requestedCredential, attributes: BADGE_ATTRIBUTES },
+            {
+              jsonSchemaCredentialId: `https://${VESTA_CAST.vesta.host}/vt/schemas-badge-jsc.json`,
+              attributes: BADGE_ATTRIBUTES,
+            },
           ],
         }),
-      });
-
-    // Preferred: request by schemaName (vs-agent #550) - a badge from ANY
-    // issuer (Vesta, Zenith, Umbra) satisfies it, so all three login
-    // outcomes are demonstrable. Until the portal image ships that
-    // selector, fall back to the canonical badge VTJSC on the Vesta
-    // anchor - which restricts matching to Vesta-issued badges (the
-    // employee path only).
-    let request: unknown;
-    try {
-      request = await mintDidcomm({
-        schemaName: "ECS-Badge",
-        schemaVersion: "1.0",
-      });
-    } catch {
-      request = await mintDidcomm({
-        jsonSchemaCredentialId: `https://${VESTA_CAST.vesta.host}/vt/schemas-badge-jsc.json`,
-      });
-    }
+      },
+    );
     const url = str(request, "shortUrl") ?? str(request, "url");
     if (!url) throw new Error("no url in response");
     return NextResponse.json({

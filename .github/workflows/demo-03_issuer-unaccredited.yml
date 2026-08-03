@@ -20,6 +20,11 @@ on:
         required: false
         type: boolean
         default: false
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   demo-issuer-unaccredited:
@@ -28,4 +33,5 @@ jobs:
       org: demo-issuer-unaccredited
       step: ${{ inputs.step }}
       force_refresh: ${{ inputs.force_refresh }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

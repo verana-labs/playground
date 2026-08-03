@@ -22,7 +22,7 @@ export type BadgeOffer = {
   tone: "emerald" | "red";
 };
 
-function useSelectedWallet(wallets: PersonalWallet[]) {
+export function useSelectedWallet(wallets: PersonalWallet[]) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();

@@ -60,6 +60,15 @@ export const VESTA_CAST = {
   },
 } as const satisfies Record<string, CastMember>;
 
+/** Live testnet credential schema ids (indexer: /verana/cs/v1/get/<id>). */
+export const SCHEMA_IDS = {
+  ecsOrganization: 168,
+  ecsService: 170,
+  ecsBadge: 250,
+  iso9001Demo: 251,
+  authorizedRepairer: 252,
+} as const;
+
 /** On-chain trust registry ids (indexer: /verana/tr/v1/get/<id>). */
 export const TRUST_REGISTRY_IDS = {
   ecs: 89,

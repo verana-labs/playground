@@ -2,7 +2,7 @@ import { ENDPOINTS } from "./site";
 
 export type TrustState = "TRUSTED" | "UNTRUSTED" | "UNVERIFIED";
 export type PotCredential = { ecsType?: string; result?: string; issuedBy?: string;
-  claims: Record<string, unknown>; permissionChain?: unknown[] };
+  schema?: { id?: number }; claims: Record<string, unknown>; permissionChain?: unknown[] };
 export type PotResolution = {
   state: TrustState; did: string; trustStatus?: string; evaluatedAt?: string;
   evaluatedAtBlock?: number; expiresAt?: string;

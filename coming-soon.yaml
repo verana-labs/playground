@@ -15,7 +15,10 @@
 #
 # Already integrated, so deliberately absent: Sphereon Edge Wallet, Hologram
 # Messaging, Procivis One Wallet, Altme, EUDI Wallet Reference Implementation,
-# Paradym Wallet, SWIYU Wallet, and Inji Certifier (integrations/mosip-inji).
+# Paradym Wallet, SWIYU Wallet, and the whole Inji server stack. integrations/
+# mosip-inji covers Inji Certify, Inji Web and Inji Verify in one entry, so
+# listing Inji Verifier again here would double-count it. Inji Wallet stays
+# below because that is the separate mobile holder, not Inji Web.
 
 personal:
   - id: nl-wallet
@@ -159,13 +162,6 @@ business:
     license: MIT
     website: https://swiyu-admin-ch.github.io/cookbooks/onboarding-generic-verifier/
     repo: https://github.com/swiyu-admin-ch/swiyu-verifier
-
-  - id: inji-verifier
-    name: Inji Verifier
-    vendor: MOSIP
-    logo: ./coming-soon/inji-verifier.png
-    website: https://docs.mosip.io/inji
-    repo: https://github.com/mosip/inji-verify
 
   - id: didroom
     name: DIDroom

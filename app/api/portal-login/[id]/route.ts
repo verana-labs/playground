@@ -3,6 +3,7 @@ import { adminBase, adminJson } from "@/app/lib/demo-admin";
 import { resolveTrust } from "@/app/lib/resolver";
 import { SCHEMA_IDS, VESTA_CAST } from "@/app/lib/vesta-cast";
 import { didHost } from "@/app/lib/did";
+import { ENDPOINTS } from "@/app/lib/site";
 
 // Status + access decision for a portal-login presentation (chapter-4 demo
 // 2). Once the wallet presents an ECS-Badge, the portal decides from the
@@ -82,6 +83,82 @@ function extractIssuerDid(record: unknown, claims: Claim[]): string | null {
   return null;
 }
 
+const RESOLVER = process.env.RESOLVER_URL ?? ENDPOINTS.resolver;
+
+const fetchJson = async (url: string): Promise<unknown> => {
+  const res = await fetch(url, { signal: AbortSignal.timeout(10_000), cache: "no-store" });
+  if (!res.ok) throw new Error(`${url} -> HTTP ${res.status}`);
+  return res.json();
+};
+
+const first = (value: unknown): unknown =>
+  Array.isArray(value) ? value[0] : value;
+
+/** True when the org behind `host` presents an Authorized Repairer
+ *  credential that verifies down the chain: the linked VP on its DID
+ *  document, subject = itself, credentialSchema anchored to the Authorized
+ *  Repairer VPR schema, and the credential's issuer holding an ACTIVE
+ *  ISSUER permission for it on-chain (resolver issuer-authorization). The
+ *  network resolver does not surface non-ECS credentials in its
+ *  resolution result, so the membership rule walks the chain itself. */
+async function holdsAuthorizedRepairer(host: string): Promise<boolean> {
+  try {
+    const doc = (await fetchJson(`https://${host}/.well-known/did.json`)) as {
+      service?: Array<{ id?: string; type?: string; serviceEndpoint?: unknown }>;
+    };
+    const entry = doc.service?.find(
+      (svc) =>
+        svc.type === "LinkedVerifiablePresentation" &&
+        typeof svc.id === "string" &&
+        svc.id.includes("authorized-repairer"),
+    );
+    const vpUrl = first(entry?.serviceEndpoint);
+    if (typeof vpUrl !== "string") return false;
+
+    const vp = (await fetchJson(vpUrl)) as { verifiableCredential?: unknown };
+    const vc = first(vp.verifiableCredential) as
+      | {
+          issuer?: unknown;
+          credentialSubject?: unknown;
+          credentialSchema?: unknown;
+        }
+      | undefined;
+    if (!vc) return false;
+
+    const subject = first(vc.credentialSubject) as { id?: unknown } | undefined;
+    if (typeof subject?.id !== "string" || didHost(subject.id) !== host)
+      return false;
+
+    const credentialSchema = first(vc.credentialSchema) as
+      | { id?: unknown }
+      | undefined;
+    const jscId = credentialSchema?.id;
+    if (typeof jscId !== "string") return false;
+
+    const jsc = (await fetchJson(jscId)) as { credentialSubject?: unknown };
+    const jscSubject = first(jsc.credentialSubject) as
+      | { jsonSchema?: { $ref?: unknown } }
+      | undefined;
+    const ref = jscSubject?.jsonSchema?.$ref;
+    if (
+      typeof ref !== "string" ||
+      !ref.endsWith(`/js/${SCHEMA_IDS.authorizedRepairer}`)
+    )
+      return false;
+
+    const arIssuer =
+      typeof vc.issuer === "string" ? vc.issuer : (first(vc.issuer) as { id?: string } | undefined)?.id;
+    if (typeof arIssuer !== "string") return false;
+
+    const auth = (await fetchJson(
+      `${RESOLVER}/v1/trust/issuer-authorization?did=${encodeURIComponent(arIssuer)}&vtjscId=${encodeURIComponent(jscId)}`,
+    )) as { authorized?: unknown };
+    return auth.authorized === true;
+  } catch {
+    return false;
+  }
+}
+
 async function decide(issuerDid: string | null): Promise<{
   decision: "employee" | "partner" | "denied";
   company?: string;
@@ -95,16 +172,15 @@ async function decide(issuerDid: string | null): Promise<{
     (host !== null && host === VESTA_CAST.vesta.host)
   )
     return { decision: "employee" };
+  if (!host) return { decision: "denied" };
 
   const canonical =
     Object.values(VESTA_CAST).find((m) => m.host === host)?.did ?? issuerDid;
-  const pot = await resolveTrust(canonical);
-  const authorizedRepairer = pot.credentials.find(
-    (c) =>
-      c.schema?.id === SCHEMA_IDS.authorizedRepairer &&
-      (c.result ?? "VALID") === "VALID",
-  );
-  if (pot.state === "TRUSTED" && authorizedRepairer) {
+  const [pot, isAuthorizedRepairer] = await Promise.all([
+    resolveTrust(canonical),
+    holdsAuthorizedRepairer(host),
+  ]);
+  if (pot.state === "TRUSTED" && isAuthorizedRepairer) {
     const org = pot.credentials.find((c) => c.ecsType === "ECS-ORG");
     const company =
       typeof org?.claims.name === "string" ? org.claims.name : undefined;

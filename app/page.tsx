@@ -192,7 +192,7 @@ export default function Home() {
             <h3 className="mb-4 text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
               Live from the testnet
             </h3>
-            <ProofOfTrust serviceId="issuer-web-vs" title="Live from the testnet" />
+            <ProofOfTrust serviceId="vesta" title="Live from the testnet" />
           </div>
         </Container>
       </Section>

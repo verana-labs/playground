@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Nav from "./components/Nav";
+import GdcBanner from "./components/GdcBanner";
 import Footer from "./components/Footer";
 import Reveal from "./components/Reveal";
 import { SITE_URL, SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION } from "./lib/site";
@@ -28,6 +29,7 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth">
       <body className="flex min-h-screen flex-col bg-[#fcfcff] text-gray-900 antialiased">
         <Reveal />
+        <GdcBanner />
         <Nav />
         <main className="flex-1">{children}</main>
         <Footer />

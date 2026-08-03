@@ -134,11 +134,21 @@ jobs:
           fi
           echo "--- Helm values (oid4vc config elided) ---"
           yq 'del(.oid4vc)' /tmp/helm-values.yaml
-          helm upgrade --install "$RELEASE_NAME" "$CHART_SOURCE" \
-            --version "$CHART_VERSION" \
-            --namespace "$CHART_NAMESPACE" --create-namespace \
-            --values /tmp/helm-values.yaml \
-            --wait --timeout 300s
+          helm_upgrade() {
+            helm upgrade --install "$RELEASE_NAME" "$CHART_SOURCE" \
+              --version "$CHART_VERSION" \
+              --namespace "$CHART_NAMESPACE" --create-namespace \
+              --values /tmp/helm-values.yaml \
+              --wait --timeout 300s
+          }
+          if ! helm_upgrade; then
+            # StatefulSets deployed before the swagger env dedupe carry a
+            # duplicate env name, which breaks the strategic merge patch.
+            # Recreate the object (PVCs and the wallet survive) and retry.
+            echo "::warning::Helm upgrade failed; recreating the statefulset and retrying"
+            kubectl delete statefulset "$RELEASE_NAME" -n "$CHART_NAMESPACE" --ignore-not-found
+            helm_upgrade
+          fi
           if [ -n "${OID4VC_ROLE:-}" ]; then
             # The agent reads the oid4vc ConfigMap once at boot, and helm only
             # rolls the pod when its template changes - so a config-only change

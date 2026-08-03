@@ -113,21 +113,40 @@ export async function GET(
 
   try {
     if (rail === "oid4vc") {
+      // Completed-session shape (plugin-openid4vc VerifierService.getResult):
+      // { state: "ResponseVerified", cryptographicVerified, accepted,
+      //   trust: { verdict, evidence: { did, trustStatus, authorized, … } },
+      //   credential: { vct, disclosedClaims } }
+      // `accepted` is the plugin's own Q2 verdict on the badge (issuer
+      // TRUSTED_AUTHORIZED for the badge schema); the issuer DID comes from
+      // the trust evidence.
       const body = await adminJson(
         `${admin}/v1/oid4vc/verifier/sessions/${encodeURIComponent(id)}`,
       );
-      const record = (body ?? {}) as Record<string, unknown>;
+      const record = (body ?? {}) as {
+        state?: unknown;
+        cryptographicVerified?: unknown;
+        accepted?: unknown;
+        trust?: { evidence?: { did?: unknown } };
+        credential?: { disclosedClaims?: unknown };
+      };
       const state = typeof record.state === "string" ? record.state : null;
       const done = state === "ResponseVerified" || record.accepted === true;
       if (!done) return NextResponse.json({ done: false, state });
-      const claims = toClaims(
-        record.claims ?? record.presentedClaims ?? record.credentials,
-      );
-      const issuerDid = extractIssuerDid(record, claims);
-      const decision = await decide(issuerDid);
+      const claims = toClaims(record.credential?.disclosedClaims);
+      const evidenceDid = record.trust?.evidence?.did;
+      const issuerDid =
+        typeof evidenceDid === "string" && evidenceDid
+          ? evidenceDid
+          : extractIssuerDid(record, claims);
+      // A badge the plugin did not accept (unpinned certificate, unbound
+      // key, untrusted or unauthorized issuer) never grants access,
+      // whatever DID it claims.
+      const decision =
+        record.accepted === true ? await decide(issuerDid) : { decision: "denied" as const };
       return NextResponse.json({
         done: true,
-        verified: record.cryptographicVerified === true || record.accepted === true,
+        verified: record.cryptographicVerified === true,
         claims,
         issuerDid,
         ...decision,

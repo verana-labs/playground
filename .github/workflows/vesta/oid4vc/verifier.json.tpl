@@ -14,7 +14,8 @@
     "timeoutMs": 10000,
     "allowedDidWebHosts": [
       "vesta.playground.__NETWORK__.verana.network",
-      "zenith.playground.__NETWORK__.verana.network"
+      "zenith.playground.__NETWORK__.verana.network",
+      "umbra.playground.__NETWORK__.verana.network"
     ],
     "credentialIssuerCertificates": [],
     "developmentCertificateFingerprints": [__ISSUER_FINGERPRINTS__]

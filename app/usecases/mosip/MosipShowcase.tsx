@@ -47,7 +47,7 @@ export default function PlaygroundPage() {
       {/* Hero */}
       <header className="relative bg-gradient-to-b from-violet-50 via-white to-white border-b border-gray-100">
         <div className="max-w-4xl mx-auto px-6 pt-14 pb-16 text-center">
-          <img src="/mosip-x-verana.png" alt="MOSIP × Verana" className="h-16 mx-auto mb-6" />
+          <img src="/usecases/mosip/mosip-x-verana.png" alt="MOSIP × Verana" className="h-16 mx-auto mb-6" />
           <p className="text-violet-500 text-sm font-semibold tracking-wider uppercase mb-3">
             The trust layer for MOSIP Inji
           </p>
@@ -227,7 +227,7 @@ export default function PlaygroundPage() {
             <div className="flex flex-col sm:flex-row gap-5 sm:items-center">
               <a href={INJI_WALLET_APK} className="shrink-0 flex flex-col items-center gap-2">
                 <img
-                  src="/inji-wallet-qr.png"
+                  src="/usecases/mosip/inji-wallet-qr.png"
                   alt="QR to download the Inji Wallet APK"
                   className="w-32 h-32 rounded-lg border border-gray-200 bg-white"
                 />
@@ -287,7 +287,7 @@ export default function PlaygroundPage() {
           </p>
           <div className="grid md:grid-cols-2 gap-6 items-start">
             <a href={INJI_VERIFY_UI} target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-              <img src="/verify-trust-panel.png" alt="Inji Verify showing the Verana Accredited issuer panel" className="w-full" />
+              <img src="/usecases/mosip/verify-trust-panel.png" alt="Inji Verify showing the Verana Accredited issuer panel" className="w-full" />
             </a>
             <div className="grid grid-cols-2 gap-3">
               {[
@@ -297,7 +297,7 @@ export default function PlaygroundPage() {
                 { f: "tampered", label: "Invalid signature", tone: "text-gray-500" },
               ].map((q) => (
                 <div key={q.f} className="rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm">
-                  <img src={`/qrs/${q.f}.png`} alt={`${q.label}, sample QR`} className="w-full rounded-md mb-2" />
+                  <img src={`/usecases/mosip/qrs/${q.f}.png`} alt={`${q.label}, sample QR`} className="w-full rounded-md mb-2" />
                   <span className={`text-xs font-medium ${q.tone}`}>{q.label}</span>
                 </div>
               ))}

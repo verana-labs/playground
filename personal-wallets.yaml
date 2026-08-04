@@ -113,22 +113,31 @@ wallets:
     captures:
       issue-accredited:
         src: ./hologram/screenshots/1.webp
+        clip: ./hologram/clips/1-issuer-accredited.mp4
         caption: "Accredited issuer: identity verified, authorized for this credential, accept enabled"
       issue-unaccredited:
         src: ./hologram/screenshots/2.webp
+        clip: ./hologram/clips/2-issuer-unaccredited.mp4
         caption: Identified but not accredited to issue this credential, so accept is withdrawn
       issue-untrusted:
         src: ./hologram/screenshots/3.webp
+        clip: ./hologram/clips/3-issuer-untrusted.mp4
         caption: "Untrusted issuer: the refusal happens at connect on the AnonCreds rail"
       present-accredited:
         src: ./hologram/screenshots/4.webp
-        caption: "Accredited verifier: authorized to request this credential, sharing allowed"
+        clip: ./hologram/clips/4-verifier-accredited.mp4
+        caption: "Accredited verifier: authorized to request this credential, and the presentation completes"
       present-unaccredited:
         src: ./hologram/screenshots/5.webp
+        clip: ./hologram/clips/5-verifier-unaccredited.mp4
         caption: Identified but not authorized to ask for this credential, so sharing is refused
       present-untrusted:
         src: ./hologram/screenshots/6.webp
+        clip: ./hologram/clips/6-verifier-untrusted.mp4
         caption: "Untrusted verifier: self-issued claims withheld, sharing refused"
+    video:
+      src: ./hologram/demo.mp4
+      note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end, human-paced, silent, otherwise unedited. Scenario 1 stores the credential and scenario 4 presents that same credential back to the accredited verifier.
 
   - id: sphereon
     name: Sphereon Wallet

@@ -198,24 +198,39 @@ wallets:
     vendor: Talao
     icon: ./talao/logo.webp
     formats: [openid4vc-sdjwt]
-    download: https://github.com/AirKyzzZ/AltMe-verana
+    download: https://github.com/AirKyzzZ/AltMe-verana/releases/download/verana-2026-08-04/altme-wallet-verana-release-2026-08-04.apk
     website: https://talao.io
     repo: https://github.com/TalaoDAO/AltMe
     license: Apache-2.0
-    notes: Verana trust resolution on the OID4VP accept path with a config-driven TESTNET label.
+    notes: Verana trust chain card on the OID4VCI and OID4VP consent screens, Q1 + Q2/Q3 against the live registry (Flutter wallet).
     captures:
       issue-accredited:
-        src: ./talao/screenshots/2.webp
-        caption: The trust dossier
-      present-accredited:
         src: ./talao/screenshots/1.webp
-        caption: Verana trust card
-      present-untrusted:
+        clip: ./talao/clips/1-issuer-accredited.mp4
+        caption: "Accredited issuer: identity verified, authorized for this credential, accept enabled"
+      issue-unaccredited:
+        src: ./talao/screenshots/2.webp
+        clip: ./talao/clips/2-issuer-unaccredited.mp4
+        caption: Identified but not accredited to issue this credential, so accept is blocked
+      issue-untrusted:
         src: ./talao/screenshots/3.webp
-        caption: Rogue service denied
+        clip: ./talao/clips/3-issuer-untrusted.mp4
+        caption: "Untrusted issuer: self-issued claims withheld, accept blocked"
+      present-accredited:
+        src: ./talao/screenshots/4.webp
+        clip: ./talao/clips/4-verifier-accredited.mp4
+        caption: "Accredited verifier: authorized to request this credential, sharing allowed"
+      present-unaccredited:
+        src: ./talao/screenshots/5.webp
+        clip: ./talao/clips/5-verifier-unaccredited.mp4
+        caption: Identified but not authorized to ask for this credential, so sharing is refused
+      present-untrusted:
+        src: ./talao/screenshots/6.webp
+        clip: ./talao/clips/6-verifier-untrusted.mp4
+        caption: "Untrusted verifier: self-issued claims withheld, sharing refused"
     video:
       src: ./talao/demo.mp4
-      note: Real device, human-paced. Silent.
+      note: Real device, live against the demo cast, offers and requests minted from this page's API. Silent.
   - id: eudi
     name: EUDI Wallet (reference)
     vendor: European Commission

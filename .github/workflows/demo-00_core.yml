@@ -170,17 +170,17 @@ jobs:
         if: failure()
         run: |
           set +e
+          POD="${RELEASE_NAME}-0"
           echo "::group::pods"
-          kubectl get pods -n "$CHART_NAMESPACE" -l "app.kubernetes.io/instance=$RELEASE_NAME" -o wide
+          kubectl get pods -n "$CHART_NAMESPACE" -o wide | grep -E "NAME|$RELEASE_NAME"
           echo "::endgroup::"
           echo "::group::describe"
-          kubectl describe pod -n "$CHART_NAMESPACE" -l "app.kubernetes.io/instance=$RELEASE_NAME"
+          kubectl describe pod "$POD" -n "$CHART_NAMESPACE"
           echo "::endgroup::"
           echo "::group::logs"
-          kubectl logs -n "$CHART_NAMESPACE" -l "app.kubernetes.io/instance=$RELEASE_NAME" \
-            --all-containers --tail=120 --prefix
-          kubectl logs -n "$CHART_NAMESPACE" -l "app.kubernetes.io/instance=$RELEASE_NAME" \
-            --all-containers --tail=120 --prefix --previous
+          kubectl logs "$POD" -n "$CHART_NAMESPACE" --all-containers --tail=150
+          echo "--- previous ---"
+          kubectl logs "$POD" -n "$CHART_NAMESPACE" --all-containers --tail=150 --previous
           echo "::endgroup::"
           echo "::group::events"
           kubectl get events -n "$CHART_NAMESPACE" --sort-by=.lastTimestamp | tail -40

@@ -75,6 +75,11 @@ export async function GET(
   const format = search.get("format") ?? "anoncreds";
   // "demo-credential" (default) or "ecs-badge" (the Vesta chapter-4 demo).
   const credential = search.get("credential") ?? "demo-credential";
+  // OpenID4VP v1 replaced Presentation Exchange with DCQL, and wallets that predate DCQL reject a
+  // v1 request outright. ?query=pe mints the same request on the last draft that still admits a
+  // presentation_definition, which is what Altme needs.
+  const queryLanguage =
+    search.get("query") === "pe" ? "presentation_exchange" : undefined;
   const isBadge = credential === "ecs-badge";
   const service = getDemoService(serviceId);
   if (!service)
@@ -152,6 +157,7 @@ export async function GET(
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           policyId: isBadge ? OID4VC_BADGE_POLICY : OID4VC_POLICY,
+          ...(queryLanguage ? { queryLanguage } : {}),
         }),
       });
       const url =

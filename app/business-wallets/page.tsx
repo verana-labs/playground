@@ -145,6 +145,15 @@ export default function BusinessWallets() {
               <strong className="font-semibold text-gray-900">
                 Verifiable Service
               </strong>
+              , as defined by the{" "}
+              <a
+                href="https://verana-labs.github.io/verifiable-trust-spec/versions/v4/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-violet-700 hover:underline"
+              >
+                Verifiable Trust specification
+              </a>
               . It gives a hosted service a resolvable DID, manages its
               credentials and Linked Verifiable Presentations, resolves trust
               before every exchange, and runs the registry operations for
@@ -237,8 +246,8 @@ export default function BusinessWallets() {
               </div>
             </div>
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <Button href="/business-wallets/vs-agent">
-                Open its playground
+              <Button href="/usecases/vesta/journey">
+                See it in action in the Vesta use case
               </Button>
               <Button
                 href="https://github.com/verana-labs/vs-agent"

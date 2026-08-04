@@ -64,6 +64,11 @@ function load() {
   return cache;
 }
 
+// The playground lists what a reader can actually pick up and test, so a wallet with no
+// integration behind it stays out of the grids. The file, the logos and the tile all stay:
+// each entry moves into personal-wallets.yaml as a real card when its integration lands.
+const SHOW_COMING_SOON = false;
+
 export function listComingSoon(kind: "personal" | "business"): ComingSoonWallet[] {
-  return load()[kind];
+  return SHOW_COMING_SOON ? load()[kind] : [];
 }

@@ -121,8 +121,7 @@ export default function BusinessWallets() {
           <p className="reveal mt-8 flex items-center gap-2 text-sm text-gray-500">
             <Building2 className="h-4 w-4 text-violet-600" />
             Business wallets host organizations&apos; verifiable services - like
-            the Vesta demo cast behind this playground. Greyed-out tiles are
-            open-source stacks from the FIDES catalog we have not integrated yet.
+            the Vesta demo cast behind this playground.
           </p>
         </Container>
       </Section>

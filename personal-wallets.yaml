@@ -43,6 +43,7 @@ wallets:
     download: https://github.com/AirKyzzZ/paradym-wallet-verana/releases/download/verana-2026-08-01/paradym-wallet-verana-release-2026-08-01.apk
     website: https://animo.id
     repo: https://github.com/animo/paradym-wallet
+    fork: https://github.com/AirKyzzZ/paradym-wallet/tree/feat/verana-trust-integration
     license: Apache-2.0
     notes: Verana trust integration in Paradym's SDK trust-mechanism registry (Credo-TS wallet).
     captures:
@@ -82,6 +83,7 @@ wallets:
     download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/tag/verana-2026-07-26
     website: https://www.procivis.ch
     repo: https://github.com/procivis/one-wallet
+    fork: https://github.com/AirKyzzZ/one-wallet/tree/codex/procivis-verana
     license: Apache-2.0
     notes: Q1+Q2/Q3 in the Rust core with typed verdicts and a trust dossier in the wallet UI.
     captures:
@@ -108,6 +110,7 @@ wallets:
     appstore: https://apps.apple.com/cl/app/hologram-messaging/id6474701855
     website: https://2060.io
     repo: https://github.com/2060-io/hologram-app
+    fork: https://github.com/AirKyzzZ/hologram-app/tree/feat/verana-trust
     license: Apache-2.0
     notes: Reference personal wallet, DemoCredential scenarios over AnonCreds/DIDComm. Q1 + Q2/Q3 and the trust chain card on both consent screens; the captures below are from that build, which is upstream-pending, so the published store build still resolves Q1 only.
     captures:
@@ -147,6 +150,7 @@ wallets:
     download: https://github.com/AirKyzzZ/sphereon-mobile-wallet-verana/releases/download/verana-2026-08-03/sphereon-wallet-verana-release-2026-08-03.apk
     website: https://sphereon.com
     repo: https://github.com/Sphereon-Opensource/mobile-wallet
+    fork: https://github.com/AirKyzzZ/mobile-wallet/tree/feat/verana-ecs-normalizer
     license: Apache-2.0
     notes: Verana trust chain card on the OID4VCI and OID4VP consent screens, Q1 + Q2/Q3 against the live registry (SSI-SDK wallet).
     captures:
@@ -210,6 +214,7 @@ wallets:
     download: https://github.com/AirKyzzZ/AltMe-verana/releases/download/verana-2026-08-04/altme-wallet-verana-release-2026-08-04.apk
     website: https://talao.io
     repo: https://github.com/TalaoDAO/AltMe
+    fork: https://github.com/AirKyzzZ/AltMe/tree/feat/verana-trust-integration
     license: Apache-2.0
     notes: Verana trust chain card on the OID4VCI and OID4VP consent screens, Q1 + Q2/Q3 against the live registry (Flutter wallet).
     captures:

@@ -23,6 +23,7 @@ export type Integration = {
   name: string;
   organization: string;
   kind: IntegrationKind;
+  playgroundPage?: string;
   repo: string;
   license: string;
   /** personal wallets: native | bridge · business wallets: native | sidecar | bridge */
@@ -91,6 +92,7 @@ export function listIntegrations(): Integration[] {
       name: data.name,
       organization: data.organization ?? "",
       kind: data.kind,
+      playgroundPage: data.playground_page,
       repo: data.repo ?? "",
       license: data.license ?? "",
       track: data.track ?? "",

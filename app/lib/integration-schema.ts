@@ -52,6 +52,7 @@ export const IntegrationSchema = z
       )
       .optional(),
     demo_service: z.string().optional(),
+    playground_page: z.string().optional(),
     notes: z.string().optional(),
     contact: z.string().optional(),
     fides: z.string().url().optional(),

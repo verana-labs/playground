@@ -7,6 +7,7 @@ track: sidecar # real Inji components, a vs-agent trust layer alongside them
 scenarios: [demo-credential-loop]
 download: https://playground.mosip.testnet.verana.network/
 demo_service: mosip-organization-vs
+playground_page: /usecases/mosip
 demo_loop: live
 notes: The full triangle in one stack - Inji Certify issues, Inji Web holds, Inji Verify verifies, each identified by a DID and trust-resolved against the Verana registry.
 logo: ./logo.webp

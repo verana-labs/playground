@@ -132,22 +132,6 @@ jobs:
       # -----------------------------------------------------------------------
       # DEPLOY: install/upgrade the vs-agent via Helm
       # -----------------------------------------------------------------------
-      # A single-replica StatefulSet will not replace a pod that never goes Ready, so a
-      # crash-looping agent pins itself to the spec that broke it and no upgrade can land.
-      - name: Free a wedged pod
-        if: inputs.step == 'deploy' || inputs.step == 'all'
-        run: |
-          POD="${RELEASE_NAME}-0"
-          STATE=$(kubectl get pod "$POD" -n "$CHART_NAMESPACE" \
-            -o jsonpath='{.status.containerStatuses[*].state.waiting.reason}' 2>/dev/null)
-          echo "$POD waiting reason: ${STATE:-none}"
-          case "$STATE" in
-            *CrashLoopBackOff*|*ImagePullBackOff*|*ErrImagePull*)
-              echo "::warning::$POD is stuck in $STATE - deleting so the new spec can apply"
-              kubectl delete pod "$POD" -n "$CHART_NAMESPACE" --wait=false
-              ;;
-          esac
-
       - name: Deploy vs-agent via Helm
         if: inputs.step == 'deploy' || inputs.step == 'all'
         run: |
@@ -169,11 +153,25 @@ jobs:
           fi
           echo "--- Helm values (oid4vc config elided) ---"
           yq 'del(.oid4vc)' /tmp/helm-values.yaml
+          # Patch the StatefulSet first, without waiting. A single-replica StatefulSet will
+          # not replace a pod that never goes Ready, so a crash-looping agent would otherwise
+          # pin itself to the spec that broke it and no upgrade could ever land.
           helm upgrade --install "$RELEASE_NAME" "$CHART_SOURCE" \
             --version "$CHART_VERSION" \
             --namespace "$CHART_NAMESPACE" --create-namespace \
             --values /tmp/helm-values.yaml \
-            --wait --timeout 300s
+            --timeout 300s
+          POD="${RELEASE_NAME}-0"
+          STATE=$(kubectl get pod "$POD" -n "$CHART_NAMESPACE" \
+            -o jsonpath='{.status.containerStatuses[*].state.waiting.reason}' 2>/dev/null)
+          echo "$POD waiting reason: ${STATE:-none}"
+          case "$STATE" in
+            *CrashLoopBackOff*|*ImagePullBackOff*|*ErrImagePull*)
+              echo "::warning::$POD is stuck in $STATE - deleting so the new spec can apply"
+              kubectl delete pod "$POD" -n "$CHART_NAMESPACE" --wait=false
+              ;;
+          esac
+          kubectl rollout status statefulset "$RELEASE_NAME" -n "$CHART_NAMESPACE" --timeout=300s
           if [ -n "${OID4VC_ROLE:-}" ]; then
             # The agent reads the oid4vc ConfigMap once at boot, and helm only
             # rolls the pod when its template changes - so a config-only change

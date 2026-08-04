@@ -271,11 +271,25 @@ export default function BusinessWallets() {
       <Section className="border-t border-gray-200 bg-white">
         <Container wide>
           <h2 className="reveal text-2xl font-extrabold tracking-tight text-[#0f1222]">
-            Other Verana-compatible wallets
+            Wallets that can provide Verifiable Services
           </h2>
           <p className="reveal mt-2 mb-8 max-w-3xl text-sm leading-relaxed text-gray-500">
-            Open-source business wallets integrated with Verana - each with
-            its own playground page and hosted demo service.
+            These open-source business wallets support{" "}
+            <a
+              href="https://verana-labs.github.io/verifiable-trust-spec/versions/v4/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-violet-700 hover:underline"
+            >
+              Verifiable Trust
+            </a>
+            : they manage a resolvable DID and can present the required
+            credentials as Linked Verifiable Presentations in their DID
+            Documents, so the services they host resolve as Verifiable
+            Services. They do not support the automated vt-flow lifecycle:
+            credentials and Linked VPs are obtained and added manually. Each
+            integrated wallet has its own playground page and hosted demo
+            service.
           </p>
           <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {wallets.map((w) => (

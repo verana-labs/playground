@@ -7,8 +7,12 @@ import {
   Download,
   FileBadge,
   FileSearch,
+  Maximize2,
   ShieldQuestion,
 } from "lucide-react";
+import MediaLightbox, {
+  type LightboxMedia,
+} from "../components/MediaLightbox";
 import { Container, Section, SectionHeading, Chip } from "../components/ui";
 import { LINKS } from "../lib/site";
 import { ServiceQr } from "../components/ServiceQr";
@@ -173,6 +177,20 @@ function WalletIcon({
   );
 }
 
+/** Corner control that opens the sibling media in the lightbox. */
+function ExpandButton({ label, onClick }: { label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      className="absolute right-1.5 top-1.5 rounded-lg bg-black/50 p-1.5 text-white transition-colors hover:bg-black/70"
+    >
+      <Maximize2 className="h-3.5 w-3.5" aria-hidden />
+    </button>
+  );
+}
+
 function ScenarioCapture({
   capture,
   walletName,
@@ -182,6 +200,7 @@ function ScenarioCapture({
   walletName: string;
   position: "side" | "bottom";
 }) {
+  const [zoom, setZoom] = useState<LightboxMedia | null>(null);
   // Still and clip sit side by side rather than stacked: both are phone-shaped, so stacking
   // them doubles the column height and leaves the trust card beside it floating in a void.
   const media =
@@ -207,25 +226,51 @@ function ScenarioCapture({
               : "block"
         }
       >
-        {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized captures from wallets/ */}
-        <img
-          src={capture.src}
-          alt={capture.caption ?? `${walletName} capture`}
-          loading="lazy"
-          className={`rounded-xl border border-gray-200 bg-gray-50 ${media}`}
-        />
+        <button
+          type="button"
+          onClick={() =>
+            setZoom({
+              kind: "image",
+              src: capture.src,
+              caption: capture.caption,
+              alt: capture.caption ?? `${walletName} capture`,
+            })
+          }
+          aria-label="View this capture at full size"
+          className={`block cursor-zoom-in ${capture.clip ? "min-w-0 flex-1" : ""}`}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized captures from wallets/ */}
+          <img
+            src={capture.src}
+            alt={capture.caption ?? `${walletName} capture`}
+            loading="lazy"
+            className={`rounded-xl border border-gray-200 bg-gray-50 ${media}`}
+          />
+        </button>
         {/* No poster: with the still as poster the clip reads as a duplicate of the capture
             beside it. Its own first frame is the wallet home screen, which says "video". */}
         {capture.clip ? (
-          <video
-            controls
-            playsInline
-            preload="metadata"
-            aria-label={`${walletName} running this scenario`}
-            className={`rounded-xl border border-gray-200 bg-black ${media}`}
-          >
-            <source src={capture.clip} type="video/mp4" />
-          </video>
+          <div className="relative min-w-0 flex-1">
+            <video
+              controls
+              playsInline
+              preload="metadata"
+              aria-label={`${walletName} running this scenario`}
+              className={`rounded-xl border border-gray-200 bg-black ${media}`}
+            >
+              <source src={capture.clip} type="video/mp4" />
+            </video>
+            <ExpandButton
+              label="Watch this clip at full size"
+              onClick={() =>
+                setZoom({
+                  kind: "video",
+                  src: capture.clip as string,
+                  caption: capture.caption,
+                })
+              }
+            />
+          </div>
         ) : null}
       </div>
       {capture.caption ? (
@@ -233,6 +278,7 @@ function ScenarioCapture({
           {capture.caption}
         </figcaption>
       ) : null}
+      {zoom ? <MediaLightbox media={zoom} onClose={() => setZoom(null)} /> : null}
     </figure>
   );
 }
@@ -332,6 +378,7 @@ export default function PersonalWalletsPlayground({
   const [formatChoice, setFormatChoice] = useState<CredentialFormat | null>(
     null,
   );
+  const [demoZoom, setDemoZoom] = useState<LightboxMedia | null>(null);
   const format: CredentialFormat =
     formatChoice && wallet?.formats.includes(formatChoice)
       ? formatChoice
@@ -565,15 +612,27 @@ export default function PersonalWalletsPlayground({
                     {wallet.name} running the demos
                   </h3>
                   <div className="mt-4">
-                    <video
-                      key={wallet.video.src}
-                      controls
-                      playsInline
-                      preload="metadata"
-                      className="mx-auto w-full max-w-[280px] rounded-xl border border-gray-200 bg-black"
-                    >
-                      <source src={wallet.video.src} type="video/mp4" />
-                    </video>
+                    <div className="relative mx-auto w-full max-w-[280px]">
+                      <video
+                        key={wallet.video.src}
+                        controls
+                        playsInline
+                        preload="metadata"
+                        className="w-full rounded-xl border border-gray-200 bg-black"
+                      >
+                        <source src={wallet.video.src} type="video/mp4" />
+                      </video>
+                      <ExpandButton
+                        label="Watch this video at full size"
+                        onClick={() =>
+                          setDemoZoom({
+                            kind: "video",
+                            src: wallet.video?.src as string,
+                            caption: wallet.video?.note,
+                          })
+                        }
+                      />
+                    </div>
                     {wallet.video.note ? (
                       <p className="mt-2 text-center text-xs text-gray-500">
                         {wallet.video.note}
@@ -650,6 +709,9 @@ export default function PersonalWalletsPlayground({
           and videos.
         </p>
       </Container>
+      {demoZoom ? (
+        <MediaLightbox media={demoZoom} onClose={() => setDemoZoom(null)} />
+      ) : null}
     </Section>
   );
 }

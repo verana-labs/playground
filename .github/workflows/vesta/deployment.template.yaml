@@ -25,13 +25,15 @@ didcommPort: 3001
 eventsBaseUrl: "https://__HOST__"
 publicDidMethod: "webvh"
 
+# Fleet-wide sizing: many cast members share the cluster, so memory is capped
+# at 256Mi per agent to keep hosting cost down.
 resources:
   requests:
     cpu: 100m
-    memory: 256Mi
+    memory: 128Mi
   limits:
     cpu: 500m
-    memory: 512Mi
+    memory: 256Mi
 
 ingress:
   host: "__HOST__"

@@ -198,7 +198,7 @@ wallets:
     vendor: Talao
     icon: ./talao/logo.webp
     formats: [openid4vc-sdjwt]
-    download: https://github.com/AirKyzzZ/AltMe-verana
+    download: https://github.com/AirKyzzZ/AltMe-verana/releases/download/verana-2026-08-04/altme-wallet-verana-release-2026-08-04.apk
     website: https://talao.io
     repo: https://github.com/TalaoDAO/AltMe
     license: Apache-2.0

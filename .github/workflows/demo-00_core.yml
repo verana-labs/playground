@@ -166,6 +166,29 @@ jobs:
             kubectl rollout status statefulset "$RELEASE_NAME" -n "$CHART_NAMESPACE" --timeout=300s
           fi
 
+      - name: Why the rollout did not finish
+        if: failure()
+        run: |
+          set +e
+          echo "::group::pods"
+          kubectl get pods -n "$CHART_NAMESPACE" -l "app.kubernetes.io/instance=$RELEASE_NAME" -o wide
+          echo "::endgroup::"
+          echo "::group::describe"
+          kubectl describe pod -n "$CHART_NAMESPACE" -l "app.kubernetes.io/instance=$RELEASE_NAME"
+          echo "::endgroup::"
+          echo "::group::logs"
+          kubectl logs -n "$CHART_NAMESPACE" -l "app.kubernetes.io/instance=$RELEASE_NAME" \
+            --all-containers --tail=120 --prefix
+          kubectl logs -n "$CHART_NAMESPACE" -l "app.kubernetes.io/instance=$RELEASE_NAME" \
+            --all-containers --tail=120 --prefix --previous
+          echo "::endgroup::"
+          echo "::group::events"
+          kubectl get events -n "$CHART_NAMESPACE" --sort-by=.lastTimestamp | tail -40
+          echo "::endgroup::"
+          echo "::group::node capacity"
+          kubectl describe nodes | grep -A8 "Allocated resources"
+          echo "::endgroup::"
+
       # -----------------------------------------------------------------------
       # PROVISION: credentials, permissions, registries via the Admin APIs
       # -----------------------------------------------------------------------

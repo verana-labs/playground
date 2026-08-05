@@ -35,6 +35,47 @@
 #                   conditions (speed, editing)
 
 wallets:
+  - id: inji
+    name: Inji Wallet
+    vendor: MOSIP
+    icon: ./inji/logo.webp
+    recommended: true
+    formats: [openid4vc-sdjwt]
+    download: https://github.com/AirKyzzZ/inji-wallet/releases/download/verana-2026-08-06/Inji-Verana-arm64-v8a.apk
+    website: https://inji.io
+    repo: https://github.com/mosip/inji-wallet
+    fork: https://github.com/AirKyzzZ/inji-wallet/tree/feat/verana-trust
+    license: MPL-2.0
+    notes: MOSIP's national-scale wallet, with the Verana trust card on both the issuance and presentation consent screens and every accept or share gated on Q1 + Q2/Q3 against the live registry.
+    captures:
+      issue-accredited:
+        src: ./inji/screenshots/1.webp
+        clip: ./inji/clips/1-issuer-accredited.mp4
+        caption: "Accredited issuer: both identity credentials verified, authorized for this credential, accept enabled"
+      issue-unaccredited:
+        src: ./inji/screenshots/2.webp
+        clip: ./inji/clips/2-issuer-unaccredited.mp4
+        caption: Identity verified but not accredited to issue this credential, so accept is blocked
+      issue-untrusted:
+        src: ./inji/screenshots/3.webp
+        clip: ./inji/clips/3-issuer-untrusted.mp4
+        caption: "Untrusted issuer: self-issued claims withheld, accept blocked"
+      present-accredited:
+        src: ./inji/screenshots/4.webp
+        clip: ./inji/clips/4-verifier-accredited.mp4
+        caption: "Accredited verifier: authorized to request this credential, the presentation completes"
+      present-unaccredited:
+        src: ./inji/screenshots/5.webp
+        clip: ./inji/clips/5-verifier-unaccredited.mp4
+        caption: Identity verified but not authorized to ask for this credential, so sharing is refused
+      present-untrusted:
+        src: ./inji/screenshots/6.webp
+        clip: ./inji/clips/6-verifier-untrusted.mp4
+        caption: "Untrusted verifier: the registry does not vouch for it, claims withheld and sharing refused"
+    video:
+      src: ./inji/demo.mp4
+      note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end, silent, otherwise unedited.
+
   - id: paradym
     name: Paradym Wallet
     vendor: Animo Solutions

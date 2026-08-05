@@ -43,6 +43,7 @@ const WalletSchema = z.object({
   repo: z.string().url().optional(),
   // Our fork carrying the Verana integration, shown next to the download.
   fork: z.string().url().optional(),
+  recommended: z.boolean().optional(),
   // Vendor website; when present the vendor name links to it (new tab).
   website: z.string().url().optional(),
   license: z.string().optional(),
@@ -122,6 +123,10 @@ export function listPersonalWallets(): PersonalWallet[] {
       video: videoSrc ? { src: videoSrc, note: w.video?.note } : undefined,
     };
   });
+  cache = [
+    ...cache.filter((w) => w.recommended),
+    ...cache.filter((w) => !w.recommended),
+  ];
   return cache;
 }
 

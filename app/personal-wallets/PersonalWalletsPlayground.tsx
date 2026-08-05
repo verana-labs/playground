@@ -484,8 +484,15 @@ export default function PersonalWalletsPlayground({
                 >
                   <WalletIcon w={w} />
                   <span className="min-w-0">
-                    <span className="block truncate font-semibold text-gray-900">
-                      {w.name}
+                    <span className="flex items-center gap-2">
+                      <span className="truncate font-semibold text-gray-900">
+                        {w.name}
+                      </span>
+                      {w.recommended ? (
+                        <span className="shrink-0 rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
+                          Recommended
+                        </span>
+                      ) : null}
                     </span>
                     <span className="block truncate text-xs text-gray-500">
                       {w.vendor}

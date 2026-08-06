@@ -80,7 +80,6 @@ wallets:
     name: EUDI Wallet (reference)
     vendor: European Commission
     icon: ./eudi/logo.svg
-    recommended: true
     formats: [openid4vc-sdjwt]
     download: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/releases/download/verana-2026-08-06/eudi-wallet-verana-2026-08-06.apk
     website: https://ec.europa.eu

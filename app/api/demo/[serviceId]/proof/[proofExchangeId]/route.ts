@@ -42,8 +42,16 @@ function toClaims(value: unknown): Claim[] {
 }
 
 // The OID4VP session exposes the presented data under implementation-defined
-// keys; probe the plausible containers in order.
+// keys; probe the plausible containers in order. vs-agent nests them one level
+// deeper, as `credential.disclosedClaims`.
 function sessionClaims(record: Record<string, unknown>): Claim[] {
+  const credential = record.credential;
+  if (credential && typeof credential === "object") {
+    const disclosed = toClaims(
+      (credential as { disclosedClaims?: unknown }).disclosedClaims,
+    );
+    if (disclosed.length) return disclosed;
+  }
   for (const key of ["claims", "presentedClaims", "presented", "credentials"]) {
     const claims = toClaims(record[key]);
     if (claims.length) return claims;

@@ -31,7 +31,7 @@ const COLUMNS: {
       { label: "Network frontend", href: ENDPOINTS.frontend, ext: true },
       { label: "Trust Resolver API", href: `${ENDPOINTS.resolver}/docs`, ext: true },
       { label: "Faucet", href: ENDPOINTS.faucet, ext: true },
-      { label: "Verifiable Trust spec (v3)", href: LINKS.vtSpecV3, ext: true },
+      { label: "Verifiable Trust spec", href: LINKS.vtSpec, ext: true },
       { label: "VPR spec (v3)", href: LINKS.vprSpecV3, ext: true },
     ],
   },

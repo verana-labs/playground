@@ -190,8 +190,8 @@ export default function Home() {
             <p className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-1 border-t border-gray-100 pt-4 text-center text-xs text-gray-500">
               <a className="hover:text-violet-700 hover:underline" href={LINKS.veranaIo} target="_blank" rel="noopener noreferrer">verana.io <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
               <a className="hover:text-violet-700 hover:underline" href={LINKS.docs} target="_blank" rel="noopener noreferrer">docs.verana.io <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
-              <a className="hover:text-violet-700 hover:underline" href={LINKS.vtSpecV3} target="_blank" rel="noopener noreferrer">Verifiable Trust spec <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
-              <a className="hover:text-violet-700 hover:underline" href={LINKS.vprSpecV3} target="_blank" rel="noopener noreferrer">VPR spec <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
+              <a className="hover:text-violet-700 hover:underline" href={LINKS.vtSpec} target="_blank" rel="noopener noreferrer">Verifiable Trust spec <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
+              <a className="hover:text-violet-700 hover:underline" href={LINKS.vprSpec} target="_blank" rel="noopener noreferrer">VPR spec <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
               <a className="hover:text-violet-700 hover:underline" href={ENDPOINTS.frontend} target="_blank" rel="noopener noreferrer">app.testnet <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
             </p>
           </div>

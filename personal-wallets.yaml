@@ -41,6 +41,7 @@ wallets:
     icon: ./inji/logo.webp
     recommended: true
     formats: [openid4vc-sdjwt]
+    demoParams: query=pe
     download: https://github.com/AirKyzzZ/inji-wallet/releases/download/verana-2026-08-06.1/Inji-Verana-arm64-v8a.apk
     website: https://inji.io
     repo: https://github.com/mosip/inji-wallet
@@ -81,6 +82,7 @@ wallets:
     vendor: European Commission
     icon: ./eudi/logo.svg
     formats: [openid4vc-sdjwt]
+    demoParams: signer=x5c
     download: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/releases/download/verana-2026-08-06/eudi-wallet-verana-2026-08-06.apk
     website: https://ec.europa.eu
     repo: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui
@@ -291,6 +293,7 @@ wallets:
     vendor: Talao
     icon: ./talao/logo.webp
     formats: [openid4vc-sdjwt]
+    demoParams: query=pe
     download: https://github.com/AirKyzzZ/AltMe-verana/releases/download/verana-2026-08-04/altme-wallet-verana-release-2026-08-04.apk
     website: https://talao.io
     repo: https://github.com/TalaoDAO/AltMe

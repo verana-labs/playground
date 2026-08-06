@@ -140,12 +140,17 @@ export function ServiceQr({
   label,
   format = "anoncreds",
   credential,
+  demoParams,
   bare = false,
 }: {
   serviceId: string;
   label: string;
   /** Credential format of the selected wallet - decides the minted QR. */
   format?: string;
+  /** Extra mint query this wallet needs, e.g. `query=pe` or `signer=x5c`. The
+   *  OpenID4VP rails are mutually exclusive, so a wallet that cannot read the
+   *  default one has to be minted its own. */
+  demoParams?: string;
   /** Which credential the demo mints (default: the DemoCredential);
    *  "ecs-badge" mints the Vesta chapter-4 badge offer. */
   credential?: string;
@@ -200,7 +205,7 @@ export function ServiceQr({
     fetch(
       `/api/demo/${serviceId}?format=${encodeURIComponent(format)}${
         credential ? `&credential=${encodeURIComponent(credential)}` : ""
-      }`,
+      }${demoParams ? `&${demoParams}` : ""}`,
     )
       .then((res) => (res.ok ? (res.json() as Promise<DemoApiResponse>) : null))
       .then((body) => {
@@ -221,7 +226,7 @@ export function ServiceQr({
     return () => {
       alive = false;
     };
-  }, [serviceId, attempt, revealed, format, credential]);
+  }, [serviceId, attempt, revealed, format, credential, demoParams]);
 
   // Verifier flows: poll the presentation status so the QR flips into the
   // presented credential the moment the wallet shares it.

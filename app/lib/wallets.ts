@@ -44,6 +44,11 @@ const WalletSchema = z.object({
   // Our fork carrying the Verana integration, shown next to the download.
   fork: z.string().url().optional(),
   recommended: z.boolean().optional(),
+  // Extra query the demo mint needs for THIS wallet. OpenID4VP rails are mutually
+  // exclusive per request: a wallet that never implemented DCQL needs `query=pe`, and one
+  // that resolves no DIDs needs `signer=x5c` for an x509_hash client_id. Without this the
+  // page hands every wallet the DCQL rail and the scan fails for those that cannot read it.
+  demoParams: z.string().optional(),
   // Vendor website; when present the vendor name links to it (new tab).
   website: z.string().url().optional(),
   license: z.string().optional(),

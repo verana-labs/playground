@@ -82,7 +82,7 @@ wallets:
     icon: ./eudi/logo.svg
     formats: [openid4vc-sdjwt]
     demoParams: signer=x5c
-    download: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/releases/download/verana-2026-08-06/eudi-wallet-verana-2026-08-06.apk
+    download: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/releases/download/verana-2026-08-06.1/eudi-wallet-verana-2026-08-06.1.apk
     website: https://ec.europa.eu
     repo: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui
     fork: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/tree/feat/verana-trust

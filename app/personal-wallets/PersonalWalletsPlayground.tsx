@@ -287,11 +287,14 @@ function ScenarioCapture({
 function ScenarioCard({
   s,
   format,
+  demoParams,
   capture,
   walletName,
 }: {
   s: Scenario;
   format: CredentialFormat;
+  /** The selected wallet's mint query, so its QR carries a rail it can read. */
+  demoParams?: string;
   capture?: { src: string; caption?: string; clip?: string };
   walletName: string;
 }) {
@@ -333,7 +336,12 @@ function ScenarioCard({
         }
       >
         <div className="space-y-3">
-          <ServiceQr serviceId={s.serviceId} label={s.title} format={format} />
+          <ServiceQr
+            serviceId={s.serviceId}
+            label={s.title}
+            format={format}
+            demoParams={demoParams}
+          />
           <LiveTrustCard
             serviceId={s.serviceId}
             accreditations={accreditations}
@@ -691,6 +699,7 @@ export default function PersonalWalletsPlayground({
                 key={s.key}
                 s={s}
                 format={format}
+                demoParams={wallet.demoParams}
                 capture={wallet.captures[s.key as ScenarioKey]}
                 walletName={wallet.name}
               />
@@ -711,6 +720,7 @@ export default function PersonalWalletsPlayground({
                 key={s.key}
                 s={s}
                 format={format}
+                demoParams={wallet.demoParams}
                 capture={wallet.captures[s.key as ScenarioKey]}
                 walletName={wallet.name}
               />

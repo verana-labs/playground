@@ -88,24 +88,33 @@ wallets:
     fork: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/tree/feat/verana-trust
     license: EUPL-1.2
     notes: The European Commission's reference Android wallet (Kotlin, Jetpack Compose), with the Verana trust card on both consent screens and every accept or share gated on Q1 + Q2/Q3 against the live registry.
+    video:
+      src: ./eudi/demo.mp4
+      note: Real device, live against the demo cast, offers and requests minted from this page's API. Silent.
     captures:
       issue-accredited:
         src: ./eudi/screenshots/1.webp
+        clip: ./eudi/clips/1-issuer-accredited.mp4
         caption: "Accredited issuer: both identity credentials verified, authorized for this credential, accept enabled"
       issue-unaccredited:
         src: ./eudi/screenshots/2.webp
+        clip: ./eudi/clips/2-issuer-unaccredited.mp4
         caption: Identity verified but not accredited to issue this credential, so accept is blocked
       issue-untrusted:
         src: ./eudi/screenshots/3.webp
+        clip: ./eudi/clips/3-issuer-untrusted.mp4
         caption: "Untrusted issuer: self-issued claims marked unverified, accept blocked"
       present-accredited:
         src: ./eudi/screenshots/4.webp
+        clip: ./eudi/clips/4-verifier-accredited.mp4
         caption: "Accredited verifier: authorized to request this credential, the presentation completes"
       present-unaccredited:
         src: ./eudi/screenshots/5.webp
+        clip: ./eudi/clips/5-verifier-unaccredited.mp4
         caption: Identity verified but not accredited to request this credential, so share is blocked
       present-untrusted:
         src: ./eudi/screenshots/6.webp
+        clip: ./eudi/clips/6-verifier-untrusted.mp4
         caption: "Untrusted verifier: self-issued claims marked unverified, share blocked"
   - id: paradym
     name: Paradym Wallet

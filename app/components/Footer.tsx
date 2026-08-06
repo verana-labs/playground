@@ -8,7 +8,7 @@ const COLUMNS: {
   {
     title: "Playground",
     links: [
-      { label: "What is Verana", href: "/#what-is-verana" },
+      { label: "What you can do", href: "/#what-is-verana" },
       { label: "Learn step by step", href: "/#learn" },
       { label: "Personal wallets", href: "/personal-wallets" },
       { label: "Business wallets", href: "/business-wallets" },

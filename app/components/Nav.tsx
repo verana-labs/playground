@@ -5,7 +5,7 @@ import { MobileMenu, UseCasesMenu } from "./NavMenus";
 // Persistent header (spec §2): logo · What is Verana · Use Cases submenu ·
 // wallet anchors · network chip · one CTA: "Add your wallet" → /integrate.
 const NAV = [
-  { href: "/#what-is-verana", label: "What is Verana" },
+  { href: "/#what-is-verana", label: "What you can do" },
   { href: "/personal-wallets", label: "Personal wallets" },
   { href: "/business-wallets", label: "Business wallets" },
 ];

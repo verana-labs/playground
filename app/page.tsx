@@ -1,19 +1,21 @@
 import Link from "next/link";
 import {
   ArrowDown,
-  ExternalLink,
-  ShieldCheck,
-  ScrollText,
-  Fingerprint,
-  Search,
+  ArrowRight,
+  Award,
+  Bot,
   BadgeCheck,
   Building2,
+  CircleCheck,
+  CornerDownRight,
+  ExternalLink,
+  Fingerprint,
   Landmark,
-  Wallet,
+  Search,
+  Store,
 } from "lucide-react";
 import { Container, Section, SectionHeading } from "./components/ui";
 import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
-import { ProofOfTrust } from "./components/ProofOfTrust";
 import { businessWallets } from "./lib/integrations";
 import { listPersonalWallets, type PersonalWallet } from "./lib/wallets";
 import { CHAPTERS_NAV } from "./usecases/vesta/chapters";
@@ -21,43 +23,49 @@ import { LINKS, ENDPOINTS } from "./lib/site";
 
 // The story sections (spec §3.2), deep-linking into /usecases/vesta anchors.
 
-// The concept cards of section 1 (verana-demos ConceptCard idiom).
-const CONCEPTS = [
+// Section 1: question-first pillars - what you can do with Verana, asked the
+// way a visitor would ask it. Kept intentionally light on prose.
+const QUESTION_PILLARS = [
   {
-    icon: ScrollText,
+    icon: Landmark,
     tone: "bg-violet-50 text-violet-700",
+    mark: "text-violet-600",
     title: "Ecosystems",
-    description:
-      "Define credential schemas, accredit who may issue and who may verify, and publish their governance on a public registry.",
+    items: [
+      "Create your ecosystem: credential schemas, governance framework.",
+      "Accredit and onboard participants: issuers, verifiers, holders.",
+      "Join existing ecosystem(s).",
+    ],
+    cta: { label: "Follow the Vesta story", href: "/usecases/vesta" },
   },
   {
     icon: Fingerprint,
     tone: "bg-blue-50 text-blue-700",
-    title: "Verifiable services & agents",
-    description:
-      "Services and AI agents identified by a DID, backed by credentials that prove what they are and who operates them.",
-  },
-  {
-    icon: ShieldCheck,
-    tone: "bg-emerald-50 text-emerald-700",
-    title: "Verify first, then connect",
-    description:
-      "Trust is resolved against the public registry and shown as a Proof-of-Trust before the first interaction - offers and requests are accepted only from authorized issuers and verifiers.",
-  },
-  {
-    icon: Search,
-    tone: "bg-amber-50 text-amber-700",
-    title: "Discovery",
-    description:
-      "Because trust is published, it becomes discoverable: find services by what they prove, not what they claim.",
+    mark: "text-blue-600",
+    title: "Identity & accreditation",
+    items: [
+      "Identify the controller of any service.",
+      "See the credentials a service presents.",
+      "Verify the accreditations it holds.",
+    ],
+    cta: { label: "See a live Proof-of-Trust", href: "/personal-wallets" },
   },
 ];
 
-const CAN_DO = [
-  { icon: Fingerprint, text: "Make your services and agents verifiable" },
-  { icon: BadgeCheck, text: "Issue and verify credentials under an ecosystem's governance" },
-  { icon: Landmark, text: "Build your own trust ecosystem" },
-  { icon: Wallet, text: "Integrate your wallet" },
+// The discovery pillar, shown as ask-the-trust-graph question / answer pairs.
+const DISCOVERY_QA = [
+  {
+    q: "Where is the Customer Support AI agent of telco company Red?",
+    a: null, // rendered as the full result card below
+  },
+  {
+    q: "Which e-commerce shops sell made-in-Italy sneakers in Paris?",
+    a: { icon: Store, text: "3 verified shops found, each operated by an identified company" },
+  },
+  {
+    q: "Which ecosystems issue an ISO 42001 credential?",
+    a: { icon: Award, text: "2 ecosystems found, with 14 accredited issuers" },
+  },
 ];
 
 function PersonalWalletHomeTile({ w }: { w: PersonalWallet }) {
@@ -149,57 +157,128 @@ export default function Home() {
         </div>
       ) : null}
 
-      {/* 1 · What is Verana */}
+      {/* 1 · What can you do with Verana - question-first pillars */}
       <Section id="what-is-verana">
         <Container>
           <SectionHeading
             number={1}
-            title="What is Verana?"
-            subtitle="Open, public trust infrastructure - the trust layer of the verifiable internet"
+            title="What can you do with Verana?"
+            subtitle="Open, public trust infrastructure: ecosystems publish who may issue and verify, services prove who they are, and everything published becomes searchable."
           />
-          <div className="reveal-stagger grid gap-4 sm:grid-cols-2">
-            {CONCEPTS.map((c) => (
+          <div className="reveal-stagger grid gap-4 md:grid-cols-2">
+            {QUESTION_PILLARS.map((p) => (
               <div
-                key={c.title}
-                className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm"
+                key={p.title}
+                className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
               >
-                <div
-                  className={`mb-3 flex h-10 w-10 items-center justify-center rounded-lg ${c.tone}`}
-                >
-                  <c.icon className="h-5 w-5" />
+                <div className="mb-4 flex items-center gap-3">
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-lg ${p.tone}`}
+                  >
+                    <p.icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900">{p.title}</h3>
                 </div>
-                <h3 className="mb-1 font-semibold text-gray-900">{c.title}</h3>
-                <p className="text-sm leading-relaxed text-gray-500">
-                  {c.description}
-                </p>
+                <ul className="flex-1 space-y-2.5">
+                  {p.items.map((item) => (
+                    <li
+                      key={item}
+                      className="flex items-start gap-2.5 rounded-xl bg-gray-50 px-4 py-3 text-[0.95rem] font-medium leading-snug text-gray-800"
+                    >
+                      <CircleCheck
+                        className={`mt-0.5 h-4 w-4 shrink-0 ${p.mark}`}
+                        aria-hidden
+                      />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+                <Link
+                  href={p.cta.href}
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-violet-600 hover:underline"
+                >
+                  {p.cta.label} <ArrowRight className="h-4 w-4" aria-hidden />
+                </Link>
               </div>
             ))}
           </div>
-          <div className="reveal mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
-              What you can do with it
-            </h3>
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              {CAN_DO.map((c) => (
-                <div key={c.text} className="flex items-start gap-2.5 text-sm text-gray-600">
-                  <c.icon className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" />
-                  {c.text}
+
+          {/* Discovery: ask the trust graph */}
+          <div className="reveal mt-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div className="mb-4 flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
+                <Search className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-gray-900">Discovery</h3>
+                <p className="text-sm text-gray-500">
+                  Ask the trust graph: find services by what they prove, not
+                  what they claim.
+                </p>
+              </div>
+            </div>
+            <div className="space-y-4">
+              {DISCOVERY_QA.map((qa) => (
+                <div key={qa.q}>
+                  <div className="flex items-start gap-2.5 rounded-xl bg-gray-50 px-4 py-3 text-[0.95rem] font-medium leading-snug text-gray-800">
+                    <Search
+                      className="mt-0.5 h-4 w-4 shrink-0 text-amber-600"
+                      aria-hidden
+                    />
+                    {qa.q}
+                  </div>
+                  <div className="mt-2 flex items-start gap-2.5 pl-4 sm:pl-6">
+                    <CornerDownRight
+                      className="mt-1 h-4 w-4 shrink-0 text-gray-400"
+                      aria-hidden
+                    />
+                    {qa.a ? (
+                      <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-gray-600">
+                        <qa.a.icon
+                          className="h-4 w-4 shrink-0 text-emerald-600"
+                          aria-hidden
+                        />
+                        {qa.a.text}
+                      </p>
+                    ) : (
+                      <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5 rounded-xl border border-emerald-200 bg-emerald-50/50 px-4 py-2.5">
+                        <span className="flex items-center gap-2 text-sm font-semibold text-gray-900">
+                          <Bot className="h-4 w-4 text-emerald-600" aria-hidden />
+                          Customer Support AI Agent
+                        </span>
+                        <span className="text-sm text-gray-600">
+                          operated by Red Telco
+                        </span>
+                        <span className="flex items-center gap-1 text-xs font-medium text-emerald-700">
+                          <BadgeCheck className="h-3.5 w-3.5" aria-hidden />
+                          Verified
+                        </span>
+                        <code
+                          className="min-w-0 truncate font-mono text-xs text-gray-500"
+                          title="did:webvh:QmRd8fA3vX2kTq9wLmB5cN7sJp:support.red-telco.example"
+                        >
+                          did:webvh:QmRd8f...support.red-telco.example
+                        </code>
+                      </div>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
-            <p className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-1 border-t border-gray-100 pt-4 text-center text-xs text-gray-500">
+            <p className="mt-4 border-t border-gray-100 pt-3 text-xs text-gray-400">
+              Illustrative preview: discovery queries are answered by the Verana
+              trust graph, built from the credentials services publicly present.
+            </p>
+          </div>
+
+          <div className="reveal mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+            <p className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-center text-xs text-gray-500">
               <a className="hover:text-violet-700 hover:underline" href={LINKS.veranaIo} target="_blank" rel="noopener noreferrer">verana.io <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
               <a className="hover:text-violet-700 hover:underline" href={LINKS.docs} target="_blank" rel="noopener noreferrer">docs.verana.io <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
               <a className="hover:text-violet-700 hover:underline" href={LINKS.vtSpec} target="_blank" rel="noopener noreferrer">Verifiable Trust spec <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
               <a className="hover:text-violet-700 hover:underline" href={LINKS.vprSpec} target="_blank" rel="noopener noreferrer">VPR spec <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
               <a className="hover:text-violet-700 hover:underline" href={ENDPOINTS.frontend} target="_blank" rel="noopener noreferrer">app.testnet <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
             </p>
-          </div>
-          <div className="reveal mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <h3 className="mb-4 text-center text-sm font-semibold uppercase tracking-wider text-gray-500">
-              Live from the testnet
-            </h3>
-            <ProofOfTrust serviceId="vesta" title="Live from the testnet" />
           </div>
         </Container>
       </Section>

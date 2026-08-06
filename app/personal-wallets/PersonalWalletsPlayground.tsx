@@ -252,7 +252,10 @@ function ScenarioCapture({
             beside it. Its own first frame is the wallet home screen, which says "video". */}
         {capture.clip ? (
           <div className="relative min-w-0 flex-1">
+            {/* Keyed on the source: swapping <source> under a live <video> does not reload it,
+                so without this every wallet keeps showing the first wallet's clips. */}
             <video
+              key={capture.clip}
               controls
               playsInline
               preload="metadata"

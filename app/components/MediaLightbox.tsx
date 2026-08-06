@@ -54,6 +54,7 @@ export default function MediaLightbox({
       >
         {media.kind === "video" ? (
           <video
+            key={media.src}
             controls
             autoPlay
             playsInline

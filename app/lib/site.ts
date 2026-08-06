@@ -39,7 +39,7 @@ export const LINKS = {
   vtSpec: "https://verana-labs.github.io/verifiable-trust-spec/",
   vuaDefinition:
     "https://verana-labs.github.io/verifiable-trust-spec/#what-is-a-verifiable-user-agent-vua",
-  vprSpecV3:
-    "https://verana-labs.github.io/verifiable-trust-vpr-spec/index-v3.html",
+  vprSpec:
+    "https://verana-labs.github.io/verifiable-trust-vpr-spec/",
   veranaDemos: "https://github.com/verana-labs/verana-demos",
 } as const;

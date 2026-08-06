@@ -49,7 +49,7 @@ export default function About() {
             The playground targets Verifiable Trust / VPR <strong>v3</strong> - 
             what runs on testnet today (
             <a href={LINKS.vtSpec} target="_blank" rel="noopener noreferrer">VT spec</a>,{" "}
-            <a href={LINKS.vprSpecV3} target="_blank" rel="noopener noreferrer">VPR spec v3</a>
+            <a href={LINKS.vprSpec} target="_blank" rel="noopener noreferrer">VPR spec</a>
             ). Badge flows run over AnonCreds/DIDComm for now; OpenID4VC follows.
           </p>
           <h2>Who operates it</h2>

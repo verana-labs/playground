@@ -76,6 +76,37 @@ wallets:
       src: ./inji/demo.mp4
       note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end, silent, otherwise unedited.
 
+  - id: eudi
+    name: EUDI Wallet (reference)
+    vendor: European Commission
+    icon: ./eudi/logo.svg
+    recommended: true
+    formats: [openid4vc-sdjwt]
+    download: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/releases/download/verana-2026-08-06/eudi-wallet-verana-2026-08-06.apk
+    website: https://ec.europa.eu
+    repo: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui
+    fork: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/tree/feat/verana-trust
+    license: EUPL-1.2
+    notes: The European Commission's reference Android wallet (Kotlin, Jetpack Compose), with the Verana trust card on both consent screens and every accept or share gated on Q1 + Q2/Q3 against the live registry.
+    captures:
+      issue-accredited:
+        src: ./eudi/screenshots/1.webp
+        caption: "Accredited issuer: both identity credentials verified, authorized for this credential, accept enabled"
+      issue-unaccredited:
+        src: ./eudi/screenshots/2.webp
+        caption: Identity verified but not accredited to issue this credential, so accept is blocked
+      issue-untrusted:
+        src: ./eudi/screenshots/3.webp
+        caption: "Untrusted issuer: self-issued claims marked unverified, accept blocked"
+      present-accredited:
+        src: ./eudi/screenshots/4.webp
+        caption: "Accredited verifier: authorized to request this credential, the presentation completes"
+      present-unaccredited:
+        src: ./eudi/screenshots/5.webp
+        caption: Identity verified but not accredited to request this credential, so share is blocked
+      present-untrusted:
+        src: ./eudi/screenshots/6.webp
+        caption: "Untrusted verifier: self-issued claims marked unverified, share blocked"
   - id: paradym
     name: Paradym Wallet
     vendor: Animo Solutions
@@ -286,13 +317,3 @@ wallets:
     video:
       src: ./talao/demo.mp4
       note: Real device, live against the demo cast, offers and requests minted from this page's API. Silent.
-  - id: eudi
-    name: EUDI Wallet (reference)
-    vendor: European Commission
-    icon: ./eudi/logo.svg
-    formats: [openid4vc-sdjwt]
-    download: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui/releases/download/Wallet/Demo_Version%3D2026.07.39-Demo_Build%3D39/2026.07.39-Demo.apk
-    website: https://ec.europa.eu
-    repo: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui
-    license: EUPL-1.2
-    notes: The European Commission's reference Android wallet (Kotlin, Jetpack Compose). The download is the upstream demo build as published; Verana trust resolution is not in it yet.

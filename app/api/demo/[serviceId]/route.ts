@@ -80,6 +80,11 @@ export async function GET(
   // presentation_definition, which is what Altme needs.
   const queryLanguage =
     search.get("query") === "pe" ? "presentation_exchange" : undefined;
+  // The EUDI reference wallet resolves no DIDs; ?signer=x5c mints the request
+  // signed under the development certificate instead, an x509_hash client_id
+  // its stack accepts, and the wallet-side check binds that cert back to the
+  // DID it names in its URI SAN.
+  const requestSigner = search.get("signer") === "x5c" ? "x5c" : undefined;
   const isBadge = credential === "ecs-badge";
   const service = getDemoService(serviceId);
   if (!service)
@@ -158,6 +163,7 @@ export async function GET(
         body: JSON.stringify({
           policyId: isBadge ? OID4VC_BADGE_POLICY : OID4VC_POLICY,
           ...(queryLanguage ? { queryLanguage } : {}),
+          ...(requestSigner ? { requestSigner } : {}),
         }),
       });
       const url =

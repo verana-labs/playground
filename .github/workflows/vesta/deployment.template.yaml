@@ -5,7 +5,7 @@
 # installing. Hosts follow <org>.playground.<network>.verana.network and
 # <subservice>.<org>.playground.<network>.verana.network.
 chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
-chartVersion: v1.12.0-oidc4vc-uiprofile.1
+chartVersion: v1.12.0-oidc4vc-uiprofile.30
 
 global:
   domain: playground.__NETWORK__.verana.network
@@ -17,7 +17,7 @@ replicas: 1
 # image and is activated per org via oid4vc.plugins (vesta-00_core).
 image:
   repository: veranalabs/vs-agent
-  tag: v1.12.0-oidc4vc-uiprofile.1
+  tag: v1.12.0-oidc4vc-uiprofile.30
 
 adminPort: 3000
 enablePublicApiSwagger: true

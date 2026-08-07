@@ -181,6 +181,70 @@ wallets:
       src: ./procivis/demo.mp4
       note: Real device, three segments concatenated, 1.75x speed. Silent.
 
+  - id: bcwallet
+    name: BC Wallet
+    vendor: Government of British Columbia
+    icon: ./bcwallet/logo.webp
+    formats: [anoncreds]
+    download: https://github.com/AirKyzzZ/bc-wallet-mobile/releases/download/verana-2026-08-07.1/BCWallet-Verana-verana-2026-08-07.1.apk
+    website: https://digital.gov.bc.ca/digital-trust/
+    repo: https://github.com/bcgov/bc-wallet-mobile
+    fork: https://github.com/AirKyzzZ/bc-wallet-mobile/tree/feat/verana-trust
+    license: Apache-2.0
+    notes: British Columbia's production wallet, on the Bifold and Credo stack. The Verana trust card sits on the credential-offer and proof-request consent screens, and on the contact view for a counterparty that offers nothing, with accept and share both gated on Q1 + Q2/Q3 against the live registry.
+    captures:
+      issue-accredited:
+        src: ./bcwallet/screenshots/1.webp
+        clip: ./bcwallet/clips/1-issuer-accredited.mp4
+        caption: "Accredited issuer: both identity credentials verified, authorized for this credential, accept enabled"
+      issue-unaccredited:
+        src: ./bcwallet/screenshots/2.webp
+        clip: ./bcwallet/clips/2-issuer-unaccredited.mp4
+        caption: Identity verified but not accredited to issue this credential, so accept is blocked
+      issue-untrusted:
+        src: ./bcwallet/screenshots/3.webp
+        clip: ./bcwallet/clips/3-issuer-untrusted.mp4
+        caption: "Untrusted issuer: it vouches for itself, so its claims are withheld and nothing is offered"
+      present-accredited:
+        src: ./bcwallet/screenshots/4.webp
+        clip: ./bcwallet/clips/4-verifier-accredited.mp4
+        caption: "Accredited verifier: authorized to request this credential, the presentation completes"
+      present-unaccredited:
+        src: ./bcwallet/screenshots/5.webp
+        clip: ./bcwallet/clips/5-verifier-unaccredited.mp4
+        caption: Identity verified but not accredited to request this credential, so share is blocked
+      present-untrusted:
+        src: ./bcwallet/screenshots/6.webp
+        clip: ./bcwallet/clips/6-verifier-untrusted.mp4
+        caption: "Untrusted verifier: it vouches for itself, so its claims are withheld and nothing is requested"
+  - id: wwwallet
+    name: wwWallet
+    vendor: wwWallet
+    icon: ./wwwallet/logo.svg
+    formats: [openid4vc-sdjwt]
+    demoParams: signer=x5c
+    download: https://demo.wwwallet.org
+    website: https://wwwallet.org
+    repo: https://github.com/wwWallet/wallet-frontend
+    fork: https://github.com/AirKyzzZ/wallet-frontend/tree/feat/verana-trust
+    license: Apache-2.0
+    notes: A browser wallet rather than an app, on OpenID4VCI and OpenID4VP. The Verana trust card sits on both consent moments and gates the accept and the share. Captures are from a local build against the live demo cast; the untrusted-issuer scenario is still being re-checked and is not shown yet.
+    captures:
+      issue-accredited:
+        src: ./wwwallet/screenshots/1.webp
+        caption: "Accredited issuer: identity verified, authorized for this credential, continue enabled"
+      issue-unaccredited:
+        src: ./wwwallet/screenshots/2.webp
+        caption: Identity verified but not accredited to issue this credential, so continue is blocked
+      present-accredited:
+        src: ./wwwallet/screenshots/4.webp
+        caption: "Accredited verifier: authorized to request this credential, the presentation completes"
+      present-unaccredited:
+        src: ./wwwallet/screenshots/5.webp
+        caption: Identity verified but not accredited to request this credential, so share is blocked
+      present-untrusted:
+        src: ./wwwallet/screenshots/6.webp
+        caption: "Untrusted verifier: self-issued claims withheld, share blocked"
   - id: hologram
     name: Hologram Messaging
     vendor: "2060"

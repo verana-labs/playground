@@ -15,8 +15,9 @@ import {
   Store,
 } from "lucide-react";
 import { Container, Section, SectionHeading } from "./components/ui";
-import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
-import { businessWallets } from "./lib/integrations";
+import { AddYourWalletTile } from "./components/WalletTile";
+import WalletLogo from "./components/WalletLogo";
+import { businessWallets, type Integration } from "./lib/integrations";
 import { listPersonalWallets, type PersonalWallet } from "./lib/wallets";
 import { CHAPTERS_NAV } from "./usecases/vesta/chapters";
 import { LINKS, ENDPOINTS } from "./lib/site";
@@ -98,9 +99,30 @@ function PersonalWalletHomeTile({ w }: { w: PersonalWallet }) {
   );
 }
 
+function BusinessWalletHomeTile({ w }: { w: Integration }) {
+  return (
+    <Link
+      href={w.playgroundPage ?? `/business-wallets/${w.slug}`}
+      className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors hover:border-violet-300"
+    >
+      <WalletLogo w={w} size="tile" />
+      <span className="min-w-0">
+        <span className="block truncate font-semibold text-gray-900">
+          {w.name}
+        </span>
+        <span className="block truncate text-sm text-gray-500">
+          {w.organization}
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 export default function Home() {
   const users = listPersonalWallets();
   const clouds = businessWallets();
+  const vsAgent = clouds.find((w) => w.slug === "vs-agent");
+  const otherClouds = clouds.filter((w) => w.slug !== "vs-agent");
   const fidesUsecaseUrl = process.env.NEXT_PUBLIC_FIDES_USECASE_URL;
 
   return (
@@ -355,9 +377,35 @@ export default function Home() {
             title="Business wallets"
             subtitle="Every integrated open-source business wallet gets an identical playground page: a hosted, Verana-verified demo service you can exercise end to end"
           />
-          <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {clouds.map((w) => (
-              <WalletTile key={w.slug} w={w} />
+          {vsAgent ? (
+            <Link
+              href={vsAgent.playgroundPage ?? `/business-wallets/${vsAgent.slug}`}
+              className="reveal group mb-6 flex flex-col gap-4 rounded-2xl border border-violet-200 bg-violet-50/50 p-6 shadow-sm transition-colors hover:border-violet-300 sm:flex-row sm:items-center"
+            >
+              <WalletLogo w={vsAgent} size="tile" />
+              <span className="min-w-0 flex-1">
+                <span className="flex flex-wrap items-center gap-2">
+                  <span className="text-lg font-bold text-gray-900">
+                    {vsAgent.name}
+                  </span>
+                  <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
+                    Featured
+                  </span>
+                </span>
+                <span className="mt-1 block text-sm leading-relaxed text-gray-600">
+                  The open source business wallet provided by the Verana
+                  Foundation - it runs every verifiable service behind this
+                  playground, including the whole Vesta demo cast.
+                </span>
+              </span>
+              <span className="shrink-0 text-sm font-medium text-violet-600 group-hover:underline">
+                Open its playground →
+              </span>
+            </Link>
+          ) : null}
+          <div className="reveal-stagger grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {otherClouds.map((w) => (
+              <BusinessWalletHomeTile key={w.slug} w={w} />
             ))}
             <AddYourWalletTile />
           </div>

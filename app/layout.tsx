@@ -4,6 +4,7 @@ import Nav from "./components/Nav";
 import GdcBanner from "./components/GdcBanner";
 import Footer from "./components/Footer";
 import Reveal from "./components/Reveal";
+import JsonLd from "./components/JsonLd";
 import { SITE_URL, SITE_NAME, SITE_TAGLINE, SITE_DESCRIPTION } from "./lib/site";
 
 export const metadata: Metadata = {
@@ -14,6 +15,30 @@ export const metadata: Metadata = {
   },
   description: SITE_DESCRIPTION,
   applicationName: SITE_NAME,
+  alternates: { canonical: "/" },
+  keywords: [
+    "Verana",
+    "verifiable trust",
+    "trust registry",
+    "decentralized identity",
+    "verifiable credentials",
+    "DID",
+    "digital wallet",
+    "playground",
+  ],
+  openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} · ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    site: "@Verana_io",
+    title: `${SITE_NAME} · ${SITE_TAGLINE}`,
+    description: SITE_DESCRIPTION,
+  },
 };
 
 export const viewport: Viewport = {
@@ -27,6 +52,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <JsonLd />
+      </head>
       <body className="flex min-h-screen flex-col bg-[#fcfcff] text-gray-900 antialiased">
         <Reveal />
         <GdcBanner />

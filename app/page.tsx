@@ -8,18 +8,17 @@ import {
   Building2,
   CircleCheck,
   CornerDownRight,
-  ExternalLink,
   Fingerprint,
   Landmark,
   Search,
   Store,
 } from "lucide-react";
 import { Container, Section, SectionHeading } from "./components/ui";
-import WalletTile, { AddYourWalletTile } from "./components/WalletTile";
-import { businessWallets } from "./lib/integrations";
+import { AddYourWalletTile } from "./components/WalletTile";
+import WalletLogo from "./components/WalletLogo";
+import { businessWallets, type Integration } from "./lib/integrations";
 import { listPersonalWallets, type PersonalWallet } from "./lib/wallets";
 import { CHAPTERS_NAV } from "./usecases/vesta/chapters";
-import { LINKS, ENDPOINTS } from "./lib/site";
 
 // The story sections (spec §3.2), deep-linking into /usecases/vesta anchors.
 
@@ -98,9 +97,30 @@ function PersonalWalletHomeTile({ w }: { w: PersonalWallet }) {
   );
 }
 
+function BusinessWalletHomeTile({ w }: { w: Integration }) {
+  return (
+    <Link
+      href="/business-wallets"
+      className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors hover:border-violet-300"
+    >
+      <WalletLogo w={w} size="tile" />
+      <span className="min-w-0">
+        <span className="block truncate font-semibold text-gray-900">
+          {w.name}
+        </span>
+        <span className="block truncate text-sm text-gray-500">
+          {w.organization}
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 export default function Home() {
   const users = listPersonalWallets();
   const clouds = businessWallets();
+  const vsAgent = clouds.find((w) => w.slug === "vs-agent");
+  const otherClouds = clouds.filter((w) => w.slug !== "vs-agent");
   const fidesUsecaseUrl = process.env.NEXT_PUBLIC_FIDES_USECASE_URL;
 
   return (
@@ -271,47 +291,50 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="reveal mt-6 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-            <p className="flex flex-wrap justify-center gap-x-5 gap-y-1 text-center text-xs text-gray-500">
-              <a className="hover:text-violet-700 hover:underline" href={LINKS.veranaIo} target="_blank" rel="noopener noreferrer">verana.io <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
-              <a className="hover:text-violet-700 hover:underline" href={LINKS.docs} target="_blank" rel="noopener noreferrer">docs.verana.io <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
-              <a className="hover:text-violet-700 hover:underline" href={LINKS.vtSpec} target="_blank" rel="noopener noreferrer">Verifiable Trust spec <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
-              <a className="hover:text-violet-700 hover:underline" href={LINKS.vprSpec} target="_blank" rel="noopener noreferrer">VPR spec <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
-              <a className="hover:text-violet-700 hover:underline" href={ENDPOINTS.frontend} target="_blank" rel="noopener noreferrer">app.testnet <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden /></a>
-            </p>
-          </div>
         </Container>
       </Section>
 
-      {/* 2 · Learn step by step */}
+      {/* 2 · Learn step by step - one card per use case */}
       <Section id="learn" className="border-t border-gray-200 bg-white">
         <Container>
           <SectionHeading
             number={2}
             title="Learn step by step"
-            subtitle="Verana, explained by Vesta Appliances - one continuous story, from business problem to full circle, and you take part with your own wallet"
+            subtitle="Each use case is one continuous story, from business problem to full circle - follow it chapter by chapter and take part with your own wallet"
           />
-          <div className="reveal-stagger grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {CHAPTERS_NAV.map((s) => (
-              <Link
-                key={s.n}
-                href={s.href}
-                className="group flex flex-col rounded-xl border border-gray-200 bg-gray-50 p-5 transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
-                    {s.n}
+          <div className="reveal-stagger grid gap-4 md:grid-cols-2">
+            <Link
+              href="/usecases/vesta"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
+            >
+              <span className="relative block aspect-[16/9] overflow-hidden bg-gray-100">
+                {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized WebP illustration from public/ */}
+                <img
+                  src="/images/factory.webp"
+                  alt="The Vesta Appliances factory"
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
+              </span>
+              <span className="flex flex-1 flex-col p-5">
+                <span className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Vesta Appliances
+                  </h3>
+                  <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
+                    {CHAPTERS_NAV.length} chapters
                   </span>
-                </div>
-                <h3 className="mt-3 font-semibold text-gray-900">{s.title}</h3>
+                </span>
                 <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
-                  {s.intro}
+                  Verana, explained by an appliance maker: Vesta builds its
+                  ecosystem, accredits its repair partners, issues employee
+                  badges - and impostors get caught at the front door. Real
+                  registry entries, live trust resolution.
                 </p>
                 <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
-                  Read the section →
+                  Follow the Vesta story →
                 </span>
-              </Link>
-            ))}
+              </span>
+            </Link>
           </div>
         </Container>
       </Section>
@@ -343,9 +366,32 @@ export default function Home() {
             title="Business wallets"
             subtitle="Every integrated open-source business wallet gets an identical playground page: a hosted, Verana-verified demo service you can exercise end to end"
           />
-          <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {clouds.map((w) => (
-              <WalletTile key={w.slug} w={w} />
+          {vsAgent ? (
+            <Link
+              href="/business-wallets"
+              className="reveal group mb-6 flex flex-col gap-4 rounded-2xl border border-violet-200 bg-violet-50/50 p-6 shadow-sm transition-colors hover:border-violet-300 sm:flex-row sm:items-center"
+            >
+              <WalletLogo w={vsAgent} size="tile" />
+              <span className="min-w-0 flex-1">
+                <span className="flex flex-wrap items-center gap-2">
+                  <span className="text-lg font-bold text-gray-900">
+                    {vsAgent.name}
+                  </span>
+                  <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
+                    Featured
+                  </span>
+                </span>
+                <span className="mt-1 block text-sm leading-relaxed text-gray-600">
+                  The open source business wallet provided by the Verana
+                  Foundation - it runs every verifiable service behind this
+                  playground, including the whole Vesta demo cast.
+                </span>
+              </span>
+            </Link>
+          ) : null}
+          <div className="reveal-stagger grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {otherClouds.map((w) => (
+              <BusinessWalletHomeTile key={w.slug} w={w} />
             ))}
             <AddYourWalletTile />
           </div>

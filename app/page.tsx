@@ -102,7 +102,7 @@ function PersonalWalletHomeTile({ w }: { w: PersonalWallet }) {
 function BusinessWalletHomeTile({ w }: { w: Integration }) {
   return (
     <Link
-      href={w.playgroundPage ?? `/business-wallets/${w.slug}`}
+      href="/business-wallets"
       className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors hover:border-violet-300"
     >
       <WalletLogo w={w} size="tile" />
@@ -379,7 +379,7 @@ export default function Home() {
           />
           {vsAgent ? (
             <Link
-              href={vsAgent.playgroundPage ?? `/business-wallets/${vsAgent.slug}`}
+              href="/business-wallets"
               className="reveal group mb-6 flex flex-col gap-4 rounded-2xl border border-violet-200 bg-violet-50/50 p-6 shadow-sm transition-colors hover:border-violet-300 sm:flex-row sm:items-center"
             >
               <WalletLogo w={vsAgent} size="tile" />
@@ -397,9 +397,6 @@ export default function Home() {
                   Foundation - it runs every verifiable service behind this
                   playground, including the whole Vesta demo cast.
                 </span>
-              </span>
-              <span className="shrink-0 text-sm font-medium text-violet-600 group-hover:underline">
-                Open its playground →
               </span>
             </Link>
           ) : null}

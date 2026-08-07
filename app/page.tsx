@@ -283,35 +283,47 @@ export default function Home() {
         </Container>
       </Section>
 
-      {/* 2 · Learn step by step */}
+      {/* 2 · Learn step by step - one card per use case */}
       <Section id="learn" className="border-t border-gray-200 bg-white">
         <Container>
           <SectionHeading
             number={2}
             title="Learn step by step"
-            subtitle="Verana, explained by Vesta Appliances - one continuous story, from business problem to full circle, and you take part with your own wallet"
+            subtitle="Each use case is one continuous story, from business problem to full circle - follow it chapter by chapter and take part with your own wallet"
           />
-          <div className="reveal-stagger grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {CHAPTERS_NAV.map((s) => (
-              <Link
-                key={s.n}
-                href={s.href}
-                className="group flex flex-col rounded-xl border border-gray-200 bg-gray-50 p-5 transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
-                    {s.n}
+          <div className="reveal-stagger grid gap-4 md:grid-cols-2">
+            <Link
+              href="/usecases/vesta"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
+            >
+              <span className="relative block aspect-[16/9] overflow-hidden bg-gray-100">
+                {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized WebP illustration from public/ */}
+                <img
+                  src="/images/factory.webp"
+                  alt="The Vesta Appliances factory"
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
+              </span>
+              <span className="flex flex-1 flex-col p-5">
+                <span className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Vesta Appliances
+                  </h3>
+                  <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
+                    {CHAPTERS_NAV.length} chapters
                   </span>
-                </div>
-                <h3 className="mt-3 font-semibold text-gray-900">{s.title}</h3>
+                </span>
                 <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
-                  {s.intro}
+                  Verana, explained by an appliance maker: Vesta builds its
+                  ecosystem, accredits its repair partners, issues employee
+                  badges - and impostors get caught at the front door. Real
+                  registry entries, live trust resolution.
                 </p>
                 <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
-                  Read the section →
+                  Follow the Vesta story →
                 </span>
-              </Link>
-            ))}
+              </span>
+            </Link>
           </div>
         </Container>
       </Section>

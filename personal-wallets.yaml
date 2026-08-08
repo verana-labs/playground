@@ -41,7 +41,7 @@ wallets:
     icon: ./inji/logo.webp
     formats: [openid4vc-sdjwt]
     demoParams: query=pe
-    download: https://github.com/AirKyzzZ/inji-wallet/releases/download/verana-2026-08-08.2/Inji-Verana-arm64-v8a.apk
+    download: https://github.com/AirKyzzZ/inji-wallet/releases/download/verana-2026-08-08.2/Inji_arm64-v8a.apk
     website: https://inji.io
     repo: https://github.com/mosip/inji-wallet
     fork: https://github.com/AirKyzzZ/inji-wallet/tree/feat/verana-trust

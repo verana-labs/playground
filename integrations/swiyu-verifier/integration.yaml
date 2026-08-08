@@ -1,0 +1,14 @@
+# Verana Playground integration descriptor - see the business-wallet guideline:
+# https://github.com/verana-labs/verana-spec/blob/main/playground/guidelines/cloud-wallet-integration.md
+name: swiyu Verifier
+organization: Swiss Confederation (swiyu open source)
+kind: business-wallet
+repo: https://github.com/swiyu-admin-ch/swiyu-verifier
+fork: https://github.com/AirKyzzZ/swiyu-verifier/tree/feat/verana-trust
+license: MIT
+track: bridge # Verana trust resolution inside the OID4VP issuer-trust gate
+scenarios: [demo-credential-loop]
+download: https://github.com/AirKyzzZ/swiyu-verifier/tree/feat/verana-trust
+demo_loop: coming # code integration validated against the cast; a hosted instance is pending
+notes: The Swiss swiyu relying-party service, with a Verana acceptance path added to its issuer-trust gate. An issuer the public registry vouches for and accredits for the presented credential type is accepted, fail-closed, alongside the verification's accepted-issuer list and the Swiss trust protocols. The resolver call resolves the DID server-side, so the native did:webvh resolver (which disagrees with the Verana ecosystem on SCID derivation) is never invoked.
+logo: ./logo.webp

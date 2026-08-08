@@ -116,6 +116,46 @@ wallets:
         src: ./eudi/screenshots/6.webp
         clip: ./eudi/clips/6-verifier-untrusted.mp4
         caption: "Untrusted verifier: self-issued claims marked unverified, share blocked"
+  - id: authbound
+    name: Authbound Wallet
+    vendor: Authbound
+    icon: ./authbound/logo.webp
+    formats: [openid4vc-sdjwt]
+    demoParams: signer=x5c
+    download: https://github.com/AirKyzzZ/eudi-app-android-wallet/releases/download/authbound-verana-2026-08-08/authbound-wallet-verana-2026-08-08.apk
+    website: https://authbound.io
+    repo: https://github.com/Authbound/eudi-app-android-wallet
+    fork: https://github.com/AirKyzzZ/eudi-app-android-wallet/tree/feat/verana-trust-authbound
+    license: EUPL-1.2
+    notes: Authbound's consumer wallet, a product fork of the EUDI reference app with its own onboarding, carrying the Verana trust card on both consent screens with every accept or share gated on Q1 + Q2/Q3 against the live registry.
+    captures:
+      issue-accredited:
+        src: ./authbound/screenshots/1.webp
+        clip: ./authbound/clips/1-issuer-accredited.mp4
+        caption: "Accredited issuer: both identity credentials verified, authorized for this credential, accept enabled"
+      issue-unaccredited:
+        src: ./authbound/screenshots/2.webp
+        clip: ./authbound/clips/2-issuer-unaccredited.mp4
+        caption: Identity verified but not accredited to issue this credential, so accept is blocked
+      issue-untrusted:
+        src: ./authbound/screenshots/3.webp
+        clip: ./authbound/clips/3-issuer-untrusted.mp4
+        caption: "Untrusted issuer: self-issued claims marked unverified, accept blocked"
+      present-accredited:
+        src: ./authbound/screenshots/4.webp
+        clip: ./authbound/clips/4-verifier-accredited.mp4
+        caption: "Accredited verifier: authorized to request this credential, sharing enabled"
+      present-unaccredited:
+        src: ./authbound/screenshots/5.webp
+        clip: ./authbound/clips/5-verifier-unaccredited.mp4
+        caption: Identity verified but not accredited to request this credential, so share is blocked
+      present-untrusted:
+        src: ./authbound/screenshots/6.webp
+        clip: ./authbound/clips/6-verifier-untrusted.mp4
+        caption: "Untrusted verifier: the registry does not vouch for it, claims withheld and share blocked"
+    video:
+      src: ./authbound/demo.mp4
+      note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end at 3x speed, silent, otherwise unedited.
   - id: paradym
     name: Paradym Wallet
     vendor: Animo Solutions

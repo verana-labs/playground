@@ -159,6 +159,7 @@ wallets:
   - id: procivis
     name: Procivis One Wallet
     vendor: Procivis
+    hidden: true
     icon: ./procivis/logo.webp
     formats: [openid4vc-sdjwt]
     download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/download/verana-2026-08-08/app-debug.apk

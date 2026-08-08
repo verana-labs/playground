@@ -223,12 +223,12 @@ wallets:
     icon: ./wwwallet/logo.svg
     formats: [openid4vc-sdjwt]
     demoParams: signer=x5c
-    download: https://demo.wwwallet.org
+    browser: true
+    download: https://github.com/AirKyzzZ/wallet-frontend/tree/feat/verana-trust
     website: https://wwwallet.org
     repo: https://github.com/wwWallet/wallet-frontend
-    fork: https://github.com/AirKyzzZ/wallet-frontend/tree/feat/verana-trust
     license: Apache-2.0
-    notes: A browser wallet rather than an app, on OpenID4VCI and OpenID4VP. The Verana trust card sits on both consent moments and gates the accept and the share. Captures are from a local build against the live demo cast; the untrusted-issuer scenario is still being re-checked and is not shown yet.
+    notes: A browser wallet rather than an app, on OpenID4VCI and OpenID4VP. The Verana trust card sits on both consent moments and gates the accept and the share. wwWallet runs against its own backend, so our build is not hosted yet - the captures below come from a local build against the live demo cast, and the untrusted-issuer scenario is still being re-checked.
     captures:
       issue-accredited:
         src: ./wwwallet/screenshots/1.webp

@@ -5,15 +5,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
   Download,
+  ExternalLink,
   FileBadge,
   FileSearch,
   Github,
   Maximize2,
   ShieldQuestion,
 } from "lucide-react";
-import MediaLightbox, {
-  type LightboxMedia,
-} from "../components/MediaLightbox";
+import MediaLightbox, { type LightboxMedia } from "../components/MediaLightbox";
 import { Container, Section, SectionHeading, Chip } from "../components/ui";
 import { LINKS } from "../lib/site";
 import { ServiceQr } from "../components/ServiceQr";
@@ -39,7 +38,9 @@ function useImageOrientation(src?: string) {
     const img = new window.Image();
     img.onload = () => {
       if (alive)
-        setOrientation(img.naturalHeight > img.naturalWidth ? "portrait" : "wide");
+        setOrientation(
+          img.naturalHeight > img.naturalWidth ? "portrait" : "wide",
+        );
     };
     img.src = src;
     return () => {
@@ -147,13 +148,7 @@ const VERIFIER_SCENARIOS: Scenario[] = [
   },
 ];
 
-function WalletIcon({
-  w,
-  size = 40,
-}: {
-  w: PersonalWallet;
-  size?: number;
-}) {
+function WalletIcon({ w, size = 40 }: { w: PersonalWallet; size?: number }) {
   if (w.icon) {
     return (
       // eslint-disable-next-line @next/next/no-img-element -- pre-optimized small assets from wallets/
@@ -179,7 +174,13 @@ function WalletIcon({
 }
 
 /** Corner control that opens the sibling media in the lightbox. */
-function ExpandButton({ label, onClick }: { label: string; onClick: () => void }) {
+function ExpandButton({
+  label,
+  onClick,
+}: {
+  label: string;
+  onClick: () => void;
+}) {
   return (
     <button
       type="button"
@@ -282,7 +283,9 @@ function ScenarioCapture({
           {capture.caption}
         </figcaption>
       ) : null}
-      {zoom ? <MediaLightbox media={zoom} onClose={() => setZoom(null)} /> : null}
+      {zoom ? (
+        <MediaLightbox media={zoom} onClose={() => setZoom(null)} />
+      ) : null}
     </figure>
   );
 }
@@ -306,8 +309,7 @@ function ScenarioCard({
     ? [
         {
           role: (s.key.startsWith("issue") ? "ISSUER" : "VERIFIER") as
-            | "ISSUER"
-            | "VERIFIER",
+            "ISSUER" | "VERIFIER",
           schema: "DemoCredential",
           context: "Playground Ecosystem (demo)",
         },
@@ -381,7 +383,9 @@ export default function PersonalWalletsPlayground({
 
   const initial = searchParams.get("wallet");
   const [selectedId, setSelectedId] = useState<string>(
-    wallets.some((w) => w.id === initial) ? (initial as string) : wallets[0]?.id,
+    wallets.some((w) => w.id === initial)
+      ? (initial as string)
+      : wallets[0]?.id,
   );
   const wallet = useMemo(
     () => wallets.find((w) => w.id === selectedId) ?? wallets[0],
@@ -424,8 +428,8 @@ export default function PersonalWalletsPlayground({
                   Verifiable User Agent (VUA)
                 </a>{" "}
                 wallet answers three questions for you, at the right moments -
-                before you connect, before you accept, before you share. The
-                six demos below make each answer visible, in green and in red.
+                before you connect, before you accept, before you share. The six
+                demos below make each answer visible, in green and in red.
               </>
             }
           />
@@ -458,21 +462,21 @@ export default function PersonalWalletsPlayground({
               Playground Ecosystem (demo)
             </strong>{" "}
             and its single <em>DemoCredential</em> schema - real registry
-            entries, resolved live on the Verana testnet. The same services
-            for every wallet; only the QR format changes.
+            entries, resolved live on the Verana testnet. The same services for
+            every wallet; only the QR format changes.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-gray-500">
-            Behind each demo, credential issuance and presentation requests
-            are handled by{" "}
+            Behind each demo, credential issuance and presentation requests are
+            handled by{" "}
             <Link
               href="/business-wallets/vs-agent"
               className="text-violet-600 underline"
             >
               vs-agent
             </Link>
-            , the open source business wallet provided by the Verana
-            Foundation: the same software any organization can deploy to run
-            its own verifiable services.
+            , the open source business wallet provided by the Verana Foundation:
+            the same software any organization can deploy to run its own
+            verifiable services.
           </p>
         </div>
 
@@ -565,15 +569,28 @@ export default function PersonalWalletsPlayground({
                   - install the standard build from the links below; no special
                   version needed.
                 </p>
+              ) : wallet.browser ? (
+                <p className="text-sm leading-relaxed text-gray-600">
+                  {wallet.name} runs{" "}
+                  <strong className="font-semibold text-gray-900">
+                    in the browser
+                  </strong>{" "}
+                  - there is no APK to install.{" "}
+                  {wallet.hosted
+                    ? `Open our hosted build below; it is the Verana-integrated ${wallet.name}, configured for the testnet.`
+                    : `Our Verana build is not hosted yet - run it from the fork below. `}
+                  The public {wallet.name} instance does not include the
+                  integration.
+                </p>
               ) : (
                 <p className="text-sm leading-relaxed text-gray-600">
                   Download the{" "}
                   <strong className="font-semibold text-gray-900">
                     modified APK
                   </strong>{" "}
-                  by clicking the link below - it is the Verana-integrated
-                  build of {wallet.name}, configured for the testnet. Store
-                  builds may not include the integration.
+                  by clicking the link below - it is the Verana-integrated build
+                  of {wallet.name}, configured for the testnet. Store builds may
+                  not include the integration.
                 </p>
               )}
               {wallet.notes ? (
@@ -588,12 +605,20 @@ export default function PersonalWalletsPlayground({
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700"
                 >
-                  <Download className="h-4 w-4" />{" "}
-                  {wallet.verana_builtin
-                    ? "Get the wallet"
-                    : "Download the modified APK"}
+                  {wallet.browser ? (
+                    <ExternalLink className="h-4 w-4" />
+                  ) : (
+                    <Download className="h-4 w-4" />
+                  )}{" "}
+                  {wallet.browser
+                    ? wallet.hosted
+                      ? "Open the wallet"
+                      : "Run it from source"
+                    : wallet.verana_builtin
+                      ? "Get the wallet"
+                      : "Download the modified APK"}
                 </a>
-                {wallet.fork ?? wallet.repo ? (
+                {(wallet.fork ?? wallet.repo) ? (
                   <a
                     href={wallet.fork ?? wallet.repo}
                     target="_blank"
@@ -742,8 +767,8 @@ export default function PersonalWalletsPlayground({
             <code>personal-wallets.yaml</code>
           </a>{" "}
           - to list your wallet, test the loop with AnonCreds and/or OpenID4VC
-          SD-JWT and open a PR with your entry, icon, and optional captures
-          and videos.
+          SD-JWT and open a PR with your entry, icon, and optional captures and
+          videos.
         </p>
       </Container>
       {demoZoom ? (

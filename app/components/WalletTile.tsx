@@ -9,7 +9,9 @@ import WalletLogo from "./WalletLogo";
 export default function WalletTile({ w }: { w: Integration }) {
   const playgroundHref =
     w.playgroundPage ??
-    (w.kind === "personal-wallet" ? `/personal-wallets/${w.slug}` : `/business-wallets/${w.slug}`);
+    (w.kind === "personal-wallet"
+      ? `/personal-wallets/${w.slug}`
+      : `/business-wallets/${w.slug}`);
   return (
     <div className="flex h-full flex-col rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
       <div className="flex items-center gap-3">
@@ -64,23 +66,59 @@ export default function WalletTile({ w }: { w: Integration }) {
   );
 }
 
+/** Home-page variant: the tiles it sits beside are a single compact row, so it
+ *  matches their height instead of standing up as a full card. */
+export function AddYourWalletTileCompact() {
+  return (
+    <Link
+      href="/integrate"
+      className="group flex items-center gap-3 rounded-xl border border-dashed border-gray-300 bg-white p-5 transition-colors hover:border-violet-400 hover:bg-violet-50/30"
+    >
+      <span
+        aria-hidden
+        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-700 transition-colors group-hover:bg-violet-100"
+      >
+        <Plus className="h-5 w-5" />
+      </span>
+      <span className="min-w-0">
+        <span className="block truncate font-semibold text-gray-900">
+          Add your wallet
+        </span>
+        <span className="block truncate text-sm text-gray-500">
+          Integrate Verana, get your own page
+        </span>
+      </span>
+    </Link>
+  );
+}
+
 /** Closing card of each wallet list: Add your wallet → /integrate. */
 export function AddYourWalletTile() {
   return (
     <Link
       href="/integrate"
-      className="group flex h-full flex-col items-start justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-white p-5 transition-colors hover:border-violet-400"
+      className="group flex h-full flex-col rounded-xl border border-dashed border-gray-300 bg-white p-5 transition-colors hover:border-violet-400 hover:bg-violet-50/30"
     >
-      <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50 text-violet-700">
-        <Plus className="h-5 w-5" />
-      </span>
-      <h3 className="font-semibold text-gray-900">Add your wallet</h3>
-      <p className="text-sm text-gray-500">
-        Open source? Integrate Verana and get your own playground page.
+      <div className="flex items-center gap-3">
+        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-700 transition-colors group-hover:bg-violet-100">
+          <Plus className="h-5 w-5" />
+        </span>
+        <div className="min-w-0">
+          <h3 className="truncate font-semibold text-gray-900">
+            Add your wallet
+          </h3>
+          <p className="truncate text-sm text-gray-500">Any open-source team</p>
+        </div>
+      </div>
+      <p className="mt-3 mb-4 text-sm leading-relaxed text-gray-500">
+        Integrate the Verana trust registry and get your own playground page,
+        with the six scenarios running against the live testnet.
       </p>
-      <span className="text-sm font-medium text-violet-600 group-hover:underline">
-        How to integrate →
-      </span>
+      <div className="mt-auto flex flex-wrap items-center gap-2 border-t border-gray-100 pt-4">
+        <span className="rounded-lg border border-violet-200 px-3 py-1.5 text-sm font-medium text-violet-700 transition-colors group-hover:border-violet-400 group-hover:bg-violet-600 group-hover:text-white">
+          How to integrate
+        </span>
+      </div>
     </Link>
   );
 }

@@ -14,7 +14,7 @@ import {
   Store,
 } from "lucide-react";
 import { Container, Section, SectionHeading } from "./components/ui";
-import { AddYourWalletTile } from "./components/WalletTile";
+import { AddYourWalletTileCompact } from "./components/WalletTile";
 import WalletLogo from "./components/WalletLogo";
 import { businessWallets, type Integration } from "./lib/integrations";
 import { listPersonalWallets, type PersonalWallet } from "./lib/wallets";
@@ -59,7 +59,10 @@ const DISCOVERY_QA = [
   },
   {
     q: "Which e-commerce shops sell made-in-Italy sneakers in Paris?",
-    a: { icon: Store, text: "3 verified shops found, each operated by an identified company" },
+    a: {
+      icon: Store,
+      text: "3 verified shops found, each operated by an identified company",
+    },
   },
   {
     q: "Which ecosystems issue an ISO 42001 credential?",
@@ -75,10 +78,19 @@ function PersonalWalletHomeTile({ w }: { w: PersonalWallet }) {
     >
       {w.icon ? (
         // eslint-disable-next-line @next/next/no-img-element -- pre-optimized small assets from wallets/
-        <img src={w.icon} alt="" aria-hidden width={40} height={40}
-          className="shrink-0 rounded-lg bg-white object-contain ring-1 ring-black/5" />
+        <img
+          src={w.icon}
+          alt=""
+          aria-hidden
+          width={40}
+          height={40}
+          className="shrink-0 rounded-lg bg-white object-contain ring-1 ring-black/5"
+        />
       ) : (
-        <span aria-hidden className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-50 font-bold text-violet-700">
+        <span
+          aria-hidden
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-50 font-bold text-violet-700"
+        >
           {w.name.charAt(0)}
         </span>
       )}
@@ -161,8 +173,8 @@ export default function Home() {
           <Container>
             <p className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 py-3 text-center text-sm text-gray-600">
               <span>
-                This playground is the living evidence of the &ldquo;One
-                trust layer, many wallets&rdquo; FIDES use case.
+                This playground is the living evidence of the &ldquo;One trust
+                layer, many wallets&rdquo; FIDES use case.
               </span>
               <a
                 href={fidesUsecaseUrl}
@@ -263,7 +275,10 @@ export default function Home() {
                     ) : (
                       <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1.5 rounded-xl border border-emerald-200 bg-emerald-50/50 px-4 py-2.5">
                         <span className="flex items-center gap-2 text-sm font-semibold text-gray-900">
-                          <Bot className="h-4 w-4 text-emerald-600" aria-hidden />
+                          <Bot
+                            className="h-4 w-4 text-emerald-600"
+                            aria-hidden
+                          />
                           Customer Support AI Agent
                         </span>
                         <span className="text-sm text-gray-600">
@@ -290,7 +305,6 @@ export default function Home() {
               trust graph, built from the credentials services publicly present.
             </p>
           </div>
-
         </Container>
       </Section>
 
@@ -347,19 +361,20 @@ export default function Home() {
             title="Personal wallets"
             subtitle="One playground for every integrated open-source personal wallet: pick your wallet and run the six DemoCredential scenarios"
           />
-          {/* items-start: these tiles are a single centered row, so letting the grid
-              stretch them to the taller AddYourWalletTile floats their content mid-card. */}
-          <div className="reveal-stagger grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {users.map((w) => (
               <PersonalWalletHomeTile key={w.id} w={w} />
             ))}
-            <AddYourWalletTile />
+            <AddYourWalletTileCompact />
           </div>
         </Container>
       </Section>
 
       {/* 4 · Business wallets */}
-      <Section id="business-wallets" className="border-t border-gray-200 bg-white">
+      <Section
+        id="business-wallets"
+        className="border-t border-gray-200 bg-white"
+      >
         <Container wide>
           <SectionHeading
             number={4}
@@ -389,16 +404,16 @@ export default function Home() {
               </span>
             </Link>
           ) : null}
-          <div className="reveal-stagger grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {otherClouds.map((w) => (
               <BusinessWalletHomeTile key={w.slug} w={w} />
             ))}
-            <AddYourWalletTile />
+            <AddYourWalletTileCompact />
           </div>
           <p className="reveal mt-8 flex items-center gap-2 text-sm text-gray-500">
             <Building2 className="h-4 w-4 text-violet-600" />
-            Business wallets host organizations&apos; verifiable services - like the
-            Vesta demo cast behind this playground.
+            Business wallets host organizations&apos; verifiable services - like
+            the Vesta demo cast behind this playground.
           </p>
         </Container>
       </Section>

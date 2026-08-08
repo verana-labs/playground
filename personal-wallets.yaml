@@ -161,7 +161,7 @@ wallets:
     vendor: Procivis
     icon: ./procivis/logo.webp
     formats: [openid4vc-sdjwt]
-    download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/tag/verana-2026-07-26
+    download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/download/verana-2026-08-08/app-debug.apk
     website: https://www.procivis.ch
     repo: https://github.com/procivis/one-wallet
     fork: https://github.com/AirKyzzZ/one-wallet/tree/codex/procivis-verana

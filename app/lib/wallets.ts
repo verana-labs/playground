@@ -46,6 +46,7 @@ const WalletSchema = z.object({
   // Our fork carrying the Verana integration, shown next to the download.
   fork: z.string().url().optional(),
   recommended: z.boolean().optional(),
+  hidden: z.boolean().optional(),
   // Extra query the demo mint needs for THIS wallet. OpenID4VP rails are mutually
   // exclusive per request: a wallet that never implemented DCQL needs `query=pe`, and one
   // that resolves no DIDs needs `signer=x5c` for an x509_hash client_id. Without this the
@@ -114,7 +115,9 @@ export function listPersonalWallets(): PersonalWallet[] {
       .join("; ");
     throw new Error(`personal-wallets.yaml invalid - ${issues}`);
   }
-  cache = parsed.data.wallets.map((w) => {
+  cache = parsed.data.wallets
+    .filter((w) => !w.hidden)
+    .map((w) => {
     const videoSrc = publicAsset(w.video?.src);
     return {
       ...w,

@@ -330,6 +330,7 @@ wallets:
   - id: swiyu
     name: swiyu Wallet
     vendor: Swiss Confederation (swiyu open source)
+    hidden: true
     icon: ./swiyu/logo.webp
     formats: [openid4vc-sdjwt]
     download: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-07-26/swiyu-verana-fabrice-arm64-debug.apk

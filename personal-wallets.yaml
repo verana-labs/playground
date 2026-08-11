@@ -44,7 +44,7 @@ wallets:
     download: https://github.com/AirKyzzZ/inji-wallet/releases/download/verana-2026-08-08.2/Inji_arm64-v8a.apk
     website: https://inji.io
     repo: https://github.com/mosip/inji-wallet
-    fork: https://github.com/AirKyzzZ/inji-wallet/tree/feat/verana-trust
+    fork: https://github.com/verana-labs/inji-wallet
     license: MPL-2.0
     notes: MOSIP's national-scale wallet, with the Verana trust card on both the issuance and presentation consent screens and every accept or share gated on Q1 + Q2/Q3 against the live registry.
     captures:
@@ -85,7 +85,7 @@ wallets:
     download: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/releases/download/verana-2026-08-06.1/eudi-wallet-verana-2026-08-06.1.apk
     website: https://ec.europa.eu
     repo: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui
-    fork: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/tree/feat/verana-trust
+    fork: https://github.com/verana-labs/eudi-app-android-wallet-ui
     license: EUPL-1.2
     notes: The European Commission's reference Android wallet (Kotlin, Jetpack Compose), with the Verana trust card on both consent screens and every accept or share gated on Q1 + Q2/Q3 against the live registry.
     video:
@@ -125,7 +125,7 @@ wallets:
     download: https://github.com/AirKyzzZ/eudi-app-android-wallet/releases/download/authbound-verana-2026-08-08/authbound-wallet-verana-2026-08-08.apk
     website: https://authbound.io
     repo: https://github.com/Authbound/eudi-app-android-wallet
-    fork: https://github.com/AirKyzzZ/eudi-app-android-wallet/tree/feat/verana-trust-authbound
+    fork: https://github.com/verana-labs/eudi-app-android-wallet-ui
     license: EUPL-1.2
     notes: Authbound's consumer wallet, a product fork of the EUDI reference app with its own onboarding, carrying the Verana trust card on both consent screens with every accept or share gated on Q1 + Q2/Q3 against the live registry.
     captures:
@@ -164,7 +164,7 @@ wallets:
     download: https://github.com/AirKyzzZ/paradym-wallet-verana/releases/download/verana-2026-08-01/paradym-wallet-verana-release-2026-08-01.apk
     website: https://animo.id
     repo: https://github.com/animo/paradym-wallet
-    fork: https://github.com/AirKyzzZ/paradym-wallet/tree/feat/verana-trust-integration
+    fork: https://github.com/verana-labs/paradym-wallet
     license: Apache-2.0
     notes: Verana trust integration in Paradym's SDK trust-mechanism registry (Credo-TS wallet).
     captures:
@@ -230,7 +230,7 @@ wallets:
     download: https://github.com/AirKyzzZ/bc-wallet-mobile/releases/download/verana-2026-08-07.1/BCWallet-Verana-verana-2026-08-07.1.apk
     website: https://digital.gov.bc.ca/digital-trust/
     repo: https://github.com/bcgov/bc-wallet-mobile
-    fork: https://github.com/AirKyzzZ/bc-wallet-mobile/tree/feat/verana-trust
+    fork: https://github.com/verana-labs/bc-wallet-mobile
     license: Apache-2.0
     notes: British Columbia's production wallet, on the Bifold and Credo stack. The Verana trust card sits on the credential-offer and proof-request consent screens, and on the contact view for a counterparty that offers nothing, with accept and share both gated on Q1 + Q2/Q3 against the live registry.
     captures:
@@ -265,7 +265,7 @@ wallets:
     formats: [openid4vc-sdjwt]
     demoParams: signer=x5c
     browser: true
-    download: https://github.com/AirKyzzZ/wallet-frontend/tree/feat/verana-trust
+    download: https://github.com/verana-labs/wallet-frontend
     website: https://wwwallet.org
     repo: https://github.com/wwWallet/wallet-frontend
     license: Apache-2.0
@@ -336,7 +336,7 @@ wallets:
     download: https://github.com/AirKyzzZ/sphereon-mobile-wallet-verana/releases/download/verana-2026-08-03/sphereon-wallet-verana-release-2026-08-03.apk
     website: https://sphereon.com
     repo: https://github.com/Sphereon-Opensource/mobile-wallet
-    fork: https://github.com/AirKyzzZ/mobile-wallet/tree/feat/verana-ecs-normalizer
+    fork: https://github.com/verana-labs/mobile-wallet
     license: Apache-2.0
     notes: Verana trust chain card on the OID4VCI and OID4VP consent screens, Q1 + Q2/Q3 against the live registry (SSI-SDK wallet).
     captures:
@@ -402,7 +402,7 @@ wallets:
     download: https://github.com/AirKyzzZ/AltMe-verana/releases/download/verana-2026-08-04/altme-wallet-verana-release-2026-08-04.apk
     website: https://talao.io
     repo: https://github.com/TalaoDAO/AltMe
-    fork: https://github.com/AirKyzzZ/AltMe/tree/feat/verana-trust-integration
+    fork: https://github.com/verana-labs/AltMe
     license: Apache-2.0
     notes: Verana trust chain card on the OID4VCI and OID4VP consent screens, Q1 + Q2/Q3 against the live registry (Flutter wallet).
     captures:

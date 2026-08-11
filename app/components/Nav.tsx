@@ -10,7 +10,10 @@ const NAV = [
   { href: "/business-wallets", label: "Business wallets" },
 ];
 
-const USE_CASES = [{ href: "/usecases/vesta", label: "Vesta Appliances" }];
+const USE_CASES = [
+  { href: "/usecases/vesta", label: "Vesta Appliances" },
+  { href: "/usecases/utopia", label: "Republica of Utopia" },
+];
 
 function Logo() {
   return (

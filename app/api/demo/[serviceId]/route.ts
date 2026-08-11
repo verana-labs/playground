@@ -6,6 +6,19 @@ import {
   badgeDemoClaims,
   badgeOid4vcClaims,
 } from "@/app/lib/demo-badge";
+import {
+  citizenDemoClaims,
+  citizenOid4vcClaims,
+  legalRepDemoClaims,
+  legalRepOid4vcClaims,
+} from "@/app/lib/demo-utopia";
+import {
+  UTOPIA_CITIZEN_ID_JSC,
+  UTOPIA_CITIZEN_ID_NAME,
+  UTOPIA_LEGAL_REP_JSC,
+  UTOPIA_LEGAL_REP_NAME,
+} from "@/app/lib/utopia-cast";
+import { VESTA_CAST } from "@/app/lib/vesta-cast";
 
 // Live demo-action link for a Playground cast service (spec §4): what the
 // wallet actually scans. Issuers mint an OOB CREDENTIAL OFFER and verifiers
@@ -13,38 +26,101 @@ import {
 // wallet lands directly on the offer/request consent screen (with its
 // Q2/Q3 verdict), not in a DIDComm chat. The untrusted service keeps a plain
 // connection invitation: its lesson (Q1) happens before any exchange exists.
+//
+// The `credential` query selects WHICH credential the action is about - the
+// DemoCredential (default), the Vesta ECS-Badge, or the Utopia credentials -
+// via the registry below; the service id selects WHO mints it.
 
 export const dynamic = "force-dynamic";
 
-async function demoCredDefId(admin: string): Promise<string | null> {
-  const types = await adminJson(`${admin}/v1/credential-types`);
-  if (!Array.isArray(types)) return null;
-  const match =
-    types.find(
-      (t) =>
-        t && typeof t === "object" &&
-        (t as { relatedJsonSchemaCredentialId?: unknown })
-          .relatedJsonSchemaCredentialId === VTJSC_URL,
-    ) ??
-    types.find(
-      (t) =>
-        t && typeof t === "object" &&
-        (t as { name?: unknown }).name === "DemoCredential",
-    );
-  const id = (match as { id?: unknown } | undefined)?.id;
-  return typeof id === "string" ? id : null;
-}
+type Claim = { name: string; value: string };
 
-// The ECS-Badge credential type provisioned on the badge issuers (Vesta,
-// Zenith) by the vesta-* workflows - matched by name.
-async function badgeCredDefId(admin: string): Promise<string | null> {
+type CredentialKind = {
+  /** Human noun for error messages. */
+  label: string;
+  /** vs-agent credential-type name for the DIDComm cred-def lookup;
+   *  null = the DemoCredential (matched by VTJSC, falling back to name). */
+  credDefName: string | null;
+  /** OID4VC issuance configuration / verification policy ids on the agents. */
+  oid4vcConfig: string;
+  oid4vcPolicy: string;
+  /** VTJSC the DIDComm presentation request asks for. */
+  jscUrl: string;
+  claims: (serviceId: string) => Claim[];
+  oid4vcClaims: (serviceId: string) => Record<string, string>;
+};
+
+const CREDENTIALS: Record<string, CredentialKind> = {
+  "demo-credential": {
+    label: "DemoCredential",
+    credDefName: null,
+    oid4vcConfig: process.env.DEMO_OID4VC_CRED_CONFIG ?? "demo-credential",
+    oid4vcPolicy: process.env.DEMO_OID4VC_POLICY ?? "demo-credential",
+    jscUrl: VTJSC_URL,
+    claims: () => [
+      { name: "name", value: "Playground Visitor" },
+      { name: "demoId", value: `demo-${crypto.randomUUID().slice(0, 8)}` },
+    ],
+    oid4vcClaims: () => ({
+      name: "Playground Visitor",
+      demoId: `demo-${crypto.randomUUID().slice(0, 8)}`,
+    }),
+  },
+  "ecs-badge": {
+    label: "ECS-Badge",
+    credDefName: BADGE_CREDENTIAL_TYPE_NAME,
+    oid4vcConfig: process.env.DEMO_OID4VC_BADGE_CONFIG ?? "ecs-badge",
+    oid4vcPolicy: process.env.DEMO_OID4VC_BADGE_POLICY ?? "ecs-badge",
+    jscUrl: `https://${VESTA_CAST.vesta.host}/vt/schemas-badge-jsc.json`,
+    claims: badgeDemoClaims,
+    oid4vcClaims: badgeOid4vcClaims,
+  },
+  "utopia-citizen-id": {
+    label: "Utopia Citizen ID",
+    credDefName: UTOPIA_CITIZEN_ID_NAME,
+    oid4vcConfig:
+      process.env.DEMO_OID4VC_CITIZEN_CONFIG ?? "utopia-citizen-id",
+    oid4vcPolicy: process.env.DEMO_OID4VC_CITIZEN_POLICY ?? "utopia-citizen-id",
+    jscUrl: UTOPIA_CITIZEN_ID_JSC,
+    claims: () => citizenDemoClaims(),
+    oid4vcClaims: () => citizenOid4vcClaims(),
+  },
+  "utopia-legal-rep": {
+    label: "Legal Representative credential",
+    credDefName: UTOPIA_LEGAL_REP_NAME,
+    oid4vcConfig:
+      process.env.DEMO_OID4VC_LEGAL_REP_CONFIG ?? "utopia-legal-rep",
+    oid4vcPolicy:
+      process.env.DEMO_OID4VC_LEGAL_REP_POLICY ?? "utopia-legal-rep",
+    jscUrl: UTOPIA_LEGAL_REP_JSC,
+    claims: () => legalRepDemoClaims(),
+    oid4vcClaims: () => legalRepOid4vcClaims(),
+  },
+};
+
+async function credDefId(
+  admin: string,
+  kind: CredentialKind,
+): Promise<string | null> {
   const types = await adminJson(`${admin}/v1/credential-types`);
   if (!Array.isArray(types)) return null;
-  const match = types.find(
-    (t) =>
-      t && typeof t === "object" &&
-      (t as { name?: unknown }).name === BADGE_CREDENTIAL_TYPE_NAME,
-  );
+  const match = kind.credDefName
+    ? types.find(
+        (t) =>
+          t && typeof t === "object" &&
+          (t as { name?: unknown }).name === kind.credDefName,
+      )
+    : (types.find(
+        (t) =>
+          t && typeof t === "object" &&
+          (t as { relatedJsonSchemaCredentialId?: unknown })
+            .relatedJsonSchemaCredentialId === VTJSC_URL,
+      ) ??
+      types.find(
+        (t) =>
+          t && typeof t === "object" &&
+          (t as { name?: unknown }).name === "DemoCredential",
+      ));
   const id = (match as { id?: unknown } | undefined)?.id;
   return typeof id === "string" ? id : null;
 }
@@ -57,15 +133,6 @@ function str(body: unknown, key: string): string | null {
 
 const oobUrl = (body: unknown) => str(body, "shortUrl") ?? str(body, "url");
 
-// OID4VC identifiers configured on the demo cast agents (OID4VC plugin).
-const OID4VC_CRED_CONFIG =
-  process.env.DEMO_OID4VC_CRED_CONFIG ?? "demo-credential";
-const OID4VC_POLICY = process.env.DEMO_OID4VC_POLICY ?? "demo-credential";
-// ... and on the Vesta cast badge agents (vesta, zenith, umbra, the portal).
-const OID4VC_BADGE_CONFIG =
-  process.env.DEMO_OID4VC_BADGE_CONFIG ?? "ecs-badge";
-const OID4VC_BADGE_POLICY = process.env.DEMO_OID4VC_BADGE_POLICY ?? "ecs-badge";
-
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ serviceId: string }> },
@@ -73,8 +140,8 @@ export async function GET(
   const { serviceId } = await params;
   const search = new URL(req.url).searchParams;
   const format = search.get("format") ?? "anoncreds";
-  // "demo-credential" (default) or "ecs-badge" (the Vesta chapter-4 demo).
-  const credential = search.get("credential") ?? "demo-credential";
+  // Which credential the action is about (see the registry above).
+  const credentialId = search.get("credential") ?? "demo-credential";
   // OpenID4VP v1 replaced Presentation Exchange with DCQL, and wallets that predate DCQL reject a
   // v1 request outright. ?query=pe mints the same request on the last draft that still admits a
   // presentation_definition, which is what Altme needs.
@@ -85,9 +152,10 @@ export async function GET(
   // its stack accepts, and the wallet-side check binds that cert back to the
   // DID it names in its URI SAN.
   const requestSigner = search.get("signer") === "x5c" ? "x5c" : undefined;
-  const isBadge = credential === "ecs-badge";
+  const kind = CREDENTIALS[credentialId];
+  const isBadge = credentialId === "ecs-badge";
   const service = getDemoService(serviceId);
-  if (!service)
+  if (!service || !kind)
     return NextResponse.json({ error: "unknown service" }, { status: 404 });
 
   // The unprovisioned-but-minting pair (spec §4): untrusted on Q1, yet they
@@ -137,15 +205,8 @@ export async function GET(
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            credentialConfigurationId: isBadge
-              ? OID4VC_BADGE_CONFIG
-              : OID4VC_CRED_CONFIG,
-            claims: isBadge
-              ? badgeOid4vcClaims(serviceId)
-              : {
-                  name: "Playground Visitor",
-                  demoId: `demo-${crypto.randomUUID().slice(0, 8)}`,
-                },
+            credentialConfigurationId: kind.oid4vcConfig,
+            claims: kind.oid4vcClaims(serviceId),
           }),
         });
         const url =
@@ -161,7 +222,7 @@ export async function GET(
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          policyId: isBadge ? OID4VC_BADGE_POLICY : OID4VC_POLICY,
+          policyId: kind.oid4vcPolicy,
           ...(queryLanguage ? { queryLanguage } : {}),
           ...(requestSigner ? { requestSigner } : {}),
         }),
@@ -182,24 +243,19 @@ export async function GET(
 
   try {
     if (service.role === "issuer" || (isBadge && service.role === "untrusted")) {
-      const credentialDefinitionId = isBadge
-        ? await badgeCredDefId(admin)
-        : await demoCredDefId(admin);
+      const credentialDefinitionId = await credDefId(admin, kind);
       if (!credentialDefinitionId)
         return NextResponse.json(
-          { error: `no ${isBadge ? "ECS-Badge" : "DemoCredential"} credential type on this issuer` },
+          { error: `no ${kind.label} credential type on this issuer` },
           { status: 503 },
         );
-      const claims = isBadge
-        ? badgeDemoClaims(serviceId)
-        : [
-            { name: "name", value: "Playground Visitor" },
-            { name: "demoId", value: `demo-${crypto.randomUUID().slice(0, 8)}` },
-          ];
       const offer = await adminJson(`${admin}/v1/invitation/credential-offer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ credentialDefinitionId, claims }),
+        body: JSON.stringify({
+          credentialDefinitionId,
+          claims: kind.claims(serviceId),
+        }),
       });
       return NextResponse.json({
         kind: "credential-offer",
@@ -208,14 +264,14 @@ export async function GET(
       });
     }
 
-    // verifier: OOB presentation request for the DemoCredential
+    // verifier: OOB presentation request for the selected credential
     const request = await adminJson(
       `${admin}/v1/invitation/presentation-request`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          requestedCredentials: [{ jsonSchemaCredentialId: VTJSC_URL }],
+          requestedCredentials: [{ jsonSchemaCredentialId: kind.jscUrl }],
         }),
       },
     );

@@ -1,58 +1,55 @@
 import { Suspense } from "react";
 import {
-  Award,
   BadgeCheck,
-  Bot,
+  Check,
+  ExternalLink,
   Files,
+  IdCard,
   KeyRound,
   Landmark,
   LockKeyhole,
-  ExternalLink,
-  Check,
-  X,
   Network,
   PhoneOff,
+  Quote,
   Search,
   ShieldCheck,
-  Quote,
-  Truck,
-  Wrench,
+  Stamp,
+  Users,
+  X,
 } from "lucide-react";
 import { Container, Section, SectionHeading, Chip } from "../../components/ui";
 import { DidBadge } from "../../components/Did";
+import LiveTrustCard from "../../components/LiveTrustCard";
+import { ServiceQr } from "../../components/ServiceQr";
 import { listPersonalWallets } from "../../lib/wallets";
-import {
-  BadgeOffers,
-  WalletChooser,
-  type BadgeOffer,
-} from "./DemoWalletFlow";
-import PortalLoginDemo from "./PortalLoginDemo";
-import { VESTA_SCENES } from "./scenes";
+import { LINKS } from "../../lib/site";
+import { WalletChooser } from "../vesta/DemoWalletFlow";
 import { SubHeading, SubStepBlock } from "../story-blocks";
+import { UTOPIA_SCENES } from "./scenes";
+import UtopiaOffers from "./UtopiaOffers";
+import UtopiaLoginDemo from "./UtopiaLoginDemo";
 import {
   CLOSING,
-  COMPANY,
   DEMOS,
-  ECOSYSTEM_BUILD,
-  ECOSYSTEM_CHOICES,
+  ECOSYSTEM_JOIN,
+  ECOSYSTEMS_BUILD,
   FACTS,
-  PILLARS,
-  REPAIR_NETWORK,
-  SOLUTION,
   JOURNEY,
-  VESTA_ASSETS,
+  PILLARS,
+  REPUBLIC,
+  SOLUTION,
+  UTOPIA_ASSETS,
 } from "./content";
-import { LINKS } from "../../lib/site";
 
-const NEED_SHORT = ["Identity", "Services", "Badges", "ISO 9001", "Network"];
+const NEED_SHORT = ["Institutions", "Citizen ID", "Business IDs", "Legal Rep", "Auth"];
 
-
-const SERVICE_ICONS = { bot: Bot, badge: BadgeCheck, key: KeyRound } as const;
+const INSTITUTION_ICONS = { id: IdCard, landmark: Landmark, key: KeyRound } as const;
 const PROBLEM_ICONS = {
   phone: PhoneOff,
-  van: Truck,
   lock: LockKeyhole,
   files: Files,
+  stamp: Stamp,
+  queue: Users,
 } as const;
 const PILLAR_TONES = {
   violet: "border-violet-200 bg-violet-50/60 text-violet-700",
@@ -60,129 +57,44 @@ const PILLAR_TONES = {
   emerald: "border-emerald-200 bg-emerald-50/60 text-emerald-700",
 } as const;
 
-function VestaLogo({ className = "h-[84px] w-[84px]" }: { className?: string }) {
-  if (VESTA_ASSETS.logo) {
+export function UtopiaEmblem({ className = "h-[84px] w-[84px]" }: { className?: string }) {
+  if (UTOPIA_ASSETS.emblem) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
-        src={VESTA_ASSETS.logo}
-        alt="Vesta Appliances logo"
+        src={UTOPIA_ASSETS.emblem}
+        alt="Coat of arms of the Republica of Utopia"
         className={`${className} rounded-2xl object-contain`}
       />
     );
   }
-  // Placeholder mark until the brand kit lands (spec open item 8):
-  // hearth-flame "V" on a warm gradient.
+  // Placeholder emblem until the civic brand kit lands (spec open item 3):
+  // a shield with the Utopia star on a deep-blue gradient.
   return (
-    <svg viewBox="0 0 64 64" className={className} aria-label="Vesta Appliances logo">
+    <svg
+      viewBox="0 0 64 64"
+      className={className}
+      aria-label="Coat of arms of the Republica of Utopia"
+    >
       <defs>
-        <linearGradient id="vlg" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#7c3aed" />
-          <stop offset="100%" stopColor="#4f46e5" />
+        <linearGradient id="ulg" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#1d4ed8" />
+          <stop offset="100%" stopColor="#7c3aed" />
         </linearGradient>
       </defs>
-      <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#vlg)" />
+      <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#ulg)" />
       <path
-        d="M18 18 L32 46 L46 18"
+        d="M32 10 L48 16 V32 C48 44 41 51 32 55 C23 51 16 44 16 32 V16 Z"
         fill="none"
         stroke="#ffffff"
-        strokeWidth="6"
-        strokeLinecap="round"
+        strokeWidth="3"
         strokeLinejoin="round"
       />
-      <circle cx="32" cy="20" r="3.4" fill="#fbbf24" />
+      <path
+        d="M32 22 L34.6 28.4 L41.5 28.9 L36.2 33.3 L37.9 40 L32 36.3 L26.1 40 L27.8 33.3 L22.5 28.9 L29.4 28.4 Z"
+        fill="#fbbf24"
+      />
     </svg>
-  );
-}
-
-/** §1 - the real-world repair network: Vesta at the hub, certified partner
- *  companies around it, each carrying the amber "Vesta Certified" paper
- *  badge. Business visual - no DIDs, no protocol. */
-function RepairNetworkDiagram() {
-  const cx = 380;
-  const cy = 210;
-  const Rx = 270;
-  const Ry = 140;
-  const n = REPAIR_NETWORK.partners.length;
-  const badgeText = `✓ ${REPAIR_NETWORK.badgeLabel}`;
-  const badgeW = badgeText.length * 5.8 + 16;
-  return (
-    <div>
-      <svg
-        viewBox="40 28 680 412"
-        role="img"
-        aria-label="The Vesta certified repair network: Vesta at the center, certified partner companies around it"
-        className="h-auto w-full"
-      >
-        {REPAIR_NETWORK.partners.map((p, i) => {
-          const a = (i / n) * 2 * Math.PI - Math.PI / 2;
-          const x = cx + Rx * Math.cos(a);
-          const y = cy + Ry * Math.sin(a);
-          const dx = x - cx;
-          const dy = y - cy;
-          const len = Math.hypot(dx, dy) || 1;
-          const ux = dx / len;
-          const uy = dy / len;
-          return (
-            <g key={p.name}>
-              <line
-                x1={cx + ux * 62}
-                y1={cy + uy * 62}
-                x2={x - ux * 32}
-                y2={y - uy * 32}
-                stroke="#d1d5db"
-                strokeWidth={1.5}
-              />
-              <circle cx={x} cy={y} r={31} fill="#eff6ff" opacity={0.7} />
-              <circle cx={x} cy={y} r={24} fill="#ffffff" stroke="#2563eb" strokeWidth={1.7} />
-              <g transform={`translate(${x - 10}, ${y - 10})`} style={{ color: "#2563eb" }}>
-                <Wrench width={20} height={20} strokeWidth={1.8} />
-              </g>
-              <text x={x} y={y + 43} textAnchor="middle" fontSize={12.5} fontWeight={700} fill="#111827">
-                {p.name}
-              </text>
-              <text x={x} y={y + 57} textAnchor="middle" fontSize={10.5} fill="#6b7280">
-                {p.city}
-              </text>
-              <g>
-                <rect
-                  x={x - badgeW / 2}
-                  y={y + 63}
-                  width={badgeW}
-                  height={17}
-                  rx={8.5}
-                  fill="#ecfdf5"
-                  stroke="#059669"
-                  strokeOpacity={0.5}
-                />
-                <text x={x} y={y + 75} textAnchor="middle" fontSize={9} fontWeight={600} fill="#047857">
-                  {badgeText}
-                </text>
-              </g>
-            </g>
-          );
-        })}
-        {/* Hub - Vesta */}
-        <circle cx={cx} cy={cy} r={56} fill="#f5f3ff" opacity={0.8} />
-        <circle cx={cx} cy={cy} r={48} fill="#ffffff" stroke="#7c3aed" strokeWidth={2} />
-        {VESTA_ASSETS.logo ? (
-          <image
-            href={VESTA_ASSETS.logo}
-            x={cx - 29}
-            y={cy - 29}
-            width={58}
-            height={58}
-          />
-        ) : null}
-        <rect x={cx - 78} y={cy + 58} width={156} height={32} fill="#ffffff" />
-        <text x={cx} y={cy + 70} textAnchor="middle" fontSize={13} fontWeight={700} fill="#111827">
-          {COMPANY.name}
-        </text>
-        <text x={cx} y={cy + 84} textAnchor="middle" fontSize={10} fill="#6b7280">
-          trains · audits · certifies
-        </text>
-      </svg>
-    </div>
   );
 }
 
@@ -191,121 +103,57 @@ function RepairNetworkDiagram() {
 export function Section1() {
   return (
     <>
-      {/* §1 · Meet Vesta Appliances - marketing article, no protocol */}
+      {/* §1 · Meet the Republica of Utopia - civic article, no protocol */}
       <Section id="section-1">
         <Container className="max-w-4xl">
-          {/* Brand header */}
+          {/* State header */}
           <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm sm:p-10">
             <div className="flex flex-wrap items-center gap-5">
-              <VestaLogo />
+              <UtopiaEmblem />
               <div>
                 <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-                  {COMPANY.name}
+                  {REPUBLIC.name}
                 </h2>
-                <p className="text-gray-500">{COMPANY.tagline}</p>
-              </div>
-              <div className="ml-auto flex flex-col items-center gap-1">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={COMPANY.certification.img}
-                  alt="ISO 9001:2015 certification seal"
-                  className="h-16 w-auto"
-                />
-                <span className="text-xs font-semibold text-gray-700">
-                  {COMPANY.certification.label}
-                </span>
-                <span className="text-[11px] text-gray-400">
-                  {COMPANY.certification.sub}
-                </span>
+                <p className="text-gray-500">{REPUBLIC.tagline}</p>
               </div>
             </div>
             <div className="mt-5 flex flex-wrap gap-2">
-              {COMPANY.meta.map((m) => (
+              {REPUBLIC.meta.map((m) => (
                 <Chip key={m}>{m}</Chip>
               ))}
             </div>
           </div>
 
           <div className="mt-12">
-            <SectionHeading number={1} title="The Company" />
+            <SectionHeading number={1} title="The Republic" />
           </div>
 
-          {/* The product line */}
-          <div>
-            <SubHeading>The product line</SubHeading>
-            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
-              {COMPANY.productLine}
-            </p>
-            {VESTA_ASSETS.lineup ? (
-              <figure className="mt-6">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={VESTA_ASSETS.lineup}
-                  alt="The Vesta product range: washing machine, oven, dryer"
-                  className="photo-frame w-full object-cover"
-                />
-                <figcaption className="mt-2 text-center text-xs text-gray-400">
-                  {VESTA_ASSETS.lineupCaption}
-                </figcaption>
-              </figure>
-            ) : null}
-          </div>
+          <p className="max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+            {REPUBLIC.intro}
+          </p>
+          {UTOPIA_ASSETS.hero ? (
+            <figure className="mt-6">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={UTOPIA_ASSETS.hero}
+                alt="The Republica of Utopia"
+                className="photo-frame w-full object-cover"
+              />
+              <figcaption className="mt-2 text-center text-xs text-gray-400">
+                {UTOPIA_ASSETS.heroCaption}
+              </figcaption>
+            </figure>
+          ) : null}
 
-          {/* The factory */}
+          {/* The institutions */}
           <div className="mt-12">
-            <SubHeading>The factory</SubHeading>
-            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
-              {COMPANY.factoryText}
-            </p>
-            {VESTA_ASSETS.hero ? (
-              <figure className="mt-6">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={VESTA_ASSETS.hero}
-                  alt="The Vesta Appliances assembly line"
-                  className="photo-frame w-full object-cover"
-                />
-                <figcaption className="mt-2 text-center text-xs text-gray-400">
-                  {VESTA_ASSETS.heroCaption}
-                </figcaption>
-              </figure>
-            ) : null}
-          </div>
-
-          {/* The certified repair network */}
-          <div className="mt-12">
-            <SubHeading>{REPAIR_NETWORK.title}</SubHeading>
-            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-500">
-              {REPAIR_NETWORK.blurb}
-            </p>
-            <div className="mt-6">
-              <RepairNetworkDiagram />
-            </div>
-            <div className="mt-4 flex flex-wrap justify-center gap-2">
-              {REPAIR_NETWORK.stats.map((st) => (
-                <Chip key={st}>{st}</Chip>
-              ))}
-              <span className="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-                <Check className="h-3 w-3" aria-hidden /> {REPAIR_NETWORK.badgeFullName} badge
-              </span>
-            </div>
-            <p className="mt-5 max-w-3xl text-sm italic leading-relaxed text-gray-500">
-              {REPAIR_NETWORK.closing}
-            </p>
-          </div>
-
-          {/* Online services */}
-          <div className="mt-12">
-            <SubHeading>Online services</SubHeading>
-            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
-              {COMPANY.servicesIntro}
-            </p>
+            <SubHeading>The institutions</SubHeading>
             <div className="mt-6 flex flex-col items-center">
               <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-3 shadow-sm">
-                <VestaLogo className="h-12 w-12" />
+                <UtopiaEmblem className="h-12 w-12" />
                 <div>
                   <div className="text-sm font-bold text-gray-900">
-                    {COMPANY.name}
+                    {REPUBLIC.name}
                   </div>
                   <div className="text-xs text-gray-500">
                     owns &amp; operates all three
@@ -318,12 +166,12 @@ export function Section1() {
                 className="hidden h-px w-2/3 bg-gray-300 sm:block"
               />
               <div className="mt-[-1px] grid w-full gap-4 sm:grid-cols-3 sm:gap-6 sm:pt-6">
-                {COMPANY.services.map((sv) => {
+                {REPUBLIC.institutions.map((inst) => {
                   const Icon =
-                    SERVICE_ICONS[sv.icon as keyof typeof SERVICE_ICONS];
+                    INSTITUTION_ICONS[inst.icon as keyof typeof INSTITUTION_ICONS];
                   return (
                     <div
-                      key={sv.name}
+                      key={inst.name}
                       className="relative rounded-2xl border border-gray-200 bg-white p-5 text-center shadow-sm"
                     >
                       <span
@@ -334,25 +182,41 @@ export function Section1() {
                         <Icon className="h-5 w-5" />
                       </span>
                       <div className="mt-3 font-semibold text-gray-900">
-                        {sv.name}
+                        {inst.name}
                       </div>
-                      <p className="mt-1 text-sm text-gray-500">{sv.desc}</p>
+                      <p className="mt-1 text-sm text-gray-500">{inst.desc}</p>
                     </div>
                   );
                 })}
               </div>
             </div>
+            {UTOPIA_ASSETS.institutions ? (
+              <figure className="mt-6">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={UTOPIA_ASSETS.institutions}
+                  alt="The civic institutions of Utopia"
+                  className="photo-frame w-full object-cover"
+                />
+                <figcaption className="mt-2 text-center text-xs text-gray-400">
+                  {UTOPIA_ASSETS.institutionsCaption}
+                </figcaption>
+              </figure>
+            ) : null}
+            <p className="mt-6 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {REPUBLIC.servicesToday}
+            </p>
           </div>
 
-          {/* The problems, and what they cost the brand */}
+          {/* The problems, and what they cost the Republic */}
           <div className="mt-12">
-            <SubHeading>The problems, and what they cost the brand</SubHeading>
+            <SubHeading>The problems, and what they cost the Republic</SubHeading>
 
             <p className="mt-6 text-sm font-bold uppercase tracking-wider text-red-500">
               Online
             </p>
             <div className="reveal-stagger mt-3 grid gap-4 sm:grid-cols-3">
-              {COMPANY.problemsOnline.map((pb) => {
+              {REPUBLIC.problemsOnline.map((pb) => {
                 const Icon =
                   PROBLEM_ICONS[pb.icon as keyof typeof PROBLEM_ICONS];
                 return (
@@ -372,25 +236,29 @@ export function Section1() {
               })}
             </div>
             <p className="mt-3 text-sm italic text-gray-500">
-              {COMPANY.onlineConsequence}
+              {REPUBLIC.onlineConsequence}
             </p>
 
             <p className="mt-8 text-sm font-bold uppercase tracking-wider text-red-500">
-              On-site
+              At the counter and at the bank
             </p>
             <div className="mt-3 grid gap-4 sm:grid-cols-2">
-              {VESTA_ASSETS.fakeVan ? (
+              {UTOPIA_ASSETS.phishing ? (
                 <figure>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={VESTA_ASSETS.fakeVan}
-                    alt="An impostor van with a printed Vesta panel on its door"
+                    src={UTOPIA_ASSETS.phishing}
+                    alt="A phishing message impersonating the Tax Buro"
                     className="h-full w-full rounded-2xl object-cover"
                   />
                 </figure>
               ) : null}
-              <div className="flex flex-col justify-center gap-3">
-                {COMPANY.problemsOnsite.map((pb) => {
+              <div
+                className={`flex flex-col justify-center gap-3 ${
+                  UTOPIA_ASSETS.phishing ? "" : "sm:col-span-2"
+                }`}
+              >
+                {REPUBLIC.problemsOffline.map((pb) => {
                   const Icon =
                     PROBLEM_ICONS[pb.icon as keyof typeof PROBLEM_ICONS];
                   return (
@@ -409,48 +277,48 @@ export function Section1() {
                   );
                 })}
                 <p className="text-sm italic text-gray-500">
-                  {COMPANY.onsiteConsequence}
+                  {REPUBLIC.offlineConsequence}
                 </p>
               </div>
             </div>
 
             <p className="mt-8 rounded-2xl bg-gray-900 px-6 py-8 text-center text-lg font-semibold text-white">
-              {COMPANY.rootCause}
+              {REPUBLIC.rootCause}
             </p>
           </div>
 
-          {/* The word of the CEO */}
+          {/* The word of the Prime Minister */}
           <div className="mt-12">
-            <SubHeading>The word of the CEO</SubHeading>
+            <SubHeading>The word of the Prime Minister</SubHeading>
             <figure className="mt-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm sm:p-10">
               <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
                 <figcaption className="shrink-0 text-center">
-                  {VESTA_ASSETS.ceo ? (
+                  {UTOPIA_ASSETS.pm ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={VESTA_ASSETS.ceo}
-                      alt={COMPANY.ceoQuote.name}
+                      src={UTOPIA_ASSETS.pm}
+                      alt={REPUBLIC.pmQuote.name}
                       className="mx-auto h-48 w-40 rounded-2xl object-cover object-top shadow-md"
                     />
                   ) : (
-                    <span className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-violet-100 text-2xl font-bold text-violet-700">
-                      {COMPANY.ceoQuote.name
+                    <span className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-blue-100 text-2xl font-bold text-blue-700">
+                      {REPUBLIC.pmQuote.name
                         .split(" ")
                         .map((w) => w[0])
                         .join("")}
                     </span>
                   )}
                   <div className="mt-3 text-sm font-semibold text-gray-900">
-                    {COMPANY.ceoQuote.name}
+                    {REPUBLIC.pmQuote.name}
                   </div>
                   <div className="text-sm text-gray-500">
-                    {COMPANY.ceoQuote.role}
+                    {REPUBLIC.pmQuote.role}
                   </div>
                 </figcaption>
                 <div>
                   <Quote className="h-6 w-6 text-violet-400" aria-hidden />
                   <blockquote className="mt-3 text-xl font-medium leading-relaxed text-gray-800">
-                    “{COMPANY.ceoQuote.text}”
+                    “{REPUBLIC.pmQuote.text}”
                   </blockquote>
                 </div>
               </div>
@@ -458,7 +326,6 @@ export function Section1() {
           </div>
         </Container>
       </Section>
-
     </>
   );
 }
@@ -466,47 +333,47 @@ export function Section1() {
 export function Section2() {
   return (
     <>
-      {/* §2 · The solution: pillars + the ecosystems Vesta wants to join */}
+      {/* §2 · The solution: pillars + the ecosystems Utopia joins or builds */}
       <Section id="section-2" className="border-t border-gray-200 bg-white">
         <Container className="max-w-4xl">
           <SectionHeading number={2} title={SOLUTION.title} />
 
-          {/* The CTO's line */}
+          {/* The Minister's line */}
           <figure className="mb-12 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
             <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
               <figcaption className="shrink-0 text-center">
-                {VESTA_ASSETS.cto ? (
+                {UTOPIA_ASSETS.minister ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={VESTA_ASSETS.cto}
-                    alt={SOLUTION.ctoQuote.name}
+                    src={UTOPIA_ASSETS.minister}
+                    alt={SOLUTION.ministerQuote.name}
                     className="mx-auto h-40 w-32 rounded-2xl object-cover object-top shadow-md"
                   />
                 ) : (
-                  <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-violet-100 text-xl font-bold text-violet-700">
-                    {SOLUTION.ctoQuote.name
+                  <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-blue-100 text-xl font-bold text-blue-700">
+                    {SOLUTION.ministerQuote.name
                       .split(" ")
                       .map((w) => w[0])
                       .join("")}
                   </span>
                 )}
                 <div className="mt-3 text-sm font-semibold text-gray-900">
-                  {SOLUTION.ctoQuote.name}
+                  {SOLUTION.ministerQuote.name}
                 </div>
                 <div className="text-sm text-gray-500">
-                  {SOLUTION.ctoQuote.role}
+                  {SOLUTION.ministerQuote.role}
                 </div>
               </figcaption>
               <div>
                 <Quote className="h-6 w-6 text-violet-400" aria-hidden />
                 <blockquote className="mt-3 text-xl font-medium leading-relaxed text-gray-800">
-                  “{SOLUTION.ctoQuote.text}”
+                  “{SOLUTION.ministerQuote.text}”
                 </blockquote>
               </div>
             </div>
           </figure>
 
-          {/* What Marc needs: the mission checklist */}
+          {/* What the Minister needs: the mission checklist */}
           <div className="mb-14">
             <SubHeading>{SOLUTION.needsTitle}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
@@ -528,10 +395,10 @@ export function Section2() {
                         {n.title}
                       </span>
                       <a
-                        href={`/usecases/vesta/journey#need-${n.need}`}
+                        href={`/usecases/utopia/journey#need-${n.need}`}
                         className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                       >
-                        → Marc&apos;s journey · {n.tag}
+                        → The journey · {n.tag}
                       </a>
                     </div>
                     <p className="mt-1 text-sm text-gray-500">{n.desc}</p>
@@ -576,19 +443,59 @@ export function Section2() {
             </p>
           </div>
 
-          {/* The ecosystems Vesta wants to join */}
+          {/* The ecosystem Utopia wants to join */}
           <div className="mt-14">
             <SubHeading>{SOLUTION.ecosystemsTitle}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {SOLUTION.ecosystemsIntro}
             </p>
+            <div className="mx-auto mt-6 max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <div className="flex items-start justify-between gap-2">
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
+                  <Landmark className="h-5 w-5" />
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
+                  <BadgeCheck className="h-3 w-3" /> Utopia joins as{" "}
+                  {ECOSYSTEM_JOIN.roles}
+                </span>
+              </div>
+              <div className="mt-3 text-lg font-bold text-gray-900">
+                {ECOSYSTEM_JOIN.name}
+              </div>
+              <div className="text-sm font-medium text-gray-400">
+                {ECOSYSTEM_JOIN.label}
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                {ECOSYSTEM_JOIN.about}
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                <span className="font-semibold text-gray-800">
+                  Why join, not build:
+                </span>{" "}
+                {ECOSYSTEM_JOIN.why}
+              </p>
+              <div className="mt-4 border-t border-gray-100 pt-3">
+                <DidBadge
+                  did={ECOSYSTEM_JOIN.did}
+                  className="flex text-[11px] text-gray-400"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* The ecosystems Utopia wants to build */}
+          <div className="mt-14">
+            <SubHeading>{SOLUTION.buildTitle}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {SOLUTION.buildIntro}
+            </p>
             <div className="reveal-stagger mt-6 grid gap-4 sm:grid-cols-2">
-              {ECOSYSTEM_CHOICES.map((e) => {
-                const Icon = e.icon === "landmark" ? Landmark : Award;
+              {ECOSYSTEMS_BUILD.map((e) => {
+                const Icon = e.icon === "id" ? IdCard : Network;
                 const chipTone =
-                  e.tone === "violet"
-                    ? "bg-violet-50 text-violet-700"
-                    : "bg-amber-50 text-amber-700";
+                  e.tone === "blue"
+                    ? "bg-blue-50 text-blue-700"
+                    : "bg-violet-50 text-violet-700";
                 return (
                   <div
                     key={e.name}
@@ -600,8 +507,8 @@ export function Section2() {
                       >
                         <Icon className="h-5 w-5" />
                       </span>
-                      <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
-                        <BadgeCheck className="h-3 w-3" /> Vesta joins as{" "}
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-xs font-semibold text-violet-700">
+                        <Landmark className="h-3 w-3" /> {e.operator} as{" "}
                         {e.role}
                       </span>
                     </div>
@@ -611,95 +518,28 @@ export function Section2() {
                     <div className="text-sm font-medium text-gray-400">
                       {e.label}
                     </div>
-                    {"about" in e && e.about ? (
-                      <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                        {e.about}
-                      </p>
-                    ) : null}
+                    <p className="mt-2 text-sm leading-relaxed text-gray-600">
+                      {e.about}
+                    </p>
                     <p className="mt-2 text-sm leading-relaxed text-gray-600">
                       <span className="font-semibold text-gray-800">
-                        Why Vesta joins:
+                        Why it matters:
                       </span>{" "}
                       {e.why}
                     </p>
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3">
+                    <div className="mt-4 border-t border-gray-100 pt-3">
                       <DidBadge
                         did={e.did}
-                        className="min-w-0 flex-1 text-[11px] text-gray-400"
+                        className="flex text-[11px] text-gray-400"
                       />
-                      <a
-                        href={e.veranaUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="shrink-0 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
-                      >
-                        Open in Verana <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
-                      </a>
                     </div>
                   </div>
                 );
               })}
             </div>
           </div>
-
-          {/* The ecosystems Vesta wants to build */}
-          <div className="mt-14">
-            <SubHeading>{ECOSYSTEM_BUILD.title}</SubHeading>
-            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
-              {ECOSYSTEM_BUILD.intro}
-            </p>
-            <div className="mx-auto mt-6 max-w-2xl rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="flex items-start justify-between gap-2">
-                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-50 text-violet-700">
-                  <Network className="h-5 w-5" />
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-violet-200 bg-violet-50 px-2.5 py-1 text-xs font-semibold text-violet-700">
-                  <Landmark className="h-3 w-3" /> Vesta operates as{" "}
-                  {ECOSYSTEM_BUILD.card.role}
-                </span>
-              </div>
-              <div className="mt-3 text-lg font-bold text-gray-900">
-                {ECOSYSTEM_BUILD.card.name}
-              </div>
-              <div className="text-sm font-medium text-gray-400">
-                {ECOSYSTEM_BUILD.card.label}
-              </div>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                {ECOSYSTEM_BUILD.card.about}
-              </p>
-              <p className="mt-2 text-sm leading-relaxed text-gray-600">
-                <span className="font-semibold text-gray-800">
-                  Why Vesta builds it:
-                </span>{" "}
-                {ECOSYSTEM_BUILD.card.why}
-              </p>
-              <div className="mt-4 space-y-2 border-t border-gray-100 pt-3">
-                <DidBadge
-                  did={ECOSYSTEM_BUILD.card.did}
-                  className="flex text-[11px] text-gray-400"
-                />
-                <div className="flex flex-wrap items-center gap-2">
-                  <a
-                    href={`/usecases/vesta/journey#need-${ECOSYSTEM_BUILD.card.need}`}
-                    className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
-                  >
-                    → Marc&apos;s journey · Vesta creates its own ecosystem
-                  </a>
-                  <a
-                    href={ECOSYSTEM_BUILD.card.veranaUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
-                  >
-                    Open in Verana <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
         </Container>
       </Section>
-
     </>
   );
 }
@@ -707,7 +547,7 @@ export function Section2() {
 export function Section3() {
   return (
     <>
-      {/* §3 · Marc's journey - one subsection per checklist need */}
+      {/* §3 · The Minister's journey - one subsection per checklist need */}
       <Section id={JOURNEY.anchor} className="border-t border-gray-200">
         <Container className="max-w-4xl">
           <SectionHeading
@@ -755,7 +595,7 @@ export function Section3() {
                 </p>
                 <div className="mt-8 space-y-14">
                   {need.steps.map((sub) => (
-                    <SubStepBlock key={sub.id} sub={sub} graph={VESTA_SCENES} />
+                    <SubStepBlock key={sub.id} sub={sub} graph={UTOPIA_SCENES} />
                   ))}
                 </div>
               </div>
@@ -766,15 +606,15 @@ export function Section3() {
           </p>
         </Container>
       </Section>
-
     </>
   );
 }
 
 export function Section4() {
+  const wallets = listPersonalWallets();
   return (
     <>
-      {/* §4 · Run the demos - placeholders until the Vesta cast ships */}
+      {/* §4 · Run the demos - placeholders until the Utopia cast ships */}
       <Section id={DEMOS.anchor} className="border-t border-gray-200 bg-white">
         <Container className="max-w-4xl">
           <SectionHeading number={DEMOS.n} title={DEMOS.title} subtitle={DEMOS.intro} />
@@ -791,34 +631,41 @@ export function Section4() {
               {DEMOS.chooseWallet.intro}
             </p>
             <Suspense>
-              <WalletChooser wallets={listPersonalWallets()} />
+              <WalletChooser wallets={wallets} />
             </Suspense>
           </div>
 
-          {/* Demo 1 · Obtain an ECS-Badge - #demo-badge is deep-linked from
-              the chapter-3 badge steps (3.4 and 3.8). */}
-          <div id="demo-badge" className="mt-14 scroll-mt-24">
-            <SubHeading>{DEMOS.badge.title}</SubHeading>
+          {/* Demo 1 · Get your Utopia Citizen ID */}
+          <div id="demo-citizen-id" className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.citizenId.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
-              {DEMOS.badge.intro}
+              {DEMOS.citizenId.intro}
             </p>
             <Suspense>
-              <BadgeOffers
-                wallets={listPersonalWallets()}
-                offers={DEMOS.badge.offers as unknown as BadgeOffer[]}
-              />
+              <UtopiaOffers wallets={wallets} offers={[DEMOS.citizenId.offer]} />
             </Suspense>
           </div>
 
-          {/* Demo 2 · Log in with the badge */}
-          <div className="mt-14">
-            <SubHeading>{DEMOS.login.title}</SubHeading>
+          {/* Demo 2 · Get a Proof of Legal Representation */}
+          <div id="demo-legal-rep" className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.legalRep.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
-              {DEMOS.login.intro}
+              {DEMOS.legalRep.intro}
+            </p>
+            <Suspense>
+              <UtopiaOffers wallets={wallets} offers={[DEMOS.legalRep.offer]} />
+            </Suspense>
+          </div>
+
+          {/* Demo 3 · Sign in to the Tax Buro */}
+          <div id="demo-tax-login" className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.taxLogin.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.taxLogin.intro}
             </p>
             <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <ul className="space-y-3">
-                {DEMOS.login.outcomes.map((o) => (
+                {DEMOS.taxLogin.outcomes.map((o) => (
                   <li key={o.rule} className="flex items-start gap-3 text-sm">
                     <span
                       aria-hidden
@@ -846,18 +693,101 @@ export function Section4() {
             </div>
             <div className="mx-auto mt-6 max-w-xl">
               <Suspense>
-                <PortalLoginDemo wallets={listPersonalWallets()} />
+                <UtopiaLoginDemo wallets={wallets} portal="tax-buro" />
               </Suspense>
             </div>
           </div>
 
-          {/* Demo 3 · Directory search */}
+          {/* Demo 4 · Open an account at Meridian Bank */}
+          <div id="demo-bank" className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.bank.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.bank.intro}
+            </p>
+            <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <ul className="space-y-3">
+                {DEMOS.bank.outcomes.map((o) => (
+                  <li key={o.rule} className="flex items-start gap-3 text-sm">
+                    <span
+                      aria-hidden
+                      className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                        o.tone === "red"
+                          ? "bg-red-50 text-red-600"
+                          : "bg-emerald-50 text-emerald-700"
+                      }`}
+                    >
+                      {o.tone === "red" ? (
+                        <X className="h-3.5 w-3.5" aria-hidden />
+                      ) : (
+                        <Check className="h-3.5 w-3.5" aria-hidden />
+                      )}
+                    </span>
+                    <span>
+                      <span className="font-semibold text-gray-900">
+                        {o.rule}:
+                      </span>{" "}
+                      <span className="text-gray-600">{o.result}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {UTOPIA_ASSETS.bank ? (
+              <figure className="mx-auto mt-6 max-w-md">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={UTOPIA_ASSETS.bank}
+                  alt="Meridian Bank (demo)"
+                  className="w-full rounded-2xl border border-gray-200 object-cover shadow-sm"
+                />
+                <figcaption className="mt-2 text-center text-xs text-gray-400">
+                  {UTOPIA_ASSETS.bankCaption}
+                </figcaption>
+              </figure>
+            ) : null}
+            <div className="mx-auto mt-6 max-w-xl">
+              <Suspense>
+                <UtopiaLoginDemo wallets={wallets} portal="meridian-bank" />
+              </Suspense>
+            </div>
+          </div>
+
+          {/* Demo 5 · The over-asking verifier */}
+          <div id="demo-quickcash" className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.quickcash.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.quickcash.intro}
+            </p>
+            <div className="mt-6 rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-bold text-gray-900">
+                  QuickCash Loans (demo)
+                </h3>
+                <Chip tone="verified">TRUSTED</Chip>
+                <Chip>not authorized for the Citizen ID</Chip>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-red-600">
+                {DEMOS.quickcash.expect}
+              </p>
+              <div className="mt-4 space-y-3">
+                <ServiceQr
+                  serviceId={DEMOS.quickcash.serviceId}
+                  label="QuickCash Loans (demo)"
+                  format="anoncreds"
+                  credential={DEMOS.quickcash.credential}
+                />
+                <LiveTrustCard serviceId={DEMOS.quickcash.serviceId} />
+              </div>
+            </div>
+          </div>
+
+          {/* Demo 6 · Directory of Utopia */}
           <div className="mt-14">
             <SubHeading>{DEMOS.directory.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.directory.intro}
             </p>
-            <div className="reveal-stagger mx-auto mt-6 grid max-w-3xl gap-4 sm:grid-cols-2">
+            <div className="reveal-stagger mx-auto mt-6 grid max-w-3xl gap-4 sm:grid-cols-3">
               {DEMOS.directory.queries.map((q) => (
                 <div
                   key={q}
@@ -899,11 +829,11 @@ export function Section4() {
             Full story specification:{" "}
             <a
               className="text-violet-600 underline hover:text-violet-700"
-              href={`${LINKS.spec}/verana-explained/spec.md`}
+              href={`${LINKS.spec}/utopia/spec.md`}
               target="_blank"
               rel="noopener noreferrer"
             >
-              verana-spec / playground / verana-explained <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
+              verana-spec / playground / utopia <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
             </a>
           </p>
         </Container>

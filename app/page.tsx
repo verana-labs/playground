@@ -19,6 +19,8 @@ import WalletLogo from "./components/WalletLogo";
 import { businessWallets, type Integration } from "./lib/integrations";
 import { listPersonalWallets, type PersonalWallet } from "./lib/wallets";
 import { CHAPTERS_NAV } from "./usecases/vesta/chapters";
+import { CHAPTERS_NAV as UTOPIA_CHAPTERS } from "./usecases/utopia/chapters";
+import { UtopiaEmblem } from "./usecases/utopia/sections";
 
 // The story sections (spec §3.2), deep-linking into /usecases/vesta anchors.
 
@@ -346,6 +348,33 @@ export default function Home() {
                 </p>
                 <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
                   Follow the Vesta story →
+                </span>
+              </span>
+            </Link>
+            <Link
+              href="/usecases/utopia"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
+            >
+              <span className="relative flex aspect-[16/9] items-center justify-center overflow-hidden bg-gradient-to-br from-[#1d4ed8] via-[#4f46e5] to-[#7c3aed]">
+                <UtopiaEmblem className="h-24 w-24 transition-transform duration-300 group-hover:scale-[1.05]" />
+              </span>
+              <span className="flex flex-1 flex-col p-5">
+                <span className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Republica of Utopia
+                  </h3>
+                  <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
+                    {UTOPIA_CHAPTERS.length} chapters
+                  </span>
+                </span>
+                <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
+                  Verana, explained by a democracy: an eIDAS-2-compatible
+                  Citizen ID, Business IDs from the national register, legal
+                  representation as proof - and passwordless sign-in at the
+                  Tax Buro and the bank, fail-closed.
+                </p>
+                <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
+                  Follow the Utopia story →
                 </span>
               </span>
             </Link>

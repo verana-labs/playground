@@ -1,4 +1,5 @@
 import { VESTA_CAST } from "./vesta-cast";
+import { UTOPIA_CAST } from "./utopia-cast";
 
 const BASE = process.env.DEMOS_BASE_DOMAIN ?? "main.demos.testnet.verana.network";
 const CAST = process.env.CAST_BASE_DOMAIN ?? "playground.testnet.verana.network";
@@ -26,6 +27,14 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "vesta-nordics", label: "Vesta Nordics (demo)", host: VESTA_CAST.nordics.host, did: VESTA_CAST.nordics.did, role: "issuer" },
   { id: "zenith", label: "Zenith Repairs (demo)", host: VESTA_CAST.zenith.host, did: VESTA_CAST.zenith.did, appUrl: invite(VESTA_CAST.zenith.host), role: "issuer" },
   { id: "umbra", label: "Umbra Repairs", host: VESTA_CAST.umbra.host, did: VESTA_CAST.umbra.did, appUrl: invite(VESTA_CAST.umbra.host), role: "untrusted" },
+  // The Utopia cast (spec: verana-spec → playground/utopia/spec.md §5),
+  // deployed by .github/workflows/utopia-*. DIDs come from host discovery
+  // until the placeholder values in utopia-cast.ts are replaced.
+  { id: "civil-registry", label: "National Civil Registry (demo)", host: UTOPIA_CAST.civilRegistry.host, appUrl: invite(UTOPIA_CAST.civilRegistry.host), role: "issuer" },
+  { id: "business-registry", label: "National Business Registry (demo)", host: UTOPIA_CAST.businessRegistry.host, appUrl: invite(UTOPIA_CAST.businessRegistry.host), role: "issuer" },
+  { id: "tax-buro", label: "Tax Buro (demo)", host: UTOPIA_CAST.taxBuro.host, appUrl: invite(UTOPIA_CAST.taxBuro.host), role: "verifier" },
+  { id: "meridian-bank", label: "Meridian Bank (demo)", host: UTOPIA_CAST.meridianBank.host, appUrl: invite(UTOPIA_CAST.meridianBank.host), role: "verifier" },
+  { id: "quickcash", label: "QuickCash Loans (demo)", host: UTOPIA_CAST.quickcash.host, appUrl: invite(UTOPIA_CAST.quickcash.host), role: "verifier" },
   // Planned personal-wallet demo cast (spec §4/§6) still referenced by the
   // personal-wallets playground page; remap those flows onto the Vesta cast
   // (badge issuers, portal login, Umbra) in a follow-up, then retire these.

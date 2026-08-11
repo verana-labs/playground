@@ -20,8 +20,8 @@ export async function generateMetadata({
   const c = chapterBySlug(chapter);
   return {
     title: c
-      ? `Use case · Vesta Appliances - ${c.n} · ${c.title}`
-      : "Use case · Vesta Appliances",
+      ? `Use case · Republica of Utopia - ${c.n} · ${c.title}`
+      : "Use case · Republica of Utopia",
     description: c?.intro,
   };
 }
@@ -32,7 +32,7 @@ const BODIES: Record<string, React.ComponentType> = {
   demos: Section4,
 };
 
-export default async function VestaChapter({
+export default async function UtopiaChapter({
   params,
 }: {
   params: Promise<{ chapter: string }>;
@@ -50,7 +50,7 @@ export default async function VestaChapter({
             onDark
             items={[
               { label: "Playground", href: "/" },
-              { label: "Vesta Appliances", href: "/usecases/vesta" },
+              { label: "Republica of Utopia", href: "/usecases/utopia" },
               { label: `Chapter ${c.n}` },
             ]}
           />

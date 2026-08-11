@@ -7,9 +7,11 @@ import {
   Bot,
   Building2,
   Ghost,
+  IdCard,
   KeyRound,
   Landmark,
   Network,
+  PiggyBank,
   Stamp,
   User,
   Wallet,
@@ -17,26 +19,20 @@ import {
 } from "lucide-react";
 import TrustCard, { type TrustCardData } from "./TrustCard";
 import {
-  ACCREDITATIONS,
-  BADGES,
-  CREDENTIALS,
-  EDGES,
-  NODES,
-  NODE_NOTES,
-  STAGE_CHANGES,
-  STAGE_VIEW,
   nodeLabelAt,
   nodeToneAt,
   stageIndex,
   visibleAt,
   type SceneEdge,
-  type Stage,
+  type SceneGraph,
   type Tone,
-} from "../usecases/vesta/scenes";
+} from "./scene-graph";
 
-// Renders the master Vesta scene graph at a given stage: everything visible
-// at that point of the story, with new or changed elements highlighted.
-// Pure SVG, server-rendered; positions never move between stages.
+// Renders a use-case scene graph at a given stage: everything visible at
+// that point of the story, with new or changed elements highlighted.
+// Pure SVG, server-rendered; positions never move between stages. The graph
+// itself (nodes, edges, credentials, stage views) is declared per use case
+// - see app/usecases/vesta/scenes.ts and app/usecases/utopia/scenes.ts.
 
 const ICONS = {
   building: Building2,
@@ -51,6 +47,8 @@ const ICONS = {
   wrench: Wrench,
   ghost: Ghost,
   user: User,
+  bank: PiggyBank,
+  id: IdCard,
 } as const;
 
 const TONE: Record<Tone, { stroke: string; halo: string; pill: string; pillText: string }> = {
@@ -62,11 +60,9 @@ const TONE: Record<Tone, { stroke: string; halo: string; pill: string; pillText:
   gray: { stroke: "#9ca3af", halo: "#f3f4f6", pill: "#f9fafb", pillText: "#4b5563" },
 };
 
-const nodeById = new Map(NODES.map((n) => [n.id, n]));
-
-function edgeGeometry(e: SceneEdge) {
-  const a = nodeById.get(e.from)!;
-  const b = nodeById.get(e.to)!;
+function edgeGeometry(graph: SceneGraph, e: SceneEdge) {
+  const a = graph.nodes.find((n) => n.id === e.from)!;
+  const b = graph.nodes.find((n) => n.id === e.to)!;
   const dx = b.x - a.x;
   const dy = b.y - a.y;
   const len = Math.hypot(dx, dy) || 1;
@@ -137,8 +133,14 @@ function Pill({
   );
 }
 
-export default function StoryDiagram({ stage }: { stage: Stage }) {
-  const idx = stageIndex(stage);
+export default function StoryDiagram({
+  graph,
+  stage,
+}: {
+  graph: SceneGraph;
+  stage: string;
+}) {
+  const idx = stageIndex(graph, stage);
   const [selected, setSelected] = useState<string | null>(null);
   // Measured label widths, so the trusted check sits at a consistent gap
   // from the text regardless of glyph widths.
@@ -150,20 +152,22 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
       Math.abs((prev[id] ?? 0) - w) < 0.5 ? prev : { ...prev, [id]: w },
     );
   };
-  const isNew = (el: { appears: Stage }) => stageIndex(el.appears) === idx;
+  const isNew = (el: { appears: string }) => stageIndex(graph, el.appears) === idx;
 
-  const view = STAGE_VIEW[stage];
+  const view = graph.stageView[stage];
   const inView = (id: string) => !view?.only || view.only.includes(id);
-  const nodes = NODES.filter((n) => visibleAt(n, stage) && inView(n.id));
-  const edges = EDGES.filter(
-    (e) => visibleAt(e, stage) && inView(e.from) && inView(e.to),
+  const nodes = graph.nodes.filter((n) => visibleAt(graph, n, stage) && inView(n.id));
+  const edges = graph.edges.filter(
+    (e) => visibleAt(graph, e, stage) && inView(e.from) && inView(e.to),
   );
-  const badges = BADGES.filter((b) => visibleAt(b, stage) && inView(b.node));
-  const changes = STAGE_CHANGES[stage];
+  const badges = graph.badges.filter(
+    (b) => visibleAt(graph, b, stage) && inView(b.node),
+  );
+  const changes = graph.stageChanges[stage];
   const changedNodes = new Set(changes?.nodes ?? []);
   const tones = Array.from(new Set(edges.map((e) => e.tone)));
   const newLabels = [
-    ...nodes.filter(isNew).map((n) => nodeLabelAt(n, stage).label ?? ""),
+    ...nodes.filter(isNew).map((n) => nodeLabelAt(graph, n, stage).label ?? ""),
     ...edges.filter(isNew).map((e) => e.label ?? ""),
     ...(changes?.note ? [changes.note] : []),
   ].filter(Boolean);
@@ -176,9 +180,9 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
     >
       <div>
         <svg
-          viewBox={view?.viewBox ?? "30 20 930 570"}
+          viewBox={view?.viewBox ?? graph.defaultViewBox}
           role="img"
-          aria-label={`The Vesta story graph at step ${stage}`}
+          aria-label={`The ${graph.title} story graph at step ${stage}`}
           className="h-auto w-full"
         >
           <defs>
@@ -199,7 +203,7 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
           </defs>
 
           {edges.map((e) => {
-            const g = edgeGeometry(e);
+            const g = edgeGeometry(graph, e);
             const c = TONE[e.tone];
             return (
               <g key={e.id} className={isNew(e) ? "sd-new" : undefined}>
@@ -220,11 +224,11 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
           })}
 
           {nodes.map((n) => {
-            const tone = nodeToneAt(n, stage);
+            const tone = nodeToneAt(graph, n, stage);
             const c = TONE[tone];
             const r = n.r ?? 22;
             const highlight = isNew(n) || changedNodes.has(n.id);
-            const { label, sub } = nodeLabelAt(n, stage);
+            const { label, sub } = nodeLabelAt(graph, n, stage);
             const Icon = ICONS[n.icon];
             return (
               <g
@@ -288,7 +292,7 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
                 </g>
                 {label ? (
                   <>
-                    {n.verifiedAt && stageIndex(n.verifiedAt) <= idx ? (
+                    {n.verifiedAt && stageIndex(graph, n.verifiedAt) <= idx ? (
                       <g
                         transform={`translate(${
                           n.x -
@@ -330,7 +334,7 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
           })}
 
           {badges.map((b) => {
-            const n = nodeById.get(b.node)!;
+            const n = graph.nodes.find((x) => x.id === b.node)!;
             return (
               <Pill
                 key={b.id}
@@ -345,7 +349,12 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
         </svg>
       </div>
       {selected ? (
-        <NodeDetail id={selected} stage={stage} onClose={() => setSelected(null)} />
+        <NodeDetail
+          graph={graph}
+          id={selected}
+          stage={stage}
+          onClose={() => setSelected(null)}
+        />
       ) : (
         <p className="mt-2 text-center text-[11px] text-gray-400">
           Click a participant to see the credentials it presents.
@@ -371,31 +380,31 @@ export default function StoryDiagram({ stage }: { stage: Stage }) {
 }
 
 function NodeDetail({
+  graph,
   id,
   stage,
   onClose,
 }: {
+  graph: SceneGraph;
   id: string;
-  stage: Stage;
+  stage: string;
   onClose: () => void;
 }) {
-  const idx = stageIndex(stage);
-  const node = NODES.find((n) => n.id === id);
+  const idx = stageIndex(graph, stage);
+  const node = graph.nodes.find((n) => n.id === id);
   if (!node) return null;
-  const { label } = nodeLabelAt(node, stage);
-  const creds = (CREDENTIALS[id] ?? []).filter((cr) => visibleAt(cr, stage));
+  const { label } = nodeLabelAt(graph, node, stage);
+  const creds = (graph.credentials[id] ?? []).filter((cr) =>
+    visibleAt(graph, cr, stage),
+  );
   const find = (n: string) => creds.find((c) => c.name === n);
   const svc = find("ECS-Service");
   const org = find("ECS-Organization");
   const others = creds.filter(
     (c) => c.name !== "ECS-Service" && c.name !== "ECS-Organization",
   );
-  const isPerson =
-    id === "customer" ||
-    id === "wallet" ||
-    id === "techWallet" ||
-    id.startsWith("emp");
-  const verified = !!node.verifiedAt && stageIndex(node.verifiedAt) <= idx;
+  const isPerson = node.person === true;
+  const verified = !!node.verifiedAt && stageIndex(graph, node.verifiedAt) <= idx;
   const data: TrustCardData = {
     name: label ?? id,
     did: verified || svc || org ? node.did : undefined,
@@ -416,21 +425,14 @@ function NodeDetail({
     impostor: node.dashed === true,
     others: isPerson ? [] : others,
     holds: isPerson ? creds : undefined,
-    accreditations: (ACCREDITATIONS[id] ?? [])
-      .filter((a) => stageIndex(a.appears) <= idx)
+    accreditations: (graph.accreditations[id] ?? [])
+      .filter((a) => stageIndex(graph, a.appears) <= idx)
       .map(({ role, schema, context }) => ({ role, schema, context })),
     note:
-      creds.length === 0 ||
-      id === "ecs" ||
-      id === "iso" ||
-      id === "vestaEco" ||
-      id === "umbra"
-        ? NODE_NOTES[id]
+      graph.nodeNotes[id] && (creds.length === 0 || node.noteAlways)
+        ? graph.nodeNotes[id]
         : undefined,
-    resolvedNote:
-      verified && node.did
-        ? "Both identity checks verified against the Verana public registry (story data - dedicated Vesta cast pending)."
-        : undefined,
+    resolvedNote: verified && node.did ? graph.verifiedNote : undefined,
   };
   return (
     <div className="mt-3">

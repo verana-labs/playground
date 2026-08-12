@@ -136,7 +136,8 @@ export async function GET(
     if (state !== "done") return NextResponse.json({ done: false, state });
     const claims = toClaims(record.claims);
     const issuerDid =
-      issuerDidFromRecord(record) ?? fallbackIssuerDid(mode, claims);
+      issuerDidFromRecord(record) ??
+      (record.verified === true ? fallbackIssuerDid(mode, claims) : null);
     const decision = decide(mode, issuerDid, claims);
     return NextResponse.json({
       done: true,

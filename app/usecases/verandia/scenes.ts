@@ -262,7 +262,7 @@ const EDGES: SceneEdge[] = [
   { id: "e-br-tax", from: "businessRegistry", to: "taxBuro", appears: "3.0", label: "the Republic's institutions", tone: "gray", labelT: 0.55 },
   { id: "e-cr-aria", from: "civilRegistry", to: "aria", appears: "3.0", until: "3.4", label: "paper ID cards", tone: "gray", dashed: true, curve: 25, labelT: 0.45 },
   { id: "e-aria-tax", from: "aria", to: "taxBuro", appears: "3.0", until: "3.7", label: "passwords and queues", tone: "gray", dashed: true, curve: 45, labelT: 0.45 },
-  { id: "e-aria-fake", from: "aria", to: "fakePortal", appears: "3.0", label: "…a refund? can't tell it's fake", tone: "red", dashed: true, curve: -25, labelT: 0.35 },
+  { id: "e-aria-fake", from: "aria", to: "fakePortal", appears: "3.0", until: "3.8", label: "…a refund? can't tell it's fake", tone: "red", dashed: true, curve: -25, labelT: 0.35 },
   // Need 1 - verifiable institutions
   { id: "e-helvetia-br", from: "helvetia", to: "businessRegistry", appears: "3.1", label: "issues ECS-Org", tone: "emerald", curve: -30, labelT: 0.45 },
   { id: "e-ecs-helvetia", from: "ecs", to: "helvetia", appears: "3.1", label: "accredits", tone: "violet" },
@@ -289,6 +289,8 @@ const EDGES: SceneEdge[] = [
   { id: "e-tomas-bank", from: "tomas", to: "meridianBank", appears: "3.7", label: "Legal Rep → corporate account", tone: "emerald", labelT: 0.45 },
   // The counter-example
   { id: "e-quickcash-aria", from: "quickcash", to: "aria", appears: "3.8", label: "asks for Citizen ID: refused", tone: "red", dashed: true, curve: 50, labelT: 0.5 },
+  { id: "e-quickcash-eco", from: "quickcash", to: "citizenEco", appears: "3.8", label: "no VERIFIER permission: red", tone: "red", dashed: true, curve: -30, labelT: 0.45 },
+  { id: "e-fake-aria", from: "fakePortal", to: "aria", appears: "3.8", label: "fails Q1: nothing provable, refused", tone: "red", dashed: true, curve: -40, labelT: 0.3 },
 ];
 
 const BADGES: SceneBadge[] = [
@@ -650,16 +652,9 @@ export const VERANDIA_SCENES: SceneGraph = {
       viewBox: "112 38 1068 648",
     },
     "3.8": {
-      only: [
-        "citizenEco",
-        "taxBuro",
-        "meridianBank",
-        "aria",
-        "tomas",
-        "quickcash",
-        "fakePortal",
-      ],
-      viewBox: "140 278 1040 408",
+      only: ["citizenEco", "aria", "quickcash", "fakePortal"],
+      viewBox: "280 265 900 275",
+      maxWidth: "max-w-4xl",
     },
   },
   stageChanges: {

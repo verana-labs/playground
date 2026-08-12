@@ -1,0 +1,32 @@
+name: "Utopia 01 · National Business Registry (register)"
+
+# Deploys the National Business Registry (demo), bootstraps its ECS-Organization +
+# ECS-Service and creates the Legal Representation ecosystem.
+# Part of the Utopia cast CI/CD — see .github/workflows/utopia/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  business-registry:
+    uses: ./.github/workflows/utopia-00_core.yml
+    with:
+      org: business-registry
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

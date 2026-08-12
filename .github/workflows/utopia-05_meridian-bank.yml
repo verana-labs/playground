@@ -1,0 +1,32 @@
+name: "Utopia 05 · Meridian Bank (relying party)"
+
+# Deploys the verifiable bank (demo) with a VERIFIER registration on the Utopia
+# Citizen ID and an open VERIFIER permission on Legal Representative.
+# Part of the Utopia cast CI/CD — see .github/workflows/utopia/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  meridian-bank:
+    uses: ./.github/workflows/utopia-00_core.yml
+    with:
+      org: meridian-bank
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

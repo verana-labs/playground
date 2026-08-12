@@ -36,9 +36,9 @@ const LEGAL_REP_ATTRIBUTES = [
 ];
 
 const CITIZEN_POLICY =
-  process.env.DEMO_OID4VC_CITIZEN_POLICY ?? "utopia-citizen-id";
+  process.env.DEMO_OID4VC_CITIZEN_POLICY ?? "verandia-citizen-id";
 const LEGAL_REP_POLICY =
-  process.env.DEMO_OID4VC_LEGAL_REP_POLICY ?? "utopia-legal-rep";
+  process.env.DEMO_OID4VC_LEGAL_REP_POLICY ?? "verandia-legal-rep";
 
 function str(body: unknown, key: string): string | null {
   if (!body || typeof body !== "object") return null;

@@ -79,8 +79,8 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     label: "Verandia Citizen ID",
     credDefName: VERANDIA_CITIZEN_ID_NAME,
     oid4vcConfig:
-      process.env.DEMO_OID4VC_CITIZEN_CONFIG ?? "utopia-citizen-id",
-    oid4vcPolicy: process.env.DEMO_OID4VC_CITIZEN_POLICY ?? "utopia-citizen-id",
+      process.env.DEMO_OID4VC_CITIZEN_CONFIG ?? "verandia-citizen-id",
+    oid4vcPolicy: process.env.DEMO_OID4VC_CITIZEN_POLICY ?? "verandia-citizen-id",
     jscUrl: VERANDIA_CITIZEN_ID_JSC,
     claims: () => citizenDemoClaims(),
     oid4vcClaims: () => citizenOid4vcClaims(),
@@ -89,9 +89,9 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     label: "Legal Representative credential",
     credDefName: VERANDIA_LEGAL_REP_NAME,
     oid4vcConfig:
-      process.env.DEMO_OID4VC_LEGAL_REP_CONFIG ?? "utopia-legal-rep",
+      process.env.DEMO_OID4VC_LEGAL_REP_CONFIG ?? "verandia-legal-rep",
     oid4vcPolicy:
-      process.env.DEMO_OID4VC_LEGAL_REP_POLICY ?? "utopia-legal-rep",
+      process.env.DEMO_OID4VC_LEGAL_REP_POLICY ?? "verandia-legal-rep",
     jscUrl: VERANDIA_LEGAL_REP_JSC,
     claims: () => legalRepDemoClaims(),
     oid4vcClaims: () => legalRepOid4vcClaims(),

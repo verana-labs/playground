@@ -657,9 +657,14 @@ export function Section4() {
             {isPendingDid(VERANDIA_CAST.civilRegistry.did) ? (
               <DemoComing />
             ) : (
-              <Suspense>
-                <VerandiaOffers wallets={wallets} offers={[DEMOS.citizenId.offer]} />
-              </Suspense>
+              <>
+                <Suspense>
+                  <VerandiaOffers wallets={wallets} offers={[DEMOS.citizenId.offer]} />
+                </Suspense>
+                <div className="mx-auto mt-6 max-w-md">
+                  <LiveTrustCard serviceId={DEMOS.citizenId.offer.serviceId} />
+                </div>
+              </>
             )}
           </div>
 
@@ -672,9 +677,14 @@ export function Section4() {
             {isPendingDid(VERANDIA_CAST.businessRegistry.did) ? (
               <DemoComing />
             ) : (
-              <Suspense>
-                <VerandiaOffers wallets={wallets} offers={[DEMOS.legalRep.offer]} />
-              </Suspense>
+              <>
+                <Suspense>
+                  <VerandiaOffers wallets={wallets} offers={[DEMOS.legalRep.offer]} />
+                </Suspense>
+                <div className="mx-auto mt-6 max-w-md">
+                  <LiveTrustCard serviceId={DEMOS.legalRep.offer.serviceId} />
+                </div>
+              </>
             )}
           </div>
 
@@ -715,10 +725,11 @@ export function Section4() {
             {isPendingDid(VERANDIA_CAST.taxBuro.did) ? (
               <DemoComing />
             ) : (
-              <div className="mx-auto mt-6 max-w-xl">
+              <div className="mx-auto mt-6 max-w-xl space-y-3">
                 <Suspense>
                   <VerandiaLoginDemo wallets={wallets} portal="tax-buro" />
                 </Suspense>
+                <LiveTrustCard serviceId="tax-buro" />
               </div>
             )}
           </div>
@@ -773,10 +784,11 @@ export function Section4() {
             {isPendingDid(VERANDIA_CAST.meridianBank.did) ? (
               <DemoComing />
             ) : (
-              <div className="mx-auto mt-6 max-w-xl">
+              <div className="mx-auto mt-6 max-w-xl space-y-3">
                 <Suspense>
                   <VerandiaLoginDemo wallets={wallets} portal="meridian-bank" />
                 </Suspense>
+                <LiveTrustCard serviceId="meridian-bank" />
               </div>
             )}
           </div>

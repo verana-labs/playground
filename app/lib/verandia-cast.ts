@@ -27,11 +27,11 @@ export const VERANDIA_CAST = {
   },
   meridianBank: {
     host: `meridian-bank.${ZONE}`,
-    did: `did:webvh:${PENDING}:meridian-bank.verandia.playground.testnet.verana.network`,
+    did: `did:webvh:QmQxoLMKcQj8t7J3uNWZF9yStSiCKkoVmrsdTGJVCZ8k43:meridian-bank.verandia.playground.testnet.verana.network`,
   },
   quickcash: {
     host: `quickcash.${ZONE}`,
-    did: `did:webvh:${PENDING}:quickcash.verandia.playground.testnet.verana.network`,
+    did: `did:webvh:Qma27dn8bEHCbkM4J5Rvwi5WsDiJppEJtFyYAEUEhETBRS:quickcash.verandia.playground.testnet.verana.network`,
   },
 } as const satisfies Record<string, CastMember>;
 

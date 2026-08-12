@@ -433,3 +433,15 @@ wallets:
     video:
       src: ./talao/demo.mp4
       note: Real device, live against the demo cast, offers and requests minted from this page's API. Silent.
+
+  - id: nl-wallet
+    name: NL Wallet
+    vendor: MinBZK (Dutch Ministry of the Interior)
+    icon: ./nl-wallet/logo.png
+    formats: [openid4vc-sdjwt]
+    download: https://github.com/AirKyzzZ/nl-wallet/releases/download/verana-2026-08-12/nl-wallet-verana-demo-2026-08-12.apk
+    website: https://edi.pleio.nl
+    repo: https://github.com/MinBZK/nl-wallet
+    fork: https://github.com/AirKyzzZ/nl-wallet/tree/feat/verana-trust
+    license: EUPL-1.2
+    notes: The Dutch government's EUDI wallet, Flutter over a Rust core. The Verana trust card and accept gate sit on all three consent surfaces - login, disclosure, and issuance - with the real request origin threaded through, and the resolver checks run live against the testnet. The APK is the MinBZK demo flavor (mock data, Skip Setup onboarding), because the wallet core only trusts X.509-anchored counterparties - on-device captures of the six scenarios land once the demo cast serves that x5c rail.

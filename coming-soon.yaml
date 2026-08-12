@@ -21,23 +21,6 @@
 # below because that is the separate mobile holder, not Inji Web.
 
 personal:
-  - id: nl-wallet
-    name: NL Wallet
-    vendor: Dutch Government
-    logo: ./coming-soon/nl-wallet.png
-    license: EUPL-1.2
-    website: https://www.nldigitalgovernment.nl/
-    repo: https://github.com/MinBZK/nl-wallet
-
-  - id: bc-wallet
-    name: BC Wallet
-    vendor: Government of British Columbia
-    logo: ./coming-soon/bc-wallet.png
-    license: Apache-2.0
-    website: https://www2.gov.bc.ca/gov/content/governments/government-id/bc-wallet
-    repo: https://github.com/bcgov/bc-wallet-mobile
-    note: Built on Credo, the same stack as Paradym - likely the shortest integration on this list.
-
   - id: eausweise
     name: eAusweise
     vendor: Austrian Government

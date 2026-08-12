@@ -27,13 +27,17 @@ export function citizenDemoClaims(): { name: string; value: string }[] {
  *  legal representative. In the real flow the applicant first identifies
  *  with their Citizen ID; the demo mints directly. */
 export function legalRepDemoClaims(): { name: string; value: string }[] {
+  // The agent refuses to issue a configured claim with an empty value, so the
+  // demo mandate always carries a validity date one year out.
+  const yearOut = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000);
+  const validUntil = yearOut.toISOString().slice(0, 10).replace(/-/g, "");
   return [
     { name: "companyName", value: "Solaris Bakery (demo)" },
     { name: "companyRegistryId", value: "UT-REG-004271" },
     { name: "representativeName", value: "Tomás Ferreira" },
     { name: "role", value: "managing-director" },
     { name: "powers", value: "full" },
-    { name: "validUntil", value: "" },
+    { name: "validUntil", value: validUntil },
   ];
 }
 

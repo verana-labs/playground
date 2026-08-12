@@ -14,23 +14,23 @@ const PENDING = "QmUtopiaCastPending11111111111111111111111111";
 export const UTOPIA_CAST = {
   businessRegistry: {
     host: `business-registry.${ZONE}`,
-    did: `did:webvh:${PENDING}:business-registry.${ZONE}`,
+    did: `did:webvh:QmezdxtknL9sjuJSoTj2vGGW1oKFMGYATSQnHDunAU5Bko:business-registry.utopia.playground.testnet.verana.network`,
   },
   civilRegistry: {
     host: `civil-registry.${ZONE}`,
-    did: `did:webvh:${PENDING}:civil-registry.${ZONE}`,
+    did: `did:webvh:QmQK1jY6YrR8dWBQkyPrDj2nj2txNYj41NzeW4VaUp7meD:civil-registry.utopia.playground.testnet.verana.network`,
   },
   taxBuro: {
     host: `tax-buro.${ZONE}`,
-    did: `did:webvh:${PENDING}:tax-buro.${ZONE}`,
+    did: `did:webvh:QmT1MWK3SGEhA5pGieFtvXMD19YpEUf8h6FAoF1MrTL4D4:tax-buro.utopia.playground.testnet.verana.network`,
   },
   meridianBank: {
     host: `meridian-bank.${ZONE}`,
-    did: `did:webvh:${PENDING}:meridian-bank.${ZONE}`,
+    did: `did:webvh:Qmc39KYrwpQvyhfDPHWg3NTbJDssYA9nCAuNd8pitfv6D4:meridian-bank.utopia.playground.testnet.verana.network`,
   },
   quickcash: {
     host: `quickcash.${ZONE}`,
-    did: `did:webvh:${PENDING}:quickcash.${ZONE}`,
+    did: `did:webvh:QmPEkB2TYgnkCMHmB5iyrv7j1qMT8NZuxbqovtwH4PK1zR:quickcash.utopia.playground.testnet.verana.network`,
   },
 } as const satisfies Record<string, CastMember>;
 

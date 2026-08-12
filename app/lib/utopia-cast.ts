@@ -34,8 +34,6 @@ export const UTOPIA_CAST = {
   },
 } as const satisfies Record<string, CastMember>;
 
-export const UTOPIA_CAST_PENDING = PENDING;
-
 /** True until the cast is deployed and the placeholder DIDs are replaced. */
 export const isPendingDid = (did: string) => did.includes(PENDING);
 
@@ -47,17 +45,3 @@ export const UTOPIA_LEGAL_REP_NAME = "LegalRepresentative";
  *  (vs-agent naming convention: /vt/schemas-<base>-jsc.json). */
 export const UTOPIA_CITIZEN_ID_JSC = `https://${UTOPIA_CAST.civilRegistry.host}/vt/schemas-utopia-citizen-id-jsc.json`;
 export const UTOPIA_LEGAL_REP_JSC = `https://${UTOPIA_CAST.businessRegistry.host}/vt/schemas-legal-representative-jsc.json`;
-
-/** Testnet ids (trust registries, schemas) - null until the cast is
- *  provisioned; id-dependent deep links render only when set. */
-export const UTOPIA_IDS: {
-  citizenIdRegistry: number | null;
-  citizenIdSchema: number | null;
-  legalRepRegistry: number | null;
-  legalRepSchema: number | null;
-} = {
-  citizenIdRegistry: null,
-  citizenIdSchema: null,
-  legalRepRegistry: null,
-  legalRepSchema: null,
-};

@@ -21,6 +21,7 @@ import { Container, Section, SectionHeading, Chip } from "../../components/ui";
 import { DidBadge } from "../../components/Did";
 import LiveTrustCard from "../../components/LiveTrustCard";
 import { listPersonalWallets } from "../../lib/wallets";
+import { isPendingDid, UTOPIA_CAST } from "../../lib/utopia-cast";
 import { LINKS } from "../../lib/site";
 import { WalletChooser } from "../vesta/DemoWalletFlow";
 import { SubHeading, SubStepBlock } from "../story-blocks";
@@ -610,6 +611,18 @@ export function Section3() {
   );
 }
 
+function DemoComing() {
+  return (
+    <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-6 text-center">
+      <Chip tone="pending">demo coming</Chip>
+      <p className="mt-2 text-sm leading-relaxed text-gray-500">
+        The Utopia cast is being deployed on the Verana testnet - this demo
+        goes live with it.
+      </p>
+    </div>
+  );
+}
+
 export function Section4() {
   const wallets = listPersonalWallets();
   return (
@@ -641,9 +654,13 @@ export function Section4() {
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.citizenId.intro}
             </p>
-            <Suspense>
-              <UtopiaOffers wallets={wallets} offers={[DEMOS.citizenId.offer]} />
-            </Suspense>
+            {isPendingDid(UTOPIA_CAST.civilRegistry.did) ? (
+              <DemoComing />
+            ) : (
+              <Suspense>
+                <UtopiaOffers wallets={wallets} offers={[DEMOS.citizenId.offer]} />
+              </Suspense>
+            )}
           </div>
 
           {/* Demo 2 · Get a Proof of Legal Representation */}
@@ -652,9 +669,13 @@ export function Section4() {
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.legalRep.intro}
             </p>
-            <Suspense>
-              <UtopiaOffers wallets={wallets} offers={[DEMOS.legalRep.offer]} />
-            </Suspense>
+            {isPendingDid(UTOPIA_CAST.businessRegistry.did) ? (
+              <DemoComing />
+            ) : (
+              <Suspense>
+                <UtopiaOffers wallets={wallets} offers={[DEMOS.legalRep.offer]} />
+              </Suspense>
+            )}
           </div>
 
           {/* Demo 3 · Sign in to the Tax Buro */}
@@ -691,11 +712,15 @@ export function Section4() {
                 ))}
               </ul>
             </div>
-            <div className="mx-auto mt-6 max-w-xl">
-              <Suspense>
-                <UtopiaLoginDemo wallets={wallets} portal="tax-buro" />
-              </Suspense>
-            </div>
+            {isPendingDid(UTOPIA_CAST.taxBuro.did) ? (
+              <DemoComing />
+            ) : (
+              <div className="mx-auto mt-6 max-w-xl">
+                <Suspense>
+                  <UtopiaLoginDemo wallets={wallets} portal="tax-buro" />
+                </Suspense>
+              </div>
+            )}
           </div>
 
           {/* Demo 4 · Open an account at Meridian Bank */}
@@ -745,11 +770,15 @@ export function Section4() {
                 </figcaption>
               </figure>
             ) : null}
-            <div className="mx-auto mt-6 max-w-xl">
-              <Suspense>
-                <UtopiaLoginDemo wallets={wallets} portal="meridian-bank" />
-              </Suspense>
-            </div>
+            {isPendingDid(UTOPIA_CAST.meridianBank.did) ? (
+              <DemoComing />
+            ) : (
+              <div className="mx-auto mt-6 max-w-xl">
+                <Suspense>
+                  <UtopiaLoginDemo wallets={wallets} portal="meridian-bank" />
+                </Suspense>
+              </div>
+            )}
           </div>
 
           {/* Demo 5 · The over-asking verifier */}
@@ -769,17 +798,21 @@ export function Section4() {
               <p className="mt-2 text-sm leading-relaxed text-red-600">
                 {DEMOS.quickcash.expect}
               </p>
-              <div className="mt-4 space-y-3">
-                <Suspense>
-                  <UtopiaRequestQr
-                    wallets={wallets}
-                    serviceId={DEMOS.quickcash.serviceId}
-                    label="QuickCash Loans (demo)"
-                    credential={DEMOS.quickcash.credential}
-                  />
-                </Suspense>
-                <LiveTrustCard serviceId={DEMOS.quickcash.serviceId} />
-              </div>
+              {isPendingDid(UTOPIA_CAST.quickcash.did) ? (
+                <DemoComing />
+              ) : (
+                <div className="mt-4 space-y-3">
+                  <Suspense>
+                    <UtopiaRequestQr
+                      wallets={wallets}
+                      serviceId={DEMOS.quickcash.serviceId}
+                      label="QuickCash Loans (demo)"
+                      credential={DEMOS.quickcash.credential}
+                    />
+                  </Suspense>
+                  <LiveTrustCard serviceId={DEMOS.quickcash.serviceId} />
+                </div>
+              )}
             </div>
           </div>
 

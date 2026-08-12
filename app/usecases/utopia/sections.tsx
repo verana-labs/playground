@@ -478,7 +478,7 @@ export function Section2() {
               <div className="mt-4 border-t border-gray-100 pt-3">
                 <DidBadge
                   did={ECOSYSTEM_JOIN.did}
-                  className="flex text-[11px] text-gray-400"
+                  className="flex w-full text-[11px] text-gray-400"
                 />
               </div>
             </div>
@@ -531,7 +531,7 @@ export function Section2() {
                     <div className="mt-4 border-t border-gray-100 pt-3">
                       <DidBadge
                         did={e.did}
-                        className="flex text-[11px] text-gray-400"
+                        className="flex w-full text-[11px] text-gray-400"
                       />
                     </div>
                   </div>
@@ -550,7 +550,7 @@ export function Section3() {
     <>
       {/* §3 · The Minister's journey - one subsection per checklist need */}
       <Section id={JOURNEY.anchor} className="border-t border-gray-200">
-        <Container className="max-w-4xl">
+        <Container wide>
           <SectionHeading
             number={JOURNEY.n}
             title={JOURNEY.title}

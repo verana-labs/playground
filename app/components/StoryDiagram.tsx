@@ -32,7 +32,7 @@ import {
 // that point of the story, with new or changed elements highlighted.
 // Pure SVG, server-rendered; positions never move between stages. The graph
 // itself (nodes, edges, credentials, stage views) is declared per use case
-// - see app/usecases/vesta/scenes.ts and app/usecases/utopia/scenes.ts.
+// - see app/usecases/vesta/scenes.ts and app/usecases/verandia/scenes.ts.
 
 const ICONS = {
   building: Building2,

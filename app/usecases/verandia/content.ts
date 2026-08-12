@@ -1,12 +1,12 @@
-// The full "Republica of Utopia" story content - four chapters.
-// Source of truth: verana-spec → playground/utopia/spec.md (0.1).
+// The full "Republic of Verandia" story content - four chapters.
+// Source of truth: verana-spec → playground/verandia/spec.md (0.1).
 // §1 is a civic article (no protocol vocabulary); §2 is the solution
 // (Minister quote + pillars + ecosystem choices); §3 is the technical build
 // with the progressive scene graph; §4 the demos. Protocol facts target v3;
 // reproduce recipes follow the current verana-frontend UX.
 
 import { ENDPOINTS, LINKS } from "../../lib/site";
-import { UTOPIA_CAST } from "../../lib/utopia-cast";
+import { VERANDIA_CAST } from "../../lib/verandia-cast";
 import { VESTA_CAST } from "../../lib/vesta-cast";
 import type { Stage } from "./scenes";
 import type {
@@ -21,28 +21,28 @@ export type SubStep = GenericSubStep<Stage>;
 export type JourneyNeed = GenericJourneyNeed<Stage>;
 
 /** Generated civic assets (spec open item 3): web-optimized WebP in
- *  public/images/utopia/. Set a path to null to fall back to the
+ *  public/images/verandia/. Set a path to null to fall back to the
  *  emblem/initials placeholder while the brand kit is generated. */
-export const UTOPIA_ASSETS = {
-  emblem: null as string | null, // /images/utopia/emblem.webp
-  hero: null as string | null, // /images/utopia/hero.webp
+export const VERANDIA_ASSETS = {
+  emblem: null as string | null, // /images/verandia/emblem.webp
+  hero: null as string | null, // /images/verandia/hero.webp
   heroCaption:
-    "The Republica of Utopia - a small democracy, and every one of its services about to become provable.",
-  institutions: null as string | null, // /images/utopia/institutions.webp
+    "The Republic of Verandia - a small democracy, and every one of its services about to become provable.",
+  institutions: null as string | null, // /images/verandia/institutions.webp
   institutionsCaption:
     "The civic institutions of the Republic: the Civil Registry, the Business Registry, the Tax Buro.",
-  pm: null as string | null, // /images/utopia/pm.webp
-  minister: null as string | null, // /images/utopia/minister.webp
-  phishing: null as string | null, // /images/utopia/phishing.webp
-  bank: null as string | null, // /images/utopia/bank.webp
+  pm: null as string | null, // /images/verandia/pm.webp
+  minister: null as string | null, // /images/verandia/minister.webp
+  phishing: null as string | null, // /images/verandia/phishing.webp
+  bank: null as string | null, // /images/verandia/bank.webp
   bankCaption:
     "Meridian Bank (demo) - the most phished brand category, about to become provable.",
 };
 
-// ---------------------------- §1 · Meet the Republica of Utopia (civic)
+// ---------------------------- §1 · Meet the Republic of Verandia (civic)
 
 export const REPUBLIC = {
-  name: "Republica of Utopia",
+  name: "Republic of Verandia",
   tagline: "A democracy, going digital",
   meta: [
     "Population ~4.8 million",
@@ -51,7 +51,7 @@ export const REPUBLIC = {
     "~310,000 registered companies",
   ],
   intro:
-    "Utopia is a small democracy that runs on trust: a Civil Registry that knows every citizen, a Business Registry that knows every company, and a Tax Buro everyone deals with once a year. The institutions work. Their digital front doors do not.",
+    "Verandia is a small democracy that runs on trust: a Civil Registry that knows every citizen, a Business Registry that knows every company, and a Tax Buro everyone deals with once a year. The institutions work. Their digital front doors do not.",
   institutions: [
     {
       icon: "id",
@@ -109,7 +109,7 @@ export const REPUBLIC = {
   pmQuote: {
     text: "Our registries are the source of truth for five million people - and online, we cannot prove a single fact they hold. Citizens are phished in our name, companies are impersonated with our own documents, and every bank rebuilds identity from scratch. That has to change.",
     name: "Ines Duarte",
-    role: "Prime Minister, Republica of Utopia",
+    role: "Prime Minister, Republic of Verandia",
   },
 };
 
@@ -120,7 +120,7 @@ export const SOLUTION = {
   ministerQuote: {
     text: "Open source wallets exist - for citizens and for organizations. Verana is public trust infrastructure. We have everything we need to give every citizen a verifiable ID card, every company a verifiable Business ID, and every service a way to check both - without building a single silo.",
     name: "Milo Kovar",
-    role: "Digital Minister, Republica of Utopia",
+    role: "Digital Minister, Republic of Verandia",
   },
   needsTitle: "What the Minister needs",
   needsIntro:
@@ -134,7 +134,7 @@ export const SOLUTION = {
     },
     {
       need: 2,
-      tag: "Utopia Citizen ID",
+      tag: "Verandia Citizen ID",
       title: "A Citizen ID citizens actually hold",
       desc: "The national ID card as a verifiable credential in any compatible wallet - eIDAS 2 compatible.",
     },
@@ -162,10 +162,10 @@ export const SOLUTION = {
   pillarsTitle: "Let's build on Verana",
   pillarsIntro:
     "Verana is a public infrastructure that generalizes the use of verifiable credentials, and provides out of the box:",
-  ecosystemsTitle: "The ecosystem Utopia wants to join",
+  ecosystemsTitle: "The ecosystem Verandia wants to join",
   ecosystemsIntro:
-    "For Business IDs, Utopia makes a deliberate choice: join the shared ecosystem rather than build a national silo.",
-  buildTitle: "The ecosystems Utopia wants to build",
+    "For Business IDs, Verandia makes a deliberate choice: join the shared ecosystem rather than build a national silo.",
+  buildTitle: "The ecosystems Verandia wants to build",
   buildIntro:
     "Two credentials only the Republic can govern - so the Republic governs them, with two purpose-built ecosystems:",
 };
@@ -204,9 +204,9 @@ export const ECOSYSTEM_JOIN = {
   name: "Verana ECS Ecosystem",
   label: "Business IDs as ECS-Organization credentials",
   about:
-    "The shared identity-card trust registry: certified Organization credentials, recognized by every Verana-aware wallet and service. Utopia's National Business Registry becomes an accredited ECS-Organization issuer - and because the register IS the source of truth, KYB becomes a lookup, not paperwork.",
+    "The shared identity-card trust registry: certified Organization credentials, recognized by every Verana-aware wallet and service. Verandia's National Business Registry becomes an accredited ECS-Organization issuer - and because the register IS the source of truth, KYB becomes a lookup, not paperwork.",
   did: VESTA_CAST.ecs.did,
-  why: "Utopia could run Business IDs in a custom ecosystem - but joining the shared ECS ecosystem means a Utopian company's credential is recognized everywhere, not just in Utopia. Interop wins.",
+  why: "Verandia could run Business IDs in a custom ecosystem - but joining the shared ECS ecosystem means a Verandian company's credential is recognized everywhere, not just in Verandia. Interop wins.",
 };
 
 export const ECOSYSTEMS_BUILD = [
@@ -215,12 +215,12 @@ export const ECOSYSTEMS_BUILD = [
     tone: "blue",
     role: "ECOSYSTEM",
     operator: "National Civil Registry",
-    name: "Utopia Citizen ID",
+    name: "Verandia Citizen ID",
     label: "the national ID card, eIDAS 2 compatible",
     about:
-      "One schema: the Utopia Citizen ID (names, birth date, personal identifier, portrait). Issuance governed - only the Civil Registry issues. Verification governed too: a service must register as a relying party before any wallet will share the ID. That is the eIDAS 2 relying-party rule, made structural.",
+      "One schema: the Verandia Citizen ID (names, birth date, personal identifier, portrait). Issuance governed - only the Civil Registry issues. Verification governed too: a service must register as a relying party before any wallet will share the ID. That is the eIDAS 2 relying-party rule, made structural.",
     why: "identity fraud dies when the ID is cryptographic, and over-collection dies when verifiers need permission to ask.",
-    did: UTOPIA_CAST.civilRegistry.did,
+    did: VERANDIA_CAST.civilRegistry.did,
   },
   {
     icon: "network",
@@ -232,7 +232,7 @@ export const ECOSYSTEMS_BUILD = [
     about:
       "One schema: the Legal Representative credential (company, registry id, person, role, powers, validity). Issuance governed - only the Business Registry issues, after the applicant identifies with their Citizen ID. Verification open: checking who represents a company is the register's public function.",
     why: "the notarized-paper-and-fax problem becomes a scan - and a representative who leaves is revoked the same day.",
-    did: UTOPIA_CAST.businessRegistry.did,
+    did: VERANDIA_CAST.businessRegistry.did,
   },
 ] as const;
 
@@ -271,8 +271,8 @@ export const JOURNEY: {
             "The National Business Registry deploys a vs-agent, an open source Business Wallet natively integrated with the public Verana infrastructure. A DID is generated for the register; Helvetia Trust Services (demo), an accredited ECS-Organization issuer, runs the KYB - trivially, for a national institution - and issues the register's Organization credential. The register self-issues its Service credential: the Republic's first green check.",
           code: {
             label: "The DID of the National Business Registry",
-            value: UTOPIA_CAST.businessRegistry.did,
-            note: "Placeholder until the Utopia cast is deployed on the Verana testnet - the value will resolve live.",
+            value: VERANDIA_CAST.businessRegistry.did,
+            note: "Placeholder until the Verandia cast is deployed on the Verana testnet - the value will resolve live.",
           },
           underHood: [
             "The vs-agent generates the DID (did:webvh recommended) and publishes its DID Document with a DIDComm endpoint at https://<host>/.well-known/did.json.",
@@ -294,9 +294,9 @@ export const JOURNEY: {
           title: "The register becomes an accredited Business ID issuer",
           kind: "watch",
           story:
-            "The Verana ECS Ecosystem accredits the National Business Registry as an ECS-Organization ISSUER. This is the keystone decision of the whole build: Business IDs are plain ECS-Organization credentials - issued by the institution that already IS the source of truth about Utopian companies. KYB stops being paperwork and becomes a lookup.",
+            "The Verana ECS Ecosystem accredits the National Business Registry as an ECS-Organization ISSUER. This is the keystone decision of the whole build: Business IDs are plain ECS-Organization credentials - issued by the institution that already IS the source of truth about Verandian companies. KYB stops being paperwork and becomes a lookup.",
           points: [
-            "Utopia deliberately joins the shared ECS ecosystem instead of building a national silo: a Utopian company's Business ID is recognized by every Verana-aware wallet and service worldwide.",
+            "Verandia deliberately joins the shared ECS ecosystem instead of building a national silo: a Verandian company's Business ID is recognized by every Verana-aware wallet and service worldwide.",
             "From now on, the state's own register issues - and every issuance is anchored in the public registry, checkable by anyone.",
           ],
           underHood: [
@@ -318,7 +318,7 @@ export const JOURNEY: {
       id: "need-2",
       n: 2,
       title: "A Citizen ID citizens actually hold",
-      tag: "Utopia Citizen ID",
+      tag: "Verandia Citizen ID",
       intro:
         "The national ID card becomes a verifiable credential - issued by the Civil Registry, held in any compatible wallet, eIDAS 2 compatible.",
       steps: [
@@ -328,7 +328,7 @@ export const JOURNEY: {
           title: "The Citizen ID ecosystem - both directions governed",
           kind: "watch",
           story:
-            "The Civil Registry becomes verifiable the Utopian way: its Organization credential is issued by the National Business Registry - the Republic dogfoods its own register. Then it creates the Utopia Citizen ID trust ecosystem with a single schema, and two governance decisions that define the whole story: issuance is governed (only the Civil Registry issues), and verification is governed too - a service must register as a relying party before any wallet will share a Citizen ID.",
+            "The Civil Registry becomes verifiable the Verandian way: its Organization credential is issued by the National Business Registry - the Republic dogfoods its own register. Then it creates the Verandia Citizen ID trust ecosystem with a single schema, and two governance decisions that define the whole story: issuance is governed (only the Civil Registry issues), and verification is governed too - a service must register as a relying party before any wallet will share a Citizen ID.",
           points: [
             "The schema carries eIDAS-2-PID-inspired claims: names, birth date, personal identifier, nationality, portrait.",
             "Governed verification is the eIDAS 2 relying-party registration, made structural: over-asking is not policed after the fact - it is impossible by default.",
@@ -353,20 +353,20 @@ export const JOURNEY: {
           title: "Citizens receive their IDs - in the wallet of their choice",
           kind: "watch",
           story:
-            "Aria walks into a registry office (or uses her existing eID) and receives her Utopia Citizen ID - straight into the Personal Wallet she already uses. Utopia does not build a wallet monopoly: any of the integrated open source wallets can be customized for the Republic, the way the EUDI reference app and its forks already are. The SD-JWT rail is the eIDAS-2-compatible one.",
+            "Aria walks into a registry office (or uses her existing eID) and receives her Verandia Citizen ID - straight into the Personal Wallet she already uses. Verandia does not build a wallet monopoly: any of the integrated open source wallets can be customized for the Republic, the way the EUDI reference app and its forks already are. The SD-JWT rail is the eIDAS-2-compatible one.",
           points: [
             "One credential, every wallet: Hologram over AnonCreds/DIDComm, the EUDI-reference fork and the other OpenID4VC wallets over SD-JWT.",
             "Selective disclosure by default: a service that needs your age never sees your birth date.",
           ],
           underHood: [
             "Issuance runs over the personal-credential rails (AnonCreds/DIDComm first, OID4VC SD-JWT alongside) - the ECS-Badge dual-rail precedent from the Vesta cast.",
-            "How the citizen is identified at first issuance (counter visit, existing eID bootstrap) is Utopia's civic process - the credential mechanics are identical either way.",
+            "How the citizen is identified at first issuance (counter visit, existing eID bootstrap) is Verandia's civic process - the credential mechanics are identical either way.",
           ],
           reproduce: [
             "Get your own (demo) Citizen ID in Run the demos: pick a wallet, reveal the Civil Registry offer, and watch the wallet check the issuer first.",
           ],
           links: [
-            { label: "Get a Citizen ID (Run the demos)", href: "/usecases/utopia/demos#demo-citizen-id" },
+            { label: "Get a Citizen ID (Run the demos)", href: "/usecases/verandia/demos#demo-citizen-id" },
             { label: "Personal wallets playground", href: "/personal-wallets" },
           ],
         },
@@ -389,7 +389,7 @@ export const JOURNEY: {
             "Meridian Bank (demo) applies for its Business ID. The Business Registry looks itself up - the company exists, its directors are known - and issues the bank's ECS-Organization credential on the spot. The bank self-issues its Service credential and publishes its online-banking service under its DID. The anti-phishing payoff: your bank can finally prove it is your bank, before you type anything.",
           points: [
             "KYB in seconds: the issuer IS the source of truth, so there is nothing to collect.",
-            "Every Utopian company follows the same path - Solaris Bakery included.",
+            "Every Verandian company follows the same path - Solaris Bakery included.",
             "Banks are the most-phished brand category: a provable bank is the single highest-value green check in the Republic.",
           ],
           underHood: [
@@ -397,7 +397,7 @@ export const JOURNEY: {
             "Customers' wallets trust-resolve the bank's DID before any connection: Q1 on every session.",
           ],
           reproduce: [
-            "Once the Utopia cast is live: resolve the bank's DID and see the Proof-of-Trust with the register-issued Organization credential.",
+            "Once the Verandia cast is live: resolve the bank's DID and see the Proof-of-Trust with the register-issued Organization credential.",
           ],
           links: [
             { label: "Business wallets", href: "/business-wallets" },
@@ -419,7 +419,7 @@ export const JOURNEY: {
           title: "Tomás proves he runs Solaris Bakery",
           kind: "watch",
           story:
-            "The Business Registry creates its second trust ecosystem: Legal Representation. Tomás Ferreira, managing director of Solaris Bakery (demo), connects to the register's service and identifies with his Utopia Citizen ID - reusable identity, the moment the whole architecture pays off. The register matches him against the company record and issues his Legal Representative credential: company, registry id, role, powers, validity.",
+            "The Business Registry creates its second trust ecosystem: Legal Representation. Tomás Ferreira, managing director of Solaris Bakery (demo), connects to the register's service and identifies with his Verandia Citizen ID - reusable identity, the moment the whole architecture pays off. The register matches him against the company record and issues his Legal Representative credential: company, registry id, role, powers, validity.",
           points: [
             "Issuance governed: only the Business Registry issues. Verification open: checking who represents a company is the register's public function - anyone may ask.",
             "The credential is revoked the day Tomás leaves the bakery - and every verifier knows within a scan.",
@@ -432,7 +432,7 @@ export const JOURNEY: {
             "Get the demo credential in Run the demos: the Business Registry offer mints Tomás' claims.",
           ],
           links: [
-            { label: "Get a Legal Representative credential", href: "/usecases/utopia/demos#demo-legal-rep" },
+            { label: "Get a Legal Representative credential", href: "/usecases/verandia/demos#demo-legal-rep" },
           ],
         },
       ],
@@ -451,7 +451,7 @@ export const JOURNEY: {
           title: "The Tax Buro and Meridian Bank register as relying parties",
           kind: "watch",
           story:
-            "The Tax Buro becomes verifiable (Organization credential from the Business Registry, of course) and registers as a VERIFIER of the Utopia Citizen ID. Meridian Bank does the same. From that day: Aria signs in to her tax space by presenting her Citizen ID - no password. Tomás opens the bakery's tax space and its bank account with his Legal Representative credential. Opening a personal account at Meridian is KYC in one scan.",
+            "The Tax Buro becomes verifiable (Organization credential from the Business Registry, of course) and registers as a VERIFIER of the Verandia Citizen ID. Meridian Bank does the same. From that day: Aria signs in to her tax space by presenting her Citizen ID - no password. Tomás opens the bakery's tax space and its bank account with his Legal Representative credential. Opening a personal account at Meridian is KYC in one scan.",
           points: [
             "One credential, public and private sector: the same Citizen ID signs Aria in at the Tax Buro and opens her account at the bank.",
             "The wallet checks the verifier before sharing (Q3): who is asking, and are they authorized to ask for this?",
@@ -465,8 +465,8 @@ export const JOURNEY: {
             "Run both demos below: the Tax Buro login and the Meridian Bank window - citizen path and company path each.",
           ],
           links: [
-            { label: "Tax Buro login (Run the demos)", href: "/usecases/utopia/demos#demo-tax-login" },
-            { label: "Meridian Bank (Run the demos)", href: "/usecases/utopia/demos#demo-bank" },
+            { label: "Tax Buro login (Run the demos)", href: "/usecases/verandia/demos#demo-tax-login" },
+            { label: "Meridian Bank (Run the demos)", href: "/usecases/verandia/demos#demo-bank" },
           ],
         },
         {
@@ -475,7 +475,7 @@ export const JOURNEY: {
           title: "The refusals: unauthorized verifiers and fake portals",
           kind: "watch",
           story:
-            "QuickCash Loans (demo) is a perfectly verifiable Utopian company - registered, green check, real Business ID. It would love to see your Citizen ID before selling you a loan. But it never registered as a relying party, and Citizen ID verification is governed: every compliant wallet answers its presentation request with a refusal. Trust is not authorization. And the fake refund portal from chapter 1? It fails at Q1 - it cannot even prove who it is.",
+            "QuickCash Loans (demo) is a perfectly verifiable Verandian company - registered, green check, real Business ID. It would love to see your Citizen ID before selling you a loan. But it never registered as a relying party, and Citizen ID verification is governed: every compliant wallet answers its presentation request with a refusal. Trust is not authorization. And the fake refund portal from chapter 1? It fails at Q1 - it cannot even prove who it is.",
           points: [
             "Trusted, but not authorized to request this credential: the wallet blocks the share, and Aria's data never leaves her phone.",
             "Fail-closed by construction: over-collection is not a policy promise, it is a protocol property.",
@@ -488,7 +488,7 @@ export const JOURNEY: {
             "Run the QuickCash demo below: reveal its very real presentation request, and watch your wallet refuse it.",
           ],
           links: [
-            { label: "The over-asking verifier (Run the demos)", href: "/usecases/utopia/demos#demo-quickcash" },
+            { label: "The over-asking verifier (Run the demos)", href: "/usecases/verandia/demos#demo-quickcash" },
             { label: "Verifiable Trust spec", href: LINKS.vtSpec },
           ],
         },
@@ -504,7 +504,7 @@ export const DEMOS = {
   anchor: "section-4",
   title: "Run the demos",
   intro:
-    "Download one of the integrated personal wallets to run the demos - every wallet shows the same verdicts, the same way. Any of them can be customized for Utopia.",
+    "Download one of the integrated personal wallets to run the demos - every wallet shows the same verdicts, the same way. Any of them can be customized for Verandia.",
   verifyRule:
     "Always verify the certified Organization name and data shown in the Proof-of-Trust card in your wallet before proceeding.",
   chooseWallet: {
@@ -513,15 +513,15 @@ export const DEMOS = {
       "Pick one of the integrated personal wallets and install it - the demo QR codes below are minted for your wallet. The SD-JWT rail is the eIDAS-2-compatible one.",
   },
   citizenId: {
-    title: "Get your Utopia Citizen ID",
+    title: "Get your Verandia Citizen ID",
     intro:
       "Request your (demo) Citizen ID from the National Civil Registry and watch your wallet check the issuer first:",
     offer: {
       org: "From the National Civil Registry",
       serviceId: "civil-registry",
-      credential: "utopia-citizen-id",
+      credential: "verandia-citizen-id",
       expect:
-        "Green Proof-of-Trust: a certified institution, authorized to issue the Utopia Citizen ID. Accept it - you'll use it in the sign-in demos below.",
+        "Green Proof-of-Trust: a certified institution, authorized to issue the Verandia Citizen ID. Accept it - you'll use it in the sign-in demos below.",
       tone: "emerald" as const,
     },
   },
@@ -532,7 +532,7 @@ export const DEMOS = {
     offer: {
       org: "From the National Business Registry",
       serviceId: "business-registry",
-      credential: "utopia-legal-rep",
+      credential: "verandia-legal-rep",
       expect:
         "Green Proof-of-Trust: the register itself, authorized to issue Legal Representative credentials. Accept it to unlock the company paths below.",
       tone: "emerald" as const,
@@ -587,17 +587,17 @@ export const DEMOS = {
     intro:
       "QuickCash Loans (demo) is a genuinely verifiable company - and it asks for your full Citizen ID. It holds no verifier permission, and Citizen ID verification is governed: your wallet must refuse.",
     serviceId: "quickcash",
-    credential: "utopia-citizen-id",
+    credential: "verandia-citizen-id",
     expect:
       "Your wallet trust-resolves QuickCash (green - it IS a real company), finds no VERIFIER authorization for the Citizen ID, and blocks the share. Your data never leaves.",
   },
   directory: {
-    title: "Search the Directory of Utopia",
+    title: "Search the Directory of Verandia",
     intro:
       "Discovery by proof: query the public registry for the Republic's services by the credentials they present.",
     queries: [
-      "All verified Utopian businesses - every company holding a Business ID issued by the National Business Registry.",
-      "All services accepting the Utopia Citizen ID - the public register of authorized relying parties.",
+      "All verified Verandian businesses - every company holding a Business ID issued by the National Business Registry.",
+      "All services accepting the Verandia Citizen ID - the public register of authorized relying parties.",
       "Who legally represents company X - the register's public function, as a query.",
     ],
   },
@@ -606,7 +606,7 @@ export const DEMOS = {
 // ----------------------------------- Closing teaser
 
 export const CLOSING = {
-  title: "Being found in Utopia",
+  title: "Being found in Verandia",
   pendingLabel: "coming later",
-  body: "Everything the Republic and its companies published - the Business IDs, the relying-party registrations, the service credentials - is public, resolvable, and indexable. The Trust Graph turns that into a national service directory nobody has to maintain by hand: citizens, search engines, and AI agents find Utopian services by what they prove, not what they claim. The full walkthrough ships when discovery is queryable.",
+  body: "Everything the Republic and its companies published - the Business IDs, the relying-party registrations, the service credentials - is public, resolvable, and indexable. The Trust Graph turns that into a national service directory nobody has to maintain by hand: citizens, search engines, and AI agents find Verandian services by what they prove, not what they claim. The full walkthrough ships when discovery is queryable.",
 };

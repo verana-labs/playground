@@ -12,7 +12,7 @@ const NAV = [
 
 const USE_CASES = [
   { href: "/usecases/vesta", label: "Vesta Appliances" },
-  { href: "/usecases/utopia", label: "Republica of Utopia" },
+  { href: "/usecases/verandia", label: "Republic of Verandia" },
 ];
 
 function Logo() {

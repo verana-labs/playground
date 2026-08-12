@@ -38,7 +38,7 @@ export default function About() {
           <p>
             All featured entities - Vesta Appliances, the ISO Certification
             Ecosystem, CertBody issuers, Umbra Repairs, Zenith Repairs, and
-            the whole Republica of Utopia cast (its registries, the Tax Buro,
+            the whole Republic of Verandia cast (its registries, the Tax Buro,
             Meridian Bank, QuickCash Loans, Solaris Bakery) - are{" "}
             <strong>fictional</strong> and labeled <em>(demo)</em>. Credentials
             referring to ISO standards are &ldquo;ISO 9001-<em>style</em>{" "}

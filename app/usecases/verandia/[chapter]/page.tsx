@@ -20,8 +20,8 @@ export async function generateMetadata({
   const c = chapterBySlug(chapter);
   return {
     title: c
-      ? `Use case · Republica of Utopia - ${c.n} · ${c.title}`
-      : "Use case · Republica of Utopia",
+      ? `Use case · Republic of Verandia - ${c.n} · ${c.title}`
+      : "Use case · Republic of Verandia",
     description: c?.intro,
   };
 }
@@ -32,7 +32,7 @@ const BODIES: Record<string, React.ComponentType> = {
   demos: Section4,
 };
 
-export default async function UtopiaChapter({
+export default async function VerandiaChapter({
   params,
 }: {
   params: Promise<{ chapter: string }>;
@@ -50,7 +50,7 @@ export default async function UtopiaChapter({
             onDark
             items={[
               { label: "Playground", href: "/" },
-              { label: "Republica of Utopia", href: "/usecases/utopia" },
+              { label: "Republic of Verandia", href: "/usecases/verandia" },
               { label: `Chapter ${c.n}` },
             ]}
           />

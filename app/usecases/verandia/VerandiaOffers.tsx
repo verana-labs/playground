@@ -7,34 +7,34 @@ import { ServiceQr } from "../../components/ServiceQr";
 import { Chip } from "../../components/ui";
 import { useSelectedWallet } from "../vesta/DemoWalletFlow";
 
-// The Utopia chapter-4 offer cards: live credential offers (Citizen ID,
+// The Verandia chapter-4 offer cards: live credential offers (Citizen ID,
 // Legal Representative) revealed on click, minted on the rail the selected
 // wallet speaks - AnonCreds/DIDComm for Hologram, OpenID4VC SD-JWT (the
 // eIDAS-2-compatible rail) otherwise. Shares the ?wallet= query param with
 // the WalletChooser.
 
-export type UtopiaOffer = {
+export type VerandiaOffer = {
   org: string;
   serviceId: string;
-  /** /api/demo credential selector, e.g. "utopia-citizen-id". */
+  /** /api/demo credential selector, e.g. "verandia-citizen-id". */
   credential: string;
   expect: string;
   tone: "emerald" | "red";
 };
 
-export default function UtopiaOffers({
+export default function VerandiaOffers({
   wallets,
   offers,
 }: {
   wallets: PersonalWallet[];
-  offers: UtopiaOffer[];
+  offers: VerandiaOffer[];
 }) {
   const { wallet } = useSelectedWallet(wallets);
   // One QR at a time: revealing an offer hides the others.
   const [activeOffer, setActiveOffer] = useState<string | null>(null);
   if (!wallet) return null;
 
-  // Both Utopia credentials ride the dual rail; AnonCreds first (Hologram's
+  // Both Verandia credentials ride the dual rail; AnonCreds first (Hologram's
   // native rail), SD-JWT otherwise.
   const format = wallet.formats.includes("anoncreds")
     ? "anoncreds"

@@ -1,11 +1,11 @@
-// The master scene graph of the Republica of Utopia story - one fixed
+// The master scene graph of the Republic of Verandia story - one fixed
 // layout, revealed and transformed stage by stage. Stage "3.0" is the
 // pre-populated civic world (the gray institutions, Aria with the "?", the
 // red fake refund portal); stages 3.1-3.8 walk the five needs of the
 // Minister's checklist. Rendering machinery is shared with the other use
 // cases (app/components/scene-graph.ts / StoryDiagram.tsx).
 
-import { UTOPIA_CAST } from "../../lib/utopia-cast";
+import { VERANDIA_CAST } from "../../lib/verandia-cast";
 import { VESTA_CAST } from "../../lib/vesta-cast";
 import { shortDid } from "../../lib/did";
 import type {
@@ -32,7 +32,7 @@ export const STAGES = [
 export type Stage = (typeof STAGES)[number];
 
 const sceneDid = (did: string) =>
-  shortDid(did).replace(/\.utopia\.playground\.testnet\.verana\.network$/, "…");
+  shortDid(did).replace(/\.verandia\.playground\.testnet\.verana\.network$/, "…");
 
 const NODES: SceneNode[] = [
   // ---- the Republic's institutions (baseline, gray)
@@ -46,13 +46,13 @@ const NODES: SceneNode[] = [
     appears: "3.0",
     label: "National Business Registry",
     sub: "PDF extracts anyone can edit",
-    did: UTOPIA_CAST.businessRegistry.did,
+    did: VERANDIA_CAST.businessRegistry.did,
     serviceType: "Company register service",
-    operator: "National Business Registry (demo) · Republica of Utopia",
+    operator: "National Business Registry (demo) · Republic of Verandia",
     verifiedAt: "3.1",
     toneByStage: { "3.1": "blue" },
     labelByStage: {
-      "3.1": { sub: sceneDid(UTOPIA_CAST.businessRegistry.did) },
+      "3.1": { sub: sceneDid(VERANDIA_CAST.businessRegistry.did) },
     },
   },
   {
@@ -64,13 +64,13 @@ const NODES: SceneNode[] = [
     appears: "3.0",
     label: "National Civil Registry",
     sub: "paper ID cards, office queues",
-    did: UTOPIA_CAST.civilRegistry.did,
+    did: VERANDIA_CAST.civilRegistry.did,
     serviceType: "Civil registry service",
-    operator: "National Civil Registry (demo) · Republica of Utopia",
+    operator: "National Civil Registry (demo) · Republic of Verandia",
     verifiedAt: "3.3",
     toneByStage: { "3.3": "blue" },
     labelByStage: {
-      "3.3": { sub: "issues the Utopia Citizen ID" },
+      "3.3": { sub: "issues the Verandia Citizen ID" },
     },
   },
   {
@@ -82,9 +82,9 @@ const NODES: SceneNode[] = [
     appears: "3.0",
     label: "Tax Buro",
     sub: "password logins, phished accounts",
-    did: UTOPIA_CAST.taxBuro.did,
+    did: VERANDIA_CAST.taxBuro.did,
     serviceType: "Tax portal service",
-    operator: "Tax Buro (demo) · Republica of Utopia",
+    operator: "Tax Buro (demo) · Republic of Verandia",
     verifiedAt: "3.7",
     toneByStage: { "3.7": "blue" },
     labelByStage: { "3.7": { sub: "authorized Citizen ID verifier" } },
@@ -176,7 +176,7 @@ const NODES: SceneNode[] = [
     noteAlways: true,
     label: "QuickCash Loans (demo)",
     sub: "verifiable - but not an authorized verifier",
-    did: UTOPIA_CAST.quickcash.did,
+    did: VERANDIA_CAST.quickcash.did,
     serviceType: "Consumer lending service (demo)",
     operator: "QuickCash Loans (demo)",
     verifiedAt: "3.8",
@@ -219,11 +219,11 @@ const NODES: SceneNode[] = [
     tone: "violet",
     appears: "3.3",
     noteAlways: true,
-    label: "Utopia Citizen ID",
+    label: "Verandia Citizen ID",
     sub: "issuance & verification governed",
-    did: UTOPIA_CAST.civilRegistry.did,
+    did: VERANDIA_CAST.civilRegistry.did,
     serviceType: "Trust registry service",
-    operator: "National Civil Registry (demo) · Republica of Utopia",
+    operator: "National Civil Registry (demo) · Republic of Verandia",
     verifiedAt: "3.3",
   },
   {
@@ -236,9 +236,9 @@ const NODES: SceneNode[] = [
     noteAlways: true,
     label: "Legal Representation",
     sub: "issuance governed · anyone verifies",
-    did: UTOPIA_CAST.businessRegistry.did,
+    did: VERANDIA_CAST.businessRegistry.did,
     serviceType: "Trust registry service",
-    operator: "National Business Registry (demo) · Republica of Utopia",
+    operator: "National Business Registry (demo) · Republic of Verandia",
     verifiedAt: "3.6",
   },
   {
@@ -250,9 +250,9 @@ const NODES: SceneNode[] = [
     appears: "3.5",
     label: "Meridian Bank (demo)",
     sub: "a verifiable bank",
-    did: UTOPIA_CAST.meridianBank.did,
+    did: VERANDIA_CAST.meridianBank.did,
     serviceType: "Online banking service (demo)",
-    operator: "Meridian Bank (demo) · Republica of Utopia",
+    operator: "Meridian Bank (demo) · Republic of Verandia",
     verifiedAt: "3.5",
   },
 ];
@@ -461,20 +461,20 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
   ],
   aria: [
     {
-      name: "Utopia Citizen ID",
+      name: "Verandia Citizen ID",
       tone: "emerald",
       issuedBy: "National Civil Registry (demo)",
-      ecosystem: "Utopia Citizen ID",
+      ecosystem: "Verandia Citizen ID",
       appears: "3.4",
-      note: "Held by Aria in the Personal Wallet of her choice - any integrated wallet can be customized for Utopia.",
+      note: "Held by Aria in the Personal Wallet of her choice - any integrated wallet can be customized for Verandia.",
     },
   ],
   tomas: [
     {
-      name: "Utopia Citizen ID",
+      name: "Verandia Citizen ID",
       tone: "emerald",
       issuedBy: "National Civil Registry (demo)",
-      ecosystem: "Utopia Citizen ID",
+      ecosystem: "Verandia Citizen ID",
       appears: "3.6",
     },
     {
@@ -488,30 +488,30 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
   ],
   cit1: [
     {
-      name: "Utopia Citizen ID",
+      name: "Verandia Citizen ID",
       tone: "emerald",
       issuedBy: "National Civil Registry (demo)",
-      ecosystem: "Utopia Citizen ID",
+      ecosystem: "Verandia Citizen ID",
       appears: "3.4",
       note: "Held by a citizen in their Personal Wallet.",
     },
   ],
   cit2: [
     {
-      name: "Utopia Citizen ID",
+      name: "Verandia Citizen ID",
       tone: "emerald",
       issuedBy: "National Civil Registry (demo)",
-      ecosystem: "Utopia Citizen ID",
+      ecosystem: "Verandia Citizen ID",
       appears: "3.4",
       note: "Held by a citizen in their Personal Wallet.",
     },
   ],
   cit3: [
     {
-      name: "Utopia Citizen ID",
+      name: "Verandia Citizen ID",
       tone: "emerald",
       issuedBy: "National Civil Registry (demo)",
-      ecosystem: "Utopia Citizen ID",
+      ecosystem: "Verandia Citizen ID",
       appears: "3.4",
       note: "Held by a citizen in their Personal Wallet.",
     },
@@ -544,24 +544,24 @@ const ACCREDITATIONS: Record<string, Accreditation[]> = {
   civilRegistry: [
     {
       role: "ISSUER",
-      schema: "Utopia Citizen ID",
-      context: "Utopia Citizen ID · ecosystem root",
+      schema: "Verandia Citizen ID",
+      context: "Verandia Citizen ID · ecosystem root",
       appears: "3.3",
     },
   ],
   taxBuro: [
     {
       role: "VERIFIER",
-      schema: "Utopia Citizen ID",
-      context: "Utopia Citizen ID · registered relying party",
+      schema: "Verandia Citizen ID",
+      context: "Verandia Citizen ID · registered relying party",
       appears: "3.7",
     },
   ],
   meridianBank: [
     {
       role: "VERIFIER",
-      schema: "Utopia Citizen ID",
-      context: "Utopia Citizen ID · registered relying party",
+      schema: "Verandia Citizen ID",
+      context: "Verandia Citizen ID · registered relying party",
       appears: "3.7",
     },
   ],
@@ -577,20 +577,20 @@ const NODE_NOTES: Record<string, string> = {
   fakePortal:
     "Claims to pay official tax refunds - but presents no verifiable credential. Nothing can be proven: red verdict.",
   quickcash:
-    "A verifiable organization - ECS-Organization and ECS-Service check out. But it holds no VERIFIER permission on the Utopia Citizen ID, and verification is governed: every compliant wallet refuses to share. Trust is not authorization.",
+    "A verifiable organization - ECS-Organization and ECS-Service check out. But it holds no VERIFIER permission on the Verandia Citizen ID, and verification is governed: every compliant wallet refuses to share. Trust is not authorization.",
   aria: "A person - holds credentials in a Personal Wallet rather than presenting service credentials.",
   tomas:
     "Tomás' Personal Wallet - his Citizen ID plus the Legal Representative credential that binds him to Solaris Bakery (demo).",
-  ecs: "The shared identity-card trust registry - and a verifiable service itself: it governs the essential credential schemas and accredits issuers, including Utopia's National Business Registry.",
+  ecs: "The shared identity-card trust registry - and a verifiable service itself: it governs the essential credential schemas and accredits issuers, including Verandia's National Business Registry.",
   citizenEco:
     "The Republic's own trust ecosystem for the Citizen ID - and a verifiable service itself. Issuance governed (only the Civil Registry issues) AND verification governed (relying parties must register): the eIDAS 2 relying-party rule, on-chain.",
   legalEco:
     "The Republic's trust ecosystem for legal representation - and a verifiable service itself. Issuance governed (only the Business Registry issues), verification open: anyone may check who represents a company.",
 };
 
-export const UTOPIA_SCENES: SceneGraph = {
+export const VERANDIA_SCENES: SceneGraph = {
   stages: STAGES,
-  title: "Utopia",
+  title: "Verandia",
   defaultViewBox: "18 38 1162 648",
   nodes: NODES,
   edges: EDGES,
@@ -695,5 +695,5 @@ export const UTOPIA_SCENES: SceneGraph = {
     },
   },
   verifiedNote:
-    "Both identity checks verified against the Verana public registry (story data - the Utopia cast is pending deployment).",
+    "Both identity checks verified against the Verana public registry (story data - the Verandia cast is pending deployment).",
 };

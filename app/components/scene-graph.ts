@@ -2,7 +2,7 @@
 // (StoryDiagram). Each use case declares one SceneGraph - a fixed layout of
 // nodes/edges/badges revealed and transformed stage by stage - and the
 // diagram component renders it at a given stage. Extracted from the Vesta
-// story so every use case (Vesta, Utopia, ...) shares the same machinery.
+// story so every use case (Vesta, Verandia, ...) shares the same machinery.
 
 export type Tone = "violet" | "blue" | "emerald" | "amber" | "red" | "gray";
 

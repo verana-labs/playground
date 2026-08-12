@@ -14,13 +14,13 @@ import {
 } from "lucide-react";
 import type { PersonalWallet } from "../../lib/wallets";
 import { useSelectedWallet } from "../vesta/DemoWalletFlow";
-import { UTOPIA_CAST } from "../../lib/utopia-cast";
+import { VERANDIA_CAST } from "../../lib/verandia-cast";
 
 // Chapter-4 demos 3 and 4: mimicked relying-party windows for the Republic
-// of Utopia - the Tax Buro portal and the Meridian Bank online banking
-// window. Both run the same two-mode flow: sign in with the Utopia Citizen
+// of Verandia - the Tax Buro portal and the Meridian Bank online banking
+// window. Both run the same two-mode flow: sign in with the Verandia Citizen
 // ID (mode "citizen"), or with the Legal Representative credential (mode
-// "company"). The decision is computed live by /api/utopia-login/[id] from
+// "company"). The decision is computed live by /api/verandia-login/[id] from
 // the credential issuer's chain: Civil Registry -> citizen space, Business
 // Registry -> company space, anything else -> denied.
 
@@ -37,10 +37,10 @@ type LoginResult = {
   trustNote?: string | null;
 };
 
-export type UtopiaPortalId = "tax-buro" | "meridian-bank";
+export type VerandiaPortalId = "tax-buro" | "meridian-bank";
 
 const PORTALS: Record<
-  UtopiaPortalId,
+  VerandiaPortalId,
   {
     title: string;
     subtitle: string;
@@ -53,9 +53,9 @@ const PORTALS: Record<
   }
 > = {
   "tax-buro": {
-    title: "Tax Buro of Utopia",
+    title: "Tax Buro of Verandia",
     subtitle: "Citizen & company sign-in",
-    host: UTOPIA_CAST.taxBuro.host,
+    host: VERANDIA_CAST.taxBuro.host,
     citizenButton: "Sign in with your Citizen ID",
     companyButton: "Company space (Legal Representation)",
     citizenWelcome:
@@ -65,12 +65,12 @@ const PORTALS: Record<
         company ? ` for ${company}` : ""
       }. Company tax space opened.`,
     deniedCompany:
-      "Your credential was not issued by the National Business Registry - it does not prove legal representation in Utopia.",
+      "Your credential was not issued by the National Business Registry - it does not prove legal representation in Verandia.",
   },
   "meridian-bank": {
     title: "Meridian Bank",
     subtitle: "Online banking (demo)",
-    host: UTOPIA_CAST.meridianBank.host,
+    host: VERANDIA_CAST.meridianBank.host,
     citizenButton: "Open an account with your Citizen ID",
     companyButton: "Corporate access (Legal Representation)",
     citizenWelcome:
@@ -94,7 +94,7 @@ function DecisionBanner({
 }: {
   result: LoginResult;
   mode: "citizen" | "company";
-  portal: UtopiaPortalId;
+  portal: VerandiaPortalId;
 }) {
   const copy = PORTALS[portal];
   if (result.decision === "citizen" || result.decision === "company") {
@@ -124,7 +124,7 @@ function DecisionBanner({
           ? "Your credential was issued by an organization that is not authorized to issue it."
           : mode === "company"
             ? copy.deniedCompany
-            : "Your credential was not issued by the National Civil Registry - it is not a Utopia Citizen ID.";
+            : "Your credential was not issued by the National Civil Registry - it is not a Verandia Citizen ID.";
   return (
     <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
       <p className="flex items-center gap-2 font-bold">
@@ -166,12 +166,12 @@ function PresentedCredential({ claims }: { claims: Claim[] }) {
   );
 }
 
-export default function UtopiaLoginDemo({
+export default function VerandiaLoginDemo({
   wallets,
   portal,
 }: {
   wallets: PersonalWallet[];
-  portal: UtopiaPortalId;
+  portal: VerandiaPortalId;
 }) {
   const { wallet } = useSelectedWallet(wallets);
   const copy = PORTALS[portal];
@@ -206,7 +206,7 @@ export default function UtopiaLoginDemo({
     if (!mode) return;
     let alive = true;
     fetch(
-      `/api/utopia-login?portal=${portal}&mode=${mode}&format=${encodeURIComponent(format)}`,
+      `/api/verandia-login?portal=${portal}&mode=${mode}&format=${encodeURIComponent(format)}`,
     )
       .then((res) => (res.ok ? res.json() : null))
       .then((body) => {
@@ -243,7 +243,7 @@ export default function UtopiaLoginDemo({
     const poll = async () => {
       try {
         const res = await fetch(
-          `/api/utopia-login/${mint.id}?portal=${portal}&mode=${mode}&rail=${encodeURIComponent(mint.rail)}`,
+          `/api/verandia-login/${mint.id}?portal=${portal}&mode=${mode}&rail=${encodeURIComponent(mint.rail)}`,
         );
         if (res.ok) {
           const body = (await res.json()) as LoginResult;
@@ -358,7 +358,7 @@ export default function UtopiaLoginDemo({
                   Present your{" "}
                   {mode === "company"
                     ? "Legal Representative credential"
-                    : "Utopia Citizen ID"}{" "}
+                    : "Verandia Citizen ID"}{" "}
                   with {wallet?.name ?? "your wallet"}.
                 </p>
                 <button

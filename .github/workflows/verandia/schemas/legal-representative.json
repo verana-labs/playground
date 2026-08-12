@@ -1,0 +1,49 @@
+{
+  "$id": "https://business-registry.verandia.playground.testnet.verana.network/schemas/legal-representative.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LegalRepresentativeCredential",
+  "description": "Proof of legal representation issued by the National Business Registry of the Republic of Verandia (demo): who may act for a company, revocable the day it ends.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID of the credential holder"
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Legal name of the represented company"
+        },
+        "companyRegistryId": {
+          "type": "string",
+          "description": "Registration number of the company in the National Business Registry"
+        },
+        "representativeName": {
+          "type": "string",
+          "description": "Full name of the legal representative"
+        },
+        "role": {
+          "type": "string",
+          "description": "Role of the representative in the company"
+        },
+        "powers": {
+          "type": "string",
+          "description": "Scope of the representation powers"
+        },
+        "validUntil": {
+          "type": "string",
+          "description": "Representation expiry date (ISO 8601), empty when unbounded"
+        }
+      },
+      "required": [
+        "companyName",
+        "companyRegistryId",
+        "representativeName",
+        "role",
+        "powers"
+      ]
+    }
+  }
+}

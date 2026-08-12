@@ -1,11 +1,11 @@
 // The Verandia cast on the Verana testnet - one vs-agent (Business Wallet)
-// per participant, deployed and provisioned by the utopia-* workflows
-// (spec: verana-spec → playground/verandia/spec.md §5). The cast shipped
-// under the story's working title, so the deployed contract keeps the
-// `utopia` identifiers: the DNS zone (and therefore the on-chain DIDs), the
-// UtopiaCitizenID credential type, its VTJSC path, and the OID4VC config
-// ids. Only a redeploy of the cast can rename those; everything site-side
-// says Verandia.
+// per participant, deployed and provisioned by the cast workflows
+// (.github/workflows/verandia-*, spec: verana-spec → playground/verandia/
+// spec.md §5). The cast shipped under the story's working title, so the
+// deployed contract keeps the `utopia` identifiers: the DNS zone (and
+// therefore the on-chain DIDs), the UtopiaCitizenID credential type, its
+// VTJSC path, and the OID4VC config ids. Only a redeploy of the cast can
+// rename those; everything site-side says Verandia.
 
 import type { CastMember } from "./vesta-cast";
 

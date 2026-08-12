@@ -272,7 +272,7 @@ export const JOURNEY: {
           code: {
             label: "The DID of the National Business Registry",
             value: VERANDIA_CAST.businessRegistry.did,
-            note: "Placeholder until the Verandia cast is deployed on the Verana testnet - the value will resolve live.",
+            note: "The live DID of the deployed register on the Verana testnet - resolve it yourself at resolver.testnet.verana.network.",
           },
           underHood: [
             "The vs-agent generates the DID (did:webvh recommended) and publishes its DID Document with a DIDComm endpoint at https://<host>/.well-known/did.json.",

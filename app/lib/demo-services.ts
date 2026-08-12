@@ -28,7 +28,7 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "zenith", label: "Zenith Repairs (demo)", host: VESTA_CAST.zenith.host, did: VESTA_CAST.zenith.did, appUrl: invite(VESTA_CAST.zenith.host), role: "issuer" },
   { id: "umbra", label: "Umbra Repairs", host: VESTA_CAST.umbra.host, did: VESTA_CAST.umbra.did, appUrl: invite(VESTA_CAST.umbra.host), role: "untrusted" },
   // The Verandia cast (spec: verana-spec → playground/verandia/spec.md §5),
-  // deployed by .github/workflows/utopia-*. DIDs come from host discovery
+  // deployed by .github/workflows/verandia-*. DIDs come from host discovery
   // until the placeholder values in verandia-cast.ts are replaced.
   { id: "civil-registry", label: "National Civil Registry (demo)", host: VERANDIA_CAST.civilRegistry.host, appUrl: invite(VERANDIA_CAST.civilRegistry.host), role: "issuer" },
   { id: "business-registry", label: "National Business Registry (demo)", host: VERANDIA_CAST.businessRegistry.host, appUrl: invite(VERANDIA_CAST.businessRegistry.host), role: "issuer" },

@@ -23,15 +23,15 @@ export const VERANDIA_CAST = {
   },
   taxBuro: {
     host: `tax-buro.${ZONE}`,
-    did: `did:webvh:${PENDING}:tax-buro.verandia.playground.testnet.verana.network`,
+    did: `did:webvh:QmUb8gstdQFm1P6DyTrDCq4ukZBLx5KoM9VYCdh7hZyHCs:tax-buro.verandia.playground.testnet.verana.network`,
   },
   meridianBank: {
     host: `meridian-bank.${ZONE}`,
-    did: `did:webvh:${PENDING}:meridian-bank.verandia.playground.testnet.verana.network`,
+    did: `did:webvh:QmQxoLMKcQj8t7J3uNWZF9yStSiCKkoVmrsdTGJVCZ8k43:meridian-bank.verandia.playground.testnet.verana.network`,
   },
   quickcash: {
     host: `quickcash.${ZONE}`,
-    did: `did:webvh:${PENDING}:quickcash.verandia.playground.testnet.verana.network`,
+    did: `did:webvh:Qma27dn8bEHCbkM4J5Rvwi5WsDiJppEJtFyYAEUEhETBRS:quickcash.verandia.playground.testnet.verana.network`,
   },
 } as const satisfies Record<string, CastMember>;
 

@@ -20,7 +20,6 @@ import {
 import { Container, Section, SectionHeading, Chip } from "../../components/ui";
 import { DidBadge } from "../../components/Did";
 import LiveTrustCard from "../../components/LiveTrustCard";
-import { ServiceQr } from "../../components/ServiceQr";
 import { listPersonalWallets } from "../../lib/wallets";
 import { LINKS } from "../../lib/site";
 import { WalletChooser } from "../vesta/DemoWalletFlow";
@@ -28,6 +27,7 @@ import { SubHeading, SubStepBlock } from "../story-blocks";
 import { UTOPIA_SCENES } from "./scenes";
 import UtopiaOffers from "./UtopiaOffers";
 import UtopiaLoginDemo from "./UtopiaLoginDemo";
+import UtopiaRequestQr from "./UtopiaRequestQr";
 import {
   CLOSING,
   DEMOS,
@@ -770,12 +770,14 @@ export function Section4() {
                 {DEMOS.quickcash.expect}
               </p>
               <div className="mt-4 space-y-3">
-                <ServiceQr
-                  serviceId={DEMOS.quickcash.serviceId}
-                  label="QuickCash Loans (demo)"
-                  format="anoncreds"
-                  credential={DEMOS.quickcash.credential}
-                />
+                <Suspense>
+                  <UtopiaRequestQr
+                    wallets={wallets}
+                    serviceId={DEMOS.quickcash.serviceId}
+                    label="QuickCash Loans (demo)"
+                    credential={DEMOS.quickcash.credential}
+                  />
+                </Suspense>
                 <LiveTrustCard serviceId={DEMOS.quickcash.serviceId} />
               </div>
             </div>

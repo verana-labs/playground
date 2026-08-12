@@ -5,9 +5,20 @@
 // it is the baseline and is never rendered as a page stage itself, so
 // nothing pulses as "new" when §3 opens. Stages 3.1-3.8 walk the five needs
 // of Marc's checklist; the §1 world returns verified with verdicts at 3.8.
+//
+// Types and rendering machinery live in app/components/scene-graph.ts /
+// StoryDiagram.tsx, shared with the other use cases.
 
 import { VESTA_CAST } from "../../lib/vesta-cast";
 import { shortDid } from "../../lib/did";
+import type {
+  Accreditation,
+  NodeCredential,
+  SceneBadge,
+  SceneEdge,
+  SceneGraph,
+  SceneNode,
+} from "../../components/scene-graph";
 
 export const STAGES = [
   "3.0",
@@ -23,82 +34,7 @@ export const STAGES = [
 
 export type Stage = (typeof STAGES)[number];
 
-export function stageIndex(s: Stage): number {
-  return STAGES.indexOf(s);
-}
-
-export type Tone = "violet" | "blue" | "emerald" | "amber" | "red" | "gray";
-
-type StageOverride<T> = Partial<Record<Stage, T>>;
-
-export type SceneNode = {
-  id: string;
-  x: number;
-  y: number;
-  /** default 22; the protagonist uses 28 */
-  r?: number;
-  icon:
-    | "building"
-    | "landmark"
-    | "stamp"
-    | "bot"
-    | "badge"
-    | "key"
-    | "wallet"
-    | "award"
-    | "network"
-    | "wrench"
-    | "ghost"
-    | "user";
-  tone: Tone;
-  appears: Stage;
-  until?: Stage;
-  dashed?: boolean;
-  label?: string;
-  sub?: string;
-  /** Placeholder DID shown on the trust card (dedicated Vesta cast pending). */
-  did?: string;
-  /** Service type line on the trust card's Service step. */
-  serviceType?: string;
-  /** Organization display name on the trust card's Operated-by step. */
-  operator?: string;
-  /** From this stage on, a green trusted check renders before the name. */
-  verifiedAt?: Stage;
-  /** Latest override ≤ current stage wins. */
-  labelByStage?: StageOverride<{ label?: string; sub?: string }>;
-  toneByStage?: StageOverride<Tone>;
-};
-
-export type SceneEdge = {
-  id: string;
-  from: string;
-  to: string;
-  appears: Stage;
-  until?: Stage;
-  label?: string;
-  tone: Tone;
-  dashed?: boolean;
-  /** Bend the line: perpendicular offset of the control point. */
-  curve?: number;
-  /** Label position along the edge, 0..1 (default 0.5). */
-  labelT?: number;
-  /** Stroke width multiplier (default 1) - e.g. 0.7 for minor edges. */
-  width?: number;
-};
-
-export type SceneBadge = {
-  id: string;
-  /** Anchor node id; offset from its center (dx 0 = centered). */
-  node: string;
-  dx: number;
-  dy: number;
-  text: string;
-  tone: Tone;
-  appears: Stage;
-  until?: Stage;
-};
-
-export const NODES: SceneNode[] = [
+const NODES: SceneNode[] = [
   {
     id: "vesta",
     x: 300,
@@ -168,6 +104,7 @@ export const NODES: SceneNode[] = [
     icon: "user",
     tone: "amber",
     appears: "3.0",
+    person: true,
     label: "A customer",
     sub: "wants help with a washing machine",
   },
@@ -190,6 +127,7 @@ export const NODES: SceneNode[] = [
     tone: "red",
     appears: "3.0",
     dashed: true,
+    noteAlways: true,
     label: "Umbra Repairs",
     sub: "claims: “Vesta-authorized”",
     did: VESTA_CAST.umbra.did,
@@ -207,6 +145,7 @@ export const NODES: SceneNode[] = [
     icon: "wallet",
     tone: "emerald",
     appears: "3.4",
+    person: true,
     label: "Your wallet",
     sub: "checks before connecting",
   },
@@ -217,6 +156,7 @@ export const NODES: SceneNode[] = [
     icon: "wallet",
     tone: "emerald",
     appears: "3.8",
+    person: true,
     label: "Technician's wallet",
     sub: "Zenith employee",
   },
@@ -231,6 +171,7 @@ export const NODES: SceneNode[] = [
     tone: "emerald",
     appears: "3.4",
     until: "3.5",
+    person: true,
     label: "Employee",
   },
   {
@@ -242,6 +183,7 @@ export const NODES: SceneNode[] = [
     tone: "emerald",
     appears: "3.4",
     until: "3.5",
+    person: true,
     label: "Employee",
     sub: "badges land in their Personal Wallets",
   },
@@ -254,6 +196,7 @@ export const NODES: SceneNode[] = [
     tone: "emerald",
     appears: "3.4",
     until: "3.5",
+    person: true,
     label: "Employee",
   },
   {
@@ -263,6 +206,7 @@ export const NODES: SceneNode[] = [
     icon: "landmark",
     tone: "violet",
     appears: "3.2",
+    noteAlways: true,
     label: "Verana ECS Ecosystem",
     sub: "identity credentials - the green check",
     did: VESTA_CAST.ecs.did,
@@ -291,6 +235,7 @@ export const NODES: SceneNode[] = [
     icon: "award",
     tone: "violet",
     appears: "3.6",
+    noteAlways: true,
     label: "ISO Certification Ecosystem",
     sub: "(demo) · accredited cert bodies",
     did: VESTA_CAST.iso.did,
@@ -347,6 +292,7 @@ export const NODES: SceneNode[] = [
     icon: "network",
     tone: "violet",
     appears: "3.7",
+    noteAlways: true,
     label: "Vesta Repair Network",
     sub: "issuance governed by Vesta · anyone verifies",
     did: VESTA_CAST.repairNetwork.did,
@@ -370,7 +316,7 @@ export const NODES: SceneNode[] = [
   },
 ];
 
-export const EDGES: SceneEdge[] = [
+const EDGES: SceneEdge[] = [
   // Baseline - the world of §1, pre-populated when the journey opens
   { id: "e-vesta-support", from: "vesta", to: "support", appears: "3.0", tone: "gray" },
   { id: "e-vesta-badgeSvc", from: "vesta", to: "badgeSvc", appears: "3.0", label: "runs its services", tone: "gray", labelT: 0.55 },
@@ -402,7 +348,7 @@ export const EDGES: SceneEdge[] = [
   { id: "e-umbra-claim", from: "umbra", to: "vestaEco", appears: "3.8", label: "no Authorized Repairer: red", tone: "red", dashed: true, curve: -45, labelT: 0.35 },
 ];
 
-export const BADGES: SceneBadge[] = [
+const BADGES: SceneBadge[] = [
   // Baseline - the customer cannot tell; the gap only Vesta can fill
   { id: "b-question", node: "customer", dx: 34, dy: -24, text: "?", tone: "red", appears: "3.0", until: "3.8" },
   { id: "b-gap", node: "umbra", dx: 0, dy: -44, text: "authorized repairers? no proof exists", tone: "red", appears: "3.0", until: "3.7" },
@@ -423,23 +369,8 @@ export const BADGES: SceneBadge[] = [
   { id: "b-no-umbra", node: "umbra", dx: 34, dy: -24, text: "✗", tone: "red", appears: "3.8" },
 ];
 
-/** A credential presented by a participant, as shown in the click-to-open
- *  detail panel (verana.io/ecosystems idiom). */
-export type NodeCredential = {
-  name: string;
-  tone: Tone;
-  issuedBy: string;
-  ecosystem?: string;
-  appears: Stage;
-  until?: Stage;
-  note?: string;
-  /** Not presented by this DID: inherited from the parent service's DID
-   *  (the ECS-Service issuer), per the Verifiable Trust spec. */
-  inherited?: boolean;
-};
-
 /** Credentials presented by each participant (filtered by stage). */
-export const CREDENTIALS: Record<string, NodeCredential[]> = {
+const CREDENTIALS: Record<string, NodeCredential[]> = {
   ecs: [
     {
       name: "ECS-Organization",
@@ -695,15 +626,7 @@ export const CREDENTIALS: Record<string, NodeCredential[]> = {
   ],
 };
 
-/** Accreditations (issuer/verifier permissions) shown on the trust card. */
-export type Accreditation = {
-  role: "ISSUER" | "VERIFIER";
-  schema: string;
-  context: string;
-  appears: Stage;
-};
-
-export const ACCREDITATIONS: Record<string, Accreditation[]> = {
+const ACCREDITATIONS: Record<string, Accreditation[]> = {
   subIberia: [
     {
       role: "ISSUER",
@@ -766,8 +689,7 @@ export const ACCREDITATIONS: Record<string, Accreditation[]> = {
   ],
 };
 
-/** Panel text for participants with no presented credentials (or context). */
-export const NODE_NOTES: Record<string, string> = {
+const NODE_NOTES: Record<string, string> = {
   support:
     "No verifiable credentials presented yet - just a name on a screen.",
   badgeSvc:
@@ -788,126 +710,82 @@ export const NODE_NOTES: Record<string, string> = {
     "Vesta's own trust ecosystem - and a verifiable service itself: it governs the Authorized Repairer schema. Issuance governed, verification open.",
 };
 
-/** Per-stage view overrides: `only` restricts the render to the listed
- *  nodes (edges/badges follow), `viewBox` crops the canvas, `maxWidth`
- *  constrains the rendered size. Used for intimate moments like 3.1,
- *  where the newborn identity stands alone. */
-export const STAGE_VIEW: Partial<
-  Record<Stage, { only?: string[]; viewBox?: string; maxWidth?: string }>
-> = {
-  "3.1": { only: ["vesta"], viewBox: "140 240 320 140", maxWidth: "max-w-md" },
-  "3.2": {
-    only: ["vesta", "ecs", "orgIssuer"],
-    viewBox: "20 30 460 350",
-    maxWidth: "max-w-2xl",
+export const VESTA_SCENES: SceneGraph = {
+  stages: STAGES,
+  title: "Vesta",
+  defaultViewBox: "30 20 930 570",
+  nodes: NODES,
+  edges: EDGES,
+  badges: BADGES,
+  credentials: CREDENTIALS,
+  accreditations: ACCREDITATIONS,
+  nodeNotes: NODE_NOTES,
+  stageView: {
+    "3.1": { only: ["vesta"], viewBox: "140 240 320 140", maxWidth: "max-w-md" },
+    "3.2": {
+      only: ["vesta", "ecs", "orgIssuer"],
+      viewBox: "20 30 460 350",
+      maxWidth: "max-w-2xl",
+    },
+    "3.3": {
+      only: ["vesta", "ecs", "orgIssuer"],
+      viewBox: "20 30 460 350",
+      maxWidth: "max-w-2xl",
+    },
+    "3.4": {
+      only: ["vesta", "ecs", "orgIssuer", "emp1", "emp2", "emp3"],
+      viewBox: "20 30 460 530",
+      maxWidth: "max-w-2xl",
+    },
+    "3.5": {
+      only: ["vesta", "ecs", "orgIssuer", "portal"],
+      viewBox: "20 30 560 520",
+      maxWidth: "max-w-2xl",
+    },
+    "3.6": {
+      only: ["vesta", "ecs", "orgIssuer", "portal", "iso", "normacert"],
+      viewBox: "20 30 780 520",
+      maxWidth: "max-w-3xl",
+    },
+    "3.7": {
+      only: [
+        "vesta",
+        "ecs",
+        "orgIssuer",
+        "portal",
+        "iso",
+        "normacert",
+        "vestaEco",
+        "subIberia",
+        "subNordics",
+        "zenith",
+      ],
+      viewBox: "20 30 950 520",
+    },
+    "3.8": {
+      only: [
+        "vestaEco",
+        "subIberia",
+        "zenith",
+        "techWallet",
+        "portal",
+        "customer",
+      ],
+      viewBox: "380 25 590 635",
+      maxWidth: "max-w-3xl",
+    },
   },
-  "3.3": {
-    only: ["vesta", "ecs", "orgIssuer"],
-    viewBox: "20 30 460 350",
-    maxWidth: "max-w-2xl",
+  stageChanges: {
+    "3.1": { nodes: ["vesta"], note: "Vesta's DID is born" },
+    "3.3": { nodes: ["vesta"], note: "the check turns green" },
+    "3.7": { note: "Vesta becomes an ecosystem: its subsidiaries issue, anyone verifies" },
+    "3.4": {
+      nodes: ["vesta", "emp1", "emp2", "emp3"],
+      note: "new accreditation on Vesta - and every employee receives a badge",
+    },
+    "3.5": { nodes: ["portal"], note: "a new verifiable login service - click it to see its accreditation" },
+    "3.8": { note: "the Authorized Repairer credential at work: portal login, and the front door" },
   },
-  "3.4": {
-    only: ["vesta", "ecs", "orgIssuer", "emp1", "emp2", "emp3"],
-    viewBox: "20 30 460 530",
-    maxWidth: "max-w-2xl",
-  },
-  "3.5": {
-    only: ["vesta", "ecs", "orgIssuer", "portal"],
-    viewBox: "20 30 560 520",
-    maxWidth: "max-w-2xl",
-  },
-  "3.6": {
-    only: ["vesta", "ecs", "orgIssuer", "portal", "iso", "normacert"],
-    viewBox: "20 30 780 520",
-    maxWidth: "max-w-3xl",
-  },
-  "3.7": {
-    only: [
-      "vesta",
-      "ecs",
-      "orgIssuer",
-      "portal",
-      "iso",
-      "normacert",
-      "vestaEco",
-      "subIberia",
-      "subNordics",
-      "zenith",
-    ],
-    viewBox: "20 30 950 520",
-  },
-  "3.8": {
-    only: [
-      "vestaEco",
-      "subIberia",
-      "zenith",
-      "techWallet",
-      "portal",
-      "customer",
-    ],
-    viewBox: "380 25 590 635",
-    maxWidth: "max-w-3xl",
-  },
+  verifiedNote:
+    "Both identity checks verified against the Verana public registry (story data - dedicated Vesta cast pending).",
 };
-
-/** Stages whose meaning is a *change* to existing elements rather than a new
- *  element: the listed nodes pulse, and the note joins the caption. */
-export const STAGE_CHANGES: Partial<
-  Record<Stage, { nodes?: string[]; note?: string }>
-> = {
-  "3.1": { nodes: ["vesta"], note: "Vesta's DID is born" },
-  "3.3": { nodes: ["vesta"], note: "the check turns green" },
-  "3.7": { note: "Vesta becomes an ecosystem: its subsidiaries issue, anyone verifies" },
-  "3.4": {
-    nodes: ["vesta", "emp1", "emp2", "emp3"],
-    note: "new accreditation on Vesta - and every employee receives a badge",
-  },
-  "3.5": { nodes: ["portal"], note: "a new verifiable login service - click it to see its accreditation" },
-  "3.8": { note: "the Authorized Repairer credential at work: portal login, and the front door" },
-};
-
-/** Resolve a node's label/sub at a given stage (latest override ≤ stage). */
-export function nodeLabelAt(
-  node: SceneNode,
-  stage: Stage,
-): { label?: string; sub?: string } {
-  let label = node.label;
-  let sub = node.sub;
-  if (node.labelByStage) {
-    const idx = stageIndex(stage);
-    for (const s of STAGES) {
-      if (stageIndex(s) > idx) break;
-      const o = node.labelByStage[s];
-      if (o) {
-        if ("label" in o) label = o.label;
-        if ("sub" in o) sub = o.sub;
-      }
-    }
-  }
-  return { label, sub };
-}
-
-/** Resolve a node's tone at a given stage (latest override ≤ stage). */
-export function nodeToneAt(node: SceneNode, stage: Stage): Tone {
-  let tone = node.tone;
-  if (node.toneByStage) {
-    const idx = stageIndex(stage);
-    for (const s of STAGES) {
-      if (stageIndex(s) > idx) break;
-      const o = node.toneByStage[s];
-      if (o) tone = o;
-    }
-  }
-  return tone;
-}
-
-/** Visibility window: appears ≤ stage < until. */
-export function visibleAt(
-  el: { appears: Stage; until?: Stage },
-  stage: Stage,
-): boolean {
-  const idx = stageIndex(stage);
-  if (stageIndex(el.appears) > idx) return false;
-  if (el.until && stageIndex(el.until) <= idx) return false;
-  return true;
-}

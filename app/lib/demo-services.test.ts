@@ -4,11 +4,13 @@ import { DEMO_SERVICES, getDemoService, serviceDid, serviceDidFor } from "./demo
 afterEach(() => vi.unstubAllGlobals());
 
 describe("demo services", () => {
-  it("knows the Vesta cast, the planned demo cast, the main.demos cast and the hosted cloud-stack anchors", () => {
+  it("knows the Vesta cast, the Utopia cast, the planned demo cast, the main.demos cast and the hosted cloud-stack anchors", () => {
     expect(DEMO_SERVICES.map((s) => s.id)).toEqual([
       "vesta", "helvetia-trust", "vesta-portal", "vesta-repair-network",
       "iso-certification", "normacert", "vesta-iberia", "vesta-nordics",
       "zenith", "umbra",
+      "civil-registry", "business-registry", "tax-buro", "meridian-bank",
+      "quickcash",
       "playground-demo",
       "demo-issuer-accredited", "demo-issuer-unaccredited",
       "demo-verifier-accredited", "demo-verifier-unaccredited",

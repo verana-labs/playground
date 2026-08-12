@@ -3,6 +3,7 @@ import { adminBase, adminJson } from "@/app/lib/demo-admin";
 import { resolveTrust } from "@/app/lib/resolver";
 import { SCHEMA_IDS, VESTA_CAST } from "@/app/lib/vesta-cast";
 import { didHost } from "@/app/lib/did";
+import { issuerDidFromRecord, toClaims, type Claim } from "@/app/lib/presentation";
 import { ENDPOINTS } from "@/app/lib/site";
 
 // Status + access decision for a portal-login presentation (chapter-4 demo
@@ -19,62 +20,13 @@ export const dynamic = "force-dynamic";
 
 const PORTAL_ID = "vesta-portal";
 
-type Claim = { name: string; value: string };
-
-function toClaims(value: unknown): Claim[] {
-  if (Array.isArray(value)) {
-    const named = value.flatMap((c) =>
-      c && typeof c === "object" &&
-      typeof (c as Claim).name === "string" &&
-      typeof (c as Claim).value === "string"
-        ? [{ name: (c as Claim).name, value: (c as Claim).value }]
-        : [],
-    );
-    if (named.length) return named;
-    return value.flatMap((c) =>
-      c && typeof c === "object" && (c as { claims?: unknown }).claims
-        ? toClaims((c as { claims?: unknown }).claims)
-        : [],
-    );
-  }
-  if (value && typeof value === "object") {
-    return Object.entries(value as Record<string, unknown>).flatMap(
-      ([name, v]) =>
-        typeof v === "string" || typeof v === "number" || typeof v === "boolean"
-          ? [{ name, value: String(v) }]
-          : [],
-    );
-  }
-  return [];
-}
-
 /** Extract the badge issuer DID. Preferred: the credential definition id of
  *  the presented credential (its prefix IS the issuer DID on the did:webvh
  *  AnonCreds registry). Fallback: the demo badge numbers are prefixed by
  *  their issuer (VESTA- / ZENITH- / UMBRA-). */
 function extractIssuerDid(record: unknown, claims: Claim[]): string | null {
-  const texts: string[] = [];
-  const walk = (v: unknown, depth: number) => {
-    if (depth > 4 || !v) return;
-    if (typeof v === "string") {
-      texts.push(v);
-      return;
-    }
-    if (Array.isArray(v)) {
-      v.forEach((x) => walk(x, depth + 1));
-      return;
-    }
-    if (typeof v === "object") {
-      for (const [k, x] of Object.entries(v as Record<string, unknown>)) {
-        if (/credentialDefinition|credDef|issuer/i.test(k)) walk(x, depth + 1);
-      }
-    }
-  };
-  walk(record, 0);
-  for (const t of texts) {
-    const m = t.match(/^did:[a-z0-9]+:[^/?#]+/i);
-    if (m) return m[0];
-  }
+  const fromRecord = issuerDidFromRecord(record);
+  if (fromRecord) return fromRecord;
 
   const badgeNumber = claims.find((c) => c.name === "badgeNumber")?.value ?? "";
   if (badgeNumber.startsWith("VESTA-")) return VESTA_CAST.vesta.did;

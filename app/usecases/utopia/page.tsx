@@ -2,19 +2,17 @@ import type { Metadata } from "next";
 import { Breadcrumb } from "../../components/ui";
 import { ChapterFooter, Stepper } from "../../components/ChapterNav";
 import { CHAPTERS_NAV } from "./chapters";
-import LegacyHash from "./LegacyHash";
 import { Section1 } from "./sections";
 
 export const metadata: Metadata = {
-  title: "Use case · Vesta Appliances - 1 · Meet Vesta",
+  title: "Use case · Republica of Utopia - 1 · Meet Utopia",
   description:
-    "Chapter 1 of the Vesta story: a real business, real services, and impostors trading on its name. Nothing can be proven.",
+    "Chapter 1 of the Utopia story: a democracy with real institutions, real services, and scammers trading on the Republic's name. Nothing can be proven.",
 };
 
-export default function VestaChapter1() {
+export default function UtopiaChapter1() {
   return (
     <>
-      <LegacyHash />
       <header className="hero-gradient text-white">
         <div className="mx-auto max-w-4xl px-6 py-14 sm:py-16">
           <Breadcrumb
@@ -22,18 +20,18 @@ export default function VestaChapter1() {
             items={[
               { label: "Playground", href: "/" },
               { label: "Use Cases" },
-              { label: "Vesta Appliances" },
+              { label: "Republica of Utopia" },
             ]}
           />
           <h1 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl">
-            Learn with Vesta how to make your organization verifiable and
-            trusted
+            Learn with Utopia how a democracy deploys verifiable identity
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/80">
-            Follow Vesta Appliances, a company everyone recognizes, through
-            its full journey: proving its identity, making its services
-            verifiable, and governing trust for its partner network. Then do
-            every step yourself, with a real wallet.
+            Follow the Republica of Utopia through its full journey: an
+            eIDAS-2-compatible Citizen ID for every citizen, a verifiable
+            Business ID for every company, legal representation as proof, and
+            passwordless sign-in at the Tax Buro and the bank. Then do every
+            step yourself, with a real wallet.
           </p>
         </div>
       </header>

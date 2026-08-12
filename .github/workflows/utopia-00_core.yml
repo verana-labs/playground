@@ -1,0 +1,215 @@
+name: "Utopia 00 · Core (reusable)"
+
+# Reusable deploy + provision pipeline for one Utopia cast member.
+# Called by the utopia-01..06 workflows; not meant to be run directly.
+# Mirrors vesta-00_core.yml with the cast assets under
+# .github/workflows/utopia/; common.sh and the oid4vc render script are
+# shared from the vesta and demo cast directories (the demo-cast precedent).
+
+on:
+  workflow_call:
+    inputs:
+      org:
+        description: "Cast member — must match a directory under .github/workflows/utopia/orgs/"
+        required: true
+        type: string
+      step:
+        description: "deploy | provision | all"
+        required: false
+        default: all
+        type: string
+      force_refresh:
+        description: "Re-issue credentials even when a linked VP already exists"
+        required: false
+        default: false
+        type: boolean
+
+env:
+  NETWORK: testnet
+  VERANAD_VERSION: v0.9.5
+
+jobs:
+  run:
+    name: "${{ inputs.org }}"
+    runs-on: ubuntu-latest
+    # All playground casts (vesta-*, demo-* and utopia-*) sign with the same
+    # veranad account; running two jobs at once races on the account's
+    # transaction sequence number. The shared group name serializes every
+    # cast run across all pipelines. GitHub keeps only ONE queued run per
+    # group — start workflows one at a time rather than firing several at
+    # once.
+    concurrency:
+      group: vesta-cast
+      cancel-in-progress: false
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Load org configuration
+        run: |
+          CFG=".github/workflows/utopia/orgs/${{ inputs.org }}/config.env"
+          if [ ! -f "$CFG" ]; then
+            echo "::error::Unknown org '${{ inputs.org }}' — no $CFG"
+            exit 1
+          fi
+          set -a
+          source "$CFG"
+          set +a
+          while IFS= read -r line; do
+            key="${line%%=*}"
+            echo "${key}=${!key}" >> "$GITHUB_ENV"
+          done < <(grep -E '^[A-Z0-9_]+=' "$CFG")
+          # Resolve the network placeholder in the public host
+          echo "INGRESS_HOST=${INGRESS_HOST//__NETWORK__/${NETWORK}}" >> "$GITHUB_ENV"
+
+      - name: Resolve deployment template
+        run: |
+          sed -e "s/__NETWORK__/${NETWORK}/g" \
+              -e "s/__RELEASE__/${RELEASE_NAME}/g" \
+              -e "s/__HOST__/${INGRESS_HOST}/g" \
+            .github/workflows/utopia/deployment.template.yaml > /tmp/deployment-resolved.yaml
+          echo "--- Resolved deployment values ---"
+          cat /tmp/deployment-resolved.yaml
+
+      - name: Parse deployment values
+        run: |
+          CHART_SOURCE=$(yq '.chartSource' /tmp/deployment-resolved.yaml)
+          CHART_VERSION=$(yq '.chartVersion' /tmp/deployment-resolved.yaml)
+          CHART_NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
+          echo "CHART_SOURCE=${CHART_SOURCE}" >> "$GITHUB_ENV"
+          echo "CHART_VERSION=${CHART_VERSION}" >> "$GITHUB_ENV"
+          echo "CHART_NAMESPACE=${CHART_NAMESPACE}" >> "$GITHUB_ENV"
+          echo "Chart: $CHART_SOURCE@$CHART_VERSION -> $CHART_NAMESPACE/$RELEASE_NAME"
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          cat > ~/.kube/config <<'KUBEEOF'
+          ${{ secrets.KUBECONFIG_VERANA_DEV }}
+          KUBEEOF
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5.1.0
+        with:
+          version: 'v1.29.9'
+
+      - name: Install veranad
+        if: inputs.step != 'deploy'
+        run: |
+          curl -sfL "https://github.com/verana-labs/verana-node/releases/download/${VERANAD_VERSION}/veranad-linux-amd64" \
+            -o /usr/local/bin/veranad
+          chmod +x /usr/local/bin/veranad
+          veranad version
+
+      - name: Import account from mnemonic
+        if: inputs.step != 'deploy'
+        run: |
+          MNEMONIC="${{ secrets.PLAYGROUND_MNEMONIC }}"
+          if [ -z "$MNEMONIC" ]; then
+            echo "::error::Secret PLAYGROUND_MNEMONIC is not set (required for provisioning)"
+            exit 1
+          fi
+          echo "$MNEMONIC" | veranad keys add "$USER_ACC" --recover --keyring-backend test
+
+      # -----------------------------------------------------------------------
+      # DEPLOY: install/upgrade the vs-agent via Helm
+      # -----------------------------------------------------------------------
+      - name: Deploy vs-agent via Helm
+        if: inputs.step == 'deploy' || inputs.step == 'all'
+        run: |
+          yq 'del(.chartSource, .chartVersion)' /tmp/deployment-resolved.yaml > /tmp/helm-values.yaml
+          yq -i '.didcommLabel = env(SERVICE_NAME)' /tmp/helm-values.yaml
+          yq -i '.didcommInvitationImageUrl = env(SERVICE_LOGO_URL)' /tmp/helm-values.yaml
+          # Per-org image override (e.g. testing a prerelease vs-agent build).
+          if [ -n "${VS_AGENT_IMAGE_TAG:-}" ]; then
+            yq -i '.image.tag = env(VS_AGENT_IMAGE_TAG)' /tmp/helm-values.yaml
+          fi
+          if [ -n "${OID4VC_ROLE:-}" ]; then
+            export NAMESPACE="$CHART_NAMESPACE"
+            export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/utopia"
+            OID4VC_CONFIG_JSON=$(bash "${GITHUB_WORKSPACE}/.github/workflows/demo/scripts/render-oid4vc-config.sh")
+            export OID4VC_CONFIG_JSON
+            # openid4vc ships in the default image; activate the plugin.
+            yq -i '.oid4vc.plugins = "messaging,chat,openid4vc"' /tmp/helm-values.yaml
+            yq -i '.oid4vc.config = strenv(OID4VC_CONFIG_JSON)' /tmp/helm-values.yaml
+          fi
+          echo "--- Helm values (oid4vc config elided) ---"
+          yq 'del(.oid4vc)' /tmp/helm-values.yaml
+          helm upgrade --install "$RELEASE_NAME" "$CHART_SOURCE" \
+            --version "$CHART_VERSION" \
+            --namespace "$CHART_NAMESPACE" --create-namespace \
+            --values /tmp/helm-values.yaml \
+            --wait --timeout 300s
+          if [ -n "${OID4VC_ROLE:-}" ]; then
+            # The agent reads the oid4vc ConfigMap once at boot, and helm only
+            # rolls the pod when its template changes - so a config-only change
+            # needs an explicit restart to take effect.
+            kubectl rollout restart statefulset "$RELEASE_NAME" -n "$CHART_NAMESPACE"
+            kubectl rollout status statefulset "$RELEASE_NAME" -n "$CHART_NAMESPACE" --timeout=300s
+          fi
+
+      - name: Deploy admin ingress (issuance endpoint only)
+        if: (inputs.step == 'deploy' || inputs.step == 'all') && env.EXPOSE_ADMIN_API == 'true'
+        run: |
+          ADMIN_HOST="admin.${INGRESS_HOST}"
+          ADMIN_SECRET="${ADMIN_HOST}-cert"
+          cat <<EOF | kubectl apply -n "$CHART_NAMESPACE" -f -
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: admin-${RELEASE_NAME}
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              nginx.ingress.kubernetes.io/enable-cors: "true"
+          spec:
+            ingressClassName: nginx
+            tls:
+              - hosts:
+                  - ${ADMIN_HOST}
+                secretName: ${ADMIN_SECRET}
+            rules:
+              - host: ${ADMIN_HOST}
+                http:
+                  paths:
+                    - path: /api
+                      pathType: Prefix
+                      backend:
+                        service:
+                          name: ${RELEASE_NAME}
+                          port:
+                            number: 3000
+                    - path: /v1/vt/issue-credential
+                      pathType: Exact
+                      backend:
+                        service:
+                          name: ${RELEASE_NAME}
+                          port:
+                            number: 3000
+          EOF
+          echo "Admin ingress deployed: https://${ADMIN_HOST}/v1/vt/issue-credential"
+
+      # -----------------------------------------------------------------------
+      # PROVISION: credentials, permissions, registries via the Admin APIs
+      # -----------------------------------------------------------------------
+      - name: Provision
+        if: (inputs.step == 'provision' || inputs.step == 'all') && env.PROVISION_SCRIPT != ''
+        run: |
+          export NAMESPACE="$CHART_NAMESPACE"
+          export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/utopia"
+          export VESTA_DIR="${GITHUB_WORKSPACE}/.github/workflows/vesta"
+          export FORCE_REFRESH="${{ inputs.force_refresh }}"
+          bash "${CAST_DIR}/scripts/${PROVISION_SCRIPT}"
+
+      # -----------------------------------------------------------------------
+      # SUMMARY
+      # -----------------------------------------------------------------------
+      - name: Summary
+        if: always()
+        run: |
+          echo "## ${{ inputs.org }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${INGRESS_HOST:-}" ]; then
+            echo "- **VS Agent:** https://${INGRESS_HOST}/.well-known/did.json" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "- **Step:** ${{ inputs.step }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Network:** ${NETWORK:-unknown}" >> "$GITHUB_STEP_SUMMARY"

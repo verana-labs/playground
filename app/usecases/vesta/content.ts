@@ -13,7 +13,7 @@ import {
   trustRegistryUrl,
 } from "../../lib/vesta-cast";
 import type { Stage } from "./scenes";
-import type { TrustCardData } from "../../components/TrustCard";
+import type { JourneyNeed as GenericJourneyNeed, SubStep as GenericSubStep } from "../story-blocks";
 
 const app = ENDPOINTS.frontend;
 const resolver = ENDPOINTS.resolver;
@@ -264,34 +264,8 @@ export const ECOSYSTEM_BUILD = {
 
 // ----------------- §3–§5 · The technical build (scene graph sections)
 
-export type SubStep = {
-  id: string;
-  stage: Stage;
-  title: string;
-  kind: "story" | "watch" | "hands-on";
-  story: string;
-  points?: string[];
-  underHood?: string[];
-  reproduce?: string[];
-  links?: { label: string; href: string }[];
-  image?: { src: string; alt: string; caption?: string };
-  /** Prominent mono display (e.g. the generated DID). */
-  code?: { label: string; value: string; note?: string };
-  /** Skip the scene diagram for this step (used when a step shares a stage). */
-  noDiagram?: boolean;
-  /** Inline Proof-of-Trust card (story data) rendered after the prose. */
-  trustCard?: TrustCardData;
-};
-
-export type JourneyNeed = {
-  /** Anchor id (#need-N) - the §2 checklist chips deep-link here. */
-  id: string;
-  n: number;
-  title: string;
-  tag: string;
-  intro: string;
-  steps: SubStep[];
-};
+export type SubStep = GenericSubStep<Stage>;
+export type JourneyNeed = GenericJourneyNeed<Stage>;
 
 /** §3 · Marc's journey - one subsection per checklist need. */
 export const JOURNEY: {

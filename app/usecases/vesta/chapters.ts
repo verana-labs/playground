@@ -1,14 +1,9 @@
 // The Vesta use case, split into four chapter routes with a persistent
 // stepper. Chapter 1 lives at /usecases/vesta; the rest at /usecases/vesta/<slug>.
 
-export type Chapter = {
-  n: number;
-  slug: string | null; // null = the base route
-  href: string;
-  title: string;
-  short: string;
-  intro: string;
-};
+import type { Chapter } from "../../components/ChapterNav";
+
+export type { Chapter };
 
 export const CHAPTERS_NAV: Chapter[] = [
   {

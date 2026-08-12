@@ -24,17 +24,17 @@ export type JourneyNeed = GenericJourneyNeed<Stage>;
  *  public/images/verandia/. Set a path to null to fall back to the
  *  emblem/initials placeholder while the brand kit is generated. */
 export const VERANDIA_ASSETS = {
-  emblem: null as string | null, // /images/verandia/emblem.webp
-  hero: null as string | null, // /images/verandia/hero.webp
+  emblem: null as string | null, // by design: the generated SVG shield is the emblem
+  hero: "/images/verandia/hero.webp" as string | null,
   heroCaption:
     "The Republic of Verandia - a small democracy, and every one of its services about to become provable.",
-  institutions: null as string | null, // /images/verandia/institutions.webp
+  institutions: "/images/verandia/institutions.webp" as string | null,
   institutionsCaption:
     "The civic institutions of the Republic: the Civil Registry, the Business Registry, the Tax Buro.",
-  pm: null as string | null, // /images/verandia/pm.webp
-  minister: null as string | null, // /images/verandia/minister.webp
-  phishing: null as string | null, // /images/verandia/phishing.webp
-  bank: null as string | null, // /images/verandia/bank.webp
+  pm: "/images/verandia/pm.webp" as string | null,
+  minister: "/images/verandia/minister.webp" as string | null,
+  phishing: "/images/verandia/phishing.webp" as string | null,
+  bank: "/images/verandia/bank.webp" as string | null,
   bankCaption:
     "Meridian Bank (demo) - the most phished brand category, about to become provable.",
 };

@@ -1,5 +1,5 @@
-// Utopia demo claim sets: the values minted into a visitor's Citizen ID
-// offer and Legal Representative offer (Run the demos, Utopia chapter 4).
+// Verandia demo claim sets: the values minted into a visitor's Citizen ID
+// offer and Legal Representative offer (Run the demos, Verandia chapter 4).
 // Same conventions as demo-badge.ts: AnonCreds claims carry every schema
 // attribute (empty strings for the unset ones); the SD-JWT rail drops the
 // empty placeholders. The portrait reuses the generated demo avatar.
@@ -11,13 +11,13 @@ export const CITIZEN_DEMO_AVATAR = BADGE_DEMO_AVATAR;
 /** Per-scan citizen identity: the demo mints a fresh personalIdentifier so
  *  every visitor holds a distinguishable (but obviously fictional) ID. */
 export function citizenDemoClaims(): { name: string; value: string }[] {
-  const personalIdentifier = `UT-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
+  const personalIdentifier = `VD-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
   return [
     { name: "familyName", value: "Solano" },
     { name: "givenName", value: "Aria" },
     { name: "birthDate", value: "19940512" },
     { name: "personalIdentifier", value: personalIdentifier },
-    { name: "nationality", value: "UT" },
+    { name: "nationality", value: "VD" },
     { name: "portrait", value: CITIZEN_DEMO_AVATAR },
     { name: "issuingAuthority", value: "National Civil Registry (demo)" },
   ];
@@ -33,7 +33,7 @@ export function legalRepDemoClaims(): { name: string; value: string }[] {
   const validUntil = yearOut.toISOString().slice(0, 10).replace(/-/g, "");
   return [
     { name: "companyName", value: "Solaris Bakery (demo)" },
-    { name: "companyRegistryId", value: "UT-REG-004271" },
+    { name: "companyRegistryId", value: "VD-REG-004271" },
     { name: "representativeName", value: "Tomás Ferreira" },
     { name: "role", value: "managing-director" },
     { name: "powers", value: "full" },

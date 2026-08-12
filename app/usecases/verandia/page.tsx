@@ -5,12 +5,12 @@ import { CHAPTERS_NAV } from "./chapters";
 import { Section1 } from "./sections";
 
 export const metadata: Metadata = {
-  title: "Use case · Republica of Utopia - 1 · Meet Utopia",
+  title: "Use case · Republic of Verandia - 1 · Meet Verandia",
   description:
-    "Chapter 1 of the Utopia story: a democracy with real institutions, real services, and scammers trading on the Republic's name. Nothing can be proven.",
+    "Chapter 1 of the Verandia story: a democracy with real institutions, real services, and scammers trading on the Republic's name. Nothing can be proven.",
 };
 
-export default function UtopiaChapter1() {
+export default function VerandiaChapter1() {
   return (
     <>
       <header className="hero-gradient text-white">
@@ -20,14 +20,14 @@ export default function UtopiaChapter1() {
             items={[
               { label: "Playground", href: "/" },
               { label: "Use Cases" },
-              { label: "Republica of Utopia" },
+              { label: "Republic of Verandia" },
             ]}
           />
           <h1 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl">
-            Learn with Utopia how a democracy deploys verifiable identity
+            Learn with Verandia how a democracy deploys verifiable identity
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/80">
-            Follow the Republica of Utopia through its full journey: an
+            Follow the Republic of Verandia through its full journey: an
             eIDAS-2-compatible Citizen ID for every citizen, a verifiable
             Business ID for every company, legal representation as proof, and
             passwordless sign-in at the Tax Buro and the bank. Then do every

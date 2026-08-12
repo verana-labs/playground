@@ -11,13 +11,13 @@ import {
   citizenOid4vcClaims,
   legalRepDemoClaims,
   legalRepOid4vcClaims,
-} from "@/app/lib/demo-utopia";
+} from "@/app/lib/demo-verandia";
 import {
-  UTOPIA_CITIZEN_ID_JSC,
-  UTOPIA_CITIZEN_ID_NAME,
-  UTOPIA_LEGAL_REP_JSC,
-  UTOPIA_LEGAL_REP_NAME,
-} from "@/app/lib/utopia-cast";
+  VERANDIA_CITIZEN_ID_JSC,
+  VERANDIA_CITIZEN_ID_NAME,
+  VERANDIA_LEGAL_REP_JSC,
+  VERANDIA_LEGAL_REP_NAME,
+} from "@/app/lib/verandia-cast";
 import { VESTA_CAST } from "@/app/lib/vesta-cast";
 
 // Live demo-action link for a Playground cast service (spec §4): what the
@@ -28,7 +28,7 @@ import { VESTA_CAST } from "@/app/lib/vesta-cast";
 // connection invitation: its lesson (Q1) happens before any exchange exists.
 //
 // The `credential` query selects WHICH credential the action is about - the
-// DemoCredential (default), the Vesta ECS-Badge, or the Utopia credentials -
+// DemoCredential (default), the Vesta ECS-Badge, or the Verandia credentials -
 // via the registry below; the service id selects WHO mints it.
 
 export const dynamic = "force-dynamic";
@@ -75,24 +75,24 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     claims: badgeDemoClaims,
     oid4vcClaims: badgeOid4vcClaims,
   },
-  "utopia-citizen-id": {
-    label: "Utopia Citizen ID",
-    credDefName: UTOPIA_CITIZEN_ID_NAME,
+  "verandia-citizen-id": {
+    label: "Verandia Citizen ID",
+    credDefName: VERANDIA_CITIZEN_ID_NAME,
     oid4vcConfig:
       process.env.DEMO_OID4VC_CITIZEN_CONFIG ?? "utopia-citizen-id",
     oid4vcPolicy: process.env.DEMO_OID4VC_CITIZEN_POLICY ?? "utopia-citizen-id",
-    jscUrl: UTOPIA_CITIZEN_ID_JSC,
+    jscUrl: VERANDIA_CITIZEN_ID_JSC,
     claims: () => citizenDemoClaims(),
     oid4vcClaims: () => citizenOid4vcClaims(),
   },
-  "utopia-legal-rep": {
+  "verandia-legal-rep": {
     label: "Legal Representative credential",
-    credDefName: UTOPIA_LEGAL_REP_NAME,
+    credDefName: VERANDIA_LEGAL_REP_NAME,
     oid4vcConfig:
       process.env.DEMO_OID4VC_LEGAL_REP_CONFIG ?? "utopia-legal-rep",
     oid4vcPolicy:
       process.env.DEMO_OID4VC_LEGAL_REP_POLICY ?? "utopia-legal-rep",
-    jscUrl: UTOPIA_LEGAL_REP_JSC,
+    jscUrl: VERANDIA_LEGAL_REP_JSC,
     claims: () => legalRepDemoClaims(),
     oid4vcClaims: () => legalRepOid4vcClaims(),
   },

@@ -3,16 +3,16 @@ import { adminBase, adminJson } from "@/app/lib/demo-admin";
 import { getDemoService } from "@/app/lib/demo-services";
 import { didHost } from "@/app/lib/did";
 import { issuerDidFromRecord, toClaims, type Claim } from "@/app/lib/presentation";
-import { UTOPIA_CAST } from "@/app/lib/utopia-cast";
+import { VERANDIA_CAST } from "@/app/lib/verandia-cast";
 
-// Status + access decision for a Utopia login presentation (chapter-4 demos
+// Status + access decision for a Verandia login presentation (chapter-4 demos
 // 3 and 4). Once the wallet presents, the relying party decides from the
 // credential ISSUER's chain:
 //   - mode citizen: issuer is the National Civil Registry DID  -> citizen
 //   - mode company: issuer is the National Business Registry DID -> company
 //     space (company name from the presented claims)
 //   - anything else                                            -> denied
-// This is the login policy of the story (spec: playground/utopia §3.5 - one
+// This is the login policy of the story (spec: playground/verandia §3.5 - one
 // rule per credential covers the whole Republic), executed against the
 // issuing registries' DIDs.
 
@@ -27,14 +27,14 @@ const claim = (claims: Claim[], name: string) =>
  *  demo claim sets are recognizable by their registry-stamped values. */
 function fallbackIssuerDid(mode: string, claims: Claim[]): string | null {
   if (mode === "company") {
-    return claim(claims, "companyRegistryId")?.startsWith("UT-REG")
-      ? UTOPIA_CAST.businessRegistry.did
+    return claim(claims, "companyRegistryId")?.startsWith("VD-REG")
+      ? VERANDIA_CAST.businessRegistry.did
       : null;
   }
   return claim(claims, "issuingAuthority")?.startsWith(
     "National Civil Registry",
-  ) || claim(claims, "personalIdentifier")?.startsWith("UT-")
-    ? UTOPIA_CAST.civilRegistry.did
+  ) || claim(claims, "personalIdentifier")?.startsWith("VD-")
+    ? VERANDIA_CAST.civilRegistry.did
     : null;
 }
 
@@ -47,8 +47,8 @@ function decide(
   const host = didHost(issuerDid);
   if (mode === "company") {
     if (
-      issuerDid === UTOPIA_CAST.businessRegistry.did ||
-      (host !== null && host === UTOPIA_CAST.businessRegistry.host)
+      issuerDid === VERANDIA_CAST.businessRegistry.did ||
+      (host !== null && host === VERANDIA_CAST.businessRegistry.host)
     ) {
       return {
         decision: "company",
@@ -59,8 +59,8 @@ function decide(
     return { decision: "denied" };
   }
   if (
-    issuerDid === UTOPIA_CAST.civilRegistry.did ||
-    (host !== null && host === UTOPIA_CAST.civilRegistry.host)
+    issuerDid === VERANDIA_CAST.civilRegistry.did ||
+    (host !== null && host === VERANDIA_CAST.civilRegistry.host)
   ) {
     const name = [claim(claims, "givenName"), claim(claims, "familyName")]
       .filter(Boolean)

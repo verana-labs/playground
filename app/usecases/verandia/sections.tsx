@@ -21,14 +21,14 @@ import { Container, Section, SectionHeading, Chip } from "../../components/ui";
 import { DidBadge } from "../../components/Did";
 import LiveTrustCard from "../../components/LiveTrustCard";
 import { listPersonalWallets } from "../../lib/wallets";
-import { isPendingDid, UTOPIA_CAST } from "../../lib/utopia-cast";
+import { isPendingDid, VERANDIA_CAST } from "../../lib/verandia-cast";
 import { LINKS } from "../../lib/site";
 import { WalletChooser } from "../vesta/DemoWalletFlow";
 import { SubHeading, SubStepBlock } from "../story-blocks";
-import { UTOPIA_SCENES } from "./scenes";
-import UtopiaOffers from "./UtopiaOffers";
-import UtopiaLoginDemo from "./UtopiaLoginDemo";
-import UtopiaRequestQr from "./UtopiaRequestQr";
+import { VERANDIA_SCENES } from "./scenes";
+import VerandiaOffers from "./VerandiaOffers";
+import VerandiaLoginDemo from "./VerandiaLoginDemo";
+import VerandiaRequestQr from "./VerandiaRequestQr";
 import {
   CLOSING,
   DEMOS,
@@ -39,7 +39,7 @@ import {
   PILLARS,
   REPUBLIC,
   SOLUTION,
-  UTOPIA_ASSETS,
+  VERANDIA_ASSETS,
 } from "./content";
 
 const NEED_SHORT = ["Institutions", "Citizen ID", "Business IDs", "Legal Rep", "Auth"];
@@ -58,24 +58,24 @@ const PILLAR_TONES = {
   emerald: "border-emerald-200 bg-emerald-50/60 text-emerald-700",
 } as const;
 
-export function UtopiaEmblem({ className = "h-[84px] w-[84px]" }: { className?: string }) {
-  if (UTOPIA_ASSETS.emblem) {
+export function VerandiaEmblem({ className = "h-[84px] w-[84px]" }: { className?: string }) {
+  if (VERANDIA_ASSETS.emblem) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
       <img
-        src={UTOPIA_ASSETS.emblem}
-        alt="Coat of arms of the Republica of Utopia"
+        src={VERANDIA_ASSETS.emblem}
+        alt="Coat of arms of the Republic of Verandia"
         className={`${className} rounded-2xl object-contain`}
       />
     );
   }
   // Placeholder emblem until the civic brand kit lands (spec open item 3):
-  // a shield with the Utopia star on a deep-blue gradient.
+  // a shield with the Verandia star on a deep-blue gradient.
   return (
     <svg
       viewBox="0 0 64 64"
       className={className}
-      aria-label="Coat of arms of the Republica of Utopia"
+      aria-label="Coat of arms of the Republic of Verandia"
     >
       <defs>
         <linearGradient id="ulg" x1="0" y1="0" x2="1" y2="1">
@@ -104,13 +104,13 @@ export function UtopiaEmblem({ className = "h-[84px] w-[84px]" }: { className?: 
 export function Section1() {
   return (
     <>
-      {/* §1 · Meet the Republica of Utopia - civic article, no protocol */}
+      {/* §1 · Meet the Republic of Verandia - civic article, no protocol */}
       <Section id="section-1">
         <Container className="max-w-4xl">
           {/* State header */}
           <div className="rounded-3xl border border-gray-200 bg-white p-8 shadow-sm sm:p-10">
             <div className="flex flex-wrap items-center gap-5">
-              <UtopiaEmblem />
+              <VerandiaEmblem />
               <div>
                 <h2 className="text-3xl font-bold tracking-tight text-gray-900">
                   {REPUBLIC.name}
@@ -132,16 +132,16 @@ export function Section1() {
           <p className="max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
             {REPUBLIC.intro}
           </p>
-          {UTOPIA_ASSETS.hero ? (
+          {VERANDIA_ASSETS.hero ? (
             <figure className="mt-6">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={UTOPIA_ASSETS.hero}
-                alt="The Republica of Utopia"
+                src={VERANDIA_ASSETS.hero}
+                alt="The Republic of Verandia"
                 className="photo-frame w-full object-cover"
               />
               <figcaption className="mt-2 text-center text-xs text-gray-400">
-                {UTOPIA_ASSETS.heroCaption}
+                {VERANDIA_ASSETS.heroCaption}
               </figcaption>
             </figure>
           ) : null}
@@ -151,7 +151,7 @@ export function Section1() {
             <SubHeading>The institutions</SubHeading>
             <div className="mt-6 flex flex-col items-center">
               <div className="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-5 py-3 shadow-sm">
-                <UtopiaEmblem className="h-12 w-12" />
+                <VerandiaEmblem className="h-12 w-12" />
                 <div>
                   <div className="text-sm font-bold text-gray-900">
                     {REPUBLIC.name}
@@ -191,16 +191,16 @@ export function Section1() {
                 })}
               </div>
             </div>
-            {UTOPIA_ASSETS.institutions ? (
+            {VERANDIA_ASSETS.institutions ? (
               <figure className="mt-6">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={UTOPIA_ASSETS.institutions}
-                  alt="The civic institutions of Utopia"
+                  src={VERANDIA_ASSETS.institutions}
+                  alt="The civic institutions of Verandia"
                   className="photo-frame w-full object-cover"
                 />
                 <figcaption className="mt-2 text-center text-xs text-gray-400">
-                  {UTOPIA_ASSETS.institutionsCaption}
+                  {VERANDIA_ASSETS.institutionsCaption}
                 </figcaption>
               </figure>
             ) : null}
@@ -244,11 +244,11 @@ export function Section1() {
               At the counter and at the bank
             </p>
             <div className="mt-3 grid gap-4 sm:grid-cols-2">
-              {UTOPIA_ASSETS.phishing ? (
+              {VERANDIA_ASSETS.phishing ? (
                 <figure>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={UTOPIA_ASSETS.phishing}
+                    src={VERANDIA_ASSETS.phishing}
                     alt="A phishing message impersonating the Tax Buro"
                     className="h-full w-full rounded-2xl object-cover"
                   />
@@ -256,7 +256,7 @@ export function Section1() {
               ) : null}
               <div
                 className={`flex flex-col justify-center gap-3 ${
-                  UTOPIA_ASSETS.phishing ? "" : "sm:col-span-2"
+                  VERANDIA_ASSETS.phishing ? "" : "sm:col-span-2"
                 }`}
               >
                 {REPUBLIC.problemsOffline.map((pb) => {
@@ -294,10 +294,10 @@ export function Section1() {
             <figure className="mt-6 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm sm:p-10">
               <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
                 <figcaption className="shrink-0 text-center">
-                  {UTOPIA_ASSETS.pm ? (
+                  {VERANDIA_ASSETS.pm ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={UTOPIA_ASSETS.pm}
+                      src={VERANDIA_ASSETS.pm}
                       alt={REPUBLIC.pmQuote.name}
                       className="mx-auto h-48 w-40 rounded-2xl object-cover object-top shadow-md"
                     />
@@ -334,7 +334,7 @@ export function Section1() {
 export function Section2() {
   return (
     <>
-      {/* §2 · The solution: pillars + the ecosystems Utopia joins or builds */}
+      {/* §2 · The solution: pillars + the ecosystems Verandia joins or builds */}
       <Section id="section-2" className="border-t border-gray-200 bg-white">
         <Container className="max-w-4xl">
           <SectionHeading number={2} title={SOLUTION.title} />
@@ -343,10 +343,10 @@ export function Section2() {
           <figure className="mb-12 rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
             <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
               <figcaption className="shrink-0 text-center">
-                {UTOPIA_ASSETS.minister ? (
+                {VERANDIA_ASSETS.minister ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
-                    src={UTOPIA_ASSETS.minister}
+                    src={VERANDIA_ASSETS.minister}
                     alt={SOLUTION.ministerQuote.name}
                     className="mx-auto h-40 w-32 rounded-2xl object-cover object-top shadow-md"
                   />
@@ -396,7 +396,7 @@ export function Section2() {
                         {n.title}
                       </span>
                       <a
-                        href={`/usecases/utopia/journey#need-${n.need}`}
+                        href={`/usecases/verandia/journey#need-${n.need}`}
                         className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                       >
                         → The journey · {n.tag}
@@ -444,7 +444,7 @@ export function Section2() {
             </p>
           </div>
 
-          {/* The ecosystem Utopia wants to join */}
+          {/* The ecosystem Verandia wants to join */}
           <div className="mt-14">
             <SubHeading>{SOLUTION.ecosystemsTitle}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
@@ -456,7 +456,7 @@ export function Section2() {
                   <Landmark className="h-5 w-5" />
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 px-2.5 py-1 text-xs font-semibold text-blue-700">
-                  <BadgeCheck className="h-3 w-3" /> Utopia joins as{" "}
+                  <BadgeCheck className="h-3 w-3" /> Verandia joins as{" "}
                   {ECOSYSTEM_JOIN.roles}
                 </span>
               </div>
@@ -484,7 +484,7 @@ export function Section2() {
             </div>
           </div>
 
-          {/* The ecosystems Utopia wants to build */}
+          {/* The ecosystems Verandia wants to build */}
           <div className="mt-14">
             <SubHeading>{SOLUTION.buildTitle}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
@@ -596,7 +596,7 @@ export function Section3() {
                 </p>
                 <div className="mt-8 space-y-14">
                   {need.steps.map((sub) => (
-                    <SubStepBlock key={sub.id} sub={sub} graph={UTOPIA_SCENES} />
+                    <SubStepBlock key={sub.id} sub={sub} graph={VERANDIA_SCENES} />
                   ))}
                 </div>
               </div>
@@ -616,7 +616,7 @@ function DemoComing() {
     <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-6 text-center">
       <Chip tone="pending">demo coming</Chip>
       <p className="mt-2 text-sm leading-relaxed text-gray-500">
-        The Utopia cast is being deployed on the Verana testnet - this demo
+        The Verandia cast is being deployed on the Verana testnet - this demo
         goes live with it.
       </p>
     </div>
@@ -627,7 +627,7 @@ export function Section4() {
   const wallets = listPersonalWallets();
   return (
     <>
-      {/* §4 · Run the demos - placeholders until the Utopia cast ships */}
+      {/* §4 · Run the demos - placeholders until the Verandia cast ships */}
       <Section id={DEMOS.anchor} className="border-t border-gray-200 bg-white">
         <Container className="max-w-4xl">
           <SectionHeading number={DEMOS.n} title={DEMOS.title} subtitle={DEMOS.intro} />
@@ -648,17 +648,17 @@ export function Section4() {
             </Suspense>
           </div>
 
-          {/* Demo 1 · Get your Utopia Citizen ID */}
+          {/* Demo 1 · Get your Verandia Citizen ID */}
           <div id="demo-citizen-id" className="mt-14 scroll-mt-24">
             <SubHeading>{DEMOS.citizenId.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.citizenId.intro}
             </p>
-            {isPendingDid(UTOPIA_CAST.civilRegistry.did) ? (
+            {isPendingDid(VERANDIA_CAST.civilRegistry.did) ? (
               <DemoComing />
             ) : (
               <Suspense>
-                <UtopiaOffers wallets={wallets} offers={[DEMOS.citizenId.offer]} />
+                <VerandiaOffers wallets={wallets} offers={[DEMOS.citizenId.offer]} />
               </Suspense>
             )}
           </div>
@@ -669,11 +669,11 @@ export function Section4() {
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.legalRep.intro}
             </p>
-            {isPendingDid(UTOPIA_CAST.businessRegistry.did) ? (
+            {isPendingDid(VERANDIA_CAST.businessRegistry.did) ? (
               <DemoComing />
             ) : (
               <Suspense>
-                <UtopiaOffers wallets={wallets} offers={[DEMOS.legalRep.offer]} />
+                <VerandiaOffers wallets={wallets} offers={[DEMOS.legalRep.offer]} />
               </Suspense>
             )}
           </div>
@@ -712,12 +712,12 @@ export function Section4() {
                 ))}
               </ul>
             </div>
-            {isPendingDid(UTOPIA_CAST.taxBuro.did) ? (
+            {isPendingDid(VERANDIA_CAST.taxBuro.did) ? (
               <DemoComing />
             ) : (
               <div className="mx-auto mt-6 max-w-xl">
                 <Suspense>
-                  <UtopiaLoginDemo wallets={wallets} portal="tax-buro" />
+                  <VerandiaLoginDemo wallets={wallets} portal="tax-buro" />
                 </Suspense>
               </div>
             )}
@@ -757,25 +757,25 @@ export function Section4() {
                 ))}
               </ul>
             </div>
-            {UTOPIA_ASSETS.bank ? (
+            {VERANDIA_ASSETS.bank ? (
               <figure className="mx-auto mt-6 max-w-md">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={UTOPIA_ASSETS.bank}
+                  src={VERANDIA_ASSETS.bank}
                   alt="Meridian Bank (demo)"
                   className="w-full rounded-2xl border border-gray-200 object-cover shadow-sm"
                 />
                 <figcaption className="mt-2 text-center text-xs text-gray-400">
-                  {UTOPIA_ASSETS.bankCaption}
+                  {VERANDIA_ASSETS.bankCaption}
                 </figcaption>
               </figure>
             ) : null}
-            {isPendingDid(UTOPIA_CAST.meridianBank.did) ? (
+            {isPendingDid(VERANDIA_CAST.meridianBank.did) ? (
               <DemoComing />
             ) : (
               <div className="mx-auto mt-6 max-w-xl">
                 <Suspense>
-                  <UtopiaLoginDemo wallets={wallets} portal="meridian-bank" />
+                  <VerandiaLoginDemo wallets={wallets} portal="meridian-bank" />
                 </Suspense>
               </div>
             )}
@@ -798,12 +798,12 @@ export function Section4() {
               <p className="mt-2 text-sm leading-relaxed text-red-600">
                 {DEMOS.quickcash.expect}
               </p>
-              {isPendingDid(UTOPIA_CAST.quickcash.did) ? (
+              {isPendingDid(VERANDIA_CAST.quickcash.did) ? (
                 <DemoComing />
               ) : (
                 <div className="mt-4 space-y-3">
                   <Suspense>
-                    <UtopiaRequestQr
+                    <VerandiaRequestQr
                       wallets={wallets}
                       serviceId={DEMOS.quickcash.serviceId}
                       label="QuickCash Loans (demo)"
@@ -816,7 +816,7 @@ export function Section4() {
             </div>
           </div>
 
-          {/* Demo 6 · Directory of Utopia */}
+          {/* Demo 6 · Directory of Verandia */}
           <div className="mt-14">
             <SubHeading>{DEMOS.directory.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
@@ -864,11 +864,11 @@ export function Section4() {
             Full story specification:{" "}
             <a
               className="text-violet-600 underline hover:text-violet-700"
-              href={`${LINKS.spec}/utopia/spec.md`}
+              href={`${LINKS.spec}/verandia/spec.md`}
               target="_blank"
               rel="noopener noreferrer"
             >
-              verana-spec / playground / utopia <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
+              verana-spec / playground / verandia <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
             </a>
           </p>
         </Container>

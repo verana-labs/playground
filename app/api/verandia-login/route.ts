@@ -2,20 +2,20 @@ import { NextResponse } from "next/server";
 import { adminBase, adminJson } from "@/app/lib/demo-admin";
 import { getDemoService } from "@/app/lib/demo-services";
 import {
-  UTOPIA_CITIZEN_ID_JSC,
-  UTOPIA_LEGAL_REP_JSC,
-} from "@/app/lib/utopia-cast";
+  VERANDIA_CITIZEN_ID_JSC,
+  VERANDIA_LEGAL_REP_JSC,
+} from "@/app/lib/verandia-cast";
 
-// Mint a credential presentation request from one of the Utopia relying
+// Mint a credential presentation request from one of the Verandia relying
 // parties (chapter-4 demos 3 and 4: the Tax Buro portal and the Meridian
 // Bank window). Two modes per portal:
-//   - citizen: request the Utopia Citizen ID (personal space / KYC)
+//   - citizen: request the Verandia Citizen ID (personal space / KYC)
 //   - company: request the Legal Representative credential (company space /
 //     corporate account access)
 // DIDComm rail: an OOB presentation request against the schema's VTJSC.
 // OID4VC rail: an OID4VP authorization request from the portal's policy.
 // The access decision happens after presentation, on the credential
-// ISSUER's chain - see /api/utopia-login/[id].
+// ISSUER's chain - see /api/verandia-login/[id].
 
 export const dynamic = "force-dynamic";
 
@@ -81,15 +81,15 @@ export async function GET(req: Request) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          ref: `utopia-login-${portal}-${mode}`,
+          ref: `verandia-login-${portal}-${mode}`,
           requestedCredentials: [
             mode === "company"
               ? {
-                  jsonSchemaCredentialId: UTOPIA_LEGAL_REP_JSC,
+                  jsonSchemaCredentialId: VERANDIA_LEGAL_REP_JSC,
                   attributes: LEGAL_REP_ATTRIBUTES,
                 }
               : {
-                  jsonSchemaCredentialId: UTOPIA_CITIZEN_ID_JSC,
+                  jsonSchemaCredentialId: VERANDIA_CITIZEN_ID_JSC,
                   attributes: CITIZEN_ATTRIBUTES,
                 },
           ],

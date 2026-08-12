@@ -4,7 +4,7 @@ import type { PersonalWallet } from "../../lib/wallets";
 import { ServiceQr } from "../../components/ServiceQr";
 import { useSelectedWallet } from "../vesta/DemoWalletFlow";
 
-export default function UtopiaRequestQr({
+export default function VerandiaRequestQr({
   wallets,
   serviceId,
   label,

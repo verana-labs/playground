@@ -5,7 +5,7 @@ import { DidBadge } from "../components/Did";
 import StoryDiagram from "../components/StoryDiagram";
 import type { SceneGraph } from "../components/scene-graph";
 
-// Shared building blocks of the use-case journey chapters (Vesta, Utopia,
+// Shared building blocks of the use-case journey chapters (Vesta, Verandia,
 // ...): the sub-step block (story · points · diagram · Reproduce it · Under
 // the hood), the sub-heading, and the kind chip. Content stays per use case
 // (app/usecases/*/content.ts); the rendering is identical by design.

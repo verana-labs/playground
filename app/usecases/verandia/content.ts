@@ -43,7 +43,7 @@ export const VERANDIA_ASSETS = {
 
 export const REPUBLIC = {
   name: "Republic of Verandia",
-  tagline: "A democracy, going digital",
+  tagline: "A country, going verifiable",
   meta: [
     "Population ~4.8 million",
     "E-government since 2009",

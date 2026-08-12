@@ -29,7 +29,8 @@ TPL="${CAST_DIR}/oid4vc/${OID4VC_ROLE}.json.tpl"
 
 CONFIG=$(sed -e "s/__NETWORK__/${NETWORK}/g" -e "s/__SERVICE_NAME__/${SERVICE_NAME}/g" "$TPL")
 
-if [ "$OID4VC_ROLE" = "verifier" ]; then
+case "$OID4VC_ROLE" in verifier|verifier-overasking) FINGERPRINT_ROLE=1 ;; *) FINGERPRINT_ROLE="" ;; esac
+if [ -n "$FINGERPRINT_ROLE" ]; then
   FINGERPRINTS=""
   PF_PID=""
   trap '[ -n "$PF_PID" ] && kill "$PF_PID" 2>/dev/null || true' EXIT

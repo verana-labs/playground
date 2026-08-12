@@ -16,7 +16,7 @@
       "civil-registry.utopia.playground.__NETWORK__.verana.network"
     ],
     "credentialIssuerCertificates": [],
-    "developmentCertificateFingerprints": []
+    "developmentCertificateFingerprints": [__ISSUER_FINGERPRINTS__]
   },
   "credentialConfigurations": [
     {

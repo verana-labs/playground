@@ -1,11 +1,11 @@
-name: "Bolivia 02 · ECS accreditations (Business Registry)"
+name: "Verandia 02 · ECS accreditations (Business Registry)"
 
-# Accredits the SEPREC (demo) as an ISSUER of
+# Accredits the National Business Registry (demo) as an ISSUER of
 # ECS-Organization — Business IDs from the register itself. The
 # ECS-Organization schema is issuer-mode ECOSYSTEM, so the transaction must
 # be signed by the ECS trust registry controller account — secret
-# ECS_ECOSYSTEM_MNEMONIC. Run after "Bolivia 01". Part of the Bolivia cast
-# CI/CD — see .github/workflows/bolivia/README.md.
+# ECS_ECOSYSTEM_MNEMONIC. Run after "Verandia 01". Part of the Verandia cast
+# CI/CD — see .github/workflows/verandia/README.md.
 
 on:
   workflow_dispatch:
@@ -42,7 +42,7 @@ jobs:
 
       - name: Grant accreditations
         run: |
-          export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/bolivia"
+          export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/verandia"
           export VESTA_DIR="${GITHUB_WORKSPACE}/.github/workflows/vesta"
           bash "${CAST_DIR}/scripts/ecs-accreditations.sh"
 
@@ -51,4 +51,4 @@ jobs:
         run: |
           echo "## ECS accreditations" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "- SEPREC (demo): ISSUER permission on ECS-Organization" >> "$GITHUB_STEP_SUMMARY"
+          echo "- National Business Registry: ISSUER permission on ECS-Organization" >> "$GITHUB_STEP_SUMMARY"

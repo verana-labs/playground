@@ -15,12 +15,12 @@
   },
   "credentialConfigurations": [
     {
-      "id": "bolivia-legal-rep",
+      "id": "verandia-legal-rep",
       "format": "dc+sd-jwt",
-      "vct": "https://seprec.bolivia.playground.__NETWORK__.verana.network/oid4vc/vct/bolivia-legal-rep",
+      "vct": "https://business-registry.verandia.playground.__NETWORK__.verana.network/oid4vc/vct/verandia-legal-rep",
       "name": "LegalRepresentative",
-      "description": "Proof of legal representation issued by the SEPREC (demo) of the Estado Plurinacional de Bolivia (demo) (demo)",
-      "vtjscId": "https://seprec.bolivia.playground.__NETWORK__.verana.network/vt/schemas-legal-representative-jsc.json",
+      "description": "Proof of legal representation issued by the National Business Registry of the Republic of Verandia (demo)",
+      "vtjscId": "https://business-registry.verandia.playground.__NETWORK__.verana.network/vt/schemas-legal-representative-jsc.json",
       "claims": [
         "companyName",
         "companyRegistryId",

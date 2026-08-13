@@ -1,8 +1,8 @@
-name: "Bolivia 01 · SEPREC (demo) (register)"
+name: "Verandia 01 · National Business Registry (register)"
 
-# Deploys the SEPREC (demo), bootstraps its ECS-Organization +
+# Deploys the National Business Registry (demo), bootstraps its ECS-Organization +
 # ECS-Service and creates the Legal Representation ecosystem.
-# Part of the Bolivia cast CI/CD — see .github/workflows/bolivia/README.md.
+# Part of the Verandia cast CI/CD — see .github/workflows/verandia/README.md.
 
 on:
   workflow_dispatch:
@@ -23,10 +23,10 @@ on:
         default: false
 
 jobs:
-  seprec:
-    uses: ./.github/workflows/bolivia-00_core.yml
+  business-registry:
+    uses: ./.github/workflows/verandia-00_core.yml
     with:
-      org: seprec
+      org: business-registry
       step: ${{ inputs.step }}
       force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

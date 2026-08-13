@@ -1,8 +1,8 @@
-name: "Bolivia 03 · SEGIP (demo) (Cedula Digital)"
+name: "Verandia 03 · National Civil Registry (Citizen ID)"
 
-# Deploys the SEGIP (demo) and creates the Cedula Digital
+# Deploys the National Civil Registry (demo) and creates the Verandia Citizen ID
 # ecosystem — issuance AND verification governed.
-# Part of the Bolivia cast CI/CD — see .github/workflows/bolivia/README.md.
+# Part of the Verandia cast CI/CD — see .github/workflows/verandia/README.md.
 
 on:
   workflow_dispatch:
@@ -23,10 +23,10 @@ on:
         default: false
 
 jobs:
-  segip:
-    uses: ./.github/workflows/bolivia-00_core.yml
+  civil-registry:
+    uses: ./.github/workflows/verandia-00_core.yml
     with:
-      org: segip
+      org: civil-registry
       step: ${{ inputs.step }}
       force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

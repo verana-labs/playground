@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Provision a registered relying party of the Republic (Impuestos Nacionales, Meridian
-# Bank): ECS-Organization from the SEPREC (demo), self-issued
-# ECS-Service, a validated VERIFIER permission on the Cedula Digital
+# Provision a registered relying party of the Republic (Tax Buro, Meridian
+# Bank): ECS-Organization from the National Business Registry, self-issued
+# ECS-Service, a validated VERIFIER permission on the Verandia Citizen ID
 # (verifier mode ECOSYSTEM — the on-chain relying-party register) and a
 # self-created VERIFIER permission on the Legal Representative schema
 # (verifier mode OPEN). Shared by both relying-party orgs, like the Vesta
@@ -24,14 +24,14 @@ ok "${SERVICE_NAME} DID: $AGENT_DID"
 obtain_ecs_org_credential "$API" "$BUSINESS_REGISTRY_API" "$AGENT_DID"
 obtain_service_credential "$API" "$API" "$AGENT_DID" self
 
-# VERIFIER registration on the Cedula Digital (verifier mode is ECOSYSTEM)
+# VERIFIER registration on the Verandia Citizen ID (verifier mode is ECOSYSTEM)
 CITIZEN_SCHEMA_ID=$(discover_ecs_vtjsc "https://${CIVIL_REGISTRY_HOST}" "$CITIZEN_SCHEMA_BASE_ID" | sed -n '2p')
-[ -n "$CITIZEN_SCHEMA_ID" ] || { err "Could not discover the Cedula Digital schema from https://${CIVIL_REGISTRY_HOST} — run bolivia-03 first"; exit 1; }
+[ -n "$CITIZEN_SCHEMA_ID" ] || { err "Could not discover the Citizen ID schema from https://${CIVIL_REGISTRY_HOST} — run verandia-03 first"; exit 1; }
 ensure_validated_verifier_perm "$CITIZEN_SCHEMA_ID" "$AGENT_DID"
 
 # VERIFIER permission on the Legal Representative schema (verifier mode is OPEN)
 LEGAL_REP_SCHEMA_ID=$(discover_ecs_vtjsc "https://${BUSINESS_REGISTRY_HOST}" "$LEGAL_REP_SCHEMA_BASE_ID" | sed -n '2p')
-[ -n "$LEGAL_REP_SCHEMA_ID" ] || { err "Could not discover the Legal Representative schema from https://${BUSINESS_REGISTRY_HOST} — run bolivia-01 first"; exit 1; }
+[ -n "$LEGAL_REP_SCHEMA_ID" ] || { err "Could not discover the Legal Representative schema from https://${BUSINESS_REGISTRY_HOST} — run verandia-01 first"; exit 1; }
 ensure_open_perm "$LEGAL_REP_SCHEMA_ID" verifier "$AGENT_DID"
 
 ok "${SERVICE_NAME} provisioned: a registered relying party of the Republic."

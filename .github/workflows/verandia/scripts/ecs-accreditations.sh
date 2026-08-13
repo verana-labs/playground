@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# ECS-side accreditation for the Bolivia cast. Runs with the ECS ecosystem
+# ECS-side accreditation for the Verandia cast. Runs with the ECS ecosystem
 # controller account (ECS_ECOSYSTEM_MNEMONIC): the ECS-Organization schema is
 # issuer-mode ECOSYSTEM, so only that account can accredit the National
 # Business Registry as an ECS-Organization issuer — the keystone decision:
 # Business IDs are plain ECS-Organization credentials issued by the register
-# that IS the source of truth about Bolivian companies.
+# that IS the source of truth about Verandian companies.
 # No kubectl needed — everything works from public DID documents + the chain.
 set -eo pipefail
 source "${VESTA_DIR}/common.sh"
@@ -12,7 +12,7 @@ source "${CAST_DIR}/scripts/lib.sh"
 set_network_vars "${NETWORK:-testnet}"
 
 BUSINESS_REGISTRY_DID=$(get_public_did_from_host "$BUSINESS_REGISTRY_HOST")
-[ -n "$BUSINESS_REGISTRY_DID" ] || { err "Could not resolve the Business Registry DID from https://${BUSINESS_REGISTRY_HOST} — deploy bolivia-01 first"; exit 1; }
+[ -n "$BUSINESS_REGISTRY_DID" ] || { err "Could not resolve the Business Registry DID from https://${BUSINESS_REGISTRY_HOST} — deploy verandia-01 first"; exit 1; }
 ok "Business Registry DID: $BUSINESS_REGISTRY_DID"
 
 ORG_SCHEMA_ID=$(discover_ecs_vtjsc "$ECS_TR_PUBLIC_URL" "organization" | sed -n '2p')

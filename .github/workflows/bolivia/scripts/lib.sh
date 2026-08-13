@@ -79,7 +79,15 @@ ensure_governed_schema_with_root() {
       --holder-validation-validity-period '{"value":0}' \
       3 3)
     ok "Credential schema created: CS=$cs_id"
+  fi
 
+  # The root permission is ensured independently of schema creation: a prior
+  # run may have created the schema and died before the root perm landed
+  # (e.g. a transient broadcast failure), and re-runs must converge instead
+  # of skipping past the missing root.
+  if discover_active_root_perm "$cs_id" > /dev/null 2>&1; then
+    ok "Root permission already active for CS=$cs_id — skipping"
+  else
     check_balance "$USER_ACC"
     local effective_from root_perm
     effective_from=$(future_timestamp 15)

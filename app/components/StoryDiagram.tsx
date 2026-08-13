@@ -136,9 +136,14 @@ function Pill({
 export default function StoryDiagram({
   graph,
   stage,
+  hint = "Click a participant to see the credentials it presents.",
+  newInStepLabel = "New in this step:",
 }: {
   graph: SceneGraph;
   stage: string;
+  /** UI chrome strings, overridable for localized stories. */
+  hint?: string;
+  newInStepLabel?: string;
 }) {
   const idx = stageIndex(graph, stage);
   const [selected, setSelected] = useState<string | null>(null);
@@ -357,13 +362,13 @@ export default function StoryDiagram({
         />
       ) : (
         <p className="mt-2 text-center text-[11px] text-gray-400">
-          Click a participant to see the credentials it presents.
+          {hint}
         </p>
       )}
       {newLabels.length > 0 ? (
         <figcaption className="mt-2 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-3 text-xs text-gray-500">
           <span className="font-semibold text-violet-600">
-            New in this step:
+            {newInStepLabel}
           </span>
           {newLabels.map((l) => (
             <span

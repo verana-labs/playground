@@ -1,9 +1,8 @@
 // The Bolivia cast on the Verana testnet - one vs-agent (Business Wallet)
 // per participant, deployed and provisioned by the bolivia-* workflows
-// (the Spanish public-sector story at /usecases/bolivia). Until each agent
-// ships, its DID is an explicit placeholder (the pre-cast pattern); refresh
-// each value from https://<host>/.well-known/did.jsonl (state.id) once the
-// host is live. Real institutions, always labeled (demo) by the cast.
+// (the Spanish public-sector story at /usecases/bolivia). All five agents
+// are live; DIDs read from each host's did.jsonl log (state.id). Real
+// institutions, always labeled (demo) by the cast.
 
 import type { CastMember } from "./vesta-cast";
 
@@ -15,23 +14,23 @@ const PENDING = "QmBoliviaCastPending111111111111111111111111";
 export const BOLIVIA_CAST = {
   seprec: {
     host: `seprec.${ZONE}`,
-    did: `did:webvh:${PENDING}:seprec.bolivia.playground.testnet.verana.network`,
+    did: `did:webvh:QmQobDGzpx4mXBxoBXgt78DNWE1wFDs5MX8Brf5hpraitW:seprec.bolivia.playground.testnet.verana.network`,
   },
   segip: {
     host: `segip.${ZONE}`,
-    did: `did:webvh:${PENDING}:segip.bolivia.playground.testnet.verana.network`,
+    did: `did:webvh:QmVoNiC8jSx4d225FAHoLEkAdFbS8oJbE9jAGkNXTeu7tv:segip.bolivia.playground.testnet.verana.network`,
   },
   impuestos: {
     host: `impuestos.${ZONE}`,
-    did: `did:webvh:${PENDING}:impuestos.bolivia.playground.testnet.verana.network`,
+    did: `did:webvh:QmYmtYTu9A6Q2YyzauaWfTmauAfRGB8oYxeubiABkHRmBU:impuestos.bolivia.playground.testnet.verana.network`,
   },
   bancoUnion: {
     host: `banco-union.${ZONE}`,
-    did: `did:webvh:${PENDING}:banco-union.bolivia.playground.testnet.verana.network`,
+    did: `did:webvh:Qmb9jPbVyXsJRN8UwGJcxyq89RGAGcUi2pjmabg4kS1bVo:banco-union.bolivia.playground.testnet.verana.network`,
   },
   prestamista: {
     host: `prestamista.${ZONE}`,
-    did: `did:webvh:${PENDING}:prestamista.bolivia.playground.testnet.verana.network`,
+    did: `did:webvh:QmckF3tqudnRMG9BZUS8cYkaCzVaw8aLEjLj8y7dJCn9m5:prestamista.bolivia.playground.testnet.verana.network`,
   },
 } as const satisfies Record<string, CastMember>;
 

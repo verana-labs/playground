@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -15,9 +16,16 @@ import {
   Stamp,
 } from "lucide-react";
 import { Chip, Container, Section } from "../../components/ui";
+import LiveTrustCard from "../../components/LiveTrustCard";
+import { listPersonalWallets } from "../../lib/wallets";
+import { BOLIVIA_CAST, isBoliviaPendingDid } from "../../lib/bolivia-cast";
+import { WalletChooser } from "../vesta/DemoWalletFlow";
+import BoliviaLoginDemo from "./BoliviaLoginDemo";
+import BoliviaOffers from "./BoliviaOffers";
+import BoliviaRequestQr from "./BoliviaRequestQr";
 import { SubHeading, SubStepBlock, type StoryLabels } from "../story-blocks";
 import { BOLIVIA_SCENES } from "./scenes";
-import { BOLIVIA_ASSETS, CLOSING, DEMOS, ESTADO, JOURNEY, SOLUTION } from "./content";
+import { CLOSING, DEMOS, ESTADO, JOURNEY, SOLUTION } from "./content";
 
 // Renderizado de los cuatro capítulos del caso Bolivia. Instituciones
 // reales con sus logos oficiales, siempre "(demo)" cuando actúan en la
@@ -412,57 +420,165 @@ export function Section3() {
 
 // ---------------------------------------------------------------- Capítulo 4
 
+function DemoProximamente() {
+  return (
+    <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-5 text-center">
+      <Chip tone="pending">demo próximamente</Chip>
+      <p className="mt-2 text-xs leading-relaxed text-gray-500">
+        Este servicio de la maqueta boliviana aún no está desplegado en la
+        testnet: la demo se activa sola cuando su agente esté en línea.
+      </p>
+    </div>
+  );
+}
+
 export function Section4() {
+  const wallets = listPersonalWallets();
   return (
     <>
       <Section>
-        <Container className="max-w-5xl">
+        <Container className="max-w-4xl">
           <p className="max-w-3xl text-lg leading-relaxed text-gray-600">{DEMOS.intro}</p>
 
-          <div className="mt-10">
-            <SubHeading>{DEMOS.liveTitle}</SubHeading>
-            <div className="reveal-stagger mt-6 grid gap-4 sm:grid-cols-2">
-              {DEMOS.liveItems.map((d) => (
-                <Link
-                  key={d.href}
-                  href={d.href}
-                  className="group flex items-center justify-between gap-4 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-colors hover:border-violet-300"
-                >
-                  <span className="text-sm font-semibold text-gray-900">{d.label}</span>
-                  <ArrowRight
-                    className="h-4 w-4 shrink-0 text-gray-300 transition-colors group-hover:text-violet-600"
-                    aria-hidden
-                  />
-                </Link>
-              ))}
-            </div>
-            <p className="mt-4 text-sm text-gray-500">{DEMOS.liveNote}</p>
+          <p className="mt-8 flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-5 py-4 text-sm font-medium text-amber-800">
+            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0" aria-hidden />
+            {DEMOS.verifyRule}
+          </p>
+
+          {/* Elegir wallet */}
+          <div className="mt-12">
+            <SubHeading>{DEMOS.chooseWallet.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.chooseWallet.intro}
+            </p>
+            <Suspense>
+              <WalletChooser wallets={wallets} />
+            </Suspense>
           </div>
 
-          <div className="mt-12 rounded-2xl border border-gray-200 bg-gray-50 p-6">
-            <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-lg font-bold text-gray-900">{DEMOS.maquetaTitle}</h3>
-              <Chip tone="pending">bajo demanda</Chip>
-            </div>
-            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-600">
-              {DEMOS.maqueta}
+          {/* Demo 1 · Cédula Digital */}
+          <div id="demo-cedula" className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.cedula.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.cedula.intro}
             </p>
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              {[
-                { src: BOLIVIA_ASSETS.segip, alt: "SEGIP" },
-                { src: BOLIVIA_ASSETS.seprec, alt: "SEPREC" },
-                { src: BOLIVIA_ASSETS.sin, alt: "Impuestos Nacionales" },
-                { src: BOLIVIA_ASSETS.bancoUnion, alt: "Banco Unión" },
-              ].map((l) => (
-                <span
-                  key={l.alt}
-                  className="flex h-12 items-center rounded-lg bg-white px-3 ring-1 ring-black/5"
-                >
-                  {/* eslint-disable-next-line @next/next/no-img-element -- logos oficiales pre-optimizados en public/ */}
-                  <img src={l.src} alt={`Logo de ${l.alt} (demo)`} className="max-h-8 w-auto object-contain" />
-                </span>
-              ))}
+            {isBoliviaPendingDid(BOLIVIA_CAST.segip.did) ? (
+              <DemoProximamente />
+            ) : (
+              <>
+                <Suspense>
+                  <BoliviaOffers wallets={wallets} offers={[DEMOS.cedula.offer]} />
+                </Suspense>
+                <div className="mx-auto mt-6 max-w-md">
+                  <LiveTrustCard serviceId={DEMOS.cedula.offer.serviceId} />
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Demo 2 · Representante Legal */}
+          <div id="demo-representante" className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.legalRep.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.legalRep.intro}
+            </p>
+            {isBoliviaPendingDid(BOLIVIA_CAST.seprec.did) ? (
+              <DemoProximamente />
+            ) : (
+              <>
+                <Suspense>
+                  <BoliviaOffers wallets={wallets} offers={[DEMOS.legalRep.offer]} />
+                </Suspense>
+                <div className="mx-auto mt-6 max-w-md">
+                  <LiveTrustCard serviceId={DEMOS.legalRep.offer.serviceId} />
+                </div>
+              </>
+            )}
+          </div>
+
+          {/* Demo 3 · Impuestos Nacionales */}
+          <div id="demo-impuestos" className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.taxLogin.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.taxLogin.intro}
+            </p>
+            {isBoliviaPendingDid(BOLIVIA_CAST.impuestos.did) ? (
+              <DemoProximamente />
+            ) : (
+              <div className="mx-auto mt-6 max-w-xl space-y-3">
+                <Suspense>
+                  <BoliviaLoginDemo wallets={wallets} portal="impuestos" />
+                </Suspense>
+                <LiveTrustCard serviceId="impuestos" />
+              </div>
+            )}
+          </div>
+
+          {/* Demo 4 · Banco Unión */}
+          <div id="demo-banco" className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.banco.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.banco.intro}
+            </p>
+            {isBoliviaPendingDid(BOLIVIA_CAST.bancoUnion.did) ? (
+              <DemoProximamente />
+            ) : (
+              <div className="mx-auto mt-6 max-w-xl space-y-3">
+                <Suspense>
+                  <BoliviaLoginDemo wallets={wallets} portal="banco-union" />
+                </Suspense>
+                <LiveTrustCard serviceId="banco-union" />
+              </div>
+            )}
+          </div>
+
+          {/* Demo 5 · El prestamista */}
+          <div id="demo-prestamista" className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.prestamista.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.prestamista.intro}
+            </p>
+            <div className="mt-6 rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-bold text-gray-900">
+                  Prestamista en línea (simulado)
+                </h3>
+                <Chip tone="verified">TRUSTED</Chip>
+                <Chip>sin permiso sobre la Cédula Digital</Chip>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-red-600">
+                {DEMOS.prestamista.expect}
+              </p>
+              {isBoliviaPendingDid(BOLIVIA_CAST.prestamista.did) ? (
+                <DemoProximamente />
+              ) : (
+                <div className="mt-4 space-y-3">
+                  <Suspense>
+                    <BoliviaRequestQr
+                      wallets={wallets}
+                      serviceId={DEMOS.prestamista.serviceId}
+                      label="Prestamista en línea (simulado)"
+                      credential={DEMOS.prestamista.credential}
+                    />
+                  </Suspense>
+                  <LiveTrustCard serviceId={DEMOS.prestamista.serviceId} />
+                </div>
+              )}
             </div>
+          </div>
+
+          {/* El caso Verandia como segunda referencia */}
+          <div className="mt-12 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-5">
+            <p className="max-w-2xl text-sm leading-relaxed text-gray-600">
+              {DEMOS.verandiaNote}
+            </p>
+            <Link
+              href={DEMOS.verandiaHref}
+              className="inline-flex items-center gap-2 rounded-xl border border-violet-200 bg-white px-4 py-2 text-sm font-semibold text-violet-700 transition-colors hover:border-violet-300 hover:bg-violet-50"
+            >
+              {DEMOS.verandiaTitle}
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </Link>
           </div>
         </Container>
       </Section>

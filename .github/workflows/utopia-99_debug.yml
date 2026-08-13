@@ -28,13 +28,13 @@ jobs:
         run: |
           NS="$K8S_NAMESPACE"
           echo "===== utopia pods ====="
-          kubectl get pods -n "$NS" -o wide | grep -E "NAME|business-registry|civil-registry|tax-buro|meridian-bank|quickcash" || true
+          kubectl get pods -n "$NS" -o wide | grep -E "NAME|seprec|segip|impuestos|banco-union|prestamista" || true
           echo "===== recent events (namespace) ====="
           kubectl get events -n "$NS" --sort-by=.lastTimestamp | tail -40 || true
           echo "===== describe one dead pod ====="
-          POD=$(kubectl get pods -n "$NS" -o name | grep business-registry | head -1)
-          [ -n "$POD" ] && kubectl describe -n "$NS" "$POD" | tail -40 || echo "no business-registry pod"
-          echo "===== last container logs (business-registry) ====="
+          POD=$(kubectl get pods -n "$NS" -o name | grep seprec | head -1)
+          [ -n "$POD" ] && kubectl describe -n "$NS" "$POD" | tail -40 || echo "no seprec pod"
+          echo "===== last container logs (seprec) ====="
           [ -n "$POD" ] && kubectl logs -n "$NS" "$POD" --previous --tail=30 2>/dev/null || kubectl logs -n "$NS" "$POD" --tail=30 2>/dev/null || true
           echo "===== node allocation ====="
           kubectl describe nodes | grep -A7 "Allocated resources" || true

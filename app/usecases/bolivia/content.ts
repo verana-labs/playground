@@ -3,8 +3,9 @@
 // propias: (1) instituciones REALES con sus nombres y logos oficiales,
 // siempre marcadas "(demo)" cuando actúan como servicios de la maqueta;
 // (2) NINGUNA persona con nombre: la ciudadanía y los representantes
-// aparecen como roles genéricos. La maqueta boliviana no está desplegada:
-// el capítulo 4 apunta a la demo en vivo del caso Verandia.
+// aparecen como roles genéricos. La maqueta (bolivia-cast.ts, workflows
+// bolivia-*) alimenta las demos del capítulo 4, que se activan solas
+// cuando cada agente esté desplegado.
 
 import type { Stage } from "./scenes";
 import type {
@@ -398,31 +399,63 @@ export const JOURNEY: {
 export const DEMOS = {
   title: "La demo en vivo",
   intro:
-    "Nada de lo anterior es una promesa: el patrón completo (instituciones verificables, credencial ciudadana gobernada, sesión sin contraseñas, rechazo de verificadores no autorizados) corre EN VIVO en este playground, sobre la testnet pública de Verana, en el caso Verandia: la misma arquitectura con una república ficticia.",
-  liveTitle: "Pruébelo ahora, con una wallet real",
-  liveItems: [
-    {
-      label: "Obtener una credencial ciudadana (emisión gobernada)",
-      href: "/usecases/verandia/demos#demo-citizen-id",
+    "Nada de lo anterior es una promesa: la maqueta boliviana corre sobre la testnet pública de Verana, con un vs-agent real por institución (demo), los dos ecosistemas y sus permisos publicados en el registro. Wallets reales, resolución de confianza real. Nada simulado, salvo el prestamista.",
+  verifyRule:
+    "La regla de todas las demos: antes de aceptar una oferta o presentar una credencial, su wallet VERIFICA al servicio (identidad probada y permisos vigentes) y se lo muestra. Usted decide viendo checks, no logos.",
+  chooseWallet: {
+    title: "Elija una wallet",
+    intro:
+      "Cualquier wallet compatible sirve: las mismas de la página de wallets personales del playground. Hologram habla AnonCreds/DIDComm; las wallets OID4VC usan SD-JWT, el riel compatible con eIDAS 2.",
+  },
+  cedula: {
+    title: "Demo 1 · Obtenga su Cédula Digital",
+    intro:
+      "El SEGIP (demo) le emite una Cédula Digital con datos de demostración (titular genérico, identificador por escaneo). Su wallet verifica al emisor antes de aceptar.",
+    offer: {
+      org: "SEGIP (demo)",
+      serviceId: "segip",
+      credential: "bolivia-cedula",
+      expect:
+        "Emisión gobernada: solo el SEGIP (demo) puede emitir esta credencial, y su wallet lo comprueba contra el registro público.",
+      tone: "emerald" as const,
     },
-    {
-      label: "Iniciar sesión sin contraseñas en un portal tributario",
-      href: "/usecases/verandia/demos#demo-tax-login",
+  },
+  legalRep: {
+    title: "Demo 2 · Obtenga una credencial de Representante Legal",
+    intro:
+      "El SEPREC (demo) emite el poder verificable de una empresa registrada (demo): empresa, matrícula, cargo, alcance, vigencia. En el flujo real, el solicitante se identifica primero con su Cédula Digital.",
+    offer: {
+      org: "SEPREC (demo)",
+      serviceId: "seprec",
+      credential: "bolivia-legal-rep",
+      expect:
+        "Un rol, no una persona: el poder queda atado a la matrícula de la empresa y es revocable el mismo día en que cesa.",
+      tone: "emerald" as const,
     },
-    {
-      label: "KYC bancario y acceso corporativo con Representante Legal",
-      href: "/usecases/verandia/demos#demo-bank",
-    },
-    {
-      label: "El verificador no autorizado, rechazado en rojo",
-      href: "/usecases/verandia/demos#demo-quickcash",
-    },
-  ],
-  liveNote:
-    "Las demos en vivo están en el caso Verandia (en inglés): servicios reales desplegados en la testnet, wallets reales, resolución de confianza real. Nada simulado.",
-  maquetaTitle: "La maqueta Bolivia",
-  maqueta:
-    "La maqueta con las instituciones bolivianas (demo) que muestra este capítulo se despliega bajo demanda sobre la misma infraestructura: cinco vs-agents (SEGIP, SEPREC, Impuestos Nacionales, Banco Unión y el prestamista simulado), los dos ecosistemas y sus permisos en la testnet. Días, no meses.",
+  },
+  taxLogin: {
+    title: "Demo 3 · Inicie sesión en Impuestos Nacionales",
+    intro:
+      "La oficina virtual (demo) sin contraseñas: presente su Cédula Digital para el espacio personal, o su credencial de Representante Legal para el espacio de la empresa. La decisión se toma en vivo sobre la cadena del emisor.",
+  },
+  banco: {
+    title: "Demo 4 · Abra una cuenta en Banco Unión",
+    intro:
+      "KYC en un escaneo con la Cédula Digital, y acceso corporativo presentando el poder del SEPREC (demo). El banco no re-verifica a la empresa: confía en el registro, que ES la fuente de verdad.",
+  },
+  prestamista: {
+    title: "Demo 5 · El verificador que pide de más",
+    intro:
+      "El prestamista (simulado) es un servicio verificable y confiable (Q1 verde), pero NUNCA se registró como verificador de la Cédula Digital. Su solicitud es muy real; su permiso no existe: la wallet la muestra en rojo y usted la rechaza.",
+    expect:
+      "Pide la Cédula completa (fotografía incluida) sin permiso VERIFIER: toda wallet conforme se niega a presentar. Identidad probada no es autorización.",
+    serviceId: "prestamista",
+    credential: "bolivia-cedula",
+  },
+  verandiaTitle: "El mismo patrón, en el caso Verandia",
+  verandiaNote:
+    "La misma arquitectura corre también en el caso Verandia (en inglés), con una república ficticia: útil como segunda referencia en vivo.",
+  verandiaHref: "/usecases/verandia/demos",
   directoryTitle: "Y al final: el directorio del Estado",
   directory:
     "Todo lo publicado se vuelve consultable. El directorio de servicios verificables de Bolivia: busque cualquier institución o empresa, vea sus credenciales, sus permisos y quién la opera, desde cualquier wallet o navegador. Gratis, público, sin registro.",

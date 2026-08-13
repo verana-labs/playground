@@ -1,8 +1,8 @@
-name: "Verandia 04 · Tax Buro (relying party)"
+name: "Bolivia 04 · Impuestos Nacionales (relying party)"
 
-# Deploys the Republic's tax portal with a VERIFIER registration on the Verandia
-# Citizen ID and an open VERIFIER permission on Legal Representative.
-# Part of the Verandia cast CI/CD — see .github/workflows/verandia/README.md.
+# Deploys the Republic's tax portal with a VERIFIER registration on the Bolivia
+# Cedula Digital and an open VERIFIER permission on Legal Representative.
+# Part of the Bolivia cast CI/CD — see .github/workflows/bolivia/README.md.
 
 on:
   workflow_dispatch:
@@ -23,10 +23,10 @@ on:
         default: false
 
 jobs:
-  tax-buro:
-    uses: ./.github/workflows/verandia-00_core.yml
+  impuestos:
+    uses: ./.github/workflows/bolivia-00_core.yml
     with:
-      org: tax-buro
+      org: impuestos
       step: ${{ inputs.step }}
       force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

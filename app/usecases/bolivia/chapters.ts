@@ -41,7 +41,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     title: "La demo en vivo",
     short: "La demo",
     intro:
-      "El patrón completo ya corre en vivo en este playground. La maqueta boliviana se despliega bajo demanda para la presentación.",
+      "Las instituciones (demo) de la maqueta boliviana, en vivo sobre la testnet de Verana: obtenga su Cédula Digital, inicie sesión sin contraseñas y vea al verificador no autorizado ser rechazado.",
   },
 ];
 

@@ -1,4 +1,5 @@
 import { VESTA_CAST } from "./vesta-cast";
+import { BOLIVIA_CAST } from "./bolivia-cast";
 import { VERANDIA_CAST } from "./verandia-cast";
 
 const BASE = process.env.DEMOS_BASE_DOMAIN ?? "main.demos.testnet.verana.network";
@@ -35,6 +36,14 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "tax-buro", label: "Tax Buro (demo)", host: VERANDIA_CAST.taxBuro.host, appUrl: invite(VERANDIA_CAST.taxBuro.host), role: "verifier" },
   { id: "meridian-bank", label: "Meridian Bank (demo)", host: VERANDIA_CAST.meridianBank.host, appUrl: invite(VERANDIA_CAST.meridianBank.host), role: "verifier" },
   { id: "quickcash", label: "QuickCash Loans (demo)", host: VERANDIA_CAST.quickcash.host, appUrl: invite(VERANDIA_CAST.quickcash.host), role: "verifier" },
+  // The Bolivia cast (the Spanish public-sector story at /usecases/bolivia),
+  // deployed by .github/workflows/bolivia-*. Real institutions (demo); DIDs
+  // come from host discovery until bolivia-cast.ts placeholders are replaced.
+  { id: "segip", label: "SEGIP (demo)", host: BOLIVIA_CAST.segip.host, appUrl: invite(BOLIVIA_CAST.segip.host), role: "issuer" },
+  { id: "seprec", label: "SEPREC (demo)", host: BOLIVIA_CAST.seprec.host, appUrl: invite(BOLIVIA_CAST.seprec.host), role: "issuer" },
+  { id: "impuestos", label: "Impuestos Nacionales (demo)", host: BOLIVIA_CAST.impuestos.host, appUrl: invite(BOLIVIA_CAST.impuestos.host), role: "verifier" },
+  { id: "banco-union", label: "Banco Unión (demo)", host: BOLIVIA_CAST.bancoUnion.host, appUrl: invite(BOLIVIA_CAST.bancoUnion.host), role: "verifier" },
+  { id: "prestamista", label: "Prestamista en línea (simulado)", host: BOLIVIA_CAST.prestamista.host, appUrl: invite(BOLIVIA_CAST.prestamista.host), role: "verifier" },
   // Planned personal-wallet demo cast (spec §4/§6) still referenced by the
   // personal-wallets playground page; remap those flows onto the Vesta cast
   // (badge issuers, portal login, Umbra) in a follow-up, then retire these.

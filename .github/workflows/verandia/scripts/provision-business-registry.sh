@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Provision the SEPREC (demo): ECS-Organization from
+# Provision the National Business Registry (demo): ECS-Organization from
 # Helvetia, self-issued ECS-Service, and the Legal Representation trust
 # registry with the Legal Representative schema (issuance ecosystem-governed,
 # verification open). The register is the ecosystem's sole issuer, so the
 # only ISSUER permission in the tree is its own. Its ISSUER accreditation on
-# ECS-Organization (Business IDs) is granted separately by bolivia-02.
+# ECS-Organization (Business IDs) is granted separately by verandia-02.
 set -eo pipefail
 source "${VESTA_DIR}/common.sh"
 source "${CAST_DIR}/scripts/lib.sh"
@@ -31,7 +31,7 @@ ensure_validated_issuer_perm "$CS_ID" "$AGENT_DID"
 LEGAL_REP_JSC_URL=$(ensure_jsc "$API" "$CUSTOM_SCHEMA_BASE_ID" "$CS_ID")
 
 # AnonCreds credential type for the DIDComm offer rail (workflow contract:
-# app/lib/bolivia-cast.ts looks this type up by name)
+# app/lib/verandia-cast.ts looks this type up by name)
 ensure_anoncreds_credential_type "$API" "LegalRepresentative" "1.0" "$LEGAL_REP_JSC_URL"
 
-ok "Business Registry provisioned: TR=$TR_ID, CS=$CS_ID. Next: run 'Bolivia 02' to accredit it as ECS-Organization issuer."
+ok "Business Registry provisioned: TR=$TR_ID, CS=$CS_ID. Next: run 'Verandia 02' to accredit it as ECS-Organization issuer."

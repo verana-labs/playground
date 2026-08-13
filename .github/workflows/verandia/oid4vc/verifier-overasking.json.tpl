@@ -13,19 +13,19 @@
     "resolverUrl": "https://resolver.__NETWORK__.verana.network/v1/trust",
     "timeoutMs": 10000,
     "allowedDidWebHosts": [
-      "segip.bolivia.playground.__NETWORK__.verana.network"
+      "civil-registry.verandia.playground.__NETWORK__.verana.network"
     ],
     "credentialIssuerCertificates": [],
     "developmentCertificateFingerprints": [__ISSUER_FINGERPRINTS__]
   },
   "credentialConfigurations": [
     {
-      "id": "cedula-digital",
+      "id": "verandia-citizen-id",
       "format": "dc+sd-jwt",
-      "vct": "https://segip.bolivia.playground.__NETWORK__.verana.network/oid4vc/vct/cedula-digital",
-      "name": "CedulaDigital",
-      "description": "The Cedula Digital - national identity credential of the Estado Plurinacional de Bolivia (demo) (demo)",
-      "vtjscId": "https://segip.bolivia.playground.__NETWORK__.verana.network/vt/schemas-cedula-digital-jsc.json",
+      "vct": "https://civil-registry.verandia.playground.__NETWORK__.verana.network/oid4vc/vct/verandia-citizen-id",
+      "name": "VerandiaCitizenID",
+      "description": "The Verandia Citizen ID - national identity credential of the Republic of Verandia (demo)",
+      "vtjscId": "https://civil-registry.verandia.playground.__NETWORK__.verana.network/vt/schemas-verandia-citizen-id-jsc.json",
       "claims": ["familyName", "givenName", "birthDate", "personalIdentifier", "nationality", "portrait", "issuingAuthority"],
       "disclosureFrame": ["familyName", "givenName", "birthDate", "personalIdentifier", "nationality", "portrait", "issuingAuthority"],
       "ttlSeconds": 2592000
@@ -33,8 +33,8 @@
   ],
   "verifierPolicies": [
     {
-      "id": "cedula-digital",
-      "credentialConfigurationId": "cedula-digital",
+      "id": "verandia-citizen-id",
+      "credentialConfigurationId": "verandia-citizen-id",
       "requestedClaims": ["familyName", "givenName", "birthDate", "personalIdentifier", "nationality", "portrait", "issuingAuthority"]
     }
   ]

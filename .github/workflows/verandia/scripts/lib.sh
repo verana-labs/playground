@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Bolivia-cast-specific helpers, shared by the provision-* scripts in this
+# Verandia-cast-specific helpers, shared by the provision-* scripts in this
 # directory. Sourced AFTER vesta/common.sh (uses its helpers throughout —
 # the demo-cast lib.sh precedent).
 
@@ -7,31 +7,31 @@
 # The cast — Helm release names (also the in-cluster service names)
 # ---------------------------------------------------------------------------
 
-R_BUSINESS_REGISTRY="seprec"
-R_CIVIL_REGISTRY="segip"
-R_TAX_BURO="impuestos"
-R_MERIDIAN_BANK="banco-union"
-R_QUICKCASH="prestamista"
+R_BUSINESS_REGISTRY="business-registry"
+R_CIVIL_REGISTRY="civil-registry"
+R_TAX_BURO="tax-buro"
+R_MERIDIAN_BANK="meridian-bank"
+R_QUICKCASH="quickcash"
 
-# Public hosts derive from the Bolivia zone:
-# <org>.bolivia.playground.<network>.verana.network
-bolivia_zone() { echo "bolivia.$(cast_zone)"; }
+# Public hosts derive from the Verandia zone:
+# <org>.verandia.playground.<network>.verana.network
+verandia_zone() { echo "verandia.$(cast_zone)"; }
 
-BUSINESS_REGISTRY_HOST="${R_BUSINESS_REGISTRY}.$(bolivia_zone)"
-CIVIL_REGISTRY_HOST="${R_CIVIL_REGISTRY}.$(bolivia_zone)"
-TAX_BURO_HOST="${R_TAX_BURO}.$(bolivia_zone)"
-MERIDIAN_BANK_HOST="${R_MERIDIAN_BANK}.$(bolivia_zone)"
-QUICKCASH_HOST="${R_QUICKCASH}.$(bolivia_zone)"
+BUSINESS_REGISTRY_HOST="${R_BUSINESS_REGISTRY}.$(verandia_zone)"
+CIVIL_REGISTRY_HOST="${R_CIVIL_REGISTRY}.$(verandia_zone)"
+TAX_BURO_HOST="${R_TAX_BURO}.$(verandia_zone)"
+MERIDIAN_BANK_HOST="${R_MERIDIAN_BANK}.$(verandia_zone)"
+QUICKCASH_HOST="${R_QUICKCASH}.$(verandia_zone)"
 
 # ---------------------------------------------------------------------------
 # Governed-verification helpers (the Vesta cast never needed these: its
-# schemas are all verifier-mode OPEN, while the Cedula Digital is
+# schemas are all verifier-mode OPEN, while the Verandia Citizen ID is
 # verifier-mode ECOSYSTEM — the relying-party register)
 # ---------------------------------------------------------------------------
 
 # Find or create a credential schema (canonical JSON compare) plus its root
 # permission, like ensure_schema_with_root — but issuer mode 3 AND verifier
-# mode 3 (both ecosystem-governed): the Cedula Digital relying-party rule.
+# mode 3 (both ecosystem-governed): the Verandia Citizen ID relying-party rule.
 # Usage: ensure_governed_schema_with_root <tr_id> <schema_json> <did>
 # Echoes the credential schema ID.
 ensure_governed_schema_with_root() {

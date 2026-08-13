@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Provision Prestamista en linea (simulado) - the over-asking verifier. el prestamista IS
-# a verifiable company: ECS-Organization from the SEPREC (demo)
+# Provision QuickCash Loans (demo) - the over-asking verifier. QuickCash IS
+# a verifiable company: ECS-Organization from the National Business Registry
 # and a self-issued ECS-Service, so Q1 resolves TRUSTED. What it does NOT
-# have - deliberately, ever - is a VERIFIER permission on the Bolivia Citizen
-# ID: verification of that schema is ecosystem-governed and el prestamista never
+# have - deliberately, ever - is a VERIFIER permission on the Verandia Citizen
+# ID: verification of that schema is ecosystem-governed and QuickCash never
 # registered as a relying party. Its presentation requests reach the wallet
 # and are refused there (Q3). Trust is not authorization.
 set -eo pipefail
@@ -19,9 +19,9 @@ BUSINESS_REGISTRY_API="http://localhost:3101"
 
 AGENT_DID=$(get_agent_did "$API")
 [ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "el prestamista DID: $AGENT_DID"
+ok "QuickCash DID: $AGENT_DID"
 
 obtain_ecs_org_credential "$API" "$BUSINESS_REGISTRY_API" "$AGENT_DID"
 obtain_service_credential "$API" "$API" "$AGENT_DID" self
 
-ok "el prestamista provisioned: a verifiable company - and still no Cedula Digital VERIFIER permission, by design."
+ok "QuickCash provisioned: a verifiable company - and still no Citizen ID VERIFIER permission, by design."

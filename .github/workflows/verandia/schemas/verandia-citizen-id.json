@@ -1,8 +1,8 @@
 {
-  "$id": "https://segip.bolivia.playground.testnet.verana.network/schemas/cedula-digital.json",
+  "$id": "https://civil-registry.verandia.playground.testnet.verana.network/schemas/verandia-citizen-id.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "CedulaDigitalCredential",
-  "description": "The Cedula Digital - national identity credential of the Estado Plurinacional de Bolivia (demo) (demo), with eIDAS-2-PID-inspired claims. For demonstration only.",
+  "title": "VerandiaCitizenIDCredential",
+  "description": "The Verandia Citizen ID - national identity credential of the Republic of Verandia (demo), with eIDAS-2-PID-inspired claims. For demonstration only.",
   "type": "object",
   "properties": {
     "credentialSubject": {
@@ -26,7 +26,7 @@
         },
         "personalIdentifier": {
           "type": "string",
-          "description": "Unique personal identifier assigned by the SEGIP (demo)"
+          "description": "Unique personal identifier assigned by the National Civil Registry"
         },
         "nationality": {
           "type": "string",

@@ -1,16 +1,16 @@
-name: "Bolivia 00 · Core (reusable)"
+name: "Verandia 00 · Core (reusable)"
 
-# Reusable deploy + provision pipeline for one Bolivia cast member.
-# Called by the bolivia-01..06 workflows; not meant to be run directly.
+# Reusable deploy + provision pipeline for one Verandia cast member.
+# Called by the verandia-01..06 workflows; not meant to be run directly.
 # Mirrors vesta-00_core.yml with the cast assets under
-# .github/workflows/bolivia/; common.sh and the oid4vc render script are
+# .github/workflows/verandia/; common.sh and the oid4vc render script are
 # shared from the vesta and demo cast directories (the demo-cast precedent).
 
 on:
   workflow_call:
     inputs:
       org:
-        description: "Cast member — must match a directory under .github/workflows/bolivia/orgs/"
+        description: "Cast member — must match a directory under .github/workflows/verandia/orgs/"
         required: true
         type: string
       step:
@@ -32,7 +32,7 @@ jobs:
   run:
     name: "${{ inputs.org }}"
     runs-on: ubuntu-latest
-    # All playground casts (vesta-*, demo-* and bolivia-*) sign with the same
+    # All playground casts (vesta-*, demo-* and verandia-*) sign with the same
     # veranad account; running two jobs at once races on the account's
     # transaction sequence number. The shared group name serializes every
     # cast run across all pipelines. GitHub keeps only ONE queued run per
@@ -47,7 +47,7 @@ jobs:
 
       - name: Load org configuration
         run: |
-          CFG=".github/workflows/bolivia/orgs/${{ inputs.org }}/config.env"
+          CFG=".github/workflows/verandia/orgs/${{ inputs.org }}/config.env"
           if [ ! -f "$CFG" ]; then
             echo "::error::Unknown org '${{ inputs.org }}' — no $CFG"
             exit 1
@@ -67,7 +67,7 @@ jobs:
           sed -e "s/__NETWORK__/${NETWORK}/g" \
               -e "s/__RELEASE__/${RELEASE_NAME}/g" \
               -e "s/__HOST__/${INGRESS_HOST}/g" \
-            .github/workflows/bolivia/deployment.template.yaml > /tmp/deployment-resolved.yaml
+            .github/workflows/verandia/deployment.template.yaml > /tmp/deployment-resolved.yaml
           echo "--- Resolved deployment values ---"
           cat /tmp/deployment-resolved.yaml
 
@@ -126,7 +126,7 @@ jobs:
           fi
           if [ -n "${OID4VC_ROLE:-}" ]; then
             export NAMESPACE="$CHART_NAMESPACE"
-            export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/bolivia"
+            export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/verandia"
             OID4VC_CONFIG_JSON=$(bash "${GITHUB_WORKSPACE}/.github/workflows/demo/scripts/render-oid4vc-config.sh")
             export OID4VC_CONFIG_JSON
             # openid4vc ships in the default image; activate the plugin.
@@ -195,7 +195,7 @@ jobs:
         if: (inputs.step == 'provision' || inputs.step == 'all') && env.PROVISION_SCRIPT != ''
         run: |
           export NAMESPACE="$CHART_NAMESPACE"
-          export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/bolivia"
+          export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/verandia"
           export VESTA_DIR="${GITHUB_WORKSPACE}/.github/workflows/vesta"
           export FORCE_REFRESH="${{ inputs.force_refresh }}"
           bash "${CAST_DIR}/scripts/${PROVISION_SCRIPT}"

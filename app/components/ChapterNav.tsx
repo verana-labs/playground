@@ -78,9 +78,15 @@ export function Stepper({
 export function ChapterFooter({
   chapters,
   current,
+  labels = { continue: "Continue:", explore: "Explore the integrated wallets" },
+  exploreHref = "/personal-wallets",
 }: {
   chapters: Chapter[];
   current: number;
+  /** UI chrome strings, overridable for localized stories. */
+  labels?: { continue: string; explore: string };
+  /** Where the last chapter's CTA points. */
+  exploreHref?: string;
 }) {
   const prev = chapters.find((c) => c.n === current - 1);
   const next = chapters.find((c) => c.n === current + 1);
@@ -104,15 +110,15 @@ export function ChapterFooter({
               href={next.href}
               className="btn-gradient inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold"
             >
-              Continue: {next.n} · {next.title}
+              {labels.continue} {next.n} · {next.title}
               <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>
           ) : (
             <Link
-              href="/personal-wallets"
+              href={exploreHref}
               className="btn-gradient inline-flex items-center gap-2 rounded-xl px-6 py-3 font-semibold"
             >
-              Explore the integrated wallets
+              {labels.explore}
               <ArrowRight className="h-4 w-4" aria-hidden />
             </Link>
           )}

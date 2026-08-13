@@ -1,0 +1,53 @@
+{
+  "$id": "https://segip.bolivia.playground.testnet.verana.network/schemas/cedula-digital.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CedulaDigitalCredential",
+  "description": "La Cedula Digital: credencial nacional de identidad del Estado Plurinacional de Bolivia (demo), con claims inspirados en el PID de eIDAS 2. Solo para demostracion.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID of the credential holder"
+        },
+        "familyName": {
+          "type": "string",
+          "description": "Current family name(s) of the citizen"
+        },
+        "givenName": {
+          "type": "string",
+          "description": "Current first name(s) of the citizen"
+        },
+        "birthDate": {
+          "type": "string",
+          "description": "Date of birth as a dateint (YYYYMMDD), so AnonCreds predicate proofs (age over 18) work without revealing the date"
+        },
+        "personalIdentifier": {
+          "type": "string",
+          "description": "Unique personal identifier asignado por el SEGIP (demo)"
+        },
+        "nationality": {
+          "type": "string",
+          "description": "Nationality of the citizen (alpha-2 code)"
+        },
+        "portrait": {
+          "type": "string",
+          "description": "Portrait photo of the citizen as a data URI"
+        },
+        "issuingAuthority": {
+          "type": "string",
+          "description": "Name of the issuing authority"
+        }
+      },
+      "required": [
+        "familyName",
+        "givenName",
+        "birthDate",
+        "personalIdentifier",
+        "nationality"
+      ]
+    }
+  }
+}

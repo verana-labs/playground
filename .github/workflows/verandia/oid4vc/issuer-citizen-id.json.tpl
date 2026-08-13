@@ -15,12 +15,12 @@
   },
   "credentialConfigurations": [
     {
-      "id": "verandia-citizen-id",
+      "id": "cedula-digital",
       "format": "dc+sd-jwt",
-      "vct": "https://civil-registry.verandia.playground.__NETWORK__.verana.network/oid4vc/vct/verandia-citizen-id",
-      "name": "VerandiaCitizenID",
-      "description": "The Verandia Citizen ID - national identity credential of the Republic of Verandia (demo)",
-      "vtjscId": "https://civil-registry.verandia.playground.__NETWORK__.verana.network/vt/schemas-verandia-citizen-id-jsc.json",
+      "vct": "https://segip.bolivia.playground.__NETWORK__.verana.network/oid4vc/vct/cedula-digital",
+      "name": "CedulaDigital",
+      "description": "The Cedula Digital - national identity credential of the Estado Plurinacional de Bolivia (demo) (demo)",
+      "vtjscId": "https://segip.bolivia.playground.__NETWORK__.verana.network/vt/schemas-cedula-digital-jsc.json",
       "claims": [
         "familyName",
         "givenName",

@@ -18,6 +18,18 @@ import {
   VERANDIA_LEGAL_REP_JSC,
   VERANDIA_LEGAL_REP_NAME,
 } from "@/app/lib/verandia-cast";
+import {
+  boliviaLegalRepDemoClaims,
+  boliviaLegalRepOid4vcClaims,
+  cedulaDemoClaims,
+  cedulaOid4vcClaims,
+} from "@/app/lib/demo-bolivia";
+import {
+  BOLIVIA_CEDULA_JSC,
+  BOLIVIA_CEDULA_NAME,
+  BOLIVIA_LEGAL_REP_JSC,
+  BOLIVIA_LEGAL_REP_NAME,
+} from "@/app/lib/bolivia-cast";
 import { VESTA_CAST } from "@/app/lib/vesta-cast";
 
 // Live demo-action link for a Playground cast service (spec §4): what the
@@ -95,6 +107,26 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     jscUrl: VERANDIA_LEGAL_REP_JSC,
     claims: () => legalRepDemoClaims(),
     oid4vcClaims: () => legalRepOid4vcClaims(),
+  },
+  "bolivia-cedula": {
+    label: "Cédula Digital",
+    credDefName: BOLIVIA_CEDULA_NAME,
+    oid4vcConfig: process.env.DEMO_OID4VC_CEDULA_CONFIG ?? "cedula-digital",
+    oid4vcPolicy: process.env.DEMO_OID4VC_CEDULA_POLICY ?? "cedula-digital",
+    jscUrl: BOLIVIA_CEDULA_JSC,
+    claims: () => cedulaDemoClaims(),
+    oid4vcClaims: () => cedulaOid4vcClaims(),
+  },
+  "bolivia-legal-rep": {
+    label: "credencial de Representante Legal",
+    credDefName: BOLIVIA_LEGAL_REP_NAME,
+    oid4vcConfig:
+      process.env.DEMO_OID4VC_BO_LEGAL_REP_CONFIG ?? "bolivia-legal-rep",
+    oid4vcPolicy:
+      process.env.DEMO_OID4VC_BO_LEGAL_REP_POLICY ?? "bolivia-legal-rep",
+    jscUrl: BOLIVIA_LEGAL_REP_JSC,
+    claims: () => boliviaLegalRepDemoClaims(),
+    oid4vcClaims: () => boliviaLegalRepOid4vcClaims(),
   },
 };
 

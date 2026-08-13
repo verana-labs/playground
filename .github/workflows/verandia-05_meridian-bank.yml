@@ -1,8 +1,8 @@
-name: "Verandia 05 · Meridian Bank (relying party)"
+name: "Bolivia 05 · Banco Union (demo) (relying party)"
 
-# Deploys the verifiable bank (demo) with a VERIFIER registration on the Verandia
-# Citizen ID and an open VERIFIER permission on Legal Representative.
-# Part of the Verandia cast CI/CD — see .github/workflows/verandia/README.md.
+# Deploys the verifiable bank (demo) with a VERIFIER registration on the Bolivia
+# Cedula Digital and an open VERIFIER permission on Legal Representative.
+# Part of the Bolivia cast CI/CD — see .github/workflows/bolivia/README.md.
 
 on:
   workflow_dispatch:
@@ -23,10 +23,10 @@ on:
         default: false
 
 jobs:
-  meridian-bank:
-    uses: ./.github/workflows/verandia-00_core.yml
+  banco-union:
+    uses: ./.github/workflows/bolivia-00_core.yml
     with:
-      org: meridian-bank
+      org: banco-union
       step: ${{ inputs.step }}
       force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

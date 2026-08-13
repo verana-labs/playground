@@ -1,8 +1,8 @@
 {
-  "$id": "https://business-registry.verandia.playground.testnet.verana.network/schemas/legal-representative.json",
+  "$id": "https://seprec.bolivia.playground.testnet.verana.network/schemas/legal-representative.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "LegalRepresentativeCredential",
-  "description": "Proof of legal representation issued by the National Business Registry of the Republic of Verandia (demo): who may act for a company, revocable the day it ends.",
+  "description": "Proof of legal representation issued by the SEPREC (demo) of the Estado Plurinacional de Bolivia (demo) (demo): who may act for a company, revocable the day it ends.",
   "type": "object",
   "properties": {
     "credentialSubject": {
@@ -18,7 +18,7 @@
         },
         "companyRegistryId": {
           "type": "string",
-          "description": "Registration number of the company in the National Business Registry"
+          "description": "Registration number of the company in the SEPREC (demo)"
         },
         "representativeName": {
           "type": "string",

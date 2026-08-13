@@ -1,0 +1,32 @@
+name: "Bolivia 05 · Banco Union (verificador)"
+
+# Deploys the verifiable bank (demo) with a VERIFIER registration on the Bolivia
+# Cedula Digital and an open VERIFIER permission on Legal Representative.
+# Part of the Bolivia cast CI/CD — see .github/workflows/bolivia/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  banco-union:
+    uses: ./.github/workflows/bolivia-00_core.yml
+    with:
+      org: banco-union
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

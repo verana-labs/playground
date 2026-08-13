@@ -1,8 +1,8 @@
-name: "Verandia 06 · QuickCash Loans (over-asking verifier)"
+name: "Bolivia 06 · el prestamista Loans (over-asking verifier)"
 
 # Deploys the over-asking verifier (demo): a verifiable company that is
-# deliberately NEVER registered as a Citizen ID relying party.
-# Part of the Verandia cast CI/CD — see .github/workflows/verandia/README.md.
+# deliberately NEVER registered as a Cedula Digital relying party.
+# Part of the Bolivia cast CI/CD — see .github/workflows/bolivia/README.md.
 
 on:
   workflow_dispatch:
@@ -23,10 +23,10 @@ on:
         default: false
 
 jobs:
-  quickcash:
-    uses: ./.github/workflows/verandia-00_core.yml
+  prestamista:
+    uses: ./.github/workflows/bolivia-00_core.yml
     with:
-      org: quickcash
+      org: prestamista
       step: ${{ inputs.step }}
       force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

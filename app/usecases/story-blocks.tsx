@@ -39,6 +39,26 @@ export type JourneyNeed<S extends string = string> = {
   steps: SubStep<S>[];
 };
 
+/** UI chrome strings of the story blocks; per-use-case override for
+ *  localized stories (the content itself always comes localized). */
+export type StoryLabels = {
+  story: string;
+  handsOn: string;
+  reproduce: string;
+  underHood: string;
+  diagramHint: string;
+  newInStep: string;
+};
+
+const DEFAULT_LABELS: StoryLabels = {
+  story: "story",
+  handsOn: "hands-on - you do it",
+  reproduce: "Reproduce it",
+  underHood: "Under the hood",
+  diagramHint: "Click a participant to see the credentials it presents.",
+  newInStep: "New in this step:",
+};
+
 export function SubHeading({ children }: { children: React.ReactNode }) {
   return (
     <h3 className="text-[1.65rem] font-extrabold tracking-tight text-[#0f1222]">
@@ -47,17 +67,23 @@ export function SubHeading({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function KindChip({ kind }: { kind: SubStep["kind"] }) {
+export function KindChip({
+  kind,
+  labels = DEFAULT_LABELS,
+}: {
+  kind: SubStep["kind"];
+  labels?: StoryLabels;
+}) {
   if (kind === "hands-on")
     return (
       <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
-        <Hand className="h-3 w-3" /> hands-on - you do it
+        <Hand className="h-3 w-3" /> {labels.handsOn}
       </span>
     );
   if (kind === "watch") return null;
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-semibold text-gray-600">
-      <BookOpen className="h-3 w-3" /> story
+      <BookOpen className="h-3 w-3" /> {labels.story}
     </span>
   );
 }
@@ -65,16 +91,18 @@ export function KindChip({ kind }: { kind: SubStep["kind"] }) {
 export function SubStepBlock({
   sub,
   graph,
+  labels = DEFAULT_LABELS,
 }: {
   sub: SubStep;
   graph: SceneGraph;
+  labels?: StoryLabels;
 }) {
   return (
     <div className="space-y-6">
       <div>
         <div className="flex flex-wrap items-center gap-3">
           <h4 className="text-xl font-bold text-gray-900">{sub.title}</h4>
-          <KindChip kind={sub.kind} />
+          <KindChip kind={sub.kind} labels={labels} />
         </div>
         <p className="mt-4 max-w-3xl text-gray-600">{sub.story}</p>
         {sub.points?.length ? (
@@ -122,7 +150,14 @@ export function SubStepBlock({
         </div>
       ) : null}
 
-      {sub.noDiagram ? null : <StoryDiagram graph={graph} stage={sub.stage} />}
+      {sub.noDiagram ? null : (
+        <StoryDiagram
+          graph={graph}
+          stage={sub.stage}
+          hint={labels.diagramHint}
+          newInStepLabel={labels.newInStep}
+        />
+      )}
 
       {sub.image ? (
         <figure className="mx-auto max-w-md">
@@ -143,7 +178,7 @@ export function SubStepBlock({
       {sub.reproduce?.length ? (
         <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
           <h4 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-900">
-            <Terminal className="h-4 w-4 text-violet-600" /> Reproduce it
+            <Terminal className="h-4 w-4 text-violet-600" /> {labels.reproduce}
           </h4>
           <ol className="mt-4 space-y-3">
             {sub.reproduce.map((r, ri) => (
@@ -186,7 +221,7 @@ export function SubStepBlock({
       {sub.underHood?.length ? (
         <details className="group rounded-2xl border border-gray-200 bg-gray-50 px-6 py-4">
           <summary className="cursor-pointer select-none text-sm font-semibold text-gray-700 hover:text-violet-700">
-            Under the hood
+            {labels.underHood}
           </summary>
           <ul className="mt-3 space-y-2 text-sm text-gray-600">
             {sub.underHood.map((u, ui) => (

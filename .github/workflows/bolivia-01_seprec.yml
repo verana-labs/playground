@@ -1,0 +1,32 @@
+name: "Bolivia 01 · SEPREC (registro de comercio)"
+
+# Deploys the SEPREC (demo), bootstraps its ECS-Organization +
+# ECS-Service and creates the Legal Representation ecosystem.
+# Part of the Bolivia cast CI/CD — see .github/workflows/bolivia/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  seprec:
+    uses: ./.github/workflows/bolivia-00_core.yml
+    with:
+      org: seprec
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

@@ -444,4 +444,11 @@ wallets:
     repo: https://github.com/MinBZK/nl-wallet
     fork: https://github.com/AirKyzzZ/nl-wallet/tree/feat/verana-trust
     license: EUPL-1.2
-    notes: The Dutch government's EUDI wallet, Flutter over a Rust core. The Verana trust card and accept gate sit on all three consent surfaces - login, disclosure, and issuance - with the real request origin threaded through, and the resolver checks run live against the testnet. The APK is the MinBZK demo flavor (mock data, Skip Setup onboarding), because the wallet core only trusts X.509-anchored counterparties - on-device captures of the six scenarios land once the demo cast serves that x5c rail.
+    notes: The Dutch government's EUDI wallet, Flutter over a Rust core. The Verana trust card and accept gate sit on all three consent surfaces - login, disclosure, and issuance - with the real request origin threaded through, and the resolver checks run live against the testnet. The APK is the MinBZK demo flavor (mock data, Skip Setup onboarding), because the wallet core only trusts X.509-anchored counterparties - it declines to decode an authorization request signed under our dev x5c chain, so the six demo-cast scenarios cannot be driven on device yet. The capture below uses the wallet's own mock disclosure, where the counterparty carries no Verana identity at all and the resolver check is still live.
+    captures:
+      present-untrusted:
+        src: ./nl-wallet/screenshots/6.webp
+        caption: "Untrusted counterparty: the Verana public registry does not vouch for it, and the share is blocked"
+    video:
+      src: ./nl-wallet/demo.mp4
+      note: Real device, live resolver, the wallet's own mock disclosure scenario. 2x speed, silent, otherwise unedited. The debug ribbon is the MinBZK demo build.

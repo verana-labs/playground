@@ -436,6 +436,7 @@ wallets:
 
   - id: nl-wallet
     name: NL Wallet
+    hidden: true
     vendor: MinBZK (Dutch Ministry of the Interior)
     icon: ./nl-wallet/logo.png
     formats: [openid4vc-sdjwt]

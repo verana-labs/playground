@@ -26,17 +26,17 @@ export const CEXA_CAST = {
   /** Accredited verifier member - accepts the credential on reuse. */
   borealis: {
     host: `borealis.${ZONE}`,
-    did: `did:webvh:${PENDING}:borealis.${ZONE}`,
+    did: "did:webvh:QmZhWnfEmxZa8QYYeWBj5PCbze3Vv1jjmtT6R6Udu2NCzq:borealis.cexa.playground.testnet.verana.network",
   },
   /** Bank member, ISSUER + VERIFIER - the cross-sector corridor. */
   novara: {
     host: `novara.${ZONE}`,
-    did: `did:webvh:${PENDING}:novara.${ZONE}`,
+    did: "did:webvh:QmXesvi2DDWVt9MgdxXziP92bojMf4X9pFYA4z7gABnpUM:novara.cexa.playground.testnet.verana.network",
   },
   /** Deliberately unprovisioned (umbra pattern): a DID and nothing else. */
   darkpool: {
     host: `darkpool.${ZONE}`,
-    did: `did:webvh:${PENDING}:darkpool.${ZONE}`,
+    did: "did:webvh:QmVap281SXu4pZRYEUdCS1pRpbZYdafzugFWE9H4bxXfEc:darkpool.cexa.playground.testnet.verana.network",
   },
 } as const satisfies Record<string, CastMember>;
 
@@ -95,6 +95,13 @@ export const CEXA_RATES = {
   /** Trust unit peg decay per daily epoch (score half-life ~23 months). */
   tuDecayPerEpoch: 0.001,
 } as const;
+
+/** On-chain ids of the CEXA registry (provisioned by cexa-01, testnet).
+ *  Deep links: the Verana app shows the ecosystem at /tr/<id>, a schema at
+ *  /tr/cs/<id> and a schema's participant tree at /participants/<schemaId>. */
+export const CEXA_TRUST_REGISTRY_ID = 197;
+export const CEXA_KYC_SCHEMA_ID = 261;
+export const CEXA_COUNTERPARTY_SCHEMA_ID = 262;
 
 /** Total verification fee per reuse, before deposits and rewards. */
 export const CEXA_REUSE_FEE_USDC =

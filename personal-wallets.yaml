@@ -374,6 +374,7 @@ wallets:
     hidden: true
     icon: ./swiyu/logo.webp
     formats: [openid4vc-sdjwt]
+    demoParams: signer=x5c
     download: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-07-26/swiyu-verana-fabrice-arm64-debug.apk
     website: https://www.eid.admin.ch
     repo: https://github.com/swiyu-admin-ch/eidch-android-wallet

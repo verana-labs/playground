@@ -16,12 +16,12 @@ export const CEXA_CAST = {
   /** The association anchor: owns the trust registry and both schemas. */
   association: {
     host: `association.${ZONE}`,
-    did: `did:webvh:${PENDING}:association.${ZONE}`,
+    did: "did:webvh:QmRp5jsiA5HuA2AfUS9H6MhqaMQ6qD5P8vT3ZzrbbtWrzq:association.cexa.playground.testnet.verana.network",
   },
   /** Accredited issuer member - runs the full KYC, issues the credential. */
   aurum: {
     host: `aurum.${ZONE}`,
-    did: `did:webvh:${PENDING}:aurum.${ZONE}`,
+    did: "did:webvh:QmRuewX4EPBQLiK4mWwJkrw4JKfzbzoNM9YTbCznjGWNfc:aurum.cexa.playground.testnet.verana.network",
   },
   /** Accredited verifier member - accepts the credential on reuse. */
   borealis: {

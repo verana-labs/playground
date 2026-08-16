@@ -150,6 +150,32 @@ export function SubStepBlock({
         </div>
       ) : null}
 
+      {sub.links?.length && !sub.reproduce?.length ? (
+        <div className="flex flex-wrap gap-2">
+          {sub.links.map((l) =>
+            l.href.startsWith("/") ? (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+              >
+                {l.label}
+              </Link>
+            ) : (
+              <a
+                key={l.href}
+                href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+              >
+                {l.label} <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
+              </a>
+            ),
+          )}
+        </div>
+      ) : null}
+
       {sub.noDiagram ? null : (
         <StoryDiagram
           graph={graph}

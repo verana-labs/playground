@@ -96,6 +96,13 @@ export const CEXA_RATES = {
   tuDecayPerEpoch: 0.001,
 } as const;
 
+/** On-chain ids of the CEXA registry (provisioned by cexa-01, testnet).
+ *  Deep links: the Verana app shows the ecosystem at /tr/<id>, a schema at
+ *  /tr/cs/<id> and a schema's participant tree at /participants/<schemaId>. */
+export const CEXA_TRUST_REGISTRY_ID = 197;
+export const CEXA_KYC_SCHEMA_ID = 261;
+export const CEXA_COUNTERPARTY_SCHEMA_ID = 262;
+
 /** Total verification fee per reuse, before deposits and rewards. */
 export const CEXA_REUSE_FEE_USDC =
   CEXA_FEES.verificationIssuerUsdc + CEXA_FEES.verificationEcosystemUsdc;

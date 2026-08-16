@@ -9,13 +9,18 @@
 // a written, simulated preview - panels switch to live chain data with the
 // next network upgrade.
 
-import { LINKS } from "../../lib/site";
+import { ENDPOINTS, LINKS } from "../../lib/site";
 import {
   CEXA_CAST,
+  CEXA_COUNTERPARTY_SCHEMA_ID,
   CEXA_FEES,
+  CEXA_KYC_SCHEMA_ID,
   CEXA_RATES,
   CEXA_REUSE_FEE_USDC,
+  CEXA_TRUST_REGISTRY_ID,
 } from "../../lib/cexa-cast";
+
+const app = ENDPOINTS.frontend;
 import type { Stage } from "./scenes";
 import type {
   JourneyNeed as GenericJourneyNeed,
@@ -292,12 +297,16 @@ export const JOURNEY: {
           points: [
             "Governed verification is the unusual choice, and the point: asking a wallet for a KYC credential is a privileged, paid act - so the relying side is permissioned too.",
             "The Association issues exactly what it governs: CEXA-VerifiedCounterparty identities and CEXA-Kyc accreditations. ECS-Organization credentials stay where they belong - with the accredited issuers of the Verana ECS Ecosystem, like Helvetia.",
+            "A word on the schemas themselves: they are highly simplified for the demo. A production framework would version them, carry far richer claim sets and jurisdictional variants, and evolve them through EGF amendments - the registry, governance, fees and permissions work identically either way.",
           ],
           underHood: [
             "Create New Trust Registry (+ EGF document, digest-anchored) → Create New Credential Schema (issuer mode ECOSYSTEM, verifier mode ECOSYSTEM) → root permission.",
             "The schema prices its fees in a USD stablecoin (pricing_asset_type COIN): fees settle on-chain in USDC, deposit-bound amounts always settle in the native denom.",
           ],
           links: [
+            { label: "The CEXA ecosystem in the Verana app", href: `${app}/tr/${CEXA_TRUST_REGISTRY_ID}` },
+            { label: "CEXA-Kyc schema", href: `${app}/tr/cs/${CEXA_KYC_SCHEMA_ID}` },
+            { label: "CEXA-VerifiedCounterparty schema", href: `${app}/tr/cs/${CEXA_COUNTERPARTY_SCHEMA_ID}` },
             { label: "Verifiable Trust spec", href: LINKS.vtSpec },
             { label: "VPR spec", href: LINKS.vprSpec },
           ],
@@ -328,7 +337,11 @@ export const JOURNEY: {
             "The member's verification fee (0.90 per reuse) is agreed at validation and frozen across renewals - the fee schedule is a contract, not a dial.",
           ],
           reproduce: [
-            "Once the cast is live: open the Association's ecosystem in the Verana app and read the participant tree - membership is a public record.",
+            "Open the Association's ecosystem in the Verana app and read the participant trees - membership is a public record.",
+          ],
+          links: [
+            { label: "Participants of CEXA-Kyc", href: `${app}/participants/${CEXA_KYC_SCHEMA_ID}` },
+            { label: "Participants of CEXA-VerifiedCounterparty", href: `${app}/participants/${CEXA_COUNTERPARTY_SCHEMA_ID}` },
           ],
         },
         {

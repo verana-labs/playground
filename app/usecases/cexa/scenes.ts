@@ -135,7 +135,7 @@ const NODES: SceneNode[] = [
     sub: "KYC'd again at every exchange",
     toneByStage: { "3.4": "emerald" },
     labelByStage: {
-      "3.4": { sub: "CryptoExchangeKYC in the wallet she chose" },
+      "3.4": { sub: "CEXA-Kyc in the wallet she chose" },
     },
   },
   // ---- the red world
@@ -188,7 +188,7 @@ const EDGES: SceneEdge[] = [
     from: "aurum",
     to: "alice",
     appears: "3.4",
-    label: "CryptoExchangeKYC · free issuance",
+    label: "CEXA-Kyc · free issuance",
     tone: "emerald",
   },
   // reuse
@@ -279,7 +279,7 @@ const BADGES: SceneBadge[] = [
     node: "association",
     dx: 0,
     dy: -62,
-    text: "CryptoExchangeKYC · governed both sides",
+    text: "CEXA-Kyc · governed both sides",
     tone: "violet",
     appears: "3.1",
   },
@@ -326,7 +326,7 @@ const BADGES: SceneBadge[] = [
     node: "novara",
     dx: 6,
     dy: -58,
-    text: "VerifiedCounterparty read from its DID",
+    text: "CEXA-VerifiedCounterparty read from its DID",
     tone: "violet",
     appears: "3.7",
     until: "3.8",
@@ -374,7 +374,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
       appears: "3.2",
     },
     {
-      name: "VerifiedCounterparty",
+      name: "CEXA-VerifiedCounterparty",
       tone: "violet",
       issuedBy: "Crypto Exchange Association (demo)",
       ecosystem: "Crypto Exchange Association (demo)",
@@ -397,7 +397,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
       appears: "3.3",
     },
     {
-      name: "VerifiedCounterparty",
+      name: "CEXA-VerifiedCounterparty",
       tone: "violet",
       issuedBy: "Crypto Exchange Association (demo)",
       ecosystem: "Crypto Exchange Association (demo)",
@@ -420,7 +420,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
       appears: "3.6",
     },
     {
-      name: "VerifiedCounterparty",
+      name: "CEXA-VerifiedCounterparty",
       tone: "violet",
       issuedBy: "Crypto Exchange Association (demo)",
       ecosystem: "Crypto Exchange Association (demo)",
@@ -429,7 +429,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
   ],
   alice: [
     {
-      name: "CryptoExchangeKYC",
+      name: "CEXA-Kyc",
       tone: "emerald",
       issuedBy: "Aurum Exchange (demo)",
       ecosystem: "Crypto Exchange Association (demo)",
@@ -451,7 +451,7 @@ const ACCREDITATIONS: Record<string, Accreditation[]> = {
   aurum: [
     {
       role: "ISSUER",
-      schema: "CryptoExchangeKYC",
+      schema: "CEXA-Kyc",
       context: "Crypto Exchange Association (demo)",
       appears: "3.2",
     },
@@ -459,7 +459,7 @@ const ACCREDITATIONS: Record<string, Accreditation[]> = {
   borealis: [
     {
       role: "VERIFIER",
-      schema: "CryptoExchangeKYC",
+      schema: "CEXA-Kyc",
       context: "Crypto Exchange Association (demo)",
       appears: "3.3",
     },
@@ -467,13 +467,13 @@ const ACCREDITATIONS: Record<string, Accreditation[]> = {
   novara: [
     {
       role: "ISSUER",
-      schema: "CryptoExchangeKYC",
+      schema: "CEXA-Kyc",
       context: "Crypto Exchange Association (demo)",
       appears: "3.6",
     },
     {
       role: "VERIFIER",
-      schema: "CryptoExchangeKYC",
+      schema: "CEXA-Kyc",
       context: "Crypto Exchange Association (demo)",
       appears: "3.6",
     },
@@ -553,7 +553,7 @@ export const CEXA_SCENES: SceneGraph = {
     },
     "3.7": {
       nodes: ["aurum", "novara"],
-      note: "Before releasing a Travel Rule transfer, Aurum reads Novara's VerifiedCounterparty credential straight from its DID - no directory, no subscription, no fee.",
+      note: "Before releasing a Travel Rule transfer, Aurum reads Novara's CEXA-VerifiedCounterparty credential straight from its DID - no directory, no subscription, no fee.",
     },
     "3.8": {
       nodes: ["darkpool"],

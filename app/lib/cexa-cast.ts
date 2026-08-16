@@ -44,15 +44,15 @@ export const CEXA_CAST = {
 export const isPendingDid = (did: string) => did.includes(PENDING);
 
 /** Credential-type names provisioned on the cast agents (workflow contract). */
-export const CEXA_KYC_NAME = "CryptoExchangeKYC";
-export const CEXA_COUNTERPARTY_NAME = "VerifiedCounterparty";
+export const CEXA_KYC_NAME = "CEXA-Kyc";
+export const CEXA_COUNTERPARTY_NAME = "CEXA-VerifiedCounterparty";
 
 /** VTJSCs of the two founding schemas, published by the association anchor
  *  (vs-agent naming convention: /vt/schemas-<base>-jsc.json). The
- *  VerifiedCounterparty credential is org-level and published by each member
+ *  CEXA-VerifiedCounterparty credential is org-level and published by each member
  *  as a Linked VP: counterparty checks are free reads of the member's DID. */
-export const CEXA_KYC_JSC = `https://${CEXA_CAST.association.host}/vt/schemas-crypto-exchange-kyc-jsc.json`;
-export const CEXA_COUNTERPARTY_JSC = `https://${CEXA_CAST.association.host}/vt/schemas-verified-counterparty-jsc.json`;
+export const CEXA_KYC_JSC = `https://${CEXA_CAST.association.host}/vt/schemas-cexa-kyc-jsc.json`;
+export const CEXA_COUNTERPARTY_JSC = `https://${CEXA_CAST.association.host}/vt/schemas-cexa-verified-counterparty-jsc.json`;
 
 // ---------------------------------------------------------------------------
 // The EGF fee schedule and the network rates that drive every money panel of

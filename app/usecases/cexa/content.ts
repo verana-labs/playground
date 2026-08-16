@@ -156,7 +156,7 @@ export const SOLUTION = {
     },
     {
       need: 2,
-      tag: "CryptoExchangeKYC",
+      tag: "CEXA-Kyc",
       title: "One governed credential",
       desc: "A single KYC credential schema, governed on both sides: only accredited members issue it, only accredited members can ask for it.",
     },
@@ -174,7 +174,7 @@ export const SOLUTION = {
     },
     {
       need: 5,
-      tag: "VerifiedCounterparty",
+      tag: "CEXA-VerifiedCounterparty",
       title: "Counterparty proof, once - not per network",
       desc: "One verifiable answer to who the counterparty is, published on each member's DID and free to check - instead of a license resubmitted to every travel rule directory.",
     },
@@ -196,7 +196,7 @@ export const SOLUTION = {
       "The fee schedule: what a reuse costs, who receives it, and that issuing is free.",
       "Evidence duties: the issuer seals the full provider evidence into the holder's wallet alongside the credential, digest-bound. The verifier obtains and maintains the sealed evidence file automatically at presentation - its own complete CDD record from second zero. Contacting the issuer about a reuse is prohibited by design: no phone home.",
       "Slashing causes: issuing outside the provider list, faking evidence, issuing without the sealed evidence bundle.",
-      "Travel Rule counterparty proof: every member publishes a VerifiedCounterparty credential on its DID carrying legal name, LEI where held, licensing authority and license identifier, VASP category, and a compliance contact endpoint. Renewed at membership renewal, revoked on license loss.",
+      "Travel Rule counterparty proof: every member publishes a CEXA-VerifiedCounterparty credential on its DID carrying legal name, LEI where held, licensing authority and license identifier, VASP category, and a compliance contact endpoint. Renewed at membership renewal, revoked on license loss.",
     ],
     positioning:
       "Vendor reusable KYC already exists - which proves the demand. But it is single-vendor and vendor-owned. The Association's credential is cross-provider, member-owned and user-held: the rules belong to the members, the credential belongs to the customer, and no vendor sits in the middle. And because the EGF makes issuers vetted, bonded and auditable, a bank relying on a member-issued check stays inside the classic third-party reliance framework its regulator already accepts.",
@@ -212,12 +212,12 @@ export const SOLUTION = {
     name: "Crypto Exchange Association",
     label: "one KYC credential, governed on both sides",
     about:
-      "Two schemas at founding. CryptoExchangeKYC: the reusable retail check (KYC level, screening date, provider, expiry, a hashed document number for chip-matching re-binding - and the sealed evidence bundle riding in the holder's wallet, digest-bound). Issuance governed, verification governed, every request a paid, receipted session. VerifiedCounterparty: the Travel Rule identity of each member, published on its DID and free to check - issued by the Association, revoked on license loss.",
+      "Two schemas at founding. CEXA-Kyc: the reusable retail check (KYC level, screening date, provider, expiry, a hashed document number for chip-matching re-binding - and the sealed evidence bundle riding in the holder's wallet, digest-bound). Issuance governed, verification governed, every request a paid, receipted session. CEXA-VerifiedCounterparty: the Travel Rule identity of each member, published on its DID and free to check - issued by the Association, revoked on license loss.",
     why: "governed verification is what makes the business model enforceable: a wallet only answers requests from members in good standing, with the reuse fee paid.",
     did: CEXA_CAST.association.did,
   },
   kybNote:
-    "A CryptoExchangeKYB credential for corporate customers follows the same pattern (higher stakes, higher fees) and ships as the story's second act - and it is where the bank members care most: corporate onboarding is the slowest, costliest check either sector runs.",
+    "A CEXA-Kyb credential for corporate customers follows the same pattern (higher stakes, higher fees) and ships as the story's second act - and it is where the bank members care most: corporate onboarding is the slowest, costliest check either sector runs.",
 };
 
 export const PILLARS = [
@@ -279,7 +279,7 @@ export const JOURNEY: {
           title: "Founding the Association on Verana",
           kind: "watch",
           story:
-            "The Association deploys a vs-agent, an open source Business Wallet natively integrated with the public Verana infrastructure. Helvetia Trust Services (demo), an accredited ECS-Organization issuer, verifies the legal entity and issues its Organization credential; the Association self-issues its Service credential - the first green check. Then it creates its trust registry: the CryptoExchangeKYC schema, governed on BOTH sides (only accredited members issue, only accredited members verify), the VerifiedCounterparty schema for Travel Rule identities, the EGF document anchored by digest, and the fee schedule.",
+            "The Association deploys a vs-agent, an open source Business Wallet natively integrated with the public Verana infrastructure. Helvetia Trust Services (demo), an accredited ECS-Organization issuer, verifies the legal entity and issues its Organization credential; the Association self-issues its Service credential - the first green check. Then it creates its trust registry: the CEXA-Kyc schema, governed on BOTH sides (only accredited members issue, only accredited members verify), the CEXA-VerifiedCounterparty schema for Travel Rule identities, the EGF document anchored by digest, and the fee schedule.",
           code: {
             label: "The DID of the Crypto Exchange Association (demo)",
             value: CEXA_CAST.association.did,
@@ -314,7 +314,7 @@ export const JOURNEY: {
           title: "Aurum joins as an ISSUER member",
           kind: "watch",
           story:
-            "Aurum Exchange (demo) starts the onboarding process for an ISSUER permission on the CryptoExchangeKYC schema. Its dues - 5,000 USDC for the year - go to escrow. Over DIDComm, the Association's service collects what the EGF demands: licenses, the IdentiSure contract, evidence-retention undertakings. Satisfied, the Association validates: the dues release, Aurum receives its ECS-Organization credential and its VerifiedCounterparty credential in the same motion (published on its DID for anyone to check), and both parties' trust deposits grow - trust units worth 250 minted to each side, 5% of the dues.",
+            "Aurum Exchange (demo) starts the onboarding process for an ISSUER permission on the CEXA-Kyc schema. Its dues - 5,000 USDC for the year - go to escrow. Over DIDComm, the Association's service collects what the EGF demands: licenses, the IdentiSure contract, evidence-retention undertakings. Satisfied, the Association validates: the dues release, Aurum receives its ECS-Organization credential and its CEXA-VerifiedCounterparty credential in the same motion (published on its DID for anyone to check), and both parties' trust deposits grow - trust units worth 250 minted to each side, 5% of the dues.",
           points: [
             "No upfront stake anywhere: the trust deposit is built by usage - every fee paid or earned mints trust units worth 5% of it to the payer and to the payee.",
             "While the process is pending, everything sits in escrow: cancel and it refunds as-is. Validated, it never comes back out.",
@@ -333,7 +333,7 @@ export const JOURNEY: {
           title: "Borealis joins as a VERIFIER member",
           kind: "watch",
           story:
-            "Borealis Markets (demo) runs the same process for a VERIFIER permission: 2,000 USDC yearly dues, the EGF's re-binding undertaking (passport NFC plus face match on every reuse), and its own ECS-Organization credential on validation. From this moment Borealis may ask wallets for the CryptoExchangeKYC credential - and only from this moment: an exchange outside the Association can be perfectly legitimate and still get refused, because verification of this schema is governed.",
+            "Borealis Markets (demo) runs the same process for a VERIFIER permission: 2,000 USDC yearly dues, the EGF's re-binding undertaking (passport NFC plus face match on every reuse), and its own ECS-Organization credential on validation. From this moment Borealis may ask wallets for the CEXA-Kyc credential - and only from this moment: an exchange outside the Association can be perfectly legitimate and still get refused, because verification of this schema is governed.",
           points: [
             "Both sides of the market are memberships: issuers pay to be trusted with issuance, verifiers pay to be trusted with data.",
             "Renewal is yearly, at frozen prices - dues fund the Association's audits, provider vetting and EGF upkeep.",
@@ -348,7 +348,7 @@ export const JOURNEY: {
       id: "need-3",
       n: 3,
       title: "KYC once, reuse everywhere",
-      tag: "CryptoExchangeKYC",
+      tag: "CEXA-Kyc",
       intro:
         "The credential at work: one full check at the first exchange, sixty seconds at every exchange after that.",
       steps: [
@@ -358,7 +358,7 @@ export const JOURNEY: {
           title: "Alice's first and last full KYC",
           kind: "watch",
           story:
-            "Alice Moreau opens an account at Aurum. No credential yet, so Aurum runs the full check through IdentiSure (demo): documents, liveness, AML screening - about 1.85, invoiced off-chain. Then Aurum does what makes the spend recoverable: it seals every piece of evidence into a bundle, computes its digest, and issues Alice her CryptoExchangeKYC credential with the sealed bundle riding alongside it - straight into the wallet she chose. The digest inside the signed credential binds the bundle; the evidence travels with Alice from now on. Issuing is free by design: the Association puts no toll on the on-ramp.",
+            "Alice Moreau opens an account at Aurum. No credential yet, so Aurum runs the full check through IdentiSure (demo): documents, liveness, AML screening - about 1.85, invoiced off-chain. Then Aurum does what makes the spend recoverable: it seals every piece of evidence into a bundle, computes its digest, and issues Alice her CEXA-Kyc credential with the sealed bundle riding alongside it - straight into the wallet she chose. The digest inside the signed credential binds the bundle; the evidence travels with Alice from now on. Issuing is free by design: the Association puts no toll on the on-ramp.",
           image: {
             src: "/images/cexa/alice.webp",
             alt: "Alice Moreau, a customer of the Association's members",
@@ -421,7 +421,7 @@ export const JOURNEY: {
       id: "need-4",
       n: 4,
       title: "Counterparty proof for the Travel Rule",
-      tag: "VerifiedCounterparty",
+      tag: "CEXA-VerifiedCounterparty",
       intro:
         "The institutions verify each other too - and that obligation recurs on every transfer, by regulation.",
       steps: [
@@ -431,14 +431,14 @@ export const JOURNEY: {
           title: "Before the transfer: verify the counterparty",
           kind: "watch",
           story:
-            "Alice withdraws 1,200 USDC from Aurum to her Novara account - over the Travel Rule threshold, so Aurum must verify the receiving institution before releasing. No directory subscription, no form, no queue: Aurum's system trust-resolves Novara's DID and reads its VerifiedCounterparty credential - legal name, LEI, licensing authority and license identifier, category, compliance contact - issued by the Association, valid, free. The transfer clears. The same check runs in the other direction when funds flow back.",
+            "Alice withdraws 1,200 USDC from Aurum to her Novara account - over the Travel Rule threshold, so Aurum must verify the receiving institution before releasing. No directory subscription, no form, no queue: Aurum's system trust-resolves Novara's DID and reads its CEXA-VerifiedCounterparty credential - legal name, LEI, licensing authority and license identifier, category, compliance contact - issued by the Association, valid, free. The transfer clears. The same check runs in the other direction when funds flow back.",
           points: [
             "The Association carries no transaction data and replaces no travel rule messaging protocol - it supplies the one thing every network rebuilds: a neutral, verifiable answer to who the counterparty is.",
             "One membership replaces N directory subscriptions and N re-submissions of the same license - and the proof is checkable by anyone, not just fellow subscribers.",
             "Counterparty checks are free by design: the credential is published on the member's DID as a Linked VP, and reading it costs nothing. Dues fund the registry.",
           ],
           underHood: [
-            "VerifiedCounterparty is an org-level credential published as a Linked VP - the standard Verifiable Service pattern, so the check is ordinary trust resolution.",
+            "CEXA-VerifiedCounterparty is an org-level credential published as a Linked VP - the standard Verifiable Service pattern, so the check is ordinary trust resolution.",
             "Renewal rides the yearly membership renewal; license loss means revocation, and the credential dies in every member's transfer flow the same day.",
           ],
         },
@@ -472,7 +472,7 @@ export const JOURNEY: {
           title: "Fraud discovered: one revocation, network-wide",
           kind: "watch",
           story:
-            "Months later, Aurum discovers one of its KYC files was built on a forged document. It revokes that credential. The next time the holder tries to present it - at any member, exchange or bank - the check shows it dead. And because the Association can slash a misbehaving member's trust deposit, an issuer that faked evidence or skipped the provider list does not just lose face: it loses its bonded trust score, its permissions freeze, and the slash is a permanent public record. The same blade cuts on the institutional side: a member that loses its license has its VerifiedCounterparty credential revoked - and disappears from every other member's transfer flow the same day.",
+            "Months later, Aurum discovers one of its KYC files was built on a forged document. It revokes that credential. The next time the holder tries to present it - at any member, exchange or bank - the check shows it dead. And because the Association can slash a misbehaving member's trust deposit, an issuer that faked evidence or skipped the provider list does not just lose face: it loses its bonded trust score, its permissions freeze, and the slash is a permanent public record. The same blade cuts on the institutional side: a member that loses its license has its CEXA-VerifiedCounterparty credential revoked - and disappears from every other member's transfer flow the same day.",
           points: [
             "Revocation is the shared fraud signal without a shared database: no pooled PII, and still every member benefits from every discovery.",
             "Slash obligations are recorded at what was originally paid, in fiat terms - a score that decayed does not discount the liability.",
@@ -598,7 +598,7 @@ export const MONEY = {
   ] as MoneyFlowData[],
   counterparty: {
     title: "The counterparty check: free by design",
-    desc: "The fourth flow is deliberately not a flow. A member verifying a counterparty before a Travel Rule transfer trust-resolves the counterparty's DID and reads its VerifiedCounterparty credential - published as a Linked VP, checkable by anyone, at no per-check cost. Compare: a subscription plus per-message fees to every travel rule network joined, times the number of networks it takes to reach your counterparties. Membership dues fund the registry; the checks themselves never meter.",
+    desc: "The fourth flow is deliberately not a flow. A member verifying a counterparty before a Travel Rule transfer trust-resolves the counterparty's DID and reads its CEXA-VerifiedCounterparty credential - published as a Linked VP, checkable by anyone, at no per-check cost. Compare: a subscription plus per-message fees to every travel rule network joined, times the number of networks it takes to reach your counterparties. Membership dues fund the registry; the checks themselves never meter.",
     chip: "0 per check · dues-funded",
   },
   unitEconomics: {
@@ -703,7 +703,7 @@ export const DEMOS = {
       "Pick one of the integrated personal wallets and install it - the demo QR codes are minted for your wallet, on the rail it speaks.",
   },
   kyc: {
-    title: "Get your CryptoExchangeKYC credential",
+    title: "Get your CEXA-Kyc credential",
     intro:
       "Request Alice's (demo) credential from Aurum Exchange (demo) and watch your wallet check the issuer first. In the real flow this happens after the full IdentiSure check; the demo mints directly:",
     offer: {
@@ -718,10 +718,10 @@ export const DEMOS = {
   borealis: {
     title: "Open an account at Borealis Markets (demo)",
     intro:
-      "The reuse, on your own phone: Borealis asks for your CryptoExchangeKYC credential, your wallet checks the verifier is an accredited member, and the account opens. The re-binding step (passport NFC + face match) is simulated on screen; the fee panel shows what flows on a real reuse:",
+      "The reuse, on your own phone: Borealis asks for your CEXA-Kyc credential, your wallet checks the verifier is an accredited member, and the account opens. The re-binding step (passport NFC + face match) is simulated on screen; the fee panel shows what flows on a real reuse:",
     outcomes: [
       {
-        rule: "Your CryptoExchangeKYC was issued by an accredited member",
+        rule: "Your CEXA-Kyc was issued by an accredited member",
         result: "Account opened - no document uploads, no queue.",
         tone: "emerald" as const,
       },
@@ -738,7 +738,7 @@ export const DEMOS = {
       "The corridor, on your own phone: the same exchange-issued credential opens a bank account. Novara verifies you exactly like Borealis did - same trust checks, same re-binding, same fee split, with 0.30 flowing back to the exchange that ran your original KYC:",
     outcomes: [
       {
-        rule: "Your CryptoExchangeKYC was issued by an accredited member - exchange or bank",
+        rule: "Your CEXA-Kyc was issued by an accredited member - exchange or bank",
         result: "Bank account opened - the sector line does not exist in the protocol.",
         tone: "emerald" as const,
       },
@@ -752,9 +752,9 @@ export const DEMOS = {
   counterparty: {
     title: "Verify a counterparty",
     intro:
-      "The Travel Rule check, live: resolve a member's DID and read its VerifiedCounterparty credential - licensing authority, license identifier, category, compliance contact - straight from the public registry. No account, no subscription, no fee:",
+      "The Travel Rule check, live: resolve a member's DID and read its CEXA-VerifiedCounterparty credential - licensing authority, license identifier, category, compliance contact - straight from the public registry. No account, no subscription, no fee:",
     expect:
-      "The trust card shows the member's VerifiedCounterparty credential issued by the Association - the neutral answer to who the counterparty is, checkable by anyone.",
+      "The trust card shows the member's CEXA-VerifiedCounterparty credential issued by the Association - the neutral answer to who the counterparty is, checkable by anyone.",
   },
   darkpool: {
     title: "The exchange that cannot prove anything",
@@ -772,5 +772,5 @@ export const DEMOS = {
 export const CLOSING = {
   title: "What ships next",
   pendingLabel: "in preparation",
-  body: "The CEXA cast deploys on the Verana testnet next: live DIDs behind every trust card, live QR demos on both rails, the Borealis and Novara sign-ins with the simulated re-binding step, and the live counterparty lookup against member DIDs. When the next network upgrade lands, the money panels stop simulating: real sessions, real beneficiary splits, real trust scores - the same numbers you read in chapter 4, on chain. The corporate act - CryptoExchangeKYB for business accounts, where the bank members care most - follows.",
+  body: "The CEXA cast deploys on the Verana testnet next: live DIDs behind every trust card, live QR demos on both rails, the Borealis and Novara sign-ins with the simulated re-binding step, and the live counterparty lookup against member DIDs. When the next network upgrade lands, the money panels stop simulating: real sessions, real beneficiary splits, real trust scores - the same numbers you read in chapter 4, on chain. The corporate act - CEXA-Kyb for business accounts, where the bank members care most - follows.",
 };

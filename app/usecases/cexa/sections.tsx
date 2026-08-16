@@ -537,7 +537,7 @@ export function Section5() {
             </Suspense>
           </div>
 
-          {/* Demo 1 · Get the CryptoExchangeKYC credential */}
+          {/* Demo 1 · Get the CEXA-Kyc credential */}
           <div id="demo-kyc" className="mt-14 scroll-mt-24">
             <SubHeading>{DEMOS.kyc.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">

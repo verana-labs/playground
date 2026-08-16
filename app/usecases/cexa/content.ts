@@ -188,6 +188,10 @@ export const SOLUTION = {
   egf: {
     intro:
       "The Association's Ecosystem Governance Framework is a public document, digest-anchored from the trust registry. It defines:",
+    doc: {
+      label: "Read the full example EGF",
+      href: "/cexa/cexa-egf.md",
+    },
     rules: [
       "Who may join: licensed exchanges and credit institutions - crypto-native or not - that are already Verifiable Services (ECS-Organization from the Verana ECS Ecosystem, self-issued ECS-Service). One membership class, one fee schedule, one set of duties.",
       "The authorized IDV providers members may use for the original check: IdentiSure (demo), ClearPass (demo), VerifID (demo).",

@@ -4,6 +4,7 @@ import {
   ArrowLeftRight,
   Building2,
   Check,
+  FileText,
   Ghost,
   Hourglass,
   Landmark,
@@ -287,6 +288,15 @@ export function Section2() {
               </li>
             ))}
           </ol>
+          <a
+            href={SOLUTION.egf.doc.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-5 inline-flex items-center gap-2 rounded-full border border-violet-200 bg-violet-50 px-4 py-1.5 text-xs font-semibold text-violet-700 hover:bg-violet-100"
+          >
+            <FileText className="h-3.5 w-3.5" aria-hidden />
+            {SOLUTION.egf.doc.label}
+          </a>
         </div>
         <p className="mt-4 rounded-2xl border border-emerald-100 bg-emerald-50/60 px-6 py-4 text-sm leading-relaxed text-emerald-900">
           {SOLUTION.egf.positioning}

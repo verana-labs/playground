@@ -209,12 +209,13 @@ export function Section2() {
             <div className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between gap-3">
                 <Chip>{SOLUTION.deployment.target.label}</Chip>
-                <span className="flex h-12 items-center rounded-lg bg-white px-3 ring-1 ring-black/5">
+                {/* Logo vertical (ícono sobre el nombre): necesita más alto que los horizontales */}
+                <span className="flex h-16 items-center rounded-lg bg-white px-3 ring-1 ring-black/5">
                   {/* eslint-disable-next-line @next/next/no-img-element -- logo oficial pre-optimizado en public/ */}
                   <img
                     src={CCM_ASSETS.confecamaras}
                     alt="Logo de Confecámaras"
-                    className="max-h-8 w-auto object-contain"
+                    className="max-h-14 w-auto object-contain"
                   />
                 </span>
               </div>

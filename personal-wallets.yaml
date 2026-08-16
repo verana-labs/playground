@@ -199,29 +199,42 @@ wallets:
   - id: procivis
     name: Procivis One Wallet
     vendor: Procivis
-    hidden: true
     icon: ./procivis/logo.webp
     formats: [openid4vc-sdjwt]
-    download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/download/verana-2026-08-08/app-debug.apk
+    download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/download/verana-2026-08-16/app-debug.apk
     website: https://www.procivis.ch
     repo: https://github.com/procivis/one-wallet
     fork: https://github.com/AirKyzzZ/one-wallet/tree/codex/procivis-verana
     license: Apache-2.0
-    notes: Q1+Q2/Q3 in the Rust core with typed verdicts and a trust dossier in the wallet UI.
+    notes: Q1 and Q2/Q3 resolved inside the Rust core, so the verdict is computed below the UI and the same trust card renders on both the offer and the presentation surface, with a full evidence dossier behind it.
     captures:
       issue-accredited:
         src: ./procivis/screenshots/1.webp
-        caption: Issuance from a trusted, authorized issuer
+        clip: ./procivis/clips/1-issuer-accredited.mp4
+        caption: "Accredited issuer: both identity credentials verified, authorized for this credential"
       issue-unaccredited:
         src: ./procivis/screenshots/2.webp
-        caption: Q1 and Q2 verdicts in the trust dossier
+        clip: ./procivis/clips/2-issuer-unaccredited.mp4
+        caption: Identity verified but not accredited to issue this credential
       issue-untrusted:
         src: ./procivis/screenshots/3.webp
-        caption: "Non-positive control: trust unavailable"
+        clip: ./procivis/clips/3-issuer-untrusted.mp4
+        caption: "Untrusted issuer: the registry does not vouch for it and its self-issued claims are withheld"
+      present-accredited:
+        src: ./procivis/screenshots/4.webp
+        clip: ./procivis/clips/4-verifier-accredited.mp4
+        caption: "Accredited verifier: authorized to request this credential"
+      present-unaccredited:
+        src: ./procivis/screenshots/5.webp
+        clip: ./procivis/clips/5-verifier-unaccredited.mp4
+        caption: Identity verified but not accredited to request this credential
+      present-untrusted:
+        src: ./procivis/screenshots/6.webp
+        clip: ./procivis/clips/6-verifier-untrusted.mp4
+        caption: "Untrusted verifier: the registry does not vouch for it and its claims are withheld"
     video:
       src: ./procivis/demo.mp4
-      note: Real device, three segments concatenated, 1.75x speed. Silent.
-
+      note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end at 3x speed, silent, otherwise unedited.
   - id: bcwallet
     name: BC Wallet
     vendor: Government of British Columbia

@@ -26,17 +26,17 @@ export const CEXA_CAST = {
   /** Accredited verifier member - accepts the credential on reuse. */
   borealis: {
     host: `borealis.${ZONE}`,
-    did: `did:webvh:${PENDING}:borealis.${ZONE}`,
+    did: "did:webvh:QmZhWnfEmxZa8QYYeWBj5PCbze3Vv1jjmtT6R6Udu2NCzq:borealis.cexa.playground.testnet.verana.network",
   },
   /** Bank member, ISSUER + VERIFIER - the cross-sector corridor. */
   novara: {
     host: `novara.${ZONE}`,
-    did: `did:webvh:${PENDING}:novara.${ZONE}`,
+    did: "did:webvh:QmXesvi2DDWVt9MgdxXziP92bojMf4X9pFYA4z7gABnpUM:novara.cexa.playground.testnet.verana.network",
   },
   /** Deliberately unprovisioned (umbra pattern): a DID and nothing else. */
   darkpool: {
     host: `darkpool.${ZONE}`,
-    did: `did:webvh:${PENDING}:darkpool.${ZONE}`,
+    did: "did:webvh:QmVap281SXu4pZRYEUdCS1pRpbZYdafzugFWE9H4bxXfEc:darkpool.cexa.playground.testnet.verana.network",
   },
 } as const satisfies Record<string, CastMember>;
 

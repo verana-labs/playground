@@ -593,7 +593,7 @@ export const MONEY = {
         },
       ],
       footnote:
-        "What the verifier gets for 1.15 all-in: the identity decision, the complete sealed evidence file in its own records, a funded account in minutes instead of days, and the abandonment a fresh onboarding would have lost - against an all-in onboarding cost that is a multiple of the 1.85 vendor floor. 0.90 of it goes to a fellow member, not a vendor; Aurum breaks even on its vendor fee after 2 to 3 reuses. The identical split runs in every direction of the corridor: exchange to exchange, exchange to bank, bank to exchange.",
+        "What 1.15 all-in buys, in the order that matters: a funded account in minutes instead of days, the abandonment recovered that a fresh onboarding would have lost, the identity decision, and the complete sealed evidence file in the verifier's own records - against an all-in onboarding cost that is a multiple of the 1.85 vendor floor. 0.90 of it goes to a fellow member, not a vendor; Aurum breaks even on its vendor fee after 2 to 3 reuses. The identical split runs in every direction of the corridor: exchange to exchange, exchange to bank, bank to exchange.",
     },
   ] as MoneyFlowData[],
   counterparty: {

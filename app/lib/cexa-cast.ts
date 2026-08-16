@@ -54,6 +54,13 @@ export const CEXA_COUNTERPARTY_NAME = "CEXA-VerifiedCounterparty";
 export const CEXA_KYC_JSC = `https://${CEXA_CAST.association.host}/vt/schemas-cexa-kyc-jsc.json`;
 export const CEXA_COUNTERPARTY_JSC = `https://${CEXA_CAST.association.host}/vt/schemas-cexa-verified-counterparty-jsc.json`;
 
+/** The example EGF document, served by the playground itself
+ *  (public/cexa/cexa-egf.md). This is the URL the cexa-* provisioning
+ *  workflows anchor (with its digest) as the ecosystem's governance
+ *  framework document; /cexa/cexa-egf.md relative on the site. */
+export const CEXA_EGF_URL =
+  "https://playground.testnet.verana.network/cexa/cexa-egf.md";
+
 // ---------------------------------------------------------------------------
 // The EGF fee schedule and the network rates that drive every money panel of
 // the use case. Fees are EGF-governed (the association sets them); the rates

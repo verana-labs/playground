@@ -23,6 +23,7 @@ import { SubHeading, SubStepBlock } from "../story-blocks";
 import { CEXA_SCENES } from "./scenes";
 import { MoneyFlowCard, TrustScorePanel } from "./money";
 import {
+  CEXA_ASSETS,
   CLOSING,
   DEMOS,
   FACTS,
@@ -50,19 +51,45 @@ const PILLAR_TONES = {
 
 function QuoteCard({
   quote,
+  portrait,
 }: {
   quote: { text: string; name: string; role: string };
+  /** Generated portrait (CEXA_ASSETS); initials placeholder when null. */
+  portrait?: string | null;
 }) {
   return (
-    <figure className="rounded-2xl border border-violet-100 bg-violet-50/50 p-6">
-      <Quote className="h-5 w-5 text-violet-400" aria-hidden />
-      <blockquote className="mt-3 max-w-3xl text-[1.05rem] font-medium leading-relaxed text-gray-800">
-        “{quote.text}”
-      </blockquote>
-      <figcaption className="mt-4 text-sm text-gray-500">
-        <span className="font-semibold text-gray-900">{quote.name}</span> ·{" "}
-        {quote.role}
-      </figcaption>
+    <figure className="rounded-2xl border border-violet-100 bg-violet-50/50 p-6 sm:p-7">
+      <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
+        <figcaption className="shrink-0 text-center">
+          {portrait ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={portrait}
+              alt={quote.name}
+              className="mx-auto h-44 w-36 rounded-2xl object-cover object-top shadow-md"
+            />
+          ) : (
+            <span className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-violet-100 text-xl font-bold text-violet-700">
+              {quote.name
+                .split(" ")
+                .map((w) => w[0])
+                .join("")}
+            </span>
+          )}
+          <div className="mt-3 max-w-[11rem] text-sm font-semibold text-gray-900">
+            {quote.name}
+          </div>
+          <div className="max-w-[11rem] text-xs text-gray-500">
+            {quote.role}
+          </div>
+        </figcaption>
+        <div>
+          <Quote className="h-5 w-5 text-violet-400" aria-hidden />
+          <blockquote className="mt-3 max-w-3xl text-[1.05rem] font-medium leading-relaxed text-gray-800">
+            “{quote.text}”
+          </blockquote>
+        </div>
+      </div>
     </figure>
   );
 }
@@ -134,8 +161,8 @@ export function Section1() {
         </p>
 
         <div className="mt-10 space-y-6">
-          <QuoteCard quote={WORLD.ceoQuote} />
-          <QuoteCard quote={WORLD.bankQuote} />
+          <QuoteCard quote={WORLD.ceoQuote} portrait={CEXA_ASSETS.lena} />
+          <QuoteCard quote={WORLD.bankQuote} portrait={CEXA_ASSETS.elias} />
         </div>
       </Container>
     </Section>
@@ -153,7 +180,7 @@ export function Section2() {
           title={SOLUTION.title}
           subtitle={SOLUTION.needsIntro}
         />
-        <QuoteCard quote={SOLUTION.quote} />
+        <QuoteCard quote={SOLUTION.quote} portrait={CEXA_ASSETS.priya} />
 
         <h3 className="mt-12 text-2xl font-bold text-gray-900">
           {SOLUTION.needsTitle}

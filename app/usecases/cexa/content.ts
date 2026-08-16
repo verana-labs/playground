@@ -90,7 +90,7 @@ export const WORLD = {
   travelRule: {
     icon: "transfers",
     title: "Every VASP re-verifies every other VASP",
-    desc: "The Travel Rule requires exchanges and banks to verify counterparty institutions on transfers over 1,000 USD/EUR. Each travel rule network - Sumsub, TRP, Notabene, VerifyVASP, Sygna - keeps its own directory, so each institution joins several or all of them to reach enough counterparties, resubmits its license and controls to each, and pays each a subscription plus per-message fees.",
+    desc: "The Travel Rule requires exchanges and banks to verify the counterparty institution behind a transfer. The FATF standard sets a 1,000 USD/EUR baseline - but the EU went further: under Regulation (EU) 2023/1113, applied since 30 December 2024, originator and beneficiary data must travel with EVERY crypto transfer, whatever the amount (the 1,000 EUR line survives only for self-hosted wallet ownership checks). Each travel rule network - Sumsub, TRP, Notabene, VerifyVASP, Sygna - keeps its own directory, so each institution joins several or all of them to reach enough counterparties, resubmits its license and controls to each, and pays each a subscription plus per-message fees.",
     costs: [
       "Subscription and per-transfer fees to every network joined",
       "Compliance headcount for every counterparty reviewed",
@@ -432,8 +432,9 @@ export const JOURNEY: {
           title: "Before the transfer: verify the counterparty",
           kind: "watch",
           story:
-            "Alice withdraws 1,200 USDC from Aurum to her Novara account - over the Travel Rule threshold, so Aurum must verify the receiving institution before releasing. No directory subscription, no form, no queue: Aurum's system trust-resolves Novara's DID and reads its CEXA-VerifiedCounterparty credential - legal name, LEI, licensing authority and license identifier, category, compliance contact - issued by the Association, valid, free. The transfer clears. The same check runs in the other direction when funds flow back.",
+            "Alice withdraws 1,200 USDC from Aurum to her Novara account. Under the EU Travel Rule there is no de minimis: originator and beneficiary data travel with every transfer, whatever the amount - so Aurum must know exactly who the receiving institution is, on this transfer and on every other one. No directory subscription, no form, no queue: Aurum's system trust-resolves Novara's DID and reads its CEXA-VerifiedCounterparty credential - legal name, LEI, licensing authority and license identifier, category, compliance contact - issued by the Association, valid, free. The transfer clears. The same check runs in the other direction when funds flow back.",
           points: [
+            "In the EU (Regulation (EU) 2023/1113, since 30 December 2024) the obligation has no minimum threshold - counterparty identification is a per-transfer fact of life, not an occasional large-transfer check. The 1,000 EUR line survives only for self-hosted wallet ownership verification.",
             "The Association carries no transaction data and replaces no travel rule messaging protocol - it supplies the one thing every network rebuilds: a neutral, verifiable answer to who the counterparty is.",
             "One membership replaces N directory subscriptions and N re-submissions of the same license - and the proof is checkable by anyone, not just fellow subscribers.",
             "Counterparty checks are free by design: the credential is published on the member's DID as a Linked VP, and reading it costs nothing. Dues fund the registry.",

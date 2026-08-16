@@ -13,7 +13,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     slug: null,
     href: "/usecases/cexa",
     title: "Pay twice, wait twice",
-    short: "The problem",
+    short: "Problem",
     intro:
       "Every exchange runs the same KYC on the same customer, pays for it again, and loses sign-ups to the wait. The check is a commodity; the friction is not.",
   },
@@ -22,7 +22,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     slug: "solution",
     href: "/usecases/cexa/solution",
     title: "The solution: a KYC that travels",
-    short: "The solution",
+    short: "Solution",
     intro:
       "Exchanges found the Crypto Exchange Association (demo) on Verana: one governed credential, authorized providers, membership with teeth, and a reuse fee that pays the original issuer.",
   },
@@ -31,7 +31,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     slug: "journey",
     href: "/usecases/cexa/journey",
     title: "The Association's journey",
-    short: "The journey",
+    short: "Journey",
     intro:
       "Found the Association, onboard the members, run one full KYC, reuse it in sixty seconds, and watch the impostor and the revoked credential both fail.",
   },
@@ -40,7 +40,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     slug: "money",
     href: "/usecases/cexa/money",
     title: "The money: who pays whom",
-    short: "The money",
+    short: "Money",
     intro:
       "Dues, free issuance, the 0.40 reuse fee and its split, and the trust score every payment builds. Every flow diagrammed, every number from the fee schedule.",
   },
@@ -49,7 +49,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     slug: "demos",
     href: "/usecases/cexa/demos",
     title: "Run the demos",
-    short: "The demos",
+    short: "Demos",
     intro:
       "Get a CryptoExchangeKYC credential, open an account at Borealis Markets (demo) with it, and watch DarkPool Exchange (demo) get refused.",
   },

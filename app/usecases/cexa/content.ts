@@ -46,15 +46,15 @@ const REUSE = {
 
 export const WORLD = {
   name: "The Crypto Exchange Association (demo)",
-  tagline: "Reusable KYC, governed by the exchanges themselves",
+  tagline: "Reusable KYC, governed by the institutions that rely on it",
   meta: [
-    "Every exchange runs KYC on sign-up",
+    "Exchanges and banks run the same checks",
     "~1.85 USD per full check, list price",
     "Majority of sign-ups abandon during onboarding",
     "The same customer, re-checked everywhere",
   ],
   intro:
-    "Exchanges compete on markets, liquidity and product - not on document checks. Yet every one of them pays an IDV provider to re-run the same passport scan, the same liveness check, the same AML screening on the same customer the market already checked last month. The check is a commodity. The friction is not: it costs real money, and it costs sign-ups.",
+    "Exchanges compete on markets, liquidity and product. Banks compete on rates, service and trust. Neither competes on document checks - yet every one of them pays an IDV provider to re-run the same passport scan, the same liveness check, the same AML screening on the same customer the market already checked last month. The check is a commodity, regulated identically for both sectors. The friction is not: it costs real money, it costs sign-ups, and between banks and exchanges it costs entire business relationships.",
   actors: [
     {
       icon: "building",
@@ -67,6 +67,11 @@ export const WORLD = {
       desc: "A growing exchange. Loses a share of its sign-ups at the KYC wall - people abandon rather than upload a passport again.",
     },
     {
+      icon: "bank",
+      name: "Novara Bank (demo)",
+      desc: "A retail bank. Holds the best-audited KYC files in the market - and re-runs the checks anyway, on customers the exchanges just verified.",
+    },
+    {
       icon: "stamp",
       name: "IdentiSure (demo)",
       desc: "An IDV provider. Good at its job, paid per check - by everyone, for the same person, again and again.",
@@ -76,7 +81,7 @@ export const WORLD = {
     {
       icon: "wallet",
       title: "The same check, paid for again and again",
-      desc: "A full KYC with AML screening lists at about 1.85 USD per check. Multiply by every exchange the same customer joins, and the industry pays many times for one fact: this person is who they say they are.",
+      desc: "A full KYC with AML screening lists at about 1.85 USD per check. Multiply by every exchange and every bank the same customer joins, and the industry pays many times for one fact: this person is who they say they are.",
     },
     {
       icon: "hourglass",
@@ -84,17 +89,27 @@ export const WORLD = {
       desc: "Industry onboarding studies put abandonment during KYC above half. Every re-check is a funded account lost to whichever competitor has one step less.",
     },
     {
+      icon: "repeat",
+      title: "The corridor tax",
+      desc: "Every customer moving between a bank and an exchange is re-checked in both directions. And because a bank cannot see how an exchange verified its customers, the safe answer is too often not to serve them at all.",
+    },
+    {
       icon: "ghost",
       title: "Fake exchanges collect passports",
-      desc: "A phishing site that looks like an exchange asks for exactly what a real one asks for: documents and a selfie. Nothing lets a customer tell them apart before uploading.",
+      desc: "A phishing site that looks like an exchange - or a bank - asks for exactly what a real one asks for: documents and a selfie. Nothing lets a customer tell them apart before uploading.",
     },
   ],
   consequence:
-    "KYC is a compliance tax every exchange pays separately - and the people paying the highest price are the users, in queues, re-uploads and stolen documents.",
+    "KYC is a compliance tax every institution pays separately - and the people paying the highest price are the users, in queues, re-uploads, stolen documents and closed accounts.",
   ceoQuote: {
     text: "We spend a fortune verifying people the whole market has already verified. Our KYC file is an asset we can never use twice - and every re-check we force on a customer is a gift to whoever onboards them faster.",
     name: "Lena Okafor",
     role: "CEO, Aurum Exchange (demo)",
+  },
+  bankQuote: {
+    text: "We do not de-bank crypto customers because they are crypto customers. We de-bank them because we cannot see how they were verified. Give me the provenance of the check - who ran it, on what evidence, with what at stake if it was faked - and the risk conversation changes completely.",
+    name: "Elias Brandt",
+    role: "Chief Compliance Officer, Novara Bank (demo)",
   },
 };
 
@@ -109,7 +124,7 @@ export const SOLUTION = {
   },
   needsTitle: "What the Association needs",
   needsIntro:
-    "A group of exchanges founds the Crypto Exchange Association (demo). Its checklist is short:",
+    "A group of exchanges founds the Crypto Exchange Association (demo) - and keeps membership open to the banks that serve them. One membership, one fee schedule, one set of duties. The checklist is short:",
   needs: [
     {
       need: 1,
@@ -146,6 +161,7 @@ export const SOLUTION = {
     intro:
       "The Association's Ecosystem Governance Framework is a public document, digest-anchored from the trust registry. It defines:",
     rules: [
+      "Who may join: licensed exchanges and credit institutions - crypto-native or not. One membership class, one fee schedule, one set of duties.",
       "The authorized IDV providers members may use for the original check: IdentiSure (demo), ClearPass (demo), VerifID (demo).",
       "How to be onboarded as an ISSUER member and as a VERIFIER member: licensing evidence, provider contracts, evidence-retention duties, yearly renewal.",
       "The re-binding rule: on every reuse, the accepting exchange verifies the holder is the subject - passport NFC proof of possession plus face match - and runs its own sanctions ping.",
@@ -154,7 +170,7 @@ export const SOLUTION = {
       "Slashing causes: issuing outside the provider list, faking evidence, breaking delivery SLAs.",
     ],
     positioning:
-      "Vendor reusable KYC already exists - which proves the demand. But it is single-vendor and vendor-owned. The Association's credential is cross-provider, member-owned and user-held: the rules belong to the members, the credential belongs to the customer, and no vendor sits in the middle.",
+      "Vendor reusable KYC already exists - which proves the demand. But it is single-vendor and vendor-owned. The Association's credential is cross-provider, member-owned and user-held: the rules belong to the members, the credential belongs to the customer, and no vendor sits in the middle. And because the EGF makes issuers vetted, bonded and auditable, a bank relying on a member-issued check stays inside the classic third-party reliance framework its regulator already accepts.",
   },
   ecosystemTitle: "The ecosystem the Association builds",
   ecosystem: {
@@ -165,12 +181,12 @@ export const SOLUTION = {
     name: "Crypto Exchange Association",
     label: "one KYC credential, governed on both sides",
     about:
-      "One schema to start: CryptoExchangeKYC (KYC level, screening date, provider, evidence digest, expiry - and a hashed document number so re-binding can match the passport chip without disclosing the number). Issuance governed: only accredited member exchanges issue. Verification governed too: only accredited members may ask a wallet for it - and every request is a paid, receipted session.",
+      "One schema to start: CryptoExchangeKYC (KYC level, screening date, provider, evidence digest, expiry - and a hashed document number so re-binding can match the passport chip without disclosing the number). Issuance governed: only accredited members - exchanges and banks - issue. Verification governed too: only accredited members may ask a wallet for it - and every request is a paid, receipted session.",
     why: "governed verification is what makes the business model enforceable: a wallet only answers requests from members in good standing, with the reuse fee paid.",
     did: CEXA_CAST.association.did,
   },
   kybNote:
-    "A CryptoExchangeKYB credential for corporate customers follows the same pattern (higher stakes, higher fees) and ships as the story's second act.",
+    "A CryptoExchangeKYB credential for corporate customers follows the same pattern (higher stakes, higher fees) and ships as the story's second act - and it is where the bank members care most: corporate onboarding is the slowest, costliest check either sector runs.",
 };
 
 export const PILLARS = [
@@ -214,9 +230,9 @@ export const JOURNEY: {
   anchor: "section-3",
   title: "The Association's journey",
   intro:
-    "One checklist, four builds. The picture below opens on the exchange world you met in chapter 1 - two gray exchanges paying for the same checks, Alice in the queue, DarkPool phishing at the edge - and each step transforms it.",
+    "One checklist, four builds. The picture below opens on the financial world you met in chapter 1 - two gray exchanges and a gray bank paying for the same checks, Alice in the queue, DarkPool phishing at the edge - and each step transforms it.",
   outro:
-    "Every box checked: verifiable members · one governed credential · membership with teeth · reuse that pays the issuer - and the impostor and the revoked credential both fail closed.",
+    "Every box checked: verifiable members · one governed credential · membership with teeth · reuse that pays the issuer, across the bank-exchange corridor - and the impostor and the revoked credential both fail closed.",
   needs: [
     {
       id: "need-1",
@@ -345,6 +361,23 @@ export const JOURNEY: {
             "Run the Borealis sign-in demo below once the cast is live - the whole flow, on your own phone.",
           ],
         },
+        {
+          id: "3.6",
+          stage: "3.6",
+          title: "Novara Bank joins - and the corridor opens",
+          kind: "watch",
+          story:
+            "Novara Bank (demo) runs the same onboarding as the exchanges - the EGF admits licensed exchanges and credit institutions alike - and takes both roles: ISSUER and VERIFIER. Two things happen at once. Alice walks into Novara with her Aurum-issued credential and opens a bank account in the same sixty seconds she opened Borealis - with Novara paying Aurum the same 0.30. And Novara starts issuing: every one of its existing, fully-KYC'd customers can be credentialed at zero on-chain cost, because issuance is free - turning the bank's compliance archive into the largest issuer-side asset in the Association.",
+          points: [
+            "The corridor runs both ways: exchange-verified customers open bank accounts, bank-verified customers open exchange accounts - and the original checker earns either way.",
+            "For Novara, reliance stays defensible: the issuer is vetted at onboarding, bonded by its trust score, named in the credential, and obliged to deliver the sealed evidence file on lawful request.",
+            "De-risking becomes a risk decision instead of a blanket policy: the bank can finally see how a customer was verified, by whom, with what at stake.",
+          ],
+          underHood: [
+            "Two onboarding processes, one per role - same messages, same dues mechanics as the exchanges. Find Beneficiaries is sector-blind: a bank verifying an exchange-issued credential pays the same split.",
+            "Credentialing the existing base is issuance sessions at zero fees: digest anchored, receipt for the wallet, nothing else moves.",
+          ],
+        },
       ],
     },
     {
@@ -356,12 +389,12 @@ export const JOURNEY: {
         "What makes the whole thing safe to rely on: the failures fail closed.",
       steps: [
         {
-          id: "3.6",
-          stage: "3.6",
+          id: "3.7",
+          stage: "3.7",
           title: "DarkPool asks - and is never even shown",
           kind: "watch",
           story:
-            "DarkPool Exchange (demo) looks like an exchange and asks for what exchanges ask for: your documents. But it can present no Organization credential, no Service credential, no membership - trust resolution returns UNTRUSTED, and Alice's wallet never surfaces the request at all. The fake-exchange phishing pattern from chapter 1 dies at Q1, before any data is at risk.",
+            "DarkPool Exchange (demo) looks like an exchange and asks for what exchanges and banks ask for: your documents. But it can present no Organization credential, no Service credential, no membership - trust resolution returns UNTRUSTED, and Alice's wallet never surfaces the request at all. The fake-exchange phishing pattern from chapter 1 dies at Q1, before any data is at risk.",
           points: [
             "A trusted-but-unaccredited service fails just as cleanly: a member without the VERIFIER permission gets its request refused at Q3, with the wallet explaining why.",
           ],
@@ -370,12 +403,12 @@ export const JOURNEY: {
           ],
         },
         {
-          id: "3.7",
-          stage: "3.7",
+          id: "3.8",
+          stage: "3.8",
           title: "Fraud discovered: one revocation, network-wide",
           kind: "watch",
           story:
-            "Months later, Aurum discovers one of its KYC files was built on a forged document. It revokes that credential. The next time the holder tries to present it - at any member - the check shows it dead. And because the Association can slash a misbehaving member's trust deposit, an issuer that faked evidence or skipped the provider list does not just lose face: it loses its bonded trust score, its permissions freeze, and the slash is a permanent public record.",
+            "Months later, Aurum discovers one of its KYC files was built on a forged document. It revokes that credential. The next time the holder tries to present it - at any member, exchange or bank - the check shows it dead. And because the Association can slash a misbehaving member's trust deposit, an issuer that faked evidence or skipped the provider list does not just lose face: it loses its bonded trust score, its permissions freeze, and the slash is a permanent public record.",
           points: [
             "Revocation is the shared fraud signal without a shared database: no pooled PII, and still every member benefits from every discovery.",
             "Slash obligations are recorded at what was originally paid, in fiat terms - a score that decayed does not discount the liability.",
@@ -496,7 +529,7 @@ export const MONEY = {
         },
       ],
       footnote:
-        "Against a fresh check: about 4x cheaper than 1.85, instant instead of a queue - and 0.30 of it goes to a fellow member, not a vendor. Aurum breaks even on its 1.85 after about 7 reuses.",
+        "Against a fresh check: about 4x cheaper than 1.85, instant instead of a queue - and 0.30 of it goes to a fellow member, not a vendor. Aurum breaks even on its 1.85 after about 7 reuses. The identical split runs in every direction of the corridor: exchange to exchange, exchange to bank, bank to exchange.",
     },
   ] as MoneyFlowData[],
   unitEconomics: {
@@ -509,6 +542,10 @@ export const MONEY = {
       {
         who: "Aurum (demo), credentials reused 200,000 times a year",
         line: "~57,000 USDC of reuse revenue against its original KYC spend: the compliance cost center becomes an asset.",
+      },
+      {
+        who: "Novara Bank (demo), issuer-side goldmine",
+        line: "Credentials its entire existing KYC'd base at zero on-chain cost - issuance is free - then earns 0.285 every time one of those customers signs up anywhere in the Association.",
       },
       {
         who: "The Association",
@@ -537,6 +574,11 @@ export const MONEY = {
         who: "Borealis (demo)",
         activity: "100,000 reuses accepted + dues",
         perYear: "≈ 2,100",
+      },
+      {
+        who: "Novara Bank (demo)",
+        activity: "300,000 reuses of its bank-issued credentials + dues",
+        perYear: "≈ 4,750",
       },
       {
         who: "The Association",
@@ -615,6 +657,23 @@ export const DEMOS = {
       },
     ],
   },
+  novara: {
+    title: "Open a bank account at Novara Bank (demo)",
+    intro:
+      "The corridor, on your own phone: the same exchange-issued credential opens a bank account. Novara verifies you exactly like Borealis did - same trust checks, same re-binding, same fee split, with 0.30 flowing back to the exchange that ran your original KYC:",
+    outcomes: [
+      {
+        rule: "Your CryptoExchangeKYC was issued by an accredited member - exchange or bank",
+        result: "Bank account opened - the sector line does not exist in the protocol.",
+        tone: "emerald" as const,
+      },
+      {
+        rule: "Anything else",
+        result: "Access denied.",
+        tone: "red" as const,
+      },
+    ],
+  },
   darkpool: {
     title: "The exchange that cannot prove anything",
     intro:
@@ -631,5 +690,5 @@ export const DEMOS = {
 export const CLOSING = {
   title: "What ships next",
   pendingLabel: "in preparation",
-  body: "The CEXA cast deploys on the Verana testnet next: live DIDs behind every trust card, live QR demos on both rails, and the Borealis sign-in with the simulated re-binding step. When the next network upgrade lands, the money panels stop simulating: real sessions, real beneficiary splits, real trust scores - the same numbers you read in chapter 4, on chain. The corporate act - CryptoExchangeKYB for business accounts - follows.",
+  body: "The CEXA cast deploys on the Verana testnet next: live DIDs behind every trust card, live QR demos on both rails, and the Borealis and Novara sign-ins with the simulated re-binding step. When the next network upgrade lands, the money panels stop simulating: real sessions, real beneficiary splits, real trust scores - the same numbers you read in chapter 4, on chain. The corporate act - CryptoExchangeKYB for business accounts, where the bank members care most - follows.",
 };

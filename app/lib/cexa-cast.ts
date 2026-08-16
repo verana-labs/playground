@@ -1,8 +1,9 @@
 // The CEXA cast on the Verana testnet - the Crypto Exchange Association
-// (demo) and its member exchanges, to be deployed and provisioned by the
-// cexa-* workflows (phase 2). Every DID below is still a pending
-// placeholder: refresh each value from
-// https://<host>/.well-known/did.jsonl (state.id) once the host is live.
+// (demo) and its members (exchanges and banks: one membership, one fee
+// schedule), to be deployed and provisioned by the cexa-* workflows
+// (phase 2). Every DID below is still a pending placeholder: refresh each
+// value from https://<host>/.well-known/did.jsonl (state.id) once the host
+// is live.
 
 import type { CastMember } from "./vesta-cast";
 
@@ -26,6 +27,11 @@ export const CEXA_CAST = {
   borealis: {
     host: `borealis.${ZONE}`,
     did: `did:webvh:${PENDING}:borealis.${ZONE}`,
+  },
+  /** Bank member, ISSUER + VERIFIER - the cross-sector corridor. */
+  novara: {
+    host: `novara.${ZONE}`,
+    did: `did:webvh:${PENDING}:novara.${ZONE}`,
   },
   /** Deliberately unprovisioned (umbra pattern): a DID and nothing else. */
   darkpool: {

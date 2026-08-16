@@ -8,6 +8,7 @@ import {
   Landmark,
   Network,
   Quote,
+  Repeat,
   ShieldCheck,
   Stamp,
   Wallet,
@@ -34,8 +35,13 @@ import {
 
 const NEED_SHORT = ["Verify", "Members", "Reuse", "Defenses"];
 
-const ACTOR_ICONS = { building: Building2, stamp: Stamp } as const;
-const PROBLEM_ICONS = { wallet: Wallet, hourglass: Hourglass, ghost: Ghost } as const;
+const ACTOR_ICONS = { building: Building2, bank: Landmark, stamp: Stamp } as const;
+const PROBLEM_ICONS = {
+  wallet: Wallet,
+  hourglass: Hourglass,
+  repeat: Repeat,
+  ghost: Ghost,
+} as const;
 const PILLAR_TONES = {
   violet: "border-violet-200 bg-violet-50/60 text-violet-700",
   blue: "border-blue-200 bg-blue-50/60 text-blue-700",
@@ -81,7 +87,7 @@ export function Section1() {
           {WORLD.intro}
         </p>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-3">
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {WORLD.actors.map((a) => {
             const Icon = ACTOR_ICONS[a.icon as keyof typeof ACTOR_ICONS];
             return (
@@ -102,9 +108,9 @@ export function Section1() {
         </div>
 
         <h3 className="mt-14 text-2xl font-bold text-gray-900">
-          Three problems, one cause
+          Four problems, one cause
         </h3>
-        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
           {WORLD.problems.map((p) => {
             const Icon = PROBLEM_ICONS[p.icon as keyof typeof PROBLEM_ICONS];
             return (
@@ -127,8 +133,9 @@ export function Section1() {
           {WORLD.consequence}
         </p>
 
-        <div className="mt-10">
+        <div className="mt-10 space-y-6">
           <QuoteCard quote={WORLD.ceoQuote} />
+          <QuoteCard quote={WORLD.bankQuote} />
         </div>
       </Container>
     </Section>
@@ -360,7 +367,7 @@ export function Section4() {
         <h3 className="mt-14 text-2xl font-bold text-gray-900">
           {MONEY.unitEconomics.title}
         </h3>
-        <div className="mt-6 grid gap-4 sm:grid-cols-3">
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
           {MONEY.unitEconomics.rows.map((r) => (
             <div
               key={r.who}
@@ -496,7 +503,41 @@ export function Section5() {
             {isPendingDid(CEXA_CAST.borealis.did) ? <DemoComing /> : null}
           </div>
 
-          {/* Demo 3 · The refusal */}
+          {/* Demo 3 · The corridor: sign in at Novara Bank */}
+          <div id="demo-novara" className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.novara.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.novara.intro}
+            </p>
+            <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <ul className="space-y-3">
+                {DEMOS.novara.outcomes.map((o) => (
+                  <li key={o.rule} className="flex items-start gap-3 text-sm">
+                    {o.tone === "emerald" ? (
+                      <Check
+                        className="mt-0.5 h-4 w-4 shrink-0 text-emerald-500"
+                        aria-hidden
+                      />
+                    ) : (
+                      <X
+                        className="mt-0.5 h-4 w-4 shrink-0 text-red-400"
+                        aria-hidden
+                      />
+                    )}
+                    <span>
+                      <span className="font-semibold text-gray-900">
+                        {o.rule}:
+                      </span>{" "}
+                      <span className="text-gray-500">{o.result}</span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            {isPendingDid(CEXA_CAST.novara.did) ? <DemoComing /> : null}
+          </div>
+
+          {/* Demo 4 · The refusal */}
           <div id="demo-darkpool" className="mt-14 scroll-mt-24">
             <SubHeading>{DEMOS.darkpool.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">

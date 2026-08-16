@@ -25,6 +25,16 @@ import type {
 export type SubStep = GenericSubStep<Stage>;
 export type JourneyNeed = GenericJourneyNeed<Stage>;
 
+/** Generated portraits of the narrative cast: web-optimized WebP in
+ *  public/images/cexa/ (PNG sources kept alongside, Verandia convention).
+ *  Set a path to null to fall back to the initials placeholder. */
+export const CEXA_ASSETS = {
+  lena: "/images/cexa/lena.webp" as string | null,
+  priya: "/images/cexa/priya.webp" as string | null,
+  elias: "/images/cexa/elias.webp" as string | null,
+  alice: "/images/cexa/alice.webp" as string | null,
+};
+
 const fee = CEXA_FEES;
 const rates = CEXA_RATES;
 
@@ -328,6 +338,12 @@ export const JOURNEY: {
           kind: "watch",
           story:
             "Alice Moreau opens an account at Aurum. No credential yet, so Aurum runs the full check through IdentiSure (demo): documents, liveness, AML screening - about 1.85, invoiced off-chain. Then Aurum does what makes the spend recoverable: it seals every piece of evidence into an archive, computes its digest, and issues Alice her CryptoExchangeKYC credential with that digest inside - straight into the wallet she chose. Issuing is free by design: the Association puts no toll on the on-ramp.",
+          image: {
+            src: "/images/cexa/alice.webp",
+            alt: "Alice Moreau, a customer of the Association's members",
+            caption:
+              "Alice Moreau - one full KYC at Aurum, then never again.",
+          },
           points: [
             "The claims carry the KYC level, screening date, provider, expiry, the evidence digest - and a hashed document number, so a later re-binding can match her passport chip without disclosing the number itself.",
             "The issuance session anchors the credential's digest on-chain: a timestamped receipt that this exact credential was issued by this member.",

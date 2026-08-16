@@ -35,6 +35,8 @@ import {
   ccmLegalRepOid4vcClaims,
 } from "@/app/lib/demo-ccm";
 import { CCM_LEGAL_REP_JSC, CCM_LEGAL_REP_NAME } from "@/app/lib/ccm-cast";
+import { CEXA_KYC_JSC, CEXA_KYC_NAME } from "@/app/lib/cexa-cast";
+import { cexaKycDemoClaims, cexaKycOid4vcClaims } from "@/app/lib/demo-cexa";
 import { VESTA_CAST } from "@/app/lib/vesta-cast";
 
 // Live demo-action link for a Playground cast service (spec §4): what the
@@ -91,6 +93,15 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     jscUrl: `https://${VESTA_CAST.vesta.host}/vt/schemas-badge-jsc.json`,
     claims: badgeDemoClaims,
     oid4vcClaims: badgeOid4vcClaims,
+  },
+  "cexa-kyc": {
+    label: "CEXA-Kyc credential",
+    credDefName: CEXA_KYC_NAME,
+    oid4vcConfig: process.env.DEMO_OID4VC_CEXA_CONFIG ?? "cexa-kyc",
+    oid4vcPolicy: process.env.DEMO_OID4VC_CEXA_POLICY ?? "cexa-kyc",
+    jscUrl: CEXA_KYC_JSC,
+    claims: cexaKycDemoClaims,
+    oid4vcClaims: cexaKycOid4vcClaims,
   },
   "verandia-citizen-id": {
     label: "Verandia Citizen ID",

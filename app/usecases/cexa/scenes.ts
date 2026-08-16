@@ -1,10 +1,10 @@
 // The master scene graph of the CEXA story - one fixed layout, revealed and
-// transformed stage by stage. Stage "3.0" is the pre-populated exchange
-// world (two gray exchanges re-running the same KYC, the IDV provider
-// invoicing both, Alice stuck in the queue, DarkPool phishing at the edge);
-// stages 3.1-3.7 walk the four needs of the Association's checklist.
-// Rendering machinery is shared with the other use cases
-// (app/components/scene-graph.ts / StoryDiagram.tsx).
+// transformed stage by stage. Stage "3.0" is the pre-populated financial
+// world (two gray exchanges and a gray bank re-running the same KYC, the
+// IDV provider invoicing all of them, Alice stuck in the queue, DarkPool
+// phishing at the edge); stages 3.1-3.8 walk the four needs of the
+// Association's checklist. Rendering machinery is shared with the other use
+// cases (app/components/scene-graph.ts / StoryDiagram.tsx).
 
 import { CEXA_CAST } from "../../lib/cexa-cast";
 import { shortDid } from "../../lib/did";
@@ -26,6 +26,7 @@ export const STAGES = [
   "3.5",
   "3.6",
   "3.7",
+  "3.8",
 ] as const;
 
 export type Stage = (typeof STAGES)[number];
@@ -86,6 +87,25 @@ const NODES: SceneNode[] = [
     verifiedAt: "3.3",
     toneByStage: { "3.3": "blue" },
     labelByStage: { "3.3": { sub: "accredited VERIFIER member" } },
+  },
+  // ---- the bank
+  {
+    id: "novara",
+    x: 390,
+    y: 555,
+    icon: "bank",
+    tone: "gray",
+    appears: "3.0",
+    label: "Novara Bank (demo)",
+    sub: "re-runs the KYC the exchange just ran",
+    did: CEXA_CAST.novara.did,
+    serviceType: "Retail banking service (demo)",
+    operator: "Novara Bank (demo)",
+    verifiedAt: "3.6",
+    toneByStage: { "3.6": "blue" },
+    labelByStage: {
+      "3.6": { sub: "ISSUER + VERIFIER member" },
+    },
   },
   // ---- the provider
   {
@@ -200,12 +220,41 @@ const EDGES: SceneEdge[] = [
     width: 0.7,
     labelT: 0.6,
   },
+  // the corridor
+  {
+    id: "e-novara-join",
+    from: "novara",
+    to: "association",
+    appears: "3.6",
+    label: "ISSUER + VERIFIER member",
+    tone: "blue",
+    labelT: 0.55,
+  },
+  {
+    id: "e-alice-novara",
+    from: "alice",
+    to: "novara",
+    appears: "3.6",
+    label: "presents + re-binding",
+    tone: "emerald",
+  },
+  {
+    id: "e-novara-fee",
+    from: "novara",
+    to: "aurum",
+    appears: "3.6",
+    label: "0.30 USDC to the issuer",
+    tone: "amber",
+    curve: -45,
+    width: 0.7,
+    labelT: 0.45,
+  },
   // the refusal
   {
     id: "e-alice-darkpool",
     from: "alice",
     to: "darkpool",
-    appears: "3.6",
+    appears: "3.7",
     label: "refused at Q1",
     tone: "red",
     dashed: true,
@@ -251,13 +300,23 @@ const BADGES: SceneBadge[] = [
     appears: "3.5",
   },
   {
+    id: "b-base",
+    node: "novara",
+    dx: -6,
+    dy: -58,
+    text: "existing customers credentialed free",
+    tone: "emerald",
+    appears: "3.6",
+    until: "3.7",
+  },
+  {
     id: "b-revoked",
     node: "alice",
     dx: 0,
     dy: -60,
     text: "credential revoked by Aurum",
     tone: "red",
-    appears: "3.7",
+    appears: "3.8",
   },
 ];
 
@@ -308,6 +367,22 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
       appears: "3.3",
     },
   ],
+  novara: [
+    {
+      name: "ECS-Organization",
+      tone: "blue",
+      issuedBy: "Crypto Exchange Association (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.6",
+      note: "Banks join under the same EGF eligibility rule as exchanges: licensed institutions, one membership, one fee schedule.",
+    },
+    {
+      name: "ECS-Service",
+      tone: "blue",
+      issuedBy: "Novara Bank (demo), self-issued",
+      appears: "3.6",
+    },
+  ],
   alice: [
     {
       name: "CryptoExchangeKYC",
@@ -345,9 +420,25 @@ const ACCREDITATIONS: Record<string, Accreditation[]> = {
       appears: "3.3",
     },
   ],
+  novara: [
+    {
+      role: "ISSUER",
+      schema: "CryptoExchangeKYC",
+      context: "Crypto Exchange Association (demo)",
+      appears: "3.6",
+    },
+    {
+      role: "VERIFIER",
+      schema: "CryptoExchangeKYC",
+      context: "Crypto Exchange Association (demo)",
+      appears: "3.6",
+    },
+  ],
 };
 
 const NODE_NOTES: Record<string, string> = {
+  novara:
+    "A bank. Its KYC file is the best-audited in the market - and it re-runs the same checks anyway, on customers the exchanges just verified, and de-banks the ones whose history it cannot see.",
   identisure:
     "An IDV provider on the Association's authorized list (EGF). It works off-chain: it runs the document, liveness and AML checks and hands the evidence to the issuing exchange. Not a chain participant.",
   darkpool:
@@ -392,6 +483,11 @@ export const CEXA_SCENES: SceneGraph = {
       viewBox: "120 60 970 640",
     },
     "3.6": {
+      only: ["association", "aurum", "novara", "alice"],
+      viewBox: "100 60 780 640",
+      maxWidth: "max-w-4xl",
+    },
+    "3.7": {
       only: ["alice", "darkpool", "borealis"],
       viewBox: "480 300 680 400",
       maxWidth: "max-w-3xl",
@@ -403,12 +499,16 @@ export const CEXA_SCENES: SceneGraph = {
       note: "Borealis pays per reuse: 0.30 to Aurum, 0.10 to the Association - and Alice never re-uploads a document.",
     },
     "3.6": {
+      nodes: ["novara", "aurum"],
+      note: "The corridor opens both ways: Alice's exchange-issued credential opens her bank account, and every credential Novara issues earns it fees at the exchanges.",
+    },
+    "3.7": {
       nodes: ["darkpool"],
       note: "DarkPool cannot present a single verifiable credential: Q1 fails, and the wallet never shows its request.",
     },
-    "3.7": {
-      nodes: ["alice", "aurum", "borealis"],
-      note: "Aurum discovers fraud and revokes. The next check at any member shows the credential dead - one revocation, network-wide effect.",
+    "3.8": {
+      nodes: ["alice", "aurum", "novara", "borealis"],
+      note: "Aurum discovers fraud and revokes. The next check at any member - exchange or bank - shows the credential dead.",
     },
   },
   verifiedNote:

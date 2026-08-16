@@ -40,16 +40,16 @@ const rates = CEXA_RATES;
 
 /** Reuse fee split, precomputed for copy and panels. */
 const REUSE = {
-  total: CEXA_REUSE_FEE_USDC, // 0.40
-  issuerLiquid: fee.verificationIssuerUsdc * (1 - rates.trustDepositRate), // 0.285
-  issuerTu: fee.verificationIssuerUsdc * rates.trustDepositRate, // 0.015
+  total: CEXA_REUSE_FEE_USDC, // 1.00
+  issuerLiquid: fee.verificationIssuerUsdc * (1 - rates.trustDepositRate), // 0.855
+  issuerTu: fee.verificationIssuerUsdc * rates.trustDepositRate, // 0.045
   ecoLiquid: fee.verificationEcosystemUsdc * (1 - rates.trustDepositRate), // 0.095
   ecoTu: fee.verificationEcosystemUsdc * rates.trustDepositRate, // 0.005
-  payerUsdcOut: CEXA_REUSE_FEE_USDC * (1 - rates.trustDepositRate), // 0.38
-  payerTu: CEXA_REUSE_FEE_USDC * rates.trustDepositRate, // 0.02
-  walletReward: CEXA_REUSE_FEE_USDC * rates.walletAgentRewardRate, // 0.02
-  agentReward: CEXA_REUSE_FEE_USDC * rates.userAgentRewardRate, // 0.02
-  allIn: CEXA_REUSE_FEE_USDC * 1.15, // 0.46
+  payerUsdcOut: CEXA_REUSE_FEE_USDC * (1 - rates.trustDepositRate), // 0.95
+  payerTu: CEXA_REUSE_FEE_USDC * rates.trustDepositRate, // 0.05
+  walletReward: CEXA_REUSE_FEE_USDC * rates.walletAgentRewardRate, // 0.05
+  agentReward: CEXA_REUSE_FEE_USDC * rates.userAgentRewardRate, // 0.05
+  allIn: CEXA_REUSE_FEE_USDC * 1.15, // 1.15
 };
 
 // ------------------------------- §1 · Pay twice, wait twice (the problem)
@@ -321,7 +321,7 @@ export const JOURNEY: {
           ],
           underHood: [
             "Start Participant OP (fees + deposit-bound amount to escrow) → off-chain validation over DIDComm → Set Participant OP to Validated (payout, permission active for 365 days).",
-            "The member's verification fee (0.30 per reuse) is agreed at validation and frozen across renewals - the fee schedule is a contract, not a dial.",
+            "The member's verification fee (0.90 per reuse) is agreed at validation and frozen across renewals - the fee schedule is a contract, not a dial.",
           ],
           reproduce: [
             "Once the cast is live: open the Association's ecosystem in the Verana app and read the participant tree - membership is a public record.",
@@ -387,7 +387,8 @@ export const JOURNEY: {
             "Alice signs up at Borealis. Her wallet trust-resolves Borealis (a verified member, authorized to ask - Q1 and Q3 pass) and presents the credential. Borealis re-binds her to it - passport NFC proof of possession, face match, its own sanctions ping - and receives, in the same presentation, the sealed evidence bundle - Borealis stores it and owns its complete CDD file from second zero, no call to Aurum, ever. Then it pays the reuse fee: 1.00 USDC (example values), split by the protocol - 0.90 to Aurum, the exchange that paid for the original check, 0.10 to the Association. All-in, about 1.15 - against the full cost of a fresh onboarding, and with a funded account in minutes instead of days. Account opened.",
           points: [
             "The issuer is a beneficiary of every verification session: reuse revenue is protocol behavior, not an invoice between competitors.",
-            "Aurum breaks even on Alice's 1.85 after about 7 reuses - then her credential is margin.",
+            "No phone home: Aurum is paid through the session but never learns where Alice signed up - competitive neutrality between rivals, by construction.",
+            "Aurum breaks even on Alice's vendor fee after 2 to 3 reuses - then her credential is margin.",
             "Alice's wallet provider earns a reward on the paid session too: wallets are paid to carry Association credentials.",
           ],
           underHood: [
@@ -735,7 +736,7 @@ export const DEMOS = {
   novara: {
     title: "Open a bank account at Novara Bank (demo)",
     intro:
-      "The corridor, on your own phone: the same exchange-issued credential opens a bank account. Novara verifies you exactly like Borealis did - same trust checks, same re-binding, same fee split, with 0.30 flowing back to the exchange that ran your original KYC:",
+      "The corridor, on your own phone: the same exchange-issued credential opens a bank account. Novara verifies you exactly like Borealis did - same trust checks, same re-binding, same fee split, with 0.90 flowing back to the exchange that ran your original KYC:",
     outcomes: [
       {
         rule: "Your CEXA-Kyc was issued by an accredited member - exchange or bank",

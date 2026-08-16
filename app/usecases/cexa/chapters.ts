@@ -15,7 +15,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     title: "Pay twice, wait twice",
     short: "Problem",
     intro:
-      "Exchanges and banks run the same KYC on the same customer, pay for it again, and lose sign-ups to the wait. The check is a commodity; the friction is not.",
+      "Exchanges and banks run the same KYC on the same customer, pay for it again, and lose sign-ups to the wait - and the Travel Rule makes them re-verify each other on every transfer. The check is a commodity; the friction is not.",
   },
   {
     n: 2,
@@ -24,7 +24,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     title: "The solution: a KYC that travels",
     short: "Solution",
     intro:
-      "Exchanges found the Crypto Exchange Association (demo) on Verana, open to the banks that serve them: one governed credential, authorized providers, membership with teeth, and a reuse fee that pays the original issuer.",
+      "Exchanges found the Crypto Exchange Association (demo) on Verana, open to the banks that serve them: one governed credential, authorized providers, membership with teeth, a reuse fee that pays the original issuer - and counterparty proof for the Travel Rule.",
   },
   {
     n: 3,
@@ -33,7 +33,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     title: "The Association's journey",
     short: "Journey",
     intro:
-      "Found the Association, onboard exchanges and a bank, run one full KYC, reuse it in sixty seconds across the corridor, and watch the impostor and the revoked credential both fail.",
+      "Found the Association, onboard exchanges and a bank, run one full KYC, reuse it in sixty seconds across the corridor, verify a Travel Rule counterparty for free, and watch the impostor and the revoked credential both fail.",
   },
   {
     n: 4,
@@ -42,7 +42,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     title: "The money: who pays whom",
     short: "Money",
     intro:
-      "Dues, free issuance, the 0.40 reuse fee and its split, and the trust score every payment builds. Every flow diagrammed, every number from the fee schedule.",
+      "Dues, free issuance, the reuse fee and its split (example values: 0.90 + 0.10), the free counterparty check, and the trust score every payment builds. Every flow diagrammed, every number framework-governed.",
   },
   {
     n: 5,
@@ -51,7 +51,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     title: "Run the demos",
     short: "Demos",
     intro:
-      "Get a CryptoExchangeKYC credential, open accounts at Borealis Markets (demo) and Novara Bank (demo) with it, and watch DarkPool Exchange (demo) get refused.",
+      "Get a CryptoExchangeKYC credential, open accounts at Borealis Markets (demo) and Novara Bank (demo) with it, verify a counterparty, and watch DarkPool Exchange (demo) get refused.",
   },
 ];
 

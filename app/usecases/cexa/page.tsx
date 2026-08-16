@@ -33,9 +33,10 @@ export default function CexaChapter1() {
           <p className="mt-5 max-w-2xl text-lg text-white/80">
             Follow a group of exchanges - and the bank that joins them - as
             they found the Crypto Exchange Association (demo) on Verana: one
-            governed KYC credential, checked once and reused everywhere, with
-            the original issuer paid on every reuse and every payment building
-            a public, slashable trust score.
+            governed KYC credential checked once and reused everywhere with
+            the original issuer paid on every reuse, one free counterparty
+            proof for the Travel Rule, and every payment building a public,
+            slashable trust score.
           </p>
         </div>
       </header>

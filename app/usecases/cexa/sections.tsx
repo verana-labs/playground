@@ -27,6 +27,7 @@ import { CEXA_SCENES } from "./scenes";
 import { MoneyFlowCard, TrustScorePanel } from "./money";
 import CexaOffers from "./CexaOffers";
 import CexaRequestQr from "./CexaRequestQr";
+import CounterpartyCard from "./CounterpartyCard";
 import {
   CEXA_ASSETS,
   CLOSING,
@@ -678,9 +679,7 @@ export function Section5() {
             {isPendingDid(CEXA_CAST.novara.did) ? (
               <DemoComing />
             ) : (
-              <div className="mx-auto mt-6 max-w-md">
-                <LiveTrustCard serviceId="novara" />
-              </div>
+              <CounterpartyCard />
             )}
           </div>
 

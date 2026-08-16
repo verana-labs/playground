@@ -189,7 +189,7 @@ export const SOLUTION = {
     intro:
       "The Association's Ecosystem Governance Framework is a public document, digest-anchored from the trust registry. It defines:",
     rules: [
-      "Who may join: licensed exchanges and credit institutions - crypto-native or not. One membership class, one fee schedule, one set of duties.",
+      "Who may join: licensed exchanges and credit institutions - crypto-native or not - that are already Verifiable Services (ECS-Organization from the Verana ECS Ecosystem, self-issued ECS-Service). One membership class, one fee schedule, one set of duties.",
       "The authorized IDV providers members may use for the original check: IdentiSure (demo), ClearPass (demo), VerifID (demo).",
       "How to be onboarded as an ISSUER member and as a VERIFIER member: licensing evidence, provider contracts, evidence-retention duties, yearly renewal.",
       "The re-binding rule: on every reuse, the accepting exchange verifies the holder is the subject - passport NFC proof of possession plus face match - and runs its own sanctions ping.",
@@ -287,7 +287,7 @@ export const JOURNEY: {
           },
           points: [
             "Governed verification is the unusual choice, and the point: asking a wallet for a KYC credential is a privileged, paid act - so the relying side is permissioned too.",
-            "The Association also becomes an accredited ECS-Organization issuer: onboarding a member will make that member verifiable in the same motion.",
+            "The Association issues exactly what it governs: CEXA-VerifiedCounterparty identities and CEXA-Kyc accreditations. ECS-Organization credentials stay where they belong - with the accredited issuers of the Verana ECS Ecosystem, like Helvetia.",
           ],
           underHood: [
             "Create New Trust Registry (+ EGF document, digest-anchored) → Create New Credential Schema (issuer mode ECOSYSTEM, verifier mode ECOSYSTEM) → root permission.",
@@ -314,7 +314,7 @@ export const JOURNEY: {
           title: "Aurum joins as an ISSUER member",
           kind: "watch",
           story:
-            "Aurum Exchange (demo) starts the onboarding process for an ISSUER permission on the CEXA-Kyc schema. Its dues - 5,000 USDC for the year - go to escrow. Over DIDComm, the Association's service collects what the EGF demands: licenses, the IdentiSure contract, evidence-retention undertakings. Satisfied, the Association validates: the dues release, Aurum receives its ECS-Organization credential and its CEXA-VerifiedCounterparty credential in the same motion (published on its DID for anyone to check), and both parties' trust deposits grow - trust units worth 250 minted to each side, 5% of the dues.",
+            "Aurum Exchange (demo) starts the onboarding process for an ISSUER permission on the CEXA-Kyc schema. Its dues - 5,000 USDC for the year - go to escrow. Over DIDComm, the Association's service collects what the EGF demands: licenses, the IdentiSure contract, evidence-retention undertakings. Satisfied, the Association validates: the dues release, Aurum receives its CEXA-VerifiedCounterparty credential (published on its DID for anyone to check), and both parties' trust deposits grow - trust units worth 250 minted to each side, 5% of the dues. One thing the Association does NOT issue: Aurum's ECS-Organization credential. Being a Verifiable Service already - Organization credential from an accredited issuer of the Verana ECS Ecosystem, self-issued Service credential - is an entry requirement of the EGF, not a membership perk.",
           points: [
             "No upfront stake anywhere: the trust deposit is built by usage - every fee paid or earned mints trust units worth 5% of it to the payer and to the payee.",
             "While the process is pending, everything sits in escrow: cancel and it refunds as-is. Validated, it never comes back out.",
@@ -333,7 +333,7 @@ export const JOURNEY: {
           title: "Borealis joins as a VERIFIER member",
           kind: "watch",
           story:
-            "Borealis Markets (demo) runs the same process for a VERIFIER permission: 2,000 USDC yearly dues, the EGF's re-binding undertaking (passport NFC plus face match on every reuse), and its own ECS-Organization credential on validation. From this moment Borealis may ask wallets for the CEXA-Kyc credential - and only from this moment: an exchange outside the Association can be perfectly legitimate and still get refused, because verification of this schema is governed.",
+            "Borealis Markets (demo) - already a Verifiable Service, like every applicant - runs the same process for a VERIFIER permission: 2,000 USDC yearly dues, the EGF's re-binding undertaking (passport NFC plus face match on every reuse), and its CEXA-VerifiedCounterparty credential on validation. From this moment Borealis may ask wallets for the CEXA-Kyc credential - and only from this moment: an exchange outside the Association can be perfectly legitimate and still get refused, because verification of this schema is governed.",
           points: [
             "Both sides of the market are memberships: issuers pay to be trusted with issuance, verifiers pay to be trusted with data.",
             "Renewal is yearly, at frozen prices - dues fund the Association's audits, provider vetting and EGF upkeep.",

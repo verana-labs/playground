@@ -362,10 +362,10 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Crypto Exchange Association (demo)",
+      issuedBy: "Helvetia Trust Services (demo)",
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.2",
-      note: "The Association is an accredited ECS-Organization issuer: onboarding a member also makes it verifiable.",
+      note: "Only accredited issuers of the Verana ECS Ecosystem issue ECS-Organization credentials. Being verifiable is an entry requirement of the EGF - the Association issues membership identities, not identity itself.",
     },
     {
       name: "ECS-Service",
@@ -386,7 +386,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Crypto Exchange Association (demo)",
+      issuedBy: "Helvetia Trust Services (demo)",
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.3",
     },
@@ -408,10 +408,10 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Crypto Exchange Association (demo)",
+      issuedBy: "Helvetia Trust Services (demo)",
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.6",
-      note: "Banks join under the same EGF eligibility rule as exchanges: licensed institutions, one membership, one fee schedule.",
+      note: "Banks join under the same EGF eligibility rule as exchanges: licensed, already-verifiable institutions, one membership, one fee schedule.",
     },
     {
       name: "ECS-Service",
@@ -443,8 +443,8 @@ const ACCREDITATIONS: Record<string, Accreditation[]> = {
   association: [
     {
       role: "ISSUER",
-      schema: "ECS-Organization",
-      context: "Verana ECS Ecosystem",
+      schema: "CEXA-VerifiedCounterparty",
+      context: "Crypto Exchange Association (demo)",
       appears: "3.1",
     },
   ],

@@ -8,7 +8,7 @@ import type { MoneyFlowData, MoneyLeg } from "./content";
 // like the protocol's beneficiary query so the panels can switch from the
 // simulated preview to live chain data without a redesign.
 
-/** 5,000 → "5,000" · 0.285 → "0.285" · 0.02 → "0.02" */
+/** 5,000 → "5,000" · 0.855 → "0.855" · 0.05 → "0.05" */
 const fmt = (n: number) =>
   n >= 1000
     ? n.toLocaleString("en-US")

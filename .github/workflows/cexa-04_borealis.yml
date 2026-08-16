@@ -1,7 +1,9 @@
-name: "CEXA 04 · Novara Bank (ISSUER + VERIFIER)"
+name: "CEXA 04 · Borealis Markets (VERIFIER)"
 
-# Deploys Novara Bank (demo), the bank member of the corridor: own ECS-Organization from Helvetia,
-# validated ISSUER and VERIFIER permissions on CEXA-Kyc, cred def, CEXA-VerifiedCounterparty. Requires cexa-01.
+# Deploys Borealis Markets (demo): own ECS-Organization from Helvetia, validated VERIFIER
+# permission on CEXA-Kyc, CEXA-VerifiedCounterparty from the Association. Requires cexa-01, cexa-02
+# AND cexa-03: the OID4VC verifier pins BOTH issuers' fingerprints at deploy, so both issuer
+# agents must already be running.
 # Part of the CEXA cast CI/CD — see .github/workflows/cexa/README.md.
 
 on:
@@ -23,10 +25,10 @@ on:
         default: false
 
 jobs:
-  novara:
+  borealis:
     uses: ./.github/workflows/cexa-00_core.yml
     with:
-      org: novara
+      org: borealis
       step: ${{ inputs.step }}
       force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

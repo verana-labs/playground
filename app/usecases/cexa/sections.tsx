@@ -20,10 +20,13 @@ import { Container, Section, SectionHeading, Chip } from "../../components/ui";
 import { DidBadge } from "../../components/Did";
 import { listPersonalWallets } from "../../lib/wallets";
 import { CEXA_CAST, isPendingDid } from "../../lib/cexa-cast";
+import LiveTrustCard from "../../components/LiveTrustCard";
 import { WalletChooser } from "../vesta/DemoWalletFlow";
 import { SubHeading, SubStepBlock } from "../story-blocks";
 import { CEXA_SCENES } from "./scenes";
 import { MoneyFlowCard, TrustScorePanel } from "./money";
+import CexaOffers from "./CexaOffers";
+import CexaRequestQr from "./CexaRequestQr";
 import {
   CEXA_ASSETS,
   CLOSING,
@@ -553,8 +556,18 @@ export function Section5() {
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.kyc.intro}
             </p>
-            {/* Phase 2 replaces the placeholder with the live offer QR. */}
-            {isPendingDid(CEXA_CAST.aurum.did) ? <DemoComing /> : null}
+            {isPendingDid(CEXA_CAST.aurum.did) ? (
+              <DemoComing />
+            ) : (
+              <>
+                <Suspense>
+                  <CexaOffers wallets={wallets} offers={[DEMOS.kyc.offer]} />
+                </Suspense>
+                <div className="mx-auto mt-6 max-w-md">
+                  <LiveTrustCard serviceId={DEMOS.kyc.offer.serviceId} />
+                </div>
+              </>
+            )}
           </div>
 
           {/* Demo 2 · Sign in at Borealis */}
@@ -588,7 +601,21 @@ export function Section5() {
                 ))}
               </ul>
             </div>
-            {isPendingDid(CEXA_CAST.borealis.did) ? <DemoComing /> : null}
+            {isPendingDid(CEXA_CAST.borealis.did) ? (
+              <DemoComing />
+            ) : (
+              <div className="mx-auto mt-6 max-w-md space-y-6">
+                <Suspense>
+                  <CexaRequestQr
+                    wallets={wallets}
+                    serviceId="borealis"
+                    label="Borealis Markets (demo)"
+                    credential="cexa-kyc"
+                  />
+                </Suspense>
+                <LiveTrustCard serviceId="borealis" />
+              </div>
+            )}
           </div>
 
           {/* Demo 3 · The corridor: sign in at Novara Bank */}
@@ -622,7 +649,21 @@ export function Section5() {
                 ))}
               </ul>
             </div>
-            {isPendingDid(CEXA_CAST.novara.did) ? <DemoComing /> : null}
+            {isPendingDid(CEXA_CAST.novara.did) ? (
+              <DemoComing />
+            ) : (
+              <div className="mx-auto mt-6 max-w-md space-y-6">
+                <Suspense>
+                  <CexaRequestQr
+                    wallets={wallets}
+                    serviceId="novara"
+                    label="Novara Bank (demo)"
+                    credential="cexa-kyc"
+                  />
+                </Suspense>
+                <LiveTrustCard serviceId="novara" />
+              </div>
+            )}
           </div>
 
           {/* Demo 4 · Verify a counterparty (Travel Rule) */}
@@ -634,7 +675,13 @@ export function Section5() {
             <p className="mx-auto mt-4 max-w-3xl rounded-2xl border border-violet-100 bg-violet-50/50 px-5 py-4 text-sm leading-relaxed text-violet-900">
               {DEMOS.counterparty.expect}
             </p>
-            {isPendingDid(CEXA_CAST.novara.did) ? <DemoComing /> : null}
+            {isPendingDid(CEXA_CAST.novara.did) ? (
+              <DemoComing />
+            ) : (
+              <div className="mx-auto mt-6 max-w-md">
+                <LiveTrustCard serviceId="novara" />
+              </div>
+            )}
           </div>
 
           {/* Demo 5 · The refusal */}
@@ -646,7 +693,21 @@ export function Section5() {
             <p className="mx-auto mt-4 max-w-3xl rounded-2xl border border-red-100 bg-red-50/50 px-5 py-4 text-sm leading-relaxed text-red-800">
               {DEMOS.darkpool.expect}
             </p>
-            {isPendingDid(CEXA_CAST.darkpool.did) ? <DemoComing /> : null}
+            {isPendingDid(CEXA_CAST.darkpool.did) ? (
+              <DemoComing />
+            ) : (
+              <div className="mx-auto mt-6 max-w-md space-y-6">
+                <Suspense>
+                  <CexaRequestQr
+                    wallets={wallets}
+                    serviceId="darkpool"
+                    label="DarkPool Exchange (demo)"
+                    credential="cexa-kyc"
+                  />
+                </Suspense>
+                <LiveTrustCard serviceId="darkpool" />
+              </div>
+            )}
           </div>
         </Container>
       </Section>

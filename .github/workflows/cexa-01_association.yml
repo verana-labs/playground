@@ -1,0 +1,33 @@
+name: "CEXA 01 · Crypto Exchange Association (anchor)"
+
+# Deploys the Association anchor: ECS-Organization from Helvetia, self ECS-Service, the CEXA trust
+# registry with the CEXA-Kyc (governed both sides) and CEXA-VerifiedCounterparty schemas, VTJSCs,
+# and the AnonCreds schema for the dual rail. Anchors the example EGF by digest.
+# Part of the CEXA cast CI/CD — see .github/workflows/cexa/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  association:
+    uses: ./.github/workflows/cexa-00_core.yml
+    with:
+      org: association
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

@@ -1,0 +1,33 @@
+name: "CEXA 05 · DarkPool Exchange (untrusted)"
+
+# Deploys DarkPool Exchange (demo): deliberately unprovisioned (deploy-only, no credentials, no
+# permissions, no membership) but running the openid4vc verifier config so Track B wallets have an
+# untrusted counterparty to refuse at Q1. Resolving as anything but UNTRUSTED is a paging incident.
+# Part of the CEXA cast CI/CD — see .github/workflows/cexa/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  darkpool:
+    uses: ./.github/workflows/cexa-00_core.yml
+    with:
+      org: darkpool
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

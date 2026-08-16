@@ -2,7 +2,7 @@
 // transformed stage by stage. Stage "3.0" is the pre-populated financial
 // world (two gray exchanges and a gray bank re-running the same KYC, the
 // IDV provider invoicing all of them, Alice stuck in the queue, DarkPool
-// phishing at the edge); stages 3.1-3.8 walk the four needs of the
+// phishing at the edge); stages 3.1-3.9 walk the five needs of the
 // Association's checklist. Rendering machinery is shared with the other use
 // cases (app/components/scene-graph.ts / StoryDiagram.tsx).
 
@@ -27,6 +27,7 @@ export const STAGES = [
   "3.6",
   "3.7",
   "3.8",
+  "3.9",
 ] as const;
 
 export type Stage = (typeof STAGES)[number];
@@ -134,7 +135,7 @@ const NODES: SceneNode[] = [
     sub: "KYC'd again at every exchange",
     toneByStage: { "3.4": "emerald" },
     labelByStage: {
-      "3.4": { sub: "CryptoExchangeKYC in the wallet she chose" },
+      "3.4": { sub: "CEXA-Kyc in the wallet she chose" },
     },
   },
   // ---- the red world
@@ -187,7 +188,7 @@ const EDGES: SceneEdge[] = [
     from: "aurum",
     to: "alice",
     appears: "3.4",
-    label: "CryptoExchangeKYC · free issuance",
+    label: "CEXA-Kyc · free issuance",
     tone: "emerald",
   },
   // reuse
@@ -204,7 +205,7 @@ const EDGES: SceneEdge[] = [
     from: "borealis",
     to: "aurum",
     appears: "3.5",
-    label: "0.30 USDC per reuse",
+    label: "0.90 USDC per reuse",
     tone: "amber",
     curve: -70,
     labelT: 0.5,
@@ -243,18 +244,29 @@ const EDGES: SceneEdge[] = [
     from: "novara",
     to: "aurum",
     appears: "3.6",
-    label: "0.30 USDC to the issuer",
+    label: "0.90 USDC to the issuer",
     tone: "amber",
     curve: -45,
     width: 0.7,
     labelT: 0.45,
+  },
+  // the travel rule check
+  {
+    id: "e-transfer",
+    from: "aurum",
+    to: "novara",
+    appears: "3.7",
+    label: "1,200 transfer · counterparty verified, free",
+    tone: "violet",
+    curve: 60,
+    labelT: 0.5,
   },
   // the refusal
   {
     id: "e-alice-darkpool",
     from: "alice",
     to: "darkpool",
-    appears: "3.7",
+    appears: "3.8",
     label: "refused at Q1",
     tone: "red",
     dashed: true,
@@ -267,7 +279,7 @@ const BADGES: SceneBadge[] = [
     node: "association",
     dx: 0,
     dy: -62,
-    text: "CryptoExchangeKYC · governed both sides",
+    text: "CEXA-Kyc · governed both sides",
     tone: "violet",
     appears: "3.1",
   },
@@ -310,13 +322,23 @@ const BADGES: SceneBadge[] = [
     until: "3.7",
   },
   {
+    id: "b-counterparty",
+    node: "novara",
+    dx: 6,
+    dy: -58,
+    text: "CEXA-VerifiedCounterparty read from its DID",
+    tone: "violet",
+    appears: "3.7",
+    until: "3.8",
+  },
+  {
     id: "b-revoked",
     node: "alice",
     dx: 0,
     dy: -60,
     text: "credential revoked by Aurum",
     tone: "red",
-    appears: "3.8",
+    appears: "3.9",
   },
 ];
 
@@ -340,10 +362,10 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Crypto Exchange Association (demo)",
+      issuedBy: "Helvetia Trust Services (demo)",
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.2",
-      note: "The Association is an accredited ECS-Organization issuer: onboarding a member also makes it verifiable.",
+      note: "Only accredited issuers of the Verana ECS Ecosystem issue ECS-Organization credentials. Being verifiable is an entry requirement of the EGF - the Association issues membership identities, not identity itself.",
     },
     {
       name: "ECS-Service",
@@ -351,12 +373,20 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
       issuedBy: "Aurum Exchange (demo), self-issued",
       appears: "3.2",
     },
+    {
+      name: "CEXA-VerifiedCounterparty",
+      tone: "violet",
+      issuedBy: "Crypto Exchange Association (demo)",
+      ecosystem: "Crypto Exchange Association (demo)",
+      appears: "3.2",
+      note: "The Travel Rule identity: legal name, LEI, licensing authority and license id, category, compliance contact. Published on the DID, free to check, revoked on license loss.",
+    },
   ],
   borealis: [
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Crypto Exchange Association (demo)",
+      issuedBy: "Helvetia Trust Services (demo)",
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.3",
     },
@@ -366,15 +396,22 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
       issuedBy: "Borealis Markets (demo), self-issued",
       appears: "3.3",
     },
+    {
+      name: "CEXA-VerifiedCounterparty",
+      tone: "violet",
+      issuedBy: "Crypto Exchange Association (demo)",
+      ecosystem: "Crypto Exchange Association (demo)",
+      appears: "3.3",
+    },
   ],
   novara: [
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Crypto Exchange Association (demo)",
+      issuedBy: "Helvetia Trust Services (demo)",
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.6",
-      note: "Banks join under the same EGF eligibility rule as exchanges: licensed institutions, one membership, one fee schedule.",
+      note: "Banks join under the same EGF eligibility rule as exchanges: licensed, already-verifiable institutions, one membership, one fee schedule.",
     },
     {
       name: "ECS-Service",
@@ -382,10 +419,17 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
       issuedBy: "Novara Bank (demo), self-issued",
       appears: "3.6",
     },
+    {
+      name: "CEXA-VerifiedCounterparty",
+      tone: "violet",
+      issuedBy: "Crypto Exchange Association (demo)",
+      ecosystem: "Crypto Exchange Association (demo)",
+      appears: "3.6",
+    },
   ],
   alice: [
     {
-      name: "CryptoExchangeKYC",
+      name: "CEXA-Kyc",
       tone: "emerald",
       issuedBy: "Aurum Exchange (demo)",
       ecosystem: "Crypto Exchange Association (demo)",
@@ -399,15 +443,15 @@ const ACCREDITATIONS: Record<string, Accreditation[]> = {
   association: [
     {
       role: "ISSUER",
-      schema: "ECS-Organization",
-      context: "Verana ECS Ecosystem",
+      schema: "CEXA-VerifiedCounterparty",
+      context: "Crypto Exchange Association (demo)",
       appears: "3.1",
     },
   ],
   aurum: [
     {
       role: "ISSUER",
-      schema: "CryptoExchangeKYC",
+      schema: "CEXA-Kyc",
       context: "Crypto Exchange Association (demo)",
       appears: "3.2",
     },
@@ -415,7 +459,7 @@ const ACCREDITATIONS: Record<string, Accreditation[]> = {
   borealis: [
     {
       role: "VERIFIER",
-      schema: "CryptoExchangeKYC",
+      schema: "CEXA-Kyc",
       context: "Crypto Exchange Association (demo)",
       appears: "3.3",
     },
@@ -423,13 +467,13 @@ const ACCREDITATIONS: Record<string, Accreditation[]> = {
   novara: [
     {
       role: "ISSUER",
-      schema: "CryptoExchangeKYC",
+      schema: "CEXA-Kyc",
       context: "Crypto Exchange Association (demo)",
       appears: "3.6",
     },
     {
       role: "VERIFIER",
-      schema: "CryptoExchangeKYC",
+      schema: "CEXA-Kyc",
       context: "Crypto Exchange Association (demo)",
       appears: "3.6",
     },
@@ -488,6 +532,11 @@ export const CEXA_SCENES: SceneGraph = {
       maxWidth: "max-w-4xl",
     },
     "3.7": {
+      only: ["association", "aurum", "novara"],
+      viewBox: "100 60 780 620",
+      maxWidth: "max-w-4xl",
+    },
+    "3.8": {
       only: ["alice", "darkpool", "borealis"],
       viewBox: "480 300 680 400",
       maxWidth: "max-w-3xl",
@@ -496,17 +545,21 @@ export const CEXA_SCENES: SceneGraph = {
   stageChanges: {
     "3.5": {
       nodes: ["borealis", "aurum"],
-      note: "Borealis pays per reuse: 0.30 to Aurum, 0.10 to the Association - and Alice never re-uploads a document.",
+      note: "Borealis pays per reuse - 0.90 to Aurum, 0.10 to the Association (example values) - receives the sealed evidence bundle in the same presentation, and Alice never re-uploads a document.",
     },
     "3.6": {
       nodes: ["novara", "aurum"],
       note: "The corridor opens both ways: Alice's exchange-issued credential opens her bank account, and every credential Novara issues earns it fees at the exchanges.",
     },
     "3.7": {
+      nodes: ["aurum", "novara"],
+      note: "Before releasing a Travel Rule transfer, Aurum reads Novara's CEXA-VerifiedCounterparty credential straight from its DID - no directory, no subscription, no fee.",
+    },
+    "3.8": {
       nodes: ["darkpool"],
       note: "DarkPool cannot present a single verifiable credential: Q1 fails, and the wallet never shows its request.",
     },
-    "3.8": {
+    "3.9": {
       nodes: ["alice", "aurum", "novara", "borealis"],
       note: "Aurum discovers fraud and revokes. The next check at any member - exchange or bank - shows the credential dead.",
     },

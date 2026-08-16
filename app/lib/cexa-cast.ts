@@ -43,12 +43,16 @@ export const CEXA_CAST = {
 /** True while a cast DID is still an explicit placeholder. */
 export const isPendingDid = (did: string) => did.includes(PENDING);
 
-/** Credential-type name provisioned on the cast agents (workflow contract). */
-export const CEXA_KYC_NAME = "CryptoExchangeKYC";
+/** Credential-type names provisioned on the cast agents (workflow contract). */
+export const CEXA_KYC_NAME = "CEXA-Kyc";
+export const CEXA_COUNTERPARTY_NAME = "CEXA-VerifiedCounterparty";
 
-/** VTJSC of the CryptoExchangeKYC schema, published by the association
- *  anchor (vs-agent naming convention: /vt/schemas-<base>-jsc.json). */
-export const CEXA_KYC_JSC = `https://${CEXA_CAST.association.host}/vt/schemas-crypto-exchange-kyc-jsc.json`;
+/** VTJSCs of the two founding schemas, published by the association anchor
+ *  (vs-agent naming convention: /vt/schemas-<base>-jsc.json). The
+ *  CEXA-VerifiedCounterparty credential is org-level and published by each member
+ *  as a Linked VP: counterparty checks are free reads of the member's DID. */
+export const CEXA_KYC_JSC = `https://${CEXA_CAST.association.host}/vt/schemas-cexa-kyc-jsc.json`;
+export const CEXA_COUNTERPARTY_JSC = `https://${CEXA_CAST.association.host}/vt/schemas-cexa-verified-counterparty-jsc.json`;
 
 // ---------------------------------------------------------------------------
 // The EGF fee schedule and the network rates that drive every money panel of
@@ -65,8 +69,9 @@ export const CEXA_FEES = {
   duesVerifierYearlyUsdc: 2000,
   /** Issuing the credential is free by design: no toll on the on-ramp. */
   issuanceUsdc: 0,
-  /** Per-reuse verification fees (EGF caps). */
-  verificationIssuerUsdc: 0.3,
+  /** Per-reuse verification fees. Example values: any framework sets its
+   *  own schedule; the split mechanism reads the same regardless. */
+  verificationIssuerUsdc: 0.9,
   verificationEcosystemUsdc: 0.1,
   /** Market reference: a full KYC check with AML screening at a leading
    *  IDV provider (list price; volume pricing is lower). */

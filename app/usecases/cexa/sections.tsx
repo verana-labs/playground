@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import {
+  ArrowLeftRight,
   Building2,
   Check,
   Ghost,
@@ -34,7 +35,7 @@ import {
   WORLD,
 } from "./content";
 
-const NEED_SHORT = ["Verify", "Members", "Reuse", "Defenses"];
+const NEED_SHORT = ["Verify", "Members", "Reuse", "Counterparty", "Defenses"];
 
 const ACTOR_ICONS = { building: Building2, bank: Landmark, stamp: Stamp } as const;
 const PROBLEM_ICONS = {
@@ -135,9 +136,38 @@ export function Section1() {
         </div>
 
         <h3 className="mt-14 text-2xl font-bold text-gray-900">
-          Four problems, one cause
+          Five problems, one cause
         </h3>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+        <div className="mt-6 rounded-2xl border-2 border-red-200 bg-red-50/50 p-6">
+          <div className="flex flex-wrap items-center gap-3">
+            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-red-500 shadow-sm">
+              <ArrowLeftRight className="h-5 w-5" aria-hidden />
+            </span>
+            <div className="text-lg font-bold text-gray-900">
+              {WORLD.travelRule.title}
+            </div>
+          </div>
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-600">
+            {WORLD.travelRule.desc}
+          </p>
+          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+            {WORLD.travelRule.costs.map((c, ci) => (
+              <div
+                key={ci}
+                className="rounded-xl border border-red-100 bg-white px-4 py-3 text-sm leading-relaxed text-gray-600"
+              >
+                <span className="mb-1 block text-[11px] font-bold uppercase tracking-wide text-red-400">
+                  Cost {ci + 1}
+                </span>
+                {c}
+              </div>
+            ))}
+          </div>
+          <p className="mt-4 text-sm font-semibold leading-relaxed text-red-800">
+            {WORLD.travelRule.punchline}
+          </p>
+        </div>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
           {WORLD.problems.map((p) => {
             const Icon = PROBLEM_ICONS[p.icon as keyof typeof PROBLEM_ICONS];
             return (
@@ -261,6 +291,10 @@ export function Section2() {
         <p className="mt-4 rounded-2xl border border-emerald-100 bg-emerald-50/60 px-6 py-4 text-sm leading-relaxed text-emerald-900">
           {SOLUTION.egf.positioning}
         </p>
+        <p className="mt-4 flex items-start gap-3 rounded-2xl border border-violet-200 bg-violet-50/60 px-6 py-4 text-sm font-medium leading-relaxed text-violet-900">
+          <ArrowLeftRight className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
+          {SOLUTION.travelRulePositioning}
+        </p>
 
         <h3 className="mt-14 text-2xl font-bold text-gray-900">
           {SOLUTION.ecosystemTitle}
@@ -381,40 +415,12 @@ export function Section4() {
           subtitle={MONEY.intro}
         />
 
-        <div className="space-y-6">
-          {MONEY.flows.map((flow) => (
-            <MoneyFlowCard
-              key={flow.id}
-              flow={flow}
-              simulatedChip={MONEY.simulatedChip}
-            />
-          ))}
-        </div>
-
-        <h3 className="mt-14 text-2xl font-bold text-gray-900">
-          {MONEY.unitEconomics.title}
-        </h3>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {MONEY.unitEconomics.rows.map((r) => (
-            <div
-              key={r.who}
-              className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
-            >
-              <div className="text-sm font-bold text-gray-900">{r.who}</div>
-              <p className="mt-2 text-sm leading-relaxed text-gray-500">
-                {r.line}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        <div className="mt-14">
-          <TrustScorePanel data={MONEY.trustScore} />
-        </div>
-
-        <h3 className="mt-14 text-2xl font-bold text-gray-900">
+        <h3 className="text-2xl font-bold text-gray-900">
           {MONEY.governs.title}
         </h3>
+        <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+          {MONEY.governs.intro}
+        </p>
         <div className="mt-6 overflow-x-auto rounded-2xl border border-gray-200 bg-white shadow-sm">
           <table className="w-full min-w-[560px] text-left text-sm">
             <thead>
@@ -440,6 +446,51 @@ export function Section4() {
             </tbody>
           </table>
         </div>
+
+        <div className="mt-14 space-y-6">
+          {MONEY.flows.map((flow) => (
+            <MoneyFlowCard
+              key={flow.id}
+              flow={flow}
+              simulatedChip={MONEY.simulatedChip}
+            />
+          ))}
+        </div>
+
+        <div className="mt-6 rounded-2xl border border-violet-200 bg-violet-50/40 p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h4 className="flex items-center gap-2 text-lg font-bold text-gray-900">
+              <ArrowLeftRight className="h-5 w-5 text-violet-600" aria-hidden />
+              {MONEY.counterparty.title}
+            </h4>
+            <Chip tone="verified">{MONEY.counterparty.chip}</Chip>
+          </div>
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-600">
+            {MONEY.counterparty.desc}
+          </p>
+        </div>
+
+        <h3 className="mt-14 text-2xl font-bold text-gray-900">
+          {MONEY.unitEconomics.title}
+        </h3>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2">
+          {MONEY.unitEconomics.rows.map((r) => (
+            <div
+              key={r.who}
+              className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+            >
+              <div className="text-sm font-bold text-gray-900">{r.who}</div>
+              <p className="mt-2 text-sm leading-relaxed text-gray-500">
+                {r.line}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-14">
+          <TrustScorePanel data={MONEY.trustScore} />
+        </div>
+
       </Container>
     </Section>
   );
@@ -486,7 +537,7 @@ export function Section5() {
             </Suspense>
           </div>
 
-          {/* Demo 1 · Get the CryptoExchangeKYC credential */}
+          {/* Demo 1 · Get the CEXA-Kyc credential */}
           <div id="demo-kyc" className="mt-14 scroll-mt-24">
             <SubHeading>{DEMOS.kyc.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
@@ -564,7 +615,19 @@ export function Section5() {
             {isPendingDid(CEXA_CAST.novara.did) ? <DemoComing /> : null}
           </div>
 
-          {/* Demo 4 · The refusal */}
+          {/* Demo 4 · Verify a counterparty (Travel Rule) */}
+          <div id="demo-counterparty" className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.counterparty.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.counterparty.intro}
+            </p>
+            <p className="mx-auto mt-4 max-w-3xl rounded-2xl border border-violet-100 bg-violet-50/50 px-5 py-4 text-sm leading-relaxed text-violet-900">
+              {DEMOS.counterparty.expect}
+            </p>
+            {isPendingDid(CEXA_CAST.novara.did) ? <DemoComing /> : null}
+          </div>
+
+          {/* Demo 5 · The refusal */}
           <div id="demo-darkpool" className="mt-14 scroll-mt-24">
             <SubHeading>{DEMOS.darkpool.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">

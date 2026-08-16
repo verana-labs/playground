@@ -231,12 +231,13 @@ export function Section2() {
             <div className="flex flex-col rounded-2xl border border-violet-200 bg-white p-6 shadow-sm">
               <div className="flex items-center justify-between gap-3">
                 <Chip tone="verified">{SOLUTION.deployment.demo.label}</Chip>
-                <span className="flex h-12 items-center rounded-lg bg-white px-3 ring-1 ring-black/5">
+                {/* Misma altura de caja que el logo de Confecámaras en la tarjeta gemela */}
+                <span className="flex h-16 items-center rounded-lg bg-white px-3 ring-1 ring-black/5">
                   {/* eslint-disable-next-line @next/next/no-img-element -- logo oficial pre-optimizado en public/ */}
                   <img
                     src={CCM_ASSETS.ccm}
                     alt="Logo de la CCM"
-                    className="max-h-8 w-auto object-contain"
+                    className="max-h-12 w-auto object-contain"
                   />
                 </span>
               </div>

@@ -1,0 +1,54 @@
+name: "CCM 02 · Acreditaciones ECS (CCM)"
+
+# Accredits the Cámara de Comercio de Medellín (demo) as an ISSUER of
+# ECS-Organization — Business IDs from the register itself. The
+# ECS-Organization schema is issuer-mode ECOSYSTEM, so the transaction must
+# be signed by the ECS trust registry controller account — secret
+# ECS_ECOSYSTEM_MNEMONIC. Run after "CCM 01". Part of the CCM cast
+# CI/CD — see .github/workflows/ccm/README.md.
+
+on:
+  workflow_dispatch:
+
+env:
+  NETWORK: testnet
+  VERANAD_VERSION: v0.9.5
+  USER_ACC: ecs-ecosystem-admin
+
+jobs:
+  accredit:
+    name: Grant ECS permissions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Install veranad
+        run: |
+          curl -sfL "https://github.com/verana-labs/verana-node/releases/download/${VERANAD_VERSION}/veranad-linux-amd64" \
+            -o /usr/local/bin/veranad
+          chmod +x /usr/local/bin/veranad
+          veranad version
+
+      - name: Import ECS ecosystem account
+        run: |
+          MNEMONIC="${{ secrets.ECS_ECOSYSTEM_MNEMONIC }}"
+          if [ -z "$MNEMONIC" ]; then
+            echo "::error::Secret ECS_ECOSYSTEM_MNEMONIC is not set. It must recover the ECS trust registry controller account."
+            exit 1
+          fi
+          echo "$MNEMONIC" | veranad keys add "$USER_ACC" --recover --keyring-backend test
+          echo "Imported account address: $(veranad keys show "$USER_ACC" -a --keyring-backend test)"
+
+      - name: Grant accreditations
+        run: |
+          export CAST_DIR="${GITHUB_WORKSPACE}/.github/workflows/ccm"
+          export VESTA_DIR="${GITHUB_WORKSPACE}/.github/workflows/vesta"
+          bash "${CAST_DIR}/scripts/ecs-accreditations.sh"
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## ECS accreditations" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- Cámara de Comercio de Medellín (demo): ISSUER permission on ECS-Organization" >> "$GITHUB_STEP_SUMMARY"

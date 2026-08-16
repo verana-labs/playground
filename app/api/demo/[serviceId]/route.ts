@@ -30,6 +30,11 @@ import {
   BOLIVIA_LEGAL_REP_JSC,
   BOLIVIA_LEGAL_REP_NAME,
 } from "@/app/lib/bolivia-cast";
+import {
+  ccmLegalRepDemoClaims,
+  ccmLegalRepOid4vcClaims,
+} from "@/app/lib/demo-ccm";
+import { CCM_LEGAL_REP_JSC, CCM_LEGAL_REP_NAME } from "@/app/lib/ccm-cast";
 import { VESTA_CAST } from "@/app/lib/vesta-cast";
 
 // Live demo-action link for a Playground cast service (spec §4): what the
@@ -127,6 +132,15 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     jscUrl: BOLIVIA_LEGAL_REP_JSC,
     claims: () => boliviaLegalRepDemoClaims(),
     oid4vcClaims: () => boliviaLegalRepOid4vcClaims(),
+  },
+  "ccm-legal-rep": {
+    label: "credencial de Representación Legal",
+    credDefName: CCM_LEGAL_REP_NAME,
+    oid4vcConfig: process.env.DEMO_OID4VC_CCM_LEGAL_REP_CONFIG ?? "ccm-legal-rep",
+    oid4vcPolicy: process.env.DEMO_OID4VC_CCM_LEGAL_REP_POLICY ?? "ccm-legal-rep",
+    jscUrl: CCM_LEGAL_REP_JSC,
+    claims: () => ccmLegalRepDemoClaims(),
+    oid4vcClaims: () => ccmLegalRepOid4vcClaims(),
   },
 };
 

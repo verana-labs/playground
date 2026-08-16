@@ -11,15 +11,15 @@ plus Travel Rule counterparty proof. One vs-agent per member on the
 |---|---|---|---|
 | CEXA 01 | `association` | ecosystem anchor | ECS-Org from Helvetia + self ECS-Service; CEXA trust registry anchored on the **example EGF** (`/cexa/cexa-egf.md` on the playground site); `CEXA-Kyc` schema **governed both sides** (issuer 3 / verifier 3) + VTJSC + AnonCreds schema; `CEXA-VerifiedCounterparty` schema (issuer 3 / verifier open) + VTJSC |
 | CEXA 02 | `aurum` | ISSUER + VERIFIER member | own ECS-Org from Helvetia + self ECS-Service; validated ISSUER + VERIFIER perms on CEXA-Kyc; cred def (schema from the anchor); CEXA-VerifiedCounterparty linked VP; OID4VC issuer |
-| CEXA 03 | `borealis` | VERIFIER member | own ECS-Org + self ECS-Service; validated VERIFIER perm; CEXA-VerifiedCounterparty linked VP; OID4VC verifier (pins aurum + novara fingerprints) |
-| CEXA 04 | `novara` | bank member, ISSUER + VERIFIER | same as aurum - exchanges and banks run the same `provision-member.sh` |
+| CEXA 03 | `novara` | bank member, ISSUER + VERIFIER | same as aurum - exchanges and banks run the same `provision-member.sh` |
+| CEXA 04 | `borealis` | VERIFIER member | own ECS-Org + self ECS-Service; validated VERIFIER perm; CEXA-VerifiedCounterparty linked VP; OID4VC verifier (pins aurum + novara fingerprints - BOTH issuers must be deployed first) |
 | CEXA 05 | `darkpool` | untrusted | deploy-only, no provisioning; OID4VC verifier so Track B wallets get a real request to refuse at Q1 |
 
 ## Run order
 
 1. `CEXA 01` (the anchor: registry, schemas, EGF digest)
-2. `CEXA 02` and `CEXA 04` (the issuers - borealis pins their OID4VC fingerprints at deploy)
-3. `CEXA 03` (the verifier)
+2. `CEXA 02` then `CEXA 03` (the issuers)
+3. `CEXA 04` (the verifier - pins both issuers' OID4VC fingerprints at deploy)
 4. `CEXA 05` (deploy-only)
 5. Wire the live DIDs into `app/lib/cexa-cast.ts` (from each host's
    `/.well-known/did.jsonl`, `state.id`) - the use case demos gate on them.

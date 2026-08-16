@@ -1,0 +1,62 @@
+{
+  "$id": "https://camara.ccm.playground.testnet.verana.network/schemas/representacion-legal.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RepresentacionLegalCredential",
+  "description": "Prueba verificable de representacion legal emitida por la Camara de Comercio de Medellin para Antioquia (demo): quien puede actuar por una empresa matriculada, revocable el dia que cesa. Solo para demostracion.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID of the credential holder"
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Razon social de la empresa representada"
+        },
+        "nit": {
+          "type": "string",
+          "description": "NIT de la empresa (numero de identificacion tributaria)"
+        },
+        "companyRegistryId": {
+          "type": "string",
+          "description": "Matricula mercantil de la empresa en la camara de comercio (demo)"
+        },
+        "representativeName": {
+          "type": "string",
+          "description": "Nombre completo del representante legal"
+        },
+        "representativeId": {
+          "type": "string",
+          "description": "Numero de cedula de ciudadania del representante, para el cotejo presencial con el documento fisico"
+        },
+        "role": {
+          "type": "string",
+          "description": "Calidad de la representacion (principal, suplente)"
+        },
+        "powers": {
+          "type": "string",
+          "description": "Alcance de las facultades de representacion"
+        },
+        "issuingChamber": {
+          "type": "string",
+          "description": "Camara de comercio que expide la credencial"
+        },
+        "validUntil": {
+          "type": "string",
+          "description": "Fecha de expiracion de la credencial (YYYYMMDD): su renovacion coincide con la renovacion anual de la matricula mercantil"
+        }
+      },
+      "required": [
+        "companyName",
+        "nit",
+        "companyRegistryId",
+        "representativeName",
+        "representativeId",
+        "role"
+      ]
+    }
+  }
+}

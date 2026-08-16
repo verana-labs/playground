@@ -1,0 +1,33 @@
+name: "CCM 01 · Cámara de Comercio de Medellín"
+
+# Deploys the Cámara de Comercio de Medellín (demo), bootstraps its
+# ECS-Organization + ECS-Service and creates the Ecosistema Cámara de
+# Comercio (demo) — issuance AND verification governed.
+# Part of the CCM cast CI/CD — see .github/workflows/ccm/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  camara:
+    uses: ./.github/workflows/ccm-00_core.yml
+    with:
+      org: camara
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

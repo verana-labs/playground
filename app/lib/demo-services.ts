@@ -1,5 +1,6 @@
 import { VESTA_CAST } from "./vesta-cast";
 import { BOLIVIA_CAST } from "./bolivia-cast";
+import { CCM_CAST } from "./ccm-cast";
 import { VERANDIA_CAST } from "./verandia-cast";
 
 const BASE = process.env.DEMOS_BASE_DOMAIN ?? "main.demos.testnet.verana.network";
@@ -44,6 +45,11 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "impuestos", label: "Impuestos Nacionales (demo)", host: BOLIVIA_CAST.impuestos.host, appUrl: invite(BOLIVIA_CAST.impuestos.host), role: "verifier" },
   { id: "banco-union", label: "Banco Unión (demo)", host: BOLIVIA_CAST.bancoUnion.host, appUrl: invite(BOLIVIA_CAST.bancoUnion.host), role: "verifier" },
   { id: "prestamista", label: "Prestamista en línea (simulado)", host: BOLIVIA_CAST.prestamista.host, appUrl: invite(BOLIVIA_CAST.prestamista.host), role: "verifier" },
+  // The CCM cast (the Colombian legal-representation story at /usecases/ccm),
+  // deployed by .github/workflows/ccm-*. Real institutions (demo); DIDs come
+  // from host discovery until ccm-cast.ts placeholders are replaced.
+  { id: "camara-medellin", label: "Cámara de Comercio de Medellín (demo)", host: CCM_CAST.camara.host, appUrl: invite(CCM_CAST.camara.host), role: "issuer" },
+  { id: "bancolombia", label: "Bancolombia (demo)", host: CCM_CAST.bancolombia.host, appUrl: invite(CCM_CAST.bancolombia.host), role: "verifier" },
   // Planned personal-wallet demo cast (spec §4/§6) still referenced by the
   // personal-wallets playground page; remap those flows onto the Vesta cast
   // (badge issuers, portal login, Umbra) in a follow-up, then retire these.

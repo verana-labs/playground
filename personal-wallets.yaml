@@ -201,37 +201,37 @@ wallets:
     vendor: Procivis
     icon: ./procivis/logo.webp
     formats: [openid4vc-sdjwt]
-    download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/download/verana-2026-08-16/app-debug.apk
+    download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/download/verana-2026-08-17/app-debug.apk
     website: https://www.procivis.ch
     repo: https://github.com/procivis/one-wallet
     fork: https://github.com/AirKyzzZ/one-wallet/tree/codex/procivis-verana
     license: Apache-2.0
-    notes: Q1 and Q2/Q3 resolved inside the Rust core, so the verdict is computed below the UI and the same trust card renders on both the offer and the presentation surface, with a full evidence dossier behind it.
+    notes: Q1 and Q2/Q3 are resolved inside the Rust core, so the verdict is computed below the UI and the same trust card renders on both the offer and the presentation surface, with a full evidence dossier behind it. The two surfaces differ in force. Presentation is enforcing - nothing is sent to a verifier the registry refuses. Issuance is advisory - the card shows the refusal and disables accept, but the wallet fetches and stores the credential on arrival, before any verdict exists, and declining does not remove it. That is upstream behaviour we are working with Procivis on, not a Verana limitation.
     captures:
       issue-accredited:
         src: ./procivis/screenshots/1.webp
         clip: ./procivis/clips/1-issuer-accredited.mp4
-        caption: "Accredited issuer: both identity credentials verified, authorized for this credential"
+        caption: "Accredited issuer: both identity credentials verified, authorized for this credential, and the credential lands in the wallet"
       issue-unaccredited:
         src: ./procivis/screenshots/2.webp
         clip: ./procivis/clips/2-issuer-unaccredited.mp4
-        caption: Identity verified but not accredited to issue this credential
+        caption: Identity verified but not accredited to issue this credential, so the offer is marked refused and accept is disabled
       issue-untrusted:
         src: ./procivis/screenshots/3.webp
         clip: ./procivis/clips/3-issuer-untrusted.mp4
-        caption: "Untrusted issuer: the registry does not vouch for it and its self-issued claims are withheld"
+        caption: "Untrusted issuer: the registry does not vouch for it, its self-issued claims are withheld and accept is disabled"
       present-accredited:
         src: ./procivis/screenshots/4.webp
         clip: ./procivis/clips/4-verifier-accredited.mp4
-        caption: "Accredited verifier: authorized to request this credential"
+        caption: "Accredited verifier: authorized to request this credential, and the presentation is sent"
       present-unaccredited:
         src: ./procivis/screenshots/5.webp
         clip: ./procivis/clips/5-verifier-unaccredited.mp4
-        caption: Identity verified but not accredited to request this credential
+        caption: Identity verified but not accredited to request this credential, so nothing is presented
       present-untrusted:
         src: ./procivis/screenshots/6.webp
         clip: ./procivis/clips/6-verifier-untrusted.mp4
-        caption: "Untrusted verifier: the registry does not vouch for it and its claims are withheld"
+        caption: "Untrusted verifier: the registry does not vouch for it, claims withheld and nothing is presented"
     video:
       src: ./procivis/demo.mp4
       note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end at 3x speed, silent, otherwise unedited.

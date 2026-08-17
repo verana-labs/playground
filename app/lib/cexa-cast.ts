@@ -33,7 +33,8 @@ export const CEXA_CAST = {
     host: `novara.${ZONE}`,
     did: "did:webvh:QmXesvi2DDWVt9MgdxXziP92bojMf4X9pFYA4z7gABnpUM:novara.cexa.playground.testnet.verana.network",
   },
-  /** Deliberately unprovisioned (umbra pattern): a DID and nothing else. */
+  /** The outsider: a real, verifiable exchange that never joined - ECS
+   *  credentials only, no membership, no CEXA-VerifiedCounterparty. */
   darkpool: {
     host: `darkpool.${ZONE}`,
     did: "did:webvh:QmVap281SXu4pZRYEUdCS1pRpbZYdafzugFWE9H4bxXfEc:darkpool.cexa.playground.testnet.verana.network",

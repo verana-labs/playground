@@ -1,8 +1,10 @@
-name: "CEXA 05 · DarkPool Exchange (untrusted)"
+name: "CEXA 05 · DarkPool Exchange (outsider)"
 
-# Deploys DarkPool Exchange (demo): deliberately unprovisioned (deploy-only, no credentials, no
-# permissions, no membership) but running the openid4vc verifier config so Track B wallets have an
-# untrusted counterparty to refuse at Q1. Resolving as anything but UNTRUSTED is a paging incident.
+# Deploys DarkPool Exchange (demo), the outsider: a REAL, verifiable exchange (ECS-Org from
+# Helvetia + self ECS-Service) that never joined the Association - no membership, no
+# CEXA-VerifiedCounterparty, no permission on any CEXA schema. Runs the openid4vc verifier config
+# so wallets get a genuine request to refuse at Q3. It appearing in a CEXA participant tree, or
+# publishing a CEXA-VerifiedCounterparty VP, is a paging incident.
 # Part of the CEXA cast CI/CD — see .github/workflows/cexa/README.md.
 
 on:

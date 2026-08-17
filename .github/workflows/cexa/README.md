@@ -13,7 +13,7 @@ plus Travel Rule counterparty proof. One vs-agent per member on the
 | CEXA 02 | `aurum` | ISSUER + VERIFIER member | own ECS-Org from Helvetia + self ECS-Service; validated ISSUER + VERIFIER perms on CEXA-Kyc; cred def (schema from the anchor); CEXA-VerifiedCounterparty linked VP; OID4VC issuer |
 | CEXA 03 | `novara` | bank member, ISSUER + VERIFIER | same as aurum - exchanges and banks run the same `provision-member.sh` |
 | CEXA 04 | `borealis` | VERIFIER member | own ECS-Org + self ECS-Service; validated VERIFIER perm; CEXA-VerifiedCounterparty linked VP; OID4VC verifier (pins aurum + novara fingerprints - BOTH issuers must be deployed first) |
-| CEXA 05 | `darkpool` | untrusted | deploy-only, no provisioning; OID4VC verifier so Track B wallets get a real request to refuse at Q1 |
+| CEXA 05 | `darkpool` | outsider | verifiable (ECS-Org from Helvetia + self ECS-Service) but deliberately NOT a member: no CEXA-VerifiedCounterparty, no CEXA perms; OID4VC verifier so wallets get a genuine request to refuse at Q3 |
 
 ## Run order
 
@@ -41,7 +41,11 @@ time.
   on each member's DID, checked by plain trust resolution (the Travel Rule
   counterparty registry). Issued only by the Association; claims come from
   the org's `CP_*` config.env values; revoked on license loss per the EGF.
-- **`darkpool` resolving as anything but UNTRUSTED is a paging incident.**
+- **`darkpool` is verifiable but MUST stay outside the Association**: it must
+  resolve TRUSTED (real ECS credentials) while holding no membership - it
+  appearing in either CEXA participant tree, or publishing a
+  CEXA-VerifiedCounterparty VP, is a paging incident. Trust is not
+  membership; that is the lesson it exists to teach.
 - Fees on-chain are 0 for now (the v3 testnet); the fee story
   (0.90 + 0.10 example values) lives in the use case pages and the EGF, and
   goes live with the next network upgrade.

@@ -138,18 +138,25 @@ const NODES: SceneNode[] = [
       "3.4": { sub: "CEXA-Kyc in the wallet she chose" },
     },
   },
-  // ---- the red world
+  // ---- the outsider
   {
     id: "darkpool",
     x: 1070,
     y: 625,
-    icon: "ghost",
-    tone: "red",
+    icon: "building",
+    tone: "gray",
     appears: "3.0",
-    dashed: true,
     label: "DarkPool Exchange (demo)",
-    sub: "asks for your passport too",
+    sub: "a real exchange - outside every shared rulebook",
     did: CEXA_CAST.darkpool.did,
+    serviceType: "Crypto exchange service (demo)",
+    operator: "DarkPool Exchange Ltd (demo)",
+    verifiedAt: "3.8",
+    noteAlways: true,
+    toneByStage: { "3.8": "blue" },
+    labelByStage: {
+      "3.8": { sub: "verifiable - and still not a member" },
+    },
   },
 ];
 
@@ -267,9 +274,8 @@ const EDGES: SceneEdge[] = [
     from: "alice",
     to: "darkpool",
     appears: "3.8",
-    label: "refused at Q1",
+    label: "refused at Q3 - not a member",
     tone: "red",
-    dashed: true,
   },
 ];
 
@@ -427,6 +433,21 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
       appears: "3.6",
     },
   ],
+  darkpool: [
+    {
+      name: "ECS-Organization",
+      tone: "blue",
+      issuedBy: "Helvetia Trust Services (demo)",
+      ecosystem: "Verana ECS Ecosystem",
+      appears: "3.8",
+    },
+    {
+      name: "ECS-Service",
+      tone: "blue",
+      issuedBy: "DarkPool Exchange (demo), self-issued",
+      appears: "3.8",
+    },
+  ],
   alice: [
     {
       name: "CEXA-Kyc",
@@ -486,7 +507,7 @@ const NODE_NOTES: Record<string, string> = {
   identisure:
     "An IDV provider on the Association's authorized list (EGF). It works off-chain: it runs the document, liveness and AML checks and hands the evidence to the issuing exchange. Not a chain participant.",
   darkpool:
-    "No credentials, no membership, no permissions. Every wallet that trust-resolves this DID gets UNTRUSTED, and the request is never even shown. Resolving as anything else would be an incident.",
+    "Real and verifiable - and still outside. No membership, no CEXA-VerifiedCounterparty on its DID, no VERIFIER accreditation on CEXA-Kyc: the wallet refuses its requests and a Travel Rule desk stops at the missing credential. Trust is not membership.",
   alice:
     "A customer. Before the Association: a fresh KYC queue at every exchange. After: one credential in her own wallet, accepted by every member.",
 };
@@ -557,7 +578,7 @@ export const CEXA_SCENES: SceneGraph = {
     },
     "3.8": {
       nodes: ["darkpool"],
-      note: "DarkPool cannot present a single verifiable credential: Q1 fails, and the wallet never shows its request.",
+      note: "DarkPool verifies green - a real company - and is refused anyway: no membership, no CEXA-VerifiedCounterparty, no VERIFIER accreditation. Trust is not membership.",
     },
     "3.9": {
       nodes: ["alice", "aurum", "novara", "borealis"],

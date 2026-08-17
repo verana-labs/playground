@@ -17,7 +17,7 @@ replicas: 1
 # image and is activated per org via oid4vc.plugins (vesta-00_core).
 image:
   repository: veranalabs/vs-agent
-  tag: v1.12.0-oidc4vc-uiprofile.32
+  tag: v1.12.0-oidc4vc-uiprofile.33
 
 adminPort: 3000
 enablePublicApiSwagger: true

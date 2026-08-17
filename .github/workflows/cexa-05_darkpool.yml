@@ -1,0 +1,35 @@
+name: "CEXA 05 · DarkPool Exchange (outsider)"
+
+# Deploys DarkPool Exchange (demo), the outsider: a REAL, verifiable exchange (ECS-Org from
+# Helvetia + self ECS-Service) that never joined the Association - no membership, no
+# CEXA-VerifiedCounterparty, no permission on any CEXA schema. Runs the openid4vc verifier config
+# so wallets get a genuine request to refuse at Q3. It appearing in a CEXA participant tree, or
+# publishing a CEXA-VerifiedCounterparty VP, is a paging incident.
+# Part of the CEXA cast CI/CD — see .github/workflows/cexa/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  darkpool:
+    uses: ./.github/workflows/cexa-00_core.yml
+    with:
+      org: darkpool
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

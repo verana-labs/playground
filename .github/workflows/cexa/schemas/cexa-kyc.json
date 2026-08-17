@@ -1,0 +1,60 @@
+{
+  "$id": "https://association.cexa.playground.testnet.verana.network/schemas/cexa-kyc.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CEXAKycCredential",
+  "description": "CEXA-Kyc - the reusable retail identity check of the Crypto Exchange Association (demo), governed on both sides (EGF section 6). The sealed evidence bundle rides in the holder's wallet, digest-bound through evidenceDigest. For demonstration only.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID of the credential holder"
+        },
+        "fullName": {
+          "type": "string",
+          "description": "Full legal name of the subject as verified by the original check"
+        },
+        "birthDate": {
+          "type": "string",
+          "description": "Date of birth as a dateint (YYYYMMDD), so AnonCreds predicate proofs (age over 18) work without revealing the date"
+        },
+        "nationality": {
+          "type": "string",
+          "description": "Nationality of the subject (alpha-2 code)"
+        },
+        "documentNumberHash": {
+          "type": "string",
+          "description": "Salted hash of the identity document number, so re-binding can match a passport chip without disclosing the number"
+        },
+        "kycLevel": {
+          "type": "string",
+          "description": "Level of the check performed (e.g. standard, enhanced)"
+        },
+        "screeningDate": {
+          "type": "string",
+          "description": "Date of the AML screening as a dateint (YYYYMMDD)"
+        },
+        "provider": {
+          "type": "string",
+          "description": "EGF-authorized IDV provider that performed the original check (Annex C)"
+        },
+        "evidenceDigest": {
+          "type": "string",
+          "description": "Digest (SRI) of the sealed evidence bundle carried in the holder's wallet"
+        }
+      },
+      "required": [
+        "fullName",
+        "birthDate",
+        "nationality",
+        "documentNumberHash",
+        "kycLevel",
+        "screeningDate",
+        "provider",
+        "evidenceDigest"
+      ]
+    }
+  }
+}

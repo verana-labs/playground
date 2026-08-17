@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Crypto Exchange Association: a circular exchange loop (two swap
+       arrows), member nodes on the ring, rising candlesticks inside. -->
+  <defs>
+    <linearGradient id="cexaRing" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6d28d9"/>
+      <stop offset="100%" stop-color="#9f7aea"/>
+    </linearGradient>
+    <linearGradient id="cexaCandle" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#34d399"/>
+      <stop offset="100%" stop-color="#059669"/>
+    </linearGradient>
+    <marker id="cexaArrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="3.2" markerHeight="3.2" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#7c3aed"/>
+    </marker>
+  </defs>
+
+  <!-- the exchange loop -->
+  <path d="M 20.2 37 A 46 46 0 0 1 103.2 44.3" fill="none" stroke="url(#cexaRing)"
+        stroke-width="7" stroke-linecap="round" marker-end="url(#cexaArrow)"/>
+  <path d="M 99.8 83 A 46 46 0 0 1 16.8 75.7" fill="none" stroke="url(#cexaRing)"
+        stroke-width="7" stroke-linecap="round" marker-end="url(#cexaArrow)"/>
+
+  <!-- member nodes joining the loop -->
+  <circle cx="105.8" cy="64" r="3.2" fill="#a78bfa"/>
+  <circle cx="103.2" cy="75.7" r="3.2" fill="#a78bfa"/>
+  <circle cx="16.8" cy="44.3" r="3.2" fill="#a78bfa"/>
+  <circle cx="14.2" cy="56" r="3.2" fill="#a78bfa"/>
+
+  <!-- the market inside: three rising candles -->
+  <line x1="43" y1="54" x2="43" y2="84" stroke="#047857" stroke-width="3" stroke-linecap="round"/>
+  <rect x="38" y="60" width="10" height="18" rx="2.5" fill="url(#cexaCandle)"/>
+  <line x1="60" y1="44" x2="60" y2="80" stroke="#047857" stroke-width="3" stroke-linecap="round"/>
+  <rect x="55" y="50" width="10" height="24" rx="2.5" fill="url(#cexaCandle)"/>
+  <line x1="77" y1="32" x2="77" y2="72" stroke="#047857" stroke-width="3" stroke-linecap="round"/>
+  <rect x="72" y="38" width="10" height="28" rx="2.5" fill="url(#cexaCandle)"/>
+</svg>

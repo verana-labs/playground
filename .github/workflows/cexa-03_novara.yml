@@ -1,0 +1,32 @@
+name: "CEXA 03 · Novara Bank (ISSUER + VERIFIER)"
+
+# Deploys Novara Bank (demo), the bank member of the corridor: own ECS-Organization from Helvetia,
+# validated ISSUER and VERIFIER permissions on CEXA-Kyc, cred def, CEXA-VerifiedCounterparty. Requires cexa-01.
+# Part of the CEXA cast CI/CD — see .github/workflows/cexa/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  novara:
+    uses: ./.github/workflows/cexa-00_core.yml
+    with:
+      org: novara
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

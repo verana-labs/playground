@@ -1,0 +1,32 @@
+name: "CCM 03 · Bancolombia (verificador)"
+
+# Deploys the verifiable bank (demo) with a validated VERIFIER registration
+# on the Representación Legal schema — the chamber's paid relying-party
+# register. Part of the CCM cast CI/CD — see .github/workflows/ccm/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  bancolombia:
+    uses: ./.github/workflows/ccm-00_core.yml
+    with:
+      org: bancolombia
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

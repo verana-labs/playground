@@ -30,6 +30,13 @@ import {
   BOLIVIA_LEGAL_REP_JSC,
   BOLIVIA_LEGAL_REP_NAME,
 } from "@/app/lib/bolivia-cast";
+import {
+  ccmLegalRepDemoClaims,
+  ccmLegalRepOid4vcClaims,
+} from "@/app/lib/demo-ccm";
+import { CCM_LEGAL_REP_JSC, CCM_LEGAL_REP_NAME } from "@/app/lib/ccm-cast";
+import { CEXA_KYC_JSC } from "@/app/lib/cexa-cast";
+import { cexaKycDemoClaims, cexaKycOid4vcClaims } from "@/app/lib/demo-cexa";
 import { VESTA_CAST } from "@/app/lib/vesta-cast";
 
 // Live demo-action link for a Playground cast service (spec §4): what the
@@ -87,6 +94,16 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     claims: badgeDemoClaims,
     oid4vcClaims: badgeOid4vcClaims,
   },
+  "cexa-kyc": {
+    label: "CEXA-Kyc credential",
+    // Provisioned via ensure_credential_type: keyed on the VTJSC, no name.
+    credDefName: null,
+    oid4vcConfig: process.env.DEMO_OID4VC_CEXA_CONFIG ?? "cexa-kyc",
+    oid4vcPolicy: process.env.DEMO_OID4VC_CEXA_POLICY ?? "cexa-kyc",
+    jscUrl: CEXA_KYC_JSC,
+    claims: cexaKycDemoClaims,
+    oid4vcClaims: cexaKycOid4vcClaims,
+  },
   "verandia-citizen-id": {
     label: "Verandia Citizen ID",
     credDefName: VERANDIA_CITIZEN_ID_NAME,
@@ -128,6 +145,15 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     claims: () => boliviaLegalRepDemoClaims(),
     oid4vcClaims: () => boliviaLegalRepOid4vcClaims(),
   },
+  "ccm-legal-rep": {
+    label: "credencial de Representación Legal",
+    credDefName: CCM_LEGAL_REP_NAME,
+    oid4vcConfig: process.env.DEMO_OID4VC_CCM_LEGAL_REP_CONFIG ?? "ccm-legal-rep",
+    oid4vcPolicy: process.env.DEMO_OID4VC_CCM_LEGAL_REP_POLICY ?? "ccm-legal-rep",
+    jscUrl: CCM_LEGAL_REP_JSC,
+    claims: () => ccmLegalRepDemoClaims(),
+    oid4vcClaims: () => ccmLegalRepOid4vcClaims(),
+  },
 };
 
 async function credDefId(
@@ -136,6 +162,10 @@ async function credDefId(
 ): Promise<string | null> {
   const types = await adminJson(`${admin}/v1/credential-types`);
   if (!Array.isArray(types)) return null;
+  // credDefName null = the type was provisioned keyed on its VTJSC
+  // (ensure_credential_type), so match relatedJsonSchemaCredentialId against
+  // the credential's own jscUrl; the "DemoCredential" name fallback covers
+  // legacy demo-cast agents provisioned before the VTJSC keying.
   const match = kind.credDefName
     ? types.find(
         (t) =>
@@ -146,15 +176,42 @@ async function credDefId(
         (t) =>
           t && typeof t === "object" &&
           (t as { relatedJsonSchemaCredentialId?: unknown })
-            .relatedJsonSchemaCredentialId === VTJSC_URL,
+            .relatedJsonSchemaCredentialId === kind.jscUrl,
       ) ??
-      types.find(
-        (t) =>
-          t && typeof t === "object" &&
-          (t as { name?: unknown }).name === "DemoCredential",
-      ));
+      (kind.jscUrl === VTJSC_URL
+        ? types.find(
+            (t) =>
+              t && typeof t === "object" &&
+              (t as { name?: unknown }).name === "DemoCredential",
+          )
+        : undefined));
   const id = (match as { id?: unknown } | undefined)?.id;
   return typeof id === "string" ? id : null;
+}
+
+/** attrNames of the AnonCreds schema backing this credential, read from the
+ *  public attested-resources endpoint of the anchor serving the VTJSC.
+ *  Schemas derived from a VTJSC include credentialSubject.id in their
+ *  attrNames, and AnonCreds offers must carry a value for EVERY schema
+ *  attribute - so the mint fills the gap (see below). Returns null when the
+ *  probe fails; the offer is then attempted with the claims as-is. */
+async function anoncredsAttrNames(jscUrl: string): Promise<string[] | null> {
+  try {
+    const host = new URL(jscUrl).host;
+    const res = await fetch(
+      `https://${host}/resources?resourceType=anonCredsSchema&relatedJsonSchemaCredentialId=${encodeURIComponent(jscUrl)}`,
+      { next: { revalidate: 3600 } },
+    );
+    if (!res.ok) return null;
+    const body = (await res.json()) as unknown;
+    const names = Array.isArray(body)
+      ? (body[0] as { content?: { attrNames?: unknown } } | undefined)?.content
+          ?.attrNames
+      : undefined;
+    return Array.isArray(names) ? names.map(String) : null;
+  } catch {
+    return null;
+  }
 }
 
 function str(body: unknown, key: string): string | null {
@@ -281,12 +338,30 @@ export async function GET(
           { error: `no ${kind.label} credential type on this issuer` },
           { status: 503 },
         );
+      // AnonCreds requires a value for every schema attribute. Schemas
+      // derived from a VTJSC carry credentialSubject.id in attrNames, which
+      // the demo claim sets do not provide (and the agent refuses empty
+      // values) - fill the gap with a per-scan subject urn. Self-healing:
+      // if the derivation ever stops including id, the probe finds nothing
+      // missing and adds nothing.
+      const claims = kind.claims(serviceId);
+      const attrNames = await anoncredsAttrNames(kind.jscUrl);
+      if (attrNames) {
+        const present = new Set(claims.map((c) => c.name));
+        for (const name of attrNames) {
+          if (!present.has(name))
+            claims.push({
+              name,
+              value: name === "id" ? `urn:uuid:${crypto.randomUUID()}` : "-",
+            });
+        }
+      }
       const offer = await adminJson(`${admin}/v1/invitation/credential-offer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           credentialDefinitionId,
-          claims: kind.claims(serviceId),
+          claims,
         }),
       });
       return NextResponse.json({

@@ -1,0 +1,49 @@
+{
+  "$id": "https://association.cexa.playground.testnet.verana.network/schemas/cexa-verified-counterparty.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CEXAVerifiedCounterpartyCredential",
+  "description": "CEXA-VerifiedCounterparty - the Travel Rule identity of a member of the Crypto Exchange Association (demo), issued by the Association at validation and renewal, published on the member's DID as a Linked VP and free to verify. Revoked on license loss (EGF section 10). For demonstration only.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID of the member"
+        },
+        "legalName": {
+          "type": "string",
+          "description": "Legal name of the member institution"
+        },
+        "lei": {
+          "type": "string",
+          "description": "Legal Entity Identifier, where held"
+        },
+        "licensingAuthority": {
+          "type": "string",
+          "description": "Authority that licensed the member"
+        },
+        "licenseIdentifier": {
+          "type": "string",
+          "description": "License or registration identifier issued by the licensing authority"
+        },
+        "vaspCategory": {
+          "type": "string",
+          "description": "Category of the institution (e.g. crypto exchange, credit institution)"
+        },
+        "complianceContact": {
+          "type": "string",
+          "description": "Compliance contact endpoint for compliance-to-compliance requests"
+        }
+      },
+      "required": [
+        "legalName",
+        "licensingAuthority",
+        "licenseIdentifier",
+        "vaspCategory",
+        "complianceContact"
+      ]
+    }
+  }
+}

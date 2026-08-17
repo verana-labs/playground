@@ -487,7 +487,7 @@ export const JOURNEY: {
             "DarkPool appearing in either CEXA participant tree, or publishing a CEXA-VerifiedCounterparty VP, would be a provisioning incident.",
           ],
           reproduce: [
-            "Run the DarkPool demo below: reveal its very real presentation request and watch your wallet refuse it - then pick DarkPool in the counterparty check and read its two red lines.",
+            "Run the DarkPool demo below: reveal its very real presentation request and watch your wallet refuse it - then read the two red lines of its counterparty proof, right under its green Proof-of-Trust.",
           ],
         },
         {
@@ -773,13 +773,6 @@ export const DEMOS = {
       },
     ],
   },
-  counterparty: {
-    title: "Verify a counterparty",
-    intro:
-      "The Travel Rule check, live: resolve an exchange's DID and read its CEXA-VerifiedCounterparty credential - licensing authority, license identifier, category, compliance contact - straight from the public registry. No account, no subscription, no fee. Then pick DarkPool and watch the same check come back red:",
-    expect:
-      "Members show the credential issued by the Association plus their live VERIFIER accreditation - the neutral answer to who the counterparty is. DarkPool resolves as a real company and still fails both lines: no CEXA-VerifiedCounterparty, no accreditation.",
-  },
   darkpool: {
     title: "The exchange outside the Association",
     intro:
@@ -787,7 +780,7 @@ export const DEMOS = {
     serviceId: "darkpool",
     credential: "cexa-kyc",
     expect:
-      "Trust resolution returns TRUSTED - a genuine company - but the wallet finds no VERIFIER accreditation on CEXA-Kyc and blocks the share. In the counterparty check above, DarkPool shows its two red lines: no CEXA-VerifiedCounterparty, not an accredited verifier.",
+      "Trust resolution returns TRUSTED - a genuine company - but the wallet finds no VERIFIER accreditation on CEXA-Kyc and blocks the share. Below its green Proof-of-Trust, the counterparty proof shows the two red lines: no CEXA-VerifiedCounterparty, not an accredited verifier.",
   },
 };
 

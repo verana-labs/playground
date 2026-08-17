@@ -51,7 +51,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     title: "Run the demos",
     short: "Demos",
     intro:
-      "Get a CEXA-Kyc credential, open accounts at Borealis Markets (demo) and Novara Bank (demo) with it, verify a counterparty, and watch DarkPool Exchange (demo) get refused.",
+      "Get a CEXA-Kyc credential, open accounts at Borealis Markets (demo) and Novara Bank (demo) with it, read each service's Travel Rule counterparty proof, and watch DarkPool Exchange (demo) get refused.",
   },
 ];
 

@@ -564,8 +564,9 @@ export function Section5() {
                 <Suspense>
                   <CexaOffers wallets={wallets} offers={[DEMOS.kyc.offer]} />
                 </Suspense>
-                <div className="mx-auto mt-6 max-w-md">
+                <div className="mx-auto mt-6 max-w-md space-y-6">
                   <LiveTrustCard serviceId={DEMOS.kyc.offer.serviceId} />
+                  <CounterpartyCard serviceId="aurum" />
                 </div>
               </>
             )}
@@ -615,6 +616,7 @@ export function Section5() {
                   />
                 </Suspense>
                 <LiveTrustCard serviceId="borealis" />
+                <CounterpartyCard serviceId="borealis" />
               </div>
             )}
           </div>
@@ -663,27 +665,12 @@ export function Section5() {
                   />
                 </Suspense>
                 <LiveTrustCard serviceId="novara" />
+                <CounterpartyCard serviceId="novara" />
               </div>
             )}
           </div>
 
-          {/* Demo 4 · Verify a counterparty (Travel Rule) */}
-          <div id="demo-counterparty" className="mt-14 scroll-mt-24">
-            <SubHeading>{DEMOS.counterparty.title}</SubHeading>
-            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
-              {DEMOS.counterparty.intro}
-            </p>
-            <p className="mx-auto mt-4 max-w-3xl rounded-2xl border border-violet-100 bg-violet-50/50 px-5 py-4 text-sm leading-relaxed text-violet-900">
-              {DEMOS.counterparty.expect}
-            </p>
-            {isPendingDid(CEXA_CAST.novara.did) ? (
-              <DemoComing />
-            ) : (
-              <CounterpartyCard />
-            )}
-          </div>
-
-          {/* Demo 5 · The refusal */}
+          {/* Demo 4 · The refusal */}
           <div id="demo-darkpool" className="mt-14 scroll-mt-24">
             <SubHeading>{DEMOS.darkpool.title}</SubHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
@@ -705,6 +692,7 @@ export function Section5() {
                   />
                 </Suspense>
                 <LiveTrustCard serviceId="darkpool" />
+                <CounterpartyCard serviceId="darkpool" />
               </div>
             )}
           </div>

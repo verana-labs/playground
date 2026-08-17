@@ -35,7 +35,7 @@ import {
   ccmLegalRepOid4vcClaims,
 } from "@/app/lib/demo-ccm";
 import { CCM_LEGAL_REP_JSC, CCM_LEGAL_REP_NAME } from "@/app/lib/ccm-cast";
-import { CEXA_KYC_JSC, CEXA_KYC_NAME } from "@/app/lib/cexa-cast";
+import { CEXA_KYC_JSC } from "@/app/lib/cexa-cast";
 import { cexaKycDemoClaims, cexaKycOid4vcClaims } from "@/app/lib/demo-cexa";
 import { VESTA_CAST } from "@/app/lib/vesta-cast";
 
@@ -96,7 +96,8 @@ const CREDENTIALS: Record<string, CredentialKind> = {
   },
   "cexa-kyc": {
     label: "CEXA-Kyc credential",
-    credDefName: CEXA_KYC_NAME,
+    // Provisioned via ensure_credential_type: keyed on the VTJSC, no name.
+    credDefName: null,
     oid4vcConfig: process.env.DEMO_OID4VC_CEXA_CONFIG ?? "cexa-kyc",
     oid4vcPolicy: process.env.DEMO_OID4VC_CEXA_POLICY ?? "cexa-kyc",
     jscUrl: CEXA_KYC_JSC,
@@ -161,6 +162,10 @@ async function credDefId(
 ): Promise<string | null> {
   const types = await adminJson(`${admin}/v1/credential-types`);
   if (!Array.isArray(types)) return null;
+  // credDefName null = the type was provisioned keyed on its VTJSC
+  // (ensure_credential_type), so match relatedJsonSchemaCredentialId against
+  // the credential's own jscUrl; the "DemoCredential" name fallback covers
+  // legacy demo-cast agents provisioned before the VTJSC keying.
   const match = kind.credDefName
     ? types.find(
         (t) =>
@@ -171,13 +176,15 @@ async function credDefId(
         (t) =>
           t && typeof t === "object" &&
           (t as { relatedJsonSchemaCredentialId?: unknown })
-            .relatedJsonSchemaCredentialId === VTJSC_URL,
+            .relatedJsonSchemaCredentialId === kind.jscUrl,
       ) ??
-      types.find(
-        (t) =>
-          t && typeof t === "object" &&
-          (t as { name?: unknown }).name === "DemoCredential",
-      ));
+      (kind.jscUrl === VTJSC_URL
+        ? types.find(
+            (t) =>
+              t && typeof t === "object" &&
+              (t as { name?: unknown }).name === "DemoCredential",
+          )
+        : undefined));
   const id = (match as { id?: unknown } | undefined)?.id;
   return typeof id === "string" ? id : null;
 }

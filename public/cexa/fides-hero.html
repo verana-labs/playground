@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>CEXA · FIDES hero compositor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root { --band-top: 0px; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #17131f;
+    font-family: "Space Grotesk", sans-serif;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 18px; padding: 24px 0 60px;
+  }
+  /* The capture stage: exactly 1536x864 (16:9), same size as hero.png. */
+  .stage {
+    position: relative; width: 1536px; height: 864px;
+    background: url("/images/cexa/hero.png") center / cover no-repeat;
+    overflow: hidden; flex: none;
+  }
+  /* Verana badge, top left, straight on the image */
+  .verana {
+    position: absolute; top: 40px; left: 44px;
+    display: flex; align-items: center; gap: 18px;
+  }
+  .verana img { width: 76px; height: 76px; display: block;
+    filter: drop-shadow(0 4px 14px rgba(0,0,0,.45)); }
+  .verana span {
+    color: #fff; font-size: 44px; font-weight: 700; letter-spacing: .01em;
+    text-shadow: 0 2px 12px rgba(0,0,0,.55);
+  }
+  /* The white overlay, cropped to the CEXA content only (top right) */
+  .band {
+    position: absolute; right: 0; top: var(--band-top);
+    height: 172px;
+    background: rgba(255,255,255,.84);
+    backdrop-filter: blur(3px);
+    display: flex; align-items: center; gap: 30px;
+    padding: 0 56px 0 42px;
+    border-radius: 28px;
+  }
+  .band.floating { right: 34px; border-radius: 28px;
+    box-shadow: 0 18px 50px rgba(0,0,0,.35); }
+  .cexa { display: flex; align-items: center; gap: 30px; }
+  .cexa img { width: 134px; height: 134px; display: block; flex: none; }
+  .band h1 {
+    color: #111827; font-size: 58px; font-weight: 700;
+    letter-spacing: -0.01em; line-height: 1.05; white-space: nowrap;
+  }
+  .band p {
+    color: #374151; font-size: 25px; font-weight: 500; margin-top: 7px;
+    white-space: nowrap;
+  }
+  .hint { color: #8a8da1; font-size: 14px; font-family: sans-serif;
+    max-width: 1000px; text-align: center; line-height: 1.6; }
+  .hint code { color: #c4b5fd; }
+</style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <div class="verana">
+      <img src="/cexa/verana-logo.svg" alt="">
+      <span>Verana</span>
+    </div>
+    <div class="band">
+      <div class="cexa">
+        <img src="/cexa/cexa-logo.svg" alt="">
+        <div>
+          <h1>Crypto Exchange Association</h1>
+          <p>Reusable KYC, governed by the institutions that rely on it</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="hint">
+    Capture the stage above at exactly 1536&times;864: right-click it &rarr;
+    <em>Inspect</em> &rarr; right-click the <code>div#stage</code> node &rarr;
+    <em>Capture node screenshot</em> (Chrome), or Firefox
+    <em>Take Screenshot &rarr; select the stage</em>.
+    The white overlay is cropped to the CEXA content, top right
+    (<code>?top=0</code> default); the Verana badge sits on the image, top
+    left. Nudge the overlay with any pixel value, e.g. <code>?top=120</code>.
+    <code>?float=1</code> detaches it as a floating rounded card.
+    Hide the tagline with <code>?tagline=0</code>.
+    Use the violet service badge with <code>?logo=badge</code>.
+  </p>
+  <script>
+    const q = new URLSearchParams(location.search);
+    const top = q.get("top");
+    if (top) document.documentElement.style.setProperty("--band-top", top + "px");
+    if (q.get("tagline") === "0") document.querySelector(".band p").style.display = "none";
+    if (q.get("logo") === "badge")
+      document.querySelector(".cexa img").src = "/images/cast/cexa-association.svg";
+    // ?bare=1: pin the stage at 0,0 with nothing else, for automated capture
+    if (q.get("float") === "1") {
+      document.querySelector(".band").classList.add("floating");
+      if (!top) document.documentElement.style.setProperty("--band-top", "32px");
+    }
+    if (q.get("bare") === "1") {
+      document.body.style.padding = "0";
+      document.querySelector(".hint").style.display = "none";
+    }
+  </script>
+</body>
+</html>

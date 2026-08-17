@@ -21,7 +21,6 @@ import { listPersonalWallets, type PersonalWallet } from "./lib/wallets";
 import { CHAPTERS_NAV } from "./usecases/vesta/chapters";
 import { CHAPTERS_NAV as VERANDIA_CHAPTERS } from "./usecases/verandia/chapters";
 import { CHAPTERS_NAV as CEXA_CHAPTERS } from "./usecases/cexa/chapters";
-import { VerandiaEmblem } from "./usecases/verandia/sections";
 
 // The story sections (spec §3.2), deep-linking into /usecases/vesta anchors.
 
@@ -327,7 +326,7 @@ export default function Home() {
               <span className="relative block aspect-[16/9] overflow-hidden bg-gray-100">
                 {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized WebP illustration from public/ */}
                 <img
-                  src="/images/factory.webp"
+                  src="/images/factory-fides.webp"
                   alt="The Vesta Appliances factory"
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                 />
@@ -359,13 +358,10 @@ export default function Home() {
               <span className="relative block aspect-[16/9] overflow-hidden bg-gray-100">
                 {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized WebP illustration from public/ */}
                 <img
-                  src="/images/verandia/hero.webp"
+                  src="/images/verandia/hero-fides.webp"
                   alt="The capital of the Republic of Verandia"
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                 />
-                <span className="absolute inset-0 flex items-center justify-center">
-                  <VerandiaEmblem className="h-24 w-24 drop-shadow-lg transition-transform duration-300 group-hover:scale-[1.05]" />
-                </span>
               </span>
               <span className="flex flex-1 flex-col p-5">
                 <span className="flex flex-wrap items-center gap-2">
@@ -391,27 +387,13 @@ export default function Home() {
               href="/usecases/cexa"
               className="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
             >
-              <span className="relative block aspect-[16/9] overflow-hidden bg-gradient-to-br from-violet-600 via-violet-500 to-emerald-500">
-                <span className="absolute inset-0 flex items-center justify-center gap-6">
-                  {/* eslint-disable-next-line @next/next/no-img-element -- cast SVG logos from public/ */}
-                  <img
-                    src="/images/cast/cexa-aurum.svg"
-                    alt=""
-                    className="h-14 w-14 rounded-2xl shadow-lg transition-transform duration-300 group-hover:scale-[1.05]"
-                  />
-                  {/* eslint-disable-next-line @next/next/no-img-element -- cast SVG logos from public/ */}
-                  <img
-                    src="/images/cast/cexa-association.svg"
-                    alt="The Crypto Exchange Association (demo)"
-                    className="h-20 w-20 rounded-2xl shadow-xl transition-transform duration-300 group-hover:scale-[1.08]"
-                  />
-                  {/* eslint-disable-next-line @next/next/no-img-element -- cast SVG logos from public/ */}
-                  <img
-                    src="/images/cast/cexa-novara.svg"
-                    alt=""
-                    className="h-14 w-14 rounded-2xl shadow-lg transition-transform duration-300 group-hover:scale-[1.05]"
-                  />
-                </span>
+              <span className="relative block aspect-[16/9] overflow-hidden bg-gray-100">
+                {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized WebP illustration from public/ */}
+                <img
+                  src="/images/cexa/hero-branded.webp"
+                  alt="The Crypto Exchange Association (demo) boardroom, with the issuer-holder-verifier trust triangle on screen"
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
               </span>
               <span className="flex flex-1 flex-col p-5">
                 <span className="flex flex-wrap items-center gap-2">

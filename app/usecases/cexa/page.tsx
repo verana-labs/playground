@@ -4,13 +4,10 @@ import { ChapterFooter, Stepper } from "../../components/ChapterNav";
 import { CHAPTERS_NAV } from "./chapters";
 import { Section1 } from "./sections";
 
-// Unlisted while the cast and the story are being prepared: noindex, and no
-// links from the home page, the nav or the sitemap.
 export const metadata: Metadata = {
   title: "Use case · Crypto Exchange Association - 1 · Pay twice, wait twice",
   description:
     "Chapter 1 of the CEXA story: exchanges and banks run the same KYC on the same customer, pay for it again, and lose sign-ups to the wait.",
-  robots: { index: false, follow: false },
 };
 
 export default function CexaChapter1() {

@@ -1,7 +1,7 @@
 // The CEXA use case, split into five chapter routes with a persistent
 // stepper. Chapter 1 lives at /usecases/cexa; the rest at
-// /usecases/cexa/<slug>. Unlisted for now: every chapter page carries
-// robots noindex, and the story is linked from nowhere on the site.
+// /usecases/cexa/<slug>. Public: linked from the home page, the nav
+// use-cases menu and the sitemap.
 
 import type { Chapter } from "../../components/ChapterNav";
 

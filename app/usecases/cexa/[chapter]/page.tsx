@@ -23,8 +23,6 @@ export async function generateMetadata({
       ? `Use case · Crypto Exchange Association - ${c.n} · ${c.title}`
       : "Use case · Crypto Exchange Association",
     description: c?.intro,
-    // Unlisted while the cast and the story are being prepared.
-    robots: { index: false, follow: false },
   };
 }
 

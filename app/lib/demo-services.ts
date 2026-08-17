@@ -58,7 +58,7 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "aurum", label: "Aurum Exchange (demo)", host: CEXA_CAST.aurum.host, appUrl: invite(CEXA_CAST.aurum.host), role: "issuer" },
   { id: "borealis", label: "Borealis Markets (demo)", host: CEXA_CAST.borealis.host, appUrl: invite(CEXA_CAST.borealis.host), role: "verifier" },
   { id: "novara", label: "Novara Bank (demo)", host: CEXA_CAST.novara.host, appUrl: invite(CEXA_CAST.novara.host), role: "issuer" },
-  { id: "darkpool", label: "DarkPool Exchange (demo)", host: CEXA_CAST.darkpool.host, appUrl: invite(CEXA_CAST.darkpool.host), role: "untrusted" },
+  { id: "darkpool", label: "DarkPool Exchange (demo)", host: CEXA_CAST.darkpool.host, appUrl: invite(CEXA_CAST.darkpool.host), role: "verifier" },
   // Planned personal-wallet demo cast (spec §4/§6) still referenced by the
   // personal-wallets playground page; remap those flows onto the Vesta cast
   // (badge issuers, portal login, Umbra) in a follow-up, then retire these.

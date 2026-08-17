@@ -270,9 +270,9 @@ export const JOURNEY: {
   anchor: "section-3",
   title: "The Association's journey",
   intro:
-    "One checklist, four builds. The picture below opens on the financial world you met in chapter 1 - two gray exchanges and a gray bank paying for the same checks, Alice in the queue, DarkPool phishing at the edge - and each step transforms it.",
+    "One checklist, four builds. The picture below opens on the financial world you met in chapter 1 - two gray exchanges and a gray bank paying for the same checks, Alice in the queue, DarkPool trading outside every shared rulebook - and each step transforms it.",
   outro:
-    "Every box checked: verifiable members · one governed credential · membership with teeth · reuse that pays the issuer, across the bank-exchange corridor · counterparty proof for the Travel Rule - and the impostor and the revoked credential both fail closed.",
+    "Every box checked: verifiable members · one governed credential · membership with teeth · reuse that pays the issuer, across the bank-exchange corridor · counterparty proof for the Travel Rule - and the outsider and the revoked credential both fail closed.",
   needs: [
     {
       id: "need-1",
@@ -474,15 +474,20 @@ export const JOURNEY: {
         {
           id: "3.8",
           stage: "3.8",
-          title: "DarkPool asks - and is never even shown",
+          title: "DarkPool is real - and still refused",
           kind: "watch",
           story:
-            "DarkPool Exchange (demo) looks like an exchange and asks for what exchanges and banks ask for: your documents. But it can present no Organization credential, no Service credential, no membership - trust resolution returns UNTRUSTED, and Alice's wallet never surfaces the request at all. The fake-exchange phishing pattern from chapter 1 dies at Q1, before any data is at risk.",
+            "DarkPool Exchange (demo) is not a fake. It is a genuine, verifiable exchange: Organization credential from Helvetia, Service credential, green check. It just never joined the Association - and that is exactly the lesson. When it asks Alice's wallet for her CEXA-Kyc credential, the wallet trust-resolves it (TRUSTED), then checks its authorization and refuses: verification of this schema is governed, and DarkPool holds no VERIFIER accreditation. And when a member's Travel Rule desk checks DarkPool as a counterparty, the check stops in red at the first line: no CEXA-VerifiedCounterparty on its DID.",
           points: [
-            "A trusted-but-unaccredited service fails just as cleanly: a member without the VERIFIER permission gets its request refused at Q3, with the wallet explaining why.",
+            "Trust is not membership, and membership is not authorization: a perfectly legitimate exchange still cannot ask for the credential or pass the counterparty check.",
+            "This fails politely and legibly: the wallet can SAY why it refused (not an accredited verifier), and the counterparty card can SHOW what is missing - far more instructive than a silent UNTRUSTED.",
           ],
           underHood: [
-            "The umbra pattern of the playground casts: DarkPool is deployed but deliberately unprovisioned. It resolving as anything but UNTRUSTED would be an incident.",
+            "The wallet-side check is [PRT-3] of the Verifiable Trust spec: verify the verifier's authorization before presenting. The counterparty check is the absence of the cexa-verified-counterparty linked VP on the DID.",
+            "DarkPool appearing in either CEXA participant tree, or publishing a CEXA-VerifiedCounterparty VP, would be a provisioning incident.",
+          ],
+          reproduce: [
+            "Run the DarkPool demo below: reveal its very real presentation request and watch your wallet refuse it - then pick DarkPool in the counterparty check and read its two red lines.",
           ],
         },
         {
@@ -771,18 +776,18 @@ export const DEMOS = {
   counterparty: {
     title: "Verify a counterparty",
     intro:
-      "The Travel Rule check, live: resolve a member's DID and read its CEXA-VerifiedCounterparty credential - licensing authority, license identifier, category, compliance contact - straight from the public registry. No account, no subscription, no fee:",
+      "The Travel Rule check, live: resolve an exchange's DID and read its CEXA-VerifiedCounterparty credential - licensing authority, license identifier, category, compliance contact - straight from the public registry. No account, no subscription, no fee. Then pick DarkPool and watch the same check come back red:",
     expect:
-      "The trust card shows the member's CEXA-VerifiedCounterparty credential issued by the Association - the neutral answer to who the counterparty is, checkable by anyone.",
+      "Members show the credential issued by the Association plus their live VERIFIER accreditation - the neutral answer to who the counterparty is. DarkPool resolves as a real company and still fails both lines: no CEXA-VerifiedCounterparty, no accreditation.",
   },
   darkpool: {
-    title: "The exchange that cannot prove anything",
+    title: "The exchange outside the Association",
     intro:
-      "DarkPool Exchange (demo) makes a very real request for your documents - from a DID that can present nothing. Your wallet must refuse at Q1, before any data is at risk:",
+      "DarkPool Exchange (demo) is a real, verifiable exchange - and it asks for your CEXA-Kyc credential anyway. Your wallet resolves it green, then refuses the share, because verification of this schema is governed and DarkPool is not an accredited verifier:",
     serviceId: "darkpool",
     credential: "cexa-kyc",
     expect:
-      "Trust resolution returns UNTRUSTED: no Organization credential, no Service credential, no membership. The request is never even surfaced.",
+      "Trust resolution returns TRUSTED - a genuine company - but the wallet finds no VERIFIER accreditation on CEXA-Kyc and blocks the share. In the counterparty check above, DarkPool shows its two red lines: no CEXA-VerifiedCounterparty, not an accredited verifier.",
   },
 };
 

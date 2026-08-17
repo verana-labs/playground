@@ -189,6 +189,31 @@ async function credDefId(
   return typeof id === "string" ? id : null;
 }
 
+/** attrNames of the AnonCreds schema backing this credential, read from the
+ *  public attested-resources endpoint of the anchor serving the VTJSC.
+ *  Schemas derived from a VTJSC include credentialSubject.id in their
+ *  attrNames, and AnonCreds offers must carry a value for EVERY schema
+ *  attribute - so the mint fills the gap (see below). Returns null when the
+ *  probe fails; the offer is then attempted with the claims as-is. */
+async function anoncredsAttrNames(jscUrl: string): Promise<string[] | null> {
+  try {
+    const host = new URL(jscUrl).host;
+    const res = await fetch(
+      `https://${host}/resources?resourceType=anonCredsSchema&relatedJsonSchemaCredentialId=${encodeURIComponent(jscUrl)}`,
+      { next: { revalidate: 3600 } },
+    );
+    if (!res.ok) return null;
+    const body = (await res.json()) as unknown;
+    const names = Array.isArray(body)
+      ? (body[0] as { content?: { attrNames?: unknown } } | undefined)?.content
+          ?.attrNames
+      : undefined;
+    return Array.isArray(names) ? names.map(String) : null;
+  } catch {
+    return null;
+  }
+}
+
 function str(body: unknown, key: string): string | null {
   if (!body || typeof body !== "object") return null;
   const value = (body as Record<string, unknown>)[key];
@@ -313,12 +338,30 @@ export async function GET(
           { error: `no ${kind.label} credential type on this issuer` },
           { status: 503 },
         );
+      // AnonCreds requires a value for every schema attribute. Schemas
+      // derived from a VTJSC carry credentialSubject.id in attrNames, which
+      // the demo claim sets do not provide (and the agent refuses empty
+      // values) - fill the gap with a per-scan subject urn. Self-healing:
+      // if the derivation ever stops including id, the probe finds nothing
+      // missing and adds nothing.
+      const claims = kind.claims(serviceId);
+      const attrNames = await anoncredsAttrNames(kind.jscUrl);
+      if (attrNames) {
+        const present = new Set(claims.map((c) => c.name));
+        for (const name of attrNames) {
+          if (!present.has(name))
+            claims.push({
+              name,
+              value: name === "id" ? `urn:uuid:${crypto.randomUUID()}` : "-",
+            });
+        }
+      }
       const offer = await adminJson(`${admin}/v1/invitation/credential-offer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           credentialDefinitionId,
-          claims: kind.claims(serviceId),
+          claims,
         }),
       });
       return NextResponse.json({

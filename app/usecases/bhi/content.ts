@@ -260,7 +260,7 @@ export const SOLUTION = {
   whoDecides: [
     "OfDIA sets and administers DVS certification.",
     "BHI governs the Recruitment Trust Network and decides what a Verified Employer is.",
-    "Orchestrating Identity, as a certified Orchestration Service Provider, onboards organisations and confirms DVS register status.",
+    "Orchestrating Identity, as a certified Orchestration Service Provider, onboards organisations, confirms DVS register status, and is accredited by the Verana Council as a qualified issuer of ECS-Organization credentials.",
     "Verana is public infrastructure with no gatekeeper: any organisation can join an ecosystem, and any group can create one.",
   ],
   whoDecidesPunch:
@@ -355,9 +355,9 @@ export const JOURNEY: {
           title: "BHI becomes verifiable and creates the Recruitment Trust Network",
           kind: "watch",
           story:
-            "BHI deploys its Business Wallet: a vs-agent on a BHI domain. A DID is generated, the identifier everything else attaches to. It proves nothing yet; it is the empty identity card. BHI then joins the Verana ECS Ecosystem and completes a Know-Your-Business exchange over DIDComm. In this demonstrator Orchestrating Identity runs that onboarding, as a provider certified under the UK DVS trust framework, and confirms DVS register status as part of it. Finally BHI publishes its governance framework (the sector standard the Standards workstream is already producing, rendered as an Ecosystem Governance Framework) and creates its registry with the two schemas from Chapter 2.",
+            "BHI deploys its Business Wallet: a vs-agent on a BHI domain. A DID is generated, the identifier everything else attaches to. It proves nothing yet; it is the empty identity card. BHI then joins the Verana ECS Ecosystem and completes a Know-Your-Business exchange over DIDComm with Orchestrating Identity. Because Orchestrating Identity is a provider certified under the UK DVS trust framework, the Verana Council has accredited it as a qualified ISSUER of the ECS-Organization credential: it does not merely run the onboarding, it verifies the organisation, confirms DVS register status, and issues the credential itself. Finally BHI publishes its governance framework (the sector standard the Standards workstream is already producing, rendered as an Ecosystem Governance Framework) and creates its registry with the two schemas from Chapter 2.",
           points: [
-            "Any certified DVS provider accredited on the ECS-Organization schema can perform the same onboarding; the route is not the point, the credential is. Build 3 shows a participant taking a different one.",
+            "DVS certification is the accreditation criterion: any provider certified under the UK DVS trust framework can be accredited by the Verana Council the same way and issue ECS-Organization credentials. The route is not the point, the credential is; build 3 shows a participant taking a different one.",
             "New in this step: BHI's DID is born, the check turns green, and the Recruitment Trust Network exists.",
           ],
           reproduce: [
@@ -369,7 +369,7 @@ export const JOURNEY: {
           ],
           underHood: [
             "The vs-agent generates the DID (did:webvh recommended) and publishes its DID Document with a DIDComm endpoint.",
-            "Joining creates a HOLDER Participant entry on the Organization schema; the validating issuer sets it to VALIDATED and it becomes ACTIVE in the public tree.",
+            "Orchestrating Identity holds an ISSUER Participant entry on the ECS-Organization schema, granted under the ECS Ecosystem governed by the Verana Council; its UK DVS certification is the accreditation criterion. Joining creates a HOLDER Participant entry on the same schema; the validating issuer sets it to VALIDATED and it becomes ACTIVE in the public tree.",
             "Ecosystem creation is three transactions: Create New Ecosystem (with the EGF document) → Create New Credential Schema → Create Root Participant.",
           ],
         },

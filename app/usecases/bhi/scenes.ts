@@ -139,7 +139,7 @@ const NODES: SceneNode[] = [
     appears: "3.1",
     noteAlways: true,
     label: "Verana ECS Ecosystem",
-    sub: "organisation and service credentials",
+    sub: "governed by the Verana Council",
   },
   {
     id: "dvsEco",
@@ -246,7 +246,7 @@ const EDGES: SceneEdge[] = [
   { id: "e-jobsearch-meridian-today", from: "jobsearch", to: "meridian", appears: "3.0", until: "3.5", label: "asserted CVs, verified from scratch", tone: "gray", dashed: true, curve: -25, labelT: 0.5 },
   { id: "e-alex-halcyon", from: "alex", to: "halcyon", appears: "3.0", until: "3.6", label: "passport scan into a scammer's inbox", tone: "red", dashed: true, curve: 20, labelT: 0.5 },
   // 3.1 - BHI's identity + its ecosystem
-  { id: "e-ecs-oid", from: "ecs", to: "oid", appears: "3.1", label: "accredited ECS-Org issuer", tone: "violet", labelT: 0.5 },
+  { id: "e-ecs-oid", from: "ecs", to: "oid", appears: "3.1", label: "accredits as ECS-Org issuer (DVS-certified)", tone: "violet", labelT: 0.4 },
   { id: "e-dvseco-oid", from: "dvsEco", to: "oid", appears: "3.1", label: "certified provider (grantor)", tone: "emerald", curve: 20, labelT: 0.55 },
   { id: "e-oid-bhi", from: "oid", to: "bhi", appears: "3.1", label: "KYB + DVS register check: ECS-Org", tone: "emerald", curve: -20, labelT: 0.5 },
   { id: "e-bhi-rtn", from: "bhi", to: "rtn", appears: "3.1", label: "creates and governs (EGF published)", tone: "blue", curve: -20, labelT: 0.78 },
@@ -445,7 +445,7 @@ export const BHI_SCENES: SceneGraph = {
       {
         role: "ISSUER",
         schema: "ECS-Organization",
-        context: "Verana ECS Ecosystem",
+        context: "Verana ECS Ecosystem (accredited by the Verana Council; criterion: UK DVS certification)",
         appears: "3.1",
       },
       {
@@ -459,7 +459,7 @@ export const BHI_SCENES: SceneGraph = {
       {
         role: "ISSUER",
         schema: "ECS-Organization",
-        context: "Verana ECS Ecosystem",
+        context: "Verana ECS Ecosystem (accredited by the Verana Council; criterion: UK DVS certification)",
         appears: "3.3",
       },
     ],
@@ -509,7 +509,7 @@ export const BHI_SCENES: SceneGraph = {
     ],
   },
   nodeNotes: {
-    ecs: "Verana's shared ecosystem of organisation and service credentials: one KYB, and an organisation's identity is provable everywhere.",
+    ecs: "Verana's shared ecosystem of organisation and service credentials, governed by the Verana Council, which accredits qualified issuers (here: providers certified under the UK DVS trust framework). One KYB, and an organisation's identity is provable everywhere.",
     dvsEco:
       "Operated by Orchestrating Identity. Mirrors OfDIA's DVS register (it does not constitute it, and is neither operated by nor endorsed by OfDIA): eligibility is register status and nothing else, and a provider that leaves the register has its Participant entry revoked. Its governance framework admits other certified OSPs as grantors.",
     rtn: "BHI's own ecosystem, built narrowly on purpose: Recognised RecTech Provider (issued by BHI) and Verified Employer (issued by certified DVS grantors). Both verification-OPEN. BHI accredits who may ask, not who may issue.",

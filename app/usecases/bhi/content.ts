@@ -15,19 +15,17 @@
 // PENDING - information we are waiting on before publication (tracked in
 // the source's build notes; to be confirmed with Orchestrating Identity):
 //
-//  1. [QUOTE] Keith Rosser (Chair, BHI Advisory Board) - chapter 1 quote
-//     not yet approved. A placeholder card renders instead; the approved
-//     text drops into INSTITUTE.quote.text below.
-//  2. [QUOTE] David Rennie (ARTP Digital Identity lead and Chief Trust
-//     Officer, Orchestrating Identity) - chapter 2 quote not yet
-//     approved. Same treatment: SOLUTION.quote.text.
-//  3. [SCOPE] Orchestrating Identity's exact DVS certification scope is
+//  1. [QUOTE] Both quote texts were provided by David Rennie on
+//     2026-08-18 and are rendered below with an "awaiting final
+//     approval" chip until Keith Rosser signs them off; flip
+//     awaitingApproval to false once confirmed.
+//  2. [SCOPE] Orchestrating Identity's exact DVS certification scope is
 //     to be confirmed in writing; copy says "certified under the UK DVS
 //     trust framework" without enumerating roles until then.
-//  4. [AGREEMENT] Nothing referencing the Orchestrating Identity-Verana
+//  3. [AGREEMENT] Nothing referencing the Orchestrating Identity-Verana
 //     relationship may be published before the agreement is signed. The
 //     whole use case is therefore unlisted + noindex for now.
-//  5. [CAST] The deployment inventory (which participants get live
+//  4. [CAST] The deployment inventory (which participants get live
 //     vs-agents, hosts, demo claim sets) has not been provided; chapter 4
 //     demos render as "coming soon" until the cast ships.
 // ---------------------------------------------------------------------
@@ -157,36 +155,28 @@ export const INSTITUTE = {
   rootCause:
     "A real job ad and a scam job ad look exactly the same. A real degree and a claimed degree look exactly the same. On both sides of the hire, nothing can be proven.",
 
-  // PENDING [QUOTE 1]: text awaits Keith Rosser's approval. Until then the
-  // section renders a placeholder card with attribution only. (The source
-  // suggests the substance: hiring is the last major life transaction still
-  // run on emailed PDFs; the technology to fix it now exists; the sector
-  // needs one shared trust layer rather than thirty-six incompatible ones.
-  // We deliberately do NOT render unapproved words as a quote.)
+  // PENDING [QUOTE]: text provided by David Rennie (2026-08-18), verbatim;
+  // rendered with an "awaiting final approval" chip until Keith signs off.
   quote: {
-    text: null as string | null,
+    text: "The Better Hiring Institute aims to bring together providers of hiring technology to champion faster, fairer and safer hiring in the UK through its Association of RecTech Providers." as string | null,
     author: "Keith Rosser",
     title: "Chair of the BHI Advisory Board",
-    pendingNote: "Quote pending approval: awaiting sign-off from BHI.",
+    awaitingApproval: true,
+    pendingNote: "Awaiting final approval.",
   },
 };
 
 // ---------------------------- §2 · The solution: become verifiable
 
 export const SOLUTION = {
-  // PENDING [QUOTE 2]: text awaits David Rennie's approval; placeholder
-  // card renders meanwhile. (Suggested substance in the source: open-source
-  // personal and business wallets now exist; public trust infrastructure
-  // now exists; the UK now has a statutory framework for digital
-  // verification services. What has been missing is a way to connect them
-  // for hiring.)
+  // PENDING [QUOTE]: text provided by David Rennie (2026-08-18), verbatim;
+  // rendered with an "awaiting final approval" chip until Keith signs off.
   quote: {
-    text: null as string | null,
+    text: "The technology to make hiring safer and more efficient exists today. We need initiatives like the Better Hiring Institute to define and agree open standards so that RecTech Providers can test and implement new hiring solutions." as string | null,
     author: "David Rennie",
-    title:
-      "ARTP Digital Identity lead and Chief Trust Officer, Orchestrating Identity",
-    pendingNote:
-      "Quote pending approval: awaiting sign-off from Orchestrating Identity.",
+    title: "Orchestrating Identity and ARTP Digital Identity Working Group lead",
+    awaitingApproval: true,
+    pendingNote: "Awaiting final approval.",
   },
 
   needsTitle: "What BHI needs",
@@ -316,11 +306,6 @@ export const SOLUTION = {
     },
   ],
 
-  designTitle: "The design decision that keeps this defensible",
-  design: [
-    "BHI accredits who may ask, not who may issue. A job board holding a Recognised RecTech Provider credential is what qualifies it to request a candidate's right-to-work status, but the credential itself is issued by a certified DVS provider under the Home Office's rules, and BHI has no hand in it.",
-    "This keeps the build small, keeps BHI inside its actual authority, and avoids the sector body appearing to arbitrate government-derived attributes.",
-  ],
   why: "Why BHI builds it: sector integrity as a structural property. Real employers and recognised providers turn green, fake job ads and unrecognised providers turn red, and a member that goes rogue can be revoked. What the sector consumed, the sector now provides.",
 };
 

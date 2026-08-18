@@ -46,11 +46,9 @@ const PROBLEM_ICONS: Record<string, React.ComponentType<{ className?: string }>>
   search: Search,
 };
 
-/** Placeholder for a quote whose text has not been approved yet.
- *  PENDING [QUOTE]: renders attribution + a pending chip only - we
- *  deliberately never render unapproved words as a quote. The approved
- *  text drops into content.ts (quote.text) and this card switches to the
- *  real quote automatically. */
+/** Quote card. While a quote awaits final sign-off (PENDING [QUOTE] in
+ *  content.ts), an "awaiting final approval" chip renders alongside it;
+ *  with no text at all, only attribution + a pending chip renders. */
 function QuoteCard({
   quote,
 }: {
@@ -58,6 +56,7 @@ function QuoteCard({
     text: string | null;
     author: string;
     title: string;
+    awaitingApproval?: boolean;
     pendingNote: string;
   };
 }) {
@@ -67,10 +66,15 @@ function QuoteCard({
         <blockquote className="text-lg font-medium leading-relaxed text-gray-800">
           “{quote.text}”
         </blockquote>
-        <figcaption className="mt-4 text-sm text-gray-500">
-          <span className="font-semibold text-gray-700">{quote.author}</span>
-          {" · "}
-          {quote.title}
+        <figcaption className="mt-4 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+          <span>
+            <span className="font-semibold text-gray-700">{quote.author}</span>
+            {" · "}
+            {quote.title}
+          </span>
+          {quote.awaitingApproval ? (
+            <Chip tone="pending">awaiting final approval</Chip>
+          ) : null}
         </figcaption>
       </figure>
     );
@@ -444,21 +448,6 @@ export function Section2() {
                   <h3 className="font-bold text-gray-900">{r.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-gray-600">{r.desc}</p>
                 </div>
-              ))}
-            </div>
-          </div>
-
-          {/* The design decision */}
-          <div className="mt-10 rounded-2xl border border-violet-200 bg-violet-50/50 p-6">
-            <h3 className="flex items-center gap-2 text-sm font-bold uppercase tracking-wide text-gray-900">
-              <ShieldCheck className="h-4 w-4 text-violet-600" aria-hidden />
-              {SOLUTION.designTitle}
-            </h3>
-            <div className="mt-3 space-y-3">
-              {SOLUTION.design.map((d) => (
-                <p key={d} className="text-sm leading-relaxed text-gray-700">
-                  {d}
-                </p>
               ))}
             </div>
           </div>

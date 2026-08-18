@@ -125,7 +125,7 @@ wallets:
     download: https://github.com/AirKyzzZ/eudi-app-android-wallet/releases/download/authbound-verana-2026-08-08/authbound-wallet-verana-2026-08-08.apk
     website: https://authbound.io
     repo: https://github.com/Authbound/eudi-app-android-wallet
-    fork: https://github.com/verana-labs/eudi-app-android-wallet-ui
+    fork: https://github.com/AirKyzzZ/eudi-app-android-wallet/tree/feat/verana-trust-authbound
     license: EUPL-1.2
     notes: Authbound's consumer wallet, a product fork of the EUDI reference app with its own onboarding, carrying the Verana trust card on both consent screens with every accept or share gated on Q1 + Q2/Q3 against the live registry.
     captures:

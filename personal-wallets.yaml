@@ -384,29 +384,43 @@ wallets:
   - id: swiyu
     name: swiyu Wallet
     vendor: Swiss Confederation (swiyu open source)
-    hidden: true
     icon: ./swiyu/logo.webp
     formats: [openid4vc-sdjwt]
     demoParams: signer=x5c
-    download: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-07-26/swiyu-verana-fabrice-arm64-debug.apk
+    download: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-08-17/swiyu-verana-arm64-debug.apk
     website: https://www.eid.admin.ch
     repo: https://github.com/swiyu-admin-ch/eidch-android-wallet
+    fork: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/tree/feat/verana-trust-integration
     license: MIT
-    notes: Strict Q1+Q2 before acceptance, device-verified, with a full evidence dossier.
+    notes: The Swiss federal wallet. Q1 and Q2/Q3 are resolved before the accept action on both the offer and the presentation surface, and the wallet keeps its own ecosystem warning alongside the Verana card, so the two trust systems are visible side by side. Presentation runs on the x5c rail, where the request object is authenticated by its certificate thumbprint.
     captures:
       issue-accredited:
-        src: ./swiyu/screenshots/3.webp
-        caption: Credential stored once the checks passed
-      issue-unaccredited:
         src: ./swiyu/screenshots/1.webp
-        caption: Verana warning before the accept action
-      present-accredited:
+        clip: ./swiyu/clips/1-issuer-accredited.mp4
+        caption: "Accredited issuer: identity verified, authorized for this credential, and the credential lands in the wallet"
+      issue-unaccredited:
         src: ./swiyu/screenshots/2.webp
-        caption: "Q2: the authorized-issuer check"
+        clip: ./swiyu/clips/2-issuer-unaccredited.mp4
+        caption: Identity verified but not accredited to issue this credential, so add is blocked
+      issue-untrusted:
+        src: ./swiyu/screenshots/3.webp
+        clip: ./swiyu/clips/3-issuer-untrusted.mp4
+        caption: "Untrusted issuer: the registry does not vouch for it, its self-issued claims are withheld and add is blocked"
+      present-accredited:
+        src: ./swiyu/screenshots/4.webp
+        clip: ./swiyu/clips/4-verifier-accredited.mp4
+        caption: "Accredited verifier: authorized to request this credential, and the data is transmitted"
+      present-unaccredited:
+        src: ./swiyu/screenshots/5.webp
+        clip: ./swiyu/clips/5-verifier-unaccredited.mp4
+        caption: Identity verified but not accredited to request this credential, so sharing is blocked
+      present-untrusted:
+        src: ./swiyu/screenshots/6.webp
+        clip: ./swiyu/clips/6-verifier-untrusted.mp4
+        caption: "Untrusted verifier: the registry does not vouch for it, claims withheld and sharing blocked"
     video:
       src: ./swiyu/demo.mp4
-      note: Real device, human-paced. Silent.
-
+      note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end at 3x speed, silent, otherwise unedited.
   - id: talao
     name: Altme Wallet
     vendor: Talao

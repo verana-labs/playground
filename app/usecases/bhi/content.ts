@@ -28,9 +28,10 @@
 //  4. [CAST] The deployment inventory (which participants get live
 //     vs-agents, hosts) has not been provided; chapter 4 demos render as
 //     "coming soon" until the cast ships. Draft claim sets were received
-//     on 2026-08-19 (see SCHEMAS): modelling repeating employments and
-//     multiple qualifications as one credential each awaits partner
-//     confirmation, as does the employment-reference issuer.
+//     on 2026-08-19 and revised per partner review on 2026-08-20 (see
+//     SCHEMAS): three schema families, per-credential repeating
+//     confirmed, employment reference dropped. BHI formally defines each
+//     schema via a template David Rennie is preparing.
 // ---------------------------------------------------------------------
 
 import type { Stage } from "./scenes";
@@ -81,9 +82,9 @@ export const INSTITUTE = {
     { name: "Northgate Screening (demo)", role: "Screening provider, not certified", status: "demo" },
     { name: "Orchestrating Identity", role: "Certified Orchestration Service Provider; onboards organisations onto the network", status: "real" },
     { name: "Trustworthy Verification Services (demo)", role: "A second certified DVS provider, acting as an alternative grantor", status: "demo" },
-    { name: "Caledonian University (demo)", role: "Awarding body: issues the degree credential", status: "demo" },
-    { name: "Northbank Identity (demo)", role: "Certified DVS provider: issues right-to-work and employment-history credentials", status: "demo" },
-    { name: "Cirrus Certification (demo)", role: "Cloud certification body: issues the professional certification", status: "demo" },
+    { name: "Caledonian University (demo)", role: "Awarding body: issues the degree, a Qualification credential", status: "demo" },
+    { name: "Northbank Identity (demo)", role: "Certified DVS provider: issues the right-to-work and employment credentials", status: "demo" },
+    { name: "Cirrus Certification (demo)", role: "Cloud certification body: issues the professional certification, a Qualification credential", status: "demo" },
     { name: "HMRC", role: "Data source for employment history, accessed under the Data (Use and Access) Act 2025 information gateway. Not an issuer.", status: "real" },
   ] as { name: string; role: string; status: "real" | "demo" | "antagonist" }[],
 
@@ -417,7 +418,7 @@ export const JOURNEY: {
             "JobSearch (demo) needs two things: its own verifiable identity (ECS-Organization plus ECS-Service), and a VERIFIER Participant entry on each candidate credential schema it intends to request. As an ARTP member it also holds a Recognised RecTech Provider credential. And here is the step that shows the network is open: JobSearch does not use Orchestrating Identity. It already has a commercial relationship with Trustworthy Verification Services (demo), another certified DVS provider. So Trustworthy Verification Services is established as a verifier grantor in the network, and JobSearch is onboarded by them instead. Same schemas, same rules, same verdict in the candidate's wallet: nothing about the trust the candidate sees depends on which provider did the onboarding.",
           points: [
             "When the candidate scans the QR code, the wallet does not see “a website”. It sees a DID presenting ECS-Service, controlled by an organisation presenting ECS-Organization and Recognised RecTech Provider, holding verifier entries for exactly the credentials it is asking for.",
-            "Its verifier policy accepts qualification credentials from issuers accredited on the Qualification schema, right-to-work credentials from certified DVS issuers, and employment-reference credentials from accredited issuers.",
+            "Its verifier policy accepts Qualification credentials from issuers accredited on the Qualification schema, and right-to-work and Employment credentials from certified DVS issuers.",
           ],
           reproduce: [
             "Deploy a vs-agent for the credential-request service; issue it an ECS-Service credential from the organisation anchor and link it.",
@@ -436,17 +437,17 @@ export const JOURNEY: {
       id: "need-4",
       n: 4,
       title: "The candidate's wallet",
-      tag: "four issuers, four ecosystems",
+      tag: "three schema families, one wallet",
       intro:
-        "Alex's four credentials arrive from four different issuers, in four different ecosystems, over DIDComm, and sit in one wallet.",
+        "Alex's credentials arrive from three different issuers, over DIDComm, and sit in one wallet: qualifications, employments, and right to work.",
       steps: [
         {
           id: "s-3-4",
           stage: "3.4",
-          title: "Four credentials, none of them issued by BHI",
+          title: "Qualifications, employments and right to work, none issued by BHI",
           kind: "watch",
           story:
-            "The BSc comes from Caledonian University (demo). The employment history and the right-to-work credential come from Northbank Identity (demo), a certified DVS provider. The professional certification comes from Cirrus Certification (demo). Every one of these is issued by somebody else: BHI issues none of them, and that is the point. The Recruitment Trust Network governs the hiring side and consumes the rest. Each credential is issued to Alex's DID, held by Alex, revocable by its issuer, and, critically, not held by any employer.",
+            "The BSc and the professional cloud certification are both Qualification credentials: one from Caledonian University (demo), one from Cirrus Certification (demo). Qualifications repeat naturally, one credential per award, from any number of institutions. The Employment credentials (one per employment relationship, including any current ones) and the single right-to-work credential come from Northbank Identity (demo), a certified DVS provider. Every one of these is issued by somebody else: BHI issues none of them, and that is the point. The Recruitment Trust Network governs the hiring side and consumes the rest. Each credential is issued to Alex's DID, held by Alex, revocable by its issuer, and, critically, not held by any employer.",
           points: [
             "Where the employment credential actually comes from: this is the one credential in the demonstration with a real statutory route behind it. The Data (Use and Access) Act 2025 created an information gateway through which a certified DVS provider can request data from HMRC on behalf of a citizen. HMRC already holds the payroll history that establishes where someone has worked and when.",
             "So the issuer is the DVS provider, and HMRC is the data source. That distinction matters: HMRC has not agreed to become a credential issuer and is not being represented as one. What the demonstration shows is a credential built on a data route that already exists in law, which is why this part of the model requires a request to HMRC rather than a change to it.",
@@ -472,7 +473,7 @@ export const JOURNEY: {
           title: "From search to submitted, in one sitting",
           kind: "watch",
           story:
-            "The board filters listings to employers presenting a Verified Employer credential, and the job detail page declares up front which credentials will be requested: the four schemas the verifier holds VERIFIER entries for. Alex scans the QR: a DIDComm out-of-band invitation, and the wallet resolves the requesting DID. Then the step the wireframes did not have: the Proof-of-Trust card. Who is asking, what credentials they present, who certified them, shown before anything is shared. Alex selects credentials (selective disclosure: per credential, and per attribute), unlocks the wallet, and the presentation travels over DIDComm. The verifier checks signature, revocation status, and the issuer's registry entry. Confirmed: 4 of 4 verified, reference number, and the activity log is the audit trail.",
+            "The board filters listings to employers presenting a Verified Employer credential, and the job detail page declares up front which credentials will be requested: the schemas the verifier holds VERIFIER entries for. Alex scans the QR: a DIDComm out-of-band invitation, and the wallet resolves the requesting DID. Then the step the wireframes did not have: the Proof-of-Trust card. Who is asking, what credentials they present, who certified them, shown before anything is shared. Alex selects credentials (selective disclosure: per credential, and per attribute), unlocks the wallet, and the presentation travels over DIDComm. The verifier checks signature, revocation status, and the issuer's registry entry. Confirmed: 4 of 4 verified, reference number, and the activity log is the audit trail.",
           points: [
             "Elapsed time in the wireframe: 9:41 to 9:44. Elapsed time today: two to six weeks.",
           ],
@@ -512,44 +513,25 @@ export const JOURNEY: {
 
 /** The proposed claims of the candidate credentials, rendered under
  *  journey build 4 for review. Field names as supplied; DRAFT until the
- *  schemas are created on the testnet. Modelling: credentials carry flat
- *  claim sets, so lists repeat as credentials, not as fields - one
- *  credential per employment and per qualification (the partner's
- *  preferred repeating behaviour, without capped optional slots). */
+ *  schemas are created on the testnet. Partner review 2026-08-20: three
+ *  schema families - Qualification (many per wallet: degrees and
+ *  professional certifications alike), Employment (one per employment,
+ *  one or more current employments possible), Right to Work (exactly
+ *  one). The Employment reference schema was dropped as redundant (in
+ *  the UK the reference letter is highly formulated). PENDING: BHI will
+ *  formally define each schema via a template David Rennie is preparing
+ *  (covering more than data formats). */
 export const SCHEMAS = {
   title: "The draft claim sets",
   intro:
-    "The proposed claims of the candidate credentials, for review. Field names and formats are finalised when the schemas are created on the testnet.",
+    "The proposed claims of the three schema families, for review. Field names and formats are finalised when BHI defines each schema (a definition template is in preparation) and the schemas are created on the testnet.",
   modelNote:
-    "Modelling note: a verifiable credential carries a flat claim set, so lists repeat as credentials, not as fields inside one credential. Each employment and each qualification is issued as its own credential, and the wallet accumulates them: employments until the record reaches back five years, qualifications from any number of institutions.",
+    "Modelling note: a verifiable credential carries a flat claim set, so lists repeat as credentials, not as fields inside one credential. Each employment and each qualification is issued as its own credential, and the wallet accumulates them: employments until the record reaches back five years (with one or more current employments), qualifications from any number of institutions. Right to work is a single credential. An employment-reference schema was considered and dropped as redundant.",
   items: [
     {
-      name: "Right to Work",
-      issuer: "Northbank Identity (demo), certified DVS issuer",
-      claims: [
-        { k: "First name" },
-        { k: "Surname" },
-        { k: "Date of birth" },
-        { k: "Photograph" },
-        { k: "Nationality" },
-        { k: "Date right to work was established" },
-        { k: "Right-to-work expiry date", optional: true },
-      ],
-    },
-    {
-      name: "Employment",
-      issuer: "Northbank Identity (demo), from HMRC payroll records",
-      note: "One credential per employment relationship; the five-year history is the set of these in the wallet, repeating until the record reaches back five years.",
-      claims: [
-        { k: "Employer" },
-        { k: "Start date" },
-        { k: "End date", optional: true },
-      ],
-    },
-    {
       name: "Qualification",
-      issuer: "the awarding body, e.g. Caledonian University (demo)",
-      note: "One credential per qualification: qualifications from different institutions co-exist naturally, each issued by its own institution.",
+      issuer: "the awarding body: Caledonian University (demo) for the degree, Cirrus Certification (demo) for the professional certification",
+      note: "One credential per qualification, degrees and professional certifications alike: many Qualification credentials co-exist in the wallet, each issued by its own institution.",
       claims: [
         { k: "Issuing educational establishment" },
         { k: "Date awarded" },
@@ -559,14 +541,27 @@ export const SCHEMAS = {
       ],
     },
     {
-      name: "Employment reference",
-      issuer: "the referee employer (issuer to be confirmed)",
+      name: "Employment",
+      issuer: "Northbank Identity (demo), from HMRC payroll records",
+      note: "One credential per employment relationship; the five-year history is the set of these in the wallet, repeating until the record reaches back five years. End date is absent for a current employment, and one or more current employments can co-exist.",
       claims: [
-        { k: "Employer name" },
-        { k: "Role performed" },
-        { k: "Date started" },
-        { k: "Date finished" },
-        { k: "Reference comments" },
+        { k: "Employer" },
+        { k: "Start date" },
+        { k: "End date", optional: true },
+      ],
+    },
+    {
+      name: "Right to Work",
+      issuer: "Northbank Identity (demo), certified DVS issuer",
+      note: "Exactly one credential per person.",
+      claims: [
+        { k: "First name" },
+        { k: "Surname" },
+        { k: "Date of birth" },
+        { k: "Photograph" },
+        { k: "Nationality" },
+        { k: "Date right to work was established" },
+        { k: "Right-to-work expiry date", optional: true },
       ],
     },
   ],
@@ -598,7 +593,7 @@ export const DEMOS = {
     {
       id: "demo-credentials",
       title: "Demo 1 · Receive your credentials",
-      desc: "Request the four demo credentials and watch your wallet check each issuer's accreditation before offering to accept.",
+      desc: "Request the demo credentials and watch your wallet check each issuer's accreditation before offering to accept.",
     },
     {
       id: "demo-apply",

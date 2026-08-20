@@ -96,7 +96,7 @@ const NODES: SceneNode[] = [
     sub: "four proofs, no way to prove them",
     toneByStage: { "3.4": "emerald" },
     labelByStage: {
-      "3.4": { sub: "four credentials, one wallet" },
+      "3.4": { sub: "every proof as a credential, one wallet" },
     },
   },
   // ---- the red world
@@ -200,7 +200,7 @@ const NODES: SceneNode[] = [
     tone: "emerald",
     appears: "3.4",
     label: "Caledonian University (demo)",
-    sub: "awarding body: the degree credential",
+    sub: "awarding body: Qualification credentials",
     verifiedAt: "3.4",
   },
   {
@@ -222,7 +222,7 @@ const NODES: SceneNode[] = [
     tone: "emerald",
     appears: "3.4",
     label: "Cirrus Certification (demo)",
-    sub: "professional cloud certification",
+    sub: "Qualification issuer (cloud certification)",
     verifiedAt: "3.4",
   },
   {
@@ -264,7 +264,7 @@ const EDGES: SceneEdge[] = [
   { id: "e-hmrc-northbank", from: "hmrc", to: "northbank", appears: "3.4", label: "payroll data (DUAA 2025 gateway)", tone: "gray", dashed: true, width: 0.7, curve: -30, labelT: 0.28 },
   // 3.5 - the application
   { id: "e-alex-jobsearch-vp", from: "alex", to: "jobsearch", appears: "3.5", label: "selective disclosure", tone: "emerald", curve: 25, labelT: 0.5 },
-  { id: "e-jobsearch-meridian-vp", from: "jobsearch", to: "meridian", appears: "3.5", label: "verified presentation: 4 of 4", tone: "emerald", curve: -25, labelT: 0.5 },
+  { id: "e-jobsearch-meridian-vp", from: "jobsearch", to: "meridian", appears: "3.5", label: "verified presentation", tone: "emerald", curve: -25, labelT: 0.5 },
   // 3.6 - the impostors
   { id: "e-alex-halcyon-refused", from: "alex", to: "halcyon", appears: "3.6", label: "wallet refuses: no Verified Employer", tone: "red", dashed: true, curve: 20, labelT: 0.5 },
 ];
@@ -275,7 +275,7 @@ const BADGES: SceneBadge[] = [
   { id: "b-ve", node: "meridian", dx: 0, dy: -40, text: "Verified Employer", tone: "emerald", appears: "3.2" },
   { id: "b-rrp", node: "jobsearch", dx: 0, dy: -40, text: "Recognised RecTech Provider", tone: "emerald", appears: "3.3" },
   { id: "b-verifier", node: "jobsearch", dx: 52, dy: -18, text: "VERIFIER", tone: "blue", appears: "3.3" },
-  { id: "b-4of4", node: "alex", dx: 0, dy: -40, text: "4 of 4 verified", tone: "emerald", appears: "3.5" },
+  { id: "b-4of4", node: "alex", dx: 0, dy: -40, text: "all credentials verified", tone: "emerald", appears: "3.5" },
   { id: "b-halcyon-refused", node: "halcyon", dx: 0, dy: -40, text: "wrong network", tone: "red", appears: "3.6" },
   { id: "b-northgate", node: "northgate", dx: 0, dy: -40, text: "not recognised", tone: "red", appears: "3.6" },
 ];
@@ -392,10 +392,10 @@ export const BHI_SCENES: SceneGraph = {
         appears: "3.4",
       },
       {
-        name: "Employment history: 3 employers, 5 years",
+        name: "Employment (one per employment, 3 in the wallet)",
         tone: "blue",
         issuedBy: "Northbank Identity (demo), from HMRC payroll records",
-        ecosystem: "Employment Reference (external)",
+        ecosystem: "Employment (external)",
         appears: "3.4",
         note: "The issuer is the DVS provider; HMRC is the data source under the DUAA 2025 information gateway. HMRC is not an issuer.",
       },
@@ -407,10 +407,10 @@ export const BHI_SCENES: SceneGraph = {
         appears: "3.4",
       },
       {
-        name: "Professional cloud certification",
+        name: "Professional cloud certification (a Qualification)",
         tone: "amber",
         issuedBy: "Cirrus Certification (demo)",
-        ecosystem: "Professional Certification (external)",
+        ecosystem: "Qualification (external)",
         appears: "3.4",
       },
     ],
@@ -478,8 +478,8 @@ export const BHI_SCENES: SceneGraph = {
       },
       {
         role: "VERIFIER",
-        schema: "Employment Reference",
-        context: "Employment Reference ecosystem (external)",
+        schema: "Employment",
+        context: "Employment ecosystem (external)",
         appears: "3.3",
       },
     ],
@@ -502,8 +502,8 @@ export const BHI_SCENES: SceneGraph = {
     cirrus: [
       {
         role: "ISSUER",
-        schema: "Professional Certification",
-        context: "Professional Certification ecosystem (external)",
+        schema: "Qualification",
+        context: "Qualification ecosystem (external)",
         appears: "3.4",
       },
     ],
@@ -562,7 +562,7 @@ export const BHI_SCENES: SceneGraph = {
     },
     "3.4": {
       nodes: ["alex"],
-      note: "four credentials from four issuers, none of them issued by BHI",
+      note: "qualifications, employments and right to work, none issued by BHI",
     },
     "3.5": {
       nodes: ["alex", "meridian"],

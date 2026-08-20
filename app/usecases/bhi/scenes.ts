@@ -494,7 +494,7 @@ export const BHI_SCENES: SceneGraph = {
     northbank: [
       {
         role: "ISSUER",
-        schema: "Right to Work · Employment Reference",
+        schema: "Right to Work · Employment",
         context: "certified DVS issuer",
         appears: "3.4",
       },

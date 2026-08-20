@@ -30,9 +30,15 @@ export default function BhiChapter1() {
             ]}
           />
           <h1 className="mt-6 max-w-3xl text-4xl font-bold md:text-5xl">
-            Learn with BHI how to make hiring verifiable, end to end
+            Learn with Better Hiring Institute how to make hiring verifiable,
+            end to end
           </h1>
           <p className="mt-5 max-w-2xl text-lg text-white/80">
+            The Better Hiring Institute (BHI) are working with government and
+            industry to fundamentally overhaul the way hiring is done in the
+            UK.
+          </p>
+          <p className="mt-3 max-w-2xl text-lg text-white/80">
             Follow a single job application from search to offer: a candidate,
             an employer, a job board and a screening provider. See what breaks
             today, what changes when every party can be verified, and how to

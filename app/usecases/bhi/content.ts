@@ -26,8 +26,11 @@
 //     relationship may be published before the agreement is signed. The
 //     whole use case is therefore unlisted + noindex for now.
 //  4. [CAST] The deployment inventory (which participants get live
-//     vs-agents, hosts, demo claim sets) has not been provided; chapter 4
-//     demos render as "coming soon" until the cast ships.
+//     vs-agents, hosts) has not been provided; chapter 4 demos render as
+//     "coming soon" until the cast ships. Draft claim sets were received
+//     on 2026-08-19 (see SCHEMAS): modelling repeating employments and
+//     multiple qualifications as one credential each awaits partner
+//     confirmation, as does the employment-reference issuer.
 // ---------------------------------------------------------------------
 
 import type { Stage } from "./scenes";
@@ -55,11 +58,13 @@ export const INSTITUTE = {
   meta: [
     "A brand of the Modern Work Foundation CIC (104403)",
     "~15,000 employer members",
-    "ARTP: the Association of RecTech Providers, 36+ UK members",
-    "Works with the Home Office, DBS, DSIT, Disclosure Scotland and the ICO",
+    "ARTP: the Association of RecTech Providers, 50+ UK members",
+    "Works with the Home Office, DBS, the Department for Business, Innovation, Science and Trade, Disclosure Scotland and the ICO",
   ],
   intro:
-    "BHI convenes both sides of the hiring market: the employers who buy hiring technology and, through ARTP, the providers who build it. That is the position from which a sector-wide trust network can credibly be governed: by the body that already sets the standard, rather than by any one vendor within it.",
+    "BHI convenes both sides of the hiring market: the employers who buy hiring technology and, through ARTP, the 50+ providers who build it. That is the position from which a sector-wide trust network can credibly be governed: by the body that already sets the standard, rather than by any one vendor within it.",
+  introJobsAware:
+    "The BHI's sister company, JobsAware, works with work seekers and workers, meaning the voices of employers, providers, government, workers, and work seekers come together in one place.",
   artpNote:
     "ARTP workstreams: Standards · Right to Work · Criminal Background Checks · Digital Identity · Digital Wallets and Credentials.",
 
@@ -130,9 +135,12 @@ export const INSTITUTE = {
           desc: "Every hire funds a fresh round of reference chasing and certificate checking: the same facts, verified again.",
         },
         {
-          icon: "stamp",
-          title: "Manual right to work",
-          desc: "Document inspection is slow, inconsistent, and carries statutory-excuse risk when it goes wrong.",
+          // Partner review 2026-08-19: replaced the "Manual right to work"
+          // box. Wording as supplied, with one grammar fix ("They can
+          // significant risk" read as "They carry significant risk").
+          icon: "clock",
+          title: "Time to hire",
+          desc: "Background checks are slow, delaying when people can start work. They carry significant risk when they go wrong.",
         },
       ],
     },
@@ -143,6 +151,11 @@ export const INSTITUTE = {
           icon: "ghost",
           title: "Fake job ads and fake recruiters",
           desc: "A recruitment scam and a real application look identical: both are a form on a website asking for your passport.",
+        },
+        {
+          icon: "gauge",
+          title: "Productivity",
+          desc: "In the age of mass job applications, current processes are time consuming, inefficient and high risk.",
         },
         {
           icon: "search",
@@ -493,6 +506,80 @@ export const JOURNEY: {
       ],
     },
   ],
+};
+
+// ------------- Draft claim sets (partner proposal, 2026-08-19)
+
+/** The proposed claims of the candidate credentials, rendered under
+ *  journey build 4 for review. Field names as supplied; DRAFT until the
+ *  schemas are created on the testnet. Modelling: credentials carry flat
+ *  claim sets, so lists repeat as credentials, not as fields - one
+ *  credential per employment and per qualification (the partner's
+ *  preferred repeating behaviour, without capped optional slots). */
+export const SCHEMAS = {
+  title: "The draft claim sets",
+  intro:
+    "The proposed claims of the candidate credentials, for review. Field names and formats are finalised when the schemas are created on the testnet.",
+  modelNote:
+    "Modelling note: a verifiable credential carries a flat claim set, so lists repeat as credentials, not as fields inside one credential. Each employment and each qualification is issued as its own credential, and the wallet accumulates them: employments until the record reaches back five years, qualifications from any number of institutions.",
+  items: [
+    {
+      name: "Right to Work",
+      issuer: "Northbank Identity (demo), certified DVS issuer",
+      claims: [
+        { k: "First name" },
+        { k: "Surname" },
+        { k: "Date of birth" },
+        { k: "Photograph" },
+        { k: "Nationality" },
+        { k: "Date right to work was established" },
+        { k: "Right-to-work expiry date", optional: true },
+      ],
+    },
+    {
+      name: "Employment",
+      issuer: "Northbank Identity (demo), from HMRC payroll records",
+      note: "One credential per employment relationship; the five-year history is the set of these in the wallet, repeating until the record reaches back five years.",
+      claims: [
+        { k: "Employer" },
+        { k: "Start date" },
+        { k: "End date", optional: true },
+      ],
+    },
+    {
+      name: "Qualification",
+      issuer: "the awarding body, e.g. Caledonian University (demo)",
+      note: "One credential per qualification: qualifications from different institutions co-exist naturally, each issued by its own institution.",
+      claims: [
+        { k: "Issuing educational establishment" },
+        { k: "Date awarded" },
+        { k: "Qualification subject" },
+        { k: "Qualification type (e.g. BSc, PhD)" },
+        { k: "Grade awarded" },
+      ],
+    },
+    {
+      name: "Employment reference",
+      issuer: "the referee employer (issuer to be confirmed)",
+      claims: [
+        { k: "Employer name" },
+        { k: "Role performed" },
+        { k: "Date started" },
+        { k: "Date finished" },
+        { k: "Reference comments" },
+      ],
+    },
+  ],
+} as {
+  title: string;
+  intro: string;
+  modelNote: string;
+  items: {
+    name: string;
+    issuer: string;
+    note?: string;
+    claims: { k: string; optional?: boolean }[];
+  }[];
 };
 
 // ---------------------------- §4 · Run the demos

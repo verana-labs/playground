@@ -6,8 +6,10 @@ import {
   Clock,
   Coins,
   FileText,
+  Gauge,
   Ghost,
   Landmark,
+  ListChecks,
   Layers,
   Network,
   Repeat,
@@ -21,7 +23,7 @@ import { listPersonalWallets } from "../../lib/wallets";
 import { WalletChooser } from "../vesta/DemoWalletFlow";
 import { SubHeading, SubStepBlock } from "../story-blocks";
 import { BHI_SCENES } from "./scenes";
-import { CLOSING, DEMOS, INSTITUTE, JOURNEY, SOLUTION } from "./content";
+import { CLOSING, DEMOS, INSTITUTE, JOURNEY, SCHEMAS, SOLUTION } from "./content";
 
 // Rendering of the four chapters of the BHI Verifiable Hiring use case.
 // Real organisations (BHI, Orchestrating Identity) appear as themselves;
@@ -44,6 +46,7 @@ const PROBLEM_ICONS: Record<string, React.ComponentType<{ className?: string }>>
   coins: Coins,
   stamp: Stamp,
   search: Search,
+  gauge: Gauge,
 };
 
 /** Quote card. While a quote awaits final sign-off (PENDING [QUOTE] in
@@ -139,6 +142,9 @@ export function Section1() {
           </div>
           <p className="mt-6 max-w-3xl text-lg leading-relaxed text-gray-600">
             {INSTITUTE.intro}
+          </p>
+          <p className="mt-4 max-w-3xl text-lg leading-relaxed text-gray-600">
+            {INSTITUTE.introJobsAware}
           </p>
           <p className="mt-3 max-w-3xl text-sm text-gray-500">{INSTITUTE.artpNote}</p>
         </Container>
@@ -461,6 +467,64 @@ export function Section2() {
 
 // ---------------------------------------------------------------- Chapter 3
 
+/** Draft claim sets of the candidate credentials (partner proposal,
+ *  2026-08-19), rendered under journey build 4 for review. DRAFT until
+ *  the schemas are created on the testnet - see SCHEMAS in content.ts. */
+function SchemaDrafts() {
+  return (
+    <div className="mt-10">
+      <div className="flex flex-wrap items-center gap-2">
+        <ListChecks className="h-4 w-4 text-violet-600" aria-hidden />
+        <h4 className="text-sm font-bold uppercase tracking-wide text-gray-900">
+          {SCHEMAS.title}
+        </h4>
+        <Chip tone="pending">draft, for review</Chip>
+      </div>
+      <p className="mt-2 max-w-3xl text-sm leading-relaxed text-gray-600">
+        {SCHEMAS.intro}
+      </p>
+      <div className="mt-5 grid gap-4 md:grid-cols-2">
+        {SCHEMAS.items.map((sc) => (
+          <div
+            key={sc.name}
+            className="flex flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
+          >
+            <p className="font-bold text-gray-900">{sc.name}</p>
+            <p className="mt-0.5 text-xs text-gray-500">Issued by {sc.issuer}</p>
+            <ul className="mt-3 flex-1 space-y-1.5">
+              {sc.claims.map((cl) => (
+                <li
+                  key={cl.k}
+                  className="flex items-baseline gap-2 text-sm text-gray-700"
+                >
+                  <span
+                    aria-hidden
+                    className="h-1.5 w-1.5 shrink-0 translate-y-[-1px] rounded-full bg-violet-400"
+                  />
+                  {cl.k}
+                  {cl.optional ? (
+                    <span className="rounded bg-gray-100 px-1.5 py-px text-[10px] font-semibold text-gray-500">
+                      optional
+                    </span>
+                  ) : null}
+                </li>
+              ))}
+            </ul>
+            {sc.note ? (
+              <p className="mt-3 border-t border-gray-100 pt-2.5 text-xs leading-relaxed text-gray-500">
+                {sc.note}
+              </p>
+            ) : null}
+          </div>
+        ))}
+      </div>
+      <p className="mt-4 max-w-3xl text-xs leading-relaxed text-gray-500">
+        {SCHEMAS.modelNote}
+      </p>
+    </div>
+  );
+}
+
 export function Section3() {
   return (
     <Section>
@@ -485,6 +549,7 @@ export function Section3() {
                 {need.steps.map((s) => (
                   <SubStepBlock key={s.id} sub={s} graph={BHI_SCENES} />
                 ))}
+                {need.id === "need-4" ? <SchemaDrafts /> : null}
               </div>
             </div>
           ))}

@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, RefreshCw } from "lucide-react";
+import { BadgeCheck, ExternalLink, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import QRCode from "qrcode";
 
@@ -25,6 +25,8 @@ type ProofStatus = {
   verified?: boolean;
   claims?: { name: string; value: string }[];
 };
+
+type HostedWallet = { name: string; url: string };
 
 function StartOverButton({ onClick }: { onClick: () => void }) {
   return (
@@ -131,6 +133,29 @@ function UnavailableCard({ onRetry }: { onRetry: () => void }) {
   );
 }
 
+function OpenInWalletLink({
+  wallet,
+  appUrl,
+}: {
+  wallet: HostedWallet;
+  appUrl: string;
+}) {
+  const queryStart = appUrl.indexOf("?");
+  if (queryStart < 0) return null;
+  const href = `${wallet.url.replace(/\/$/, "")}/?${appUrl.slice(queryStart + 1)}`;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center gap-1.5 rounded-full bg-violet-600 px-3.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-violet-700"
+    >
+      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+      Open in {wallet.name}
+    </a>
+  );
+}
+
 // Auto-reveals when scrolled into view: revealing fetches /api/demo/<id>,
 // which mints a fresh live action for this visitor - an OOB credential offer
 // (issuers) or OOB presentation request (verifiers), or the plain connection
@@ -141,6 +166,7 @@ export function ServiceQr({
   format = "anoncreds",
   credential,
   demoParams,
+  openInWallet,
   bare = false,
 }: {
   serviceId: string;
@@ -151,6 +177,7 @@ export function ServiceQr({
    *  OpenID4VP rails are mutually exclusive, so a wallet that cannot read the
    *  default one has to be minted its own. */
   demoParams?: string;
+  openInWallet?: HostedWallet;
   /** Which credential the demo mints (default: the DemoCredential);
    *  "ecs-badge" mints the Vesta chapter-4 badge offer. */
   credential?: string;
@@ -352,6 +379,9 @@ export function ServiceQr({
           >
             {appUrl}
           </a>
+          {openInWallet ? (
+            <OpenInWalletLink wallet={openInWallet} appUrl={appUrl} />
+          ) : null}
           <p className="text-center text-xs text-gray-500">
             Scan with your <strong className="font-semibold">wallet</strong> - a
             live, single-use out-of-band action from this service. Your wallet

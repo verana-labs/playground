@@ -37,7 +37,7 @@ const WalletSchema = z.object({
   formats: z.array(z.enum(CREDENTIAL_FORMATS)).min(1),
   verana_builtin: z.boolean().optional(),
   browser: z.boolean().optional(),
-  hosted: z.boolean().optional(),
+  hosted: z.string().url().optional(),
   download: z.string().url(),
   playstore: z.string().url().optional(),
   appstore: z.string().url().optional(),

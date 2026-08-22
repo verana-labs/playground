@@ -294,6 +294,7 @@ function ScenarioCard({
   s,
   format,
   demoParams,
+  hosted,
   capture,
   walletName,
 }: {
@@ -301,6 +302,7 @@ function ScenarioCard({
   format: CredentialFormat;
   /** The selected wallet's mint query, so its QR carries a rail it can read. */
   demoParams?: string;
+  hosted?: string;
   capture?: { src: string; caption?: string; clip?: string };
   walletName: string;
 }) {
@@ -346,6 +348,9 @@ function ScenarioCard({
             label={s.title}
             format={format}
             demoParams={demoParams}
+            openInWallet={
+              hosted ? { name: walletName, url: hosted } : undefined
+            }
           />
           <LiveTrustCard
             serviceId={s.serviceId}
@@ -600,7 +605,7 @@ export default function PersonalWalletsPlayground({
               ) : null}
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <a
-                  href={wallet.download}
+                  href={wallet.hosted ?? wallet.download}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700"
@@ -728,6 +733,7 @@ export default function PersonalWalletsPlayground({
                 s={s}
                 format={format}
                 demoParams={wallet.demoParams}
+                hosted={wallet.hosted}
                 capture={wallet.captures[s.key as ScenarioKey]}
                 walletName={wallet.name}
               />
@@ -749,6 +755,7 @@ export default function PersonalWalletsPlayground({
                 s={s}
                 format={format}
                 demoParams={wallet.demoParams}
+                hosted={wallet.hosted}
                 capture={wallet.captures[s.key as ScenarioKey]}
                 walletName={wallet.name}
               />

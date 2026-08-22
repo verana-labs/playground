@@ -139,4 +139,52 @@ describe("ServiceQr", () => {
     expect(screen.getByRole("button", { name: /retry/i })).toBeDefined();
     expect(screen.queryByText("Resolving the live service link…")).toBeNull();
   });
+
+  it("opens an OpenID4VC action in the hosted wallet when one is given", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() =>
+        ok({
+          kind: "oid4vc-credential-offer",
+          url: "openid-credential-offer://?credential_offer_uri=https%3A%2F%2Fdemo-issuer-accredited.playground.testnet.verana.network%2Foid4vci%2Foffers%2Fabcd1234",
+        }),
+      ),
+    );
+
+    render(
+      <ServiceQr
+        serviceId="demo-issuer-accredited"
+        label="Accredited Issuer (demo)"
+        format="openid4vc-sdjwt"
+        openInWallet={{
+          name: "wwWallet",
+          url: "https://wwwallet.playground.testnet.verana.network/",
+        }}
+      />,
+    );
+
+    const link = await screen.findByRole("link", { name: "Open in wwWallet" });
+    expect(link.getAttribute("href")).toBe(
+      "https://wwwallet.playground.testnet.verana.network/?credential_offer_uri=https%3A%2F%2Fdemo-issuer-accredited.playground.testnet.verana.network%2Foid4vci%2Foffers%2Fabcd1234",
+    );
+    expect(link.getAttribute("target")).toBe("_blank");
+    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+  });
+
+  it("does not offer to open the action in a wallet when none is hosted", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(() =>
+        ok({
+          kind: "oid4vc-credential-offer",
+          url: "openid-credential-offer://?credential_offer_uri=https%3A%2F%2Fdemo-issuer-accredited.playground.testnet.verana.network%2Foid4vci%2Foffers%2Fabcd1234",
+        }),
+      ),
+    );
+
+    renderRevealed("demo-issuer-accredited", "Accredited Issuer (demo)");
+
+    expect(await screen.findByAltText("Accredited Issuer (demo) QR")).toBeDefined();
+    expect(screen.queryByRole("link", { name: /^open in /i })).toBeNull();
+  });
 });

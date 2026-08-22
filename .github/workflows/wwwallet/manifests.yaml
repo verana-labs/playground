@@ -1,0 +1,286 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: wwwallet-backend
+  namespace: ${NAMESPACE}
+  labels:
+    app: wwwallet-backend
+spec:
+  selector:
+    app: wwwallet-backend
+  ports:
+    - port: 8002
+      targetPort: 8002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: wwwallet-frontend
+  namespace: ${NAMESPACE}
+  labels:
+    app: wwwallet-frontend
+spec:
+  selector:
+    app: wwwallet-frontend
+  ports:
+    - port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: wwwallet-backend
+  namespace: ${NAMESPACE}
+  labels:
+    app: wwwallet-backend
+spec:
+  serviceName: wwwallet-backend
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wwwallet-backend
+  template:
+    metadata:
+      labels:
+        app: wwwallet-backend
+      annotations:
+        deploy-timestamp: "${DEPLOY_TS}"
+    spec:
+      containers:
+        - name: backend
+          image: ${BACKEND_IMAGE}
+          imagePullPolicy: Always
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              ok=""
+              for i in $(seq 20); do yarn migration:run:prod && ok=1 && break; sleep 5; done
+              [ -n "$ok" ] || exit 1
+              exec node ./dist/src/app.js
+          ports:
+            - containerPort: 8002
+          env:
+            - name: APP_URL
+              value: "https://${API_HOST}"
+            - name: PORT
+              value: "8002"
+            - name: APP_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: wwwallet-secrets
+                  key: APP_SECRET
+            - name: DB_HOST
+              value: "127.0.0.1"
+            - name: DB_PORT
+              value: "3306"
+            - name: DB_USER
+              value: "root"
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wwwallet-secrets
+                  key: DB_PASSWORD
+            - name: DB_NAME
+              value: "wallet"
+            - name: WALLET_CLIENT_URL
+              value: "https://${HOST}/cb"
+            - name: WEBAUTHN_ORIGIN
+              value: "https://${HOST}"
+            - name: WEBAUTHN_RP_ID
+              value: "${HOST}"
+            - name: WEBAUTHN_RP_NAME
+              value: "wwWallet"
+          readinessProbe:
+            tcpSocket:
+              port: 8002
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+        - name: mariadb
+          image: mariadb:12
+          env:
+            - name: MARIADB_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: wwwallet-secrets
+                  key: DB_PASSWORD
+            - name: MARIADB_DATABASE
+              value: "wallet"
+          ports:
+            - containerPort: 3306
+          volumeMounts:
+            - name: mariadb-data
+              mountPath: /var/lib/mysql
+          readinessProbe:
+            exec:
+              command: ["healthcheck.sh", "--connect", "--innodb_initialized"]
+            initialDelaySeconds: 15
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              memory: 512Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: mariadb-data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: csi-cinder-classic
+        resources:
+          requests:
+            storage: 5Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wwwallet-frontend
+  namespace: ${NAMESPACE}
+  labels:
+    app: wwwallet-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wwwallet-frontend
+  template:
+    metadata:
+      labels:
+        app: wwwallet-frontend
+      annotations:
+        deploy-timestamp: "${DEPLOY_TS}"
+    spec:
+      containers:
+        - name: frontend
+          image: ${FRONTEND_IMAGE}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          env:
+            - name: BASE_PATH
+              value: "/"
+            - name: STATIC_PUBLIC_URL
+              value: "https://${HOST}"
+            - name: WALLET_NAME
+              value: "wwWallet"
+            - name: WALLET_TAGLINE
+              value: "Verifiable Trust web wallet"
+            - name: OPENID4VCI_REDIRECT_URI
+              value: "https://${HOST}/"
+            - name: WS_URL
+              value: "wss://${API_HOST}"
+            - name: WALLET_BACKEND_URL
+              value: "https://${API_HOST}"
+            - name: DID_KEY_VERSION
+              value: "jwk_jcs-pub"
+            - name: DISPLAY_CONSOLE
+              value: "false"
+            - name: WEBAUTHN_RPID
+              value: "${HOST}"
+            - name: OPENID4VCI_PROOF_TYPE_PRECEDENCE
+              value: "jwt"
+            - name: OPENID4VP_SAN_DNS_CHECK
+              value: "false"
+            - name: OPENID4VP_SAN_DNS_CHECK_SSL_CERTS
+              value: "false"
+            - name: VALIDATE_CREDENTIALS_WITH_TRUST_ANCHORS
+              value: "false"
+            - name: MULTI_LANGUAGE_DISPLAY
+              value: "true"
+            - name: FOLD_EVENT_HISTORY_AFTER_SECONDS
+              value: "2592000"
+            - name: DISPLAY_ISSUANCE_WARNINGS
+              value: "false"
+            - name: OPENID4VCI_MAX_ACCEPTED_BATCH_SIZE
+              value: "10"
+            - name: OPENID4VCI_TRANSACTION_ID_POLLING_INTERVAL_IN_SECONDS
+              value: "5"
+            - name: OPENID4VCI_TRANSACTION_ID_LIFETIME_IN_SECONDS
+              value: "2592000"
+            - name: OHTTP_KEY_CONFIG
+              value: ""
+            - name: OHTTP_RELAY
+              value: ""
+            - name: VCT_REGISTRY_URLS
+              value: ""
+            - name: POLICY_LINKS
+              value: ""
+            - name: SHOW_PWA_INSTALL_PROMPT
+              value: "false"
+            - name: DISPLAY_CREDENTIAL_USAGES
+              value: "false"
+            - name: DEV_MODE
+              value: "false"
+            - name: WELLKNOWN_APPLE_APPIDS
+              value: ""
+            - name: WELLKNOWN_ANDROID_PACKAGE_NAMES_AND_FINGERPRINTS
+              value: ""
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wwwallet-frontend
+  namespace: ${NAMESPACE}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - ${HOST}
+      secretName: wwwallet-frontend-tls
+  rules:
+    - host: ${HOST}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wwwallet-frontend
+                port:
+                  number: 80
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wwwallet-backend
+  namespace: ${NAMESPACE}
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/proxy-body-size: "8m"
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - ${API_HOST}
+      secretName: wwwallet-backend-tls
+  rules:
+    - host: ${API_HOST}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: wwwallet-backend
+                port:
+                  number: 8002

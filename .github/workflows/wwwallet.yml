@@ -1,0 +1,119 @@
+name: Deploy wwWallet
+
+on:
+  workflow_dispatch:
+    inputs:
+      frontend_ref:
+        description: "verana-labs/wallet-frontend ref to build"
+        default: "master"
+      backend_ref:
+        description: "wwWallet/wallet-backend-server ref to build"
+        default: "a92809bfa82ba2c23615b12f9307619b1e376cb0"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/wwwallet.yml"
+      - ".github/workflows/wwwallet/**"
+
+concurrency:
+  group: deploy-wwwallet
+  cancel-in-progress: true
+
+jobs:
+  deploy-wwwallet:
+    name: Build and Deploy wwWallet
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Checkout wallet-frontend
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: verana-labs/wallet-frontend
+          ref: ${{ inputs.frontend_ref || 'master' }}
+          path: wallet-frontend
+
+      - name: Checkout wallet-backend-server
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: wwWallet/wallet-backend-server
+          ref: ${{ inputs.backend_ref || 'a92809bfa82ba2c23615b12f9307619b1e376cb0' }}
+          path: wallet-backend-server
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          cat > ~/.kube/config <<'KUBEEOF'
+          ${{ secrets.KUBECONFIG_VERANA_DEV }}
+          KUBEEOF
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5.1.0
+        with:
+          version: 'v1.29.9'
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+
+      - name: Log in to container registry
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_LOGIN }}
+          password: ${{ secrets.DOCKER_HUB_PWD }}
+
+      - name: Build and push frontend image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: wallet-frontend
+          push: true
+          tags: |
+            veranalabs/wwwallet-frontend:${{ github.sha }}
+            veranalabs/wwwallet-frontend:latest
+          cache-from: type=gha,scope=wwwallet-frontend
+          cache-to: type=gha,mode=max,scope=wwwallet-frontend
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: wallet-backend-server
+          push: true
+          tags: |
+            veranalabs/wwwallet-backend:${{ github.sha }}
+            veranalabs/wwwallet-backend:latest
+          cache-from: type=gha,scope=wwwallet-backend
+          cache-to: type=gha,mode=max,scope=wwwallet-backend
+
+      - name: Ensure wwwallet secrets
+        run: |
+          NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
+          if ! kubectl -n "$NAMESPACE" get secret wwwallet-secrets >/dev/null 2>&1; then
+            kubectl -n "$NAMESPACE" create secret generic wwwallet-secrets \
+              --from-literal=APP_SECRET="$(openssl rand -hex 32)" \
+              --from-literal=DB_PASSWORD="$(openssl rand -hex 24)"
+          fi
+
+      - name: Deploy wwWallet
+        run: |
+          export NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
+          export FRONTEND_IMAGE="veranalabs/wwwallet-frontend:${{ github.sha }}"
+          export BACKEND_IMAGE="veranalabs/wwwallet-backend:${{ github.sha }}"
+          export HOST="wwwallet.playground.testnet.verana.network"
+          export API_HOST="wwwallet-api.playground.testnet.verana.network"
+          export DEPLOY_TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+          envsubst '${NAMESPACE} ${FRONTEND_IMAGE} ${BACKEND_IMAGE} ${HOST} ${API_HOST} ${DEPLOY_TS}' \
+            < .github/workflows/wwwallet/manifests.yaml | kubectl apply -f -
+
+          kubectl rollout status statefulset/wwwallet-backend -n "$NAMESPACE" --timeout=300s
+          kubectl rollout status deployment/wwwallet-frontend -n "$NAMESPACE" --timeout=300s
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## wwWallet" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Wallet:** https://wwwallet.playground.testnet.verana.network" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Backend:** https://wwwallet-api.playground.testnet.verana.network" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Frontend image:** veranalabs/wwwallet-frontend:${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Backend image:** veranalabs/wwwallet-backend:${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"

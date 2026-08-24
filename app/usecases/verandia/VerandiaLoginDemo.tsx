@@ -1,4 +1,5 @@
 "use client";
+import { withBase } from "../../lib/base-path";
 
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "qrcode";
@@ -206,7 +207,7 @@ export default function VerandiaLoginDemo({
     if (!mode) return;
     let alive = true;
     fetch(
-      `/api/verandia-login?portal=${portal}&mode=${mode}&format=${encodeURIComponent(format)}`,
+      withBase(`/api/verandia-login?portal=${portal}&mode=${mode}&format=${encodeURIComponent(format)}`),
     )
       .then((res) => (res.ok ? res.json() : null))
       .then((body) => {
@@ -243,7 +244,7 @@ export default function VerandiaLoginDemo({
     const poll = async () => {
       try {
         const res = await fetch(
-          `/api/verandia-login/${mint.id}?portal=${portal}&mode=${mode}&rail=${encodeURIComponent(mint.rail)}`,
+          withBase(`/api/verandia-login/${mint.id}?portal=${portal}&mode=${mode}&rail=${encodeURIComponent(mint.rail)}`),
         );
         if (res.ok) {
           const body = (await res.json()) as LoginResult;

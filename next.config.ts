@@ -1,10 +1,10 @@
 import type { NextConfig } from "next";
 
-const basePath = process.env.NEXT_PUBLIC_BASE_PATH?.replace(/\/+$/, "");
+import { BASE_PATH } from "./app/lib/base-path";
 
 const nextConfig: NextConfig = {
   output: "standalone",
-  ...(basePath ? { basePath, assetPrefix: basePath } : {}),
+  ...(BASE_PATH ? { basePath: BASE_PATH } : {}),
   async redirects() {
     return [
       { source: "/explained", destination: "/usecases/vesta", permanent: true },

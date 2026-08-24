@@ -179,7 +179,7 @@ export default function PortalLoginDemo({
     const poll = async () => {
       try {
         const res = await fetch(
-          `/api/portal-login/${mint.id}?rail=${encodeURIComponent(mint.rail)}`,
+          withBase(`/api/portal-login/${mint.id}?rail=${encodeURIComponent(mint.rail)}`),
         );
         if (res.ok) {
           const body = (await res.json()) as LoginResult;

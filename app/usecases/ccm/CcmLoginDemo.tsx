@@ -192,7 +192,7 @@ export default function CcmLoginDemo({ wallets }: { wallets: PersonalWallet[] })
     const poll = async () => {
       try {
         const res = await fetch(
-          `/api/ccm-login/${mint.id}?rail=${encodeURIComponent(mint.rail)}`,
+          withBase(`/api/ccm-login/${mint.id}?rail=${encodeURIComponent(mint.rail)}`),
         );
         if (res.ok) {
           const body = (await res.json()) as LoginResult;

@@ -7,6 +7,7 @@
 // genérico. La maqueta (ccm-cast.ts, workflows ccm-*) alimenta las demos
 // del capítulo 4, que se activan solas cuando cada agente esté desplegado.
 
+import { withBase } from "../../lib/base-path";
 import type { Stage } from "./scenes";
 import type {
   JourneyNeed as GenericJourneyNeed,
@@ -18,9 +19,9 @@ export type JourneyNeed = GenericJourneyNeed<Stage>;
 
 /** Logos oficiales (public/images/ccm/). */
 export const CCM_ASSETS = {
-  ccm: "/images/ccm/ccm.webp",
-  bancolombia: "/images/ccm/bancolombia.webp",
-  confecamaras: "/images/ccm/confecamaras.webp",
+  ccm: withBase("/images/ccm/ccm.webp"),
+  bancolombia: withBase("/images/ccm/bancolombia.webp"),
+  confecamaras: withBase("/images/ccm/confecamaras.webp"),
 };
 
 // ---------------------------- §1 · La cámara y el certificado de hoy

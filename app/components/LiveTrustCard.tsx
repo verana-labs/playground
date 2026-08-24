@@ -1,4 +1,5 @@
 "use client";
+import { withBase } from "../lib/base-path";
 
 import { useEffect, useState } from "react";
 import TrustCard, { type TrustCardData, type TrustCardCredential } from "./TrustCard";
@@ -96,7 +97,7 @@ export default function LiveTrustCard({
   const [data, setData] = useState<TrustCardData | null | undefined>(undefined);
 
   useEffect(() => {
-    fetch(`/api/pot/${serviceId}`)
+    fetch(withBase(`/api/pot/${serviceId}`))
       .then((res) => (res.ok ? (res.json() as Promise<PotApiResponse>) : null))
       .then((body) => setData(toTrustCardData(body, accreditations)))
       .catch(() => setData(null));

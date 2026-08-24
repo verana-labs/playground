@@ -1,4 +1,5 @@
 "use client";
+import { withBase } from "../../lib/base-path";
 
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "qrcode";
@@ -211,7 +212,7 @@ export default function BoliviaLoginDemo({
     if (!mode) return;
     let alive = true;
     fetch(
-      `/api/bolivia-login?portal=${portal}&mode=${mode}&format=${encodeURIComponent(format)}`,
+      withBase(`/api/bolivia-login?portal=${portal}&mode=${mode}&format=${encodeURIComponent(format)}`),
     )
       .then((res) => (res.ok ? res.json() : null))
       .then((body) => {
@@ -248,7 +249,7 @@ export default function BoliviaLoginDemo({
     const poll = async () => {
       try {
         const res = await fetch(
-          `/api/bolivia-login/${mint.id}?portal=${portal}&mode=${mode}&rail=${encodeURIComponent(mint.rail)}`,
+          withBase(`/api/bolivia-login/${mint.id}?portal=${portal}&mode=${mode}&rail=${encodeURIComponent(mint.rail)}`),
         );
         if (res.ok) {
           const body = (await res.json()) as LoginResult;

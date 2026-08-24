@@ -7,6 +7,7 @@
 // bolivia-*) alimenta las demos del capítulo 4, que se activan solas
 // cuando cada agente esté desplegado.
 
+import { withBase } from "../../lib/base-path";
 import type { Stage } from "./scenes";
 import type {
   JourneyNeed as GenericJourneyNeed,
@@ -18,11 +19,11 @@ export type JourneyNeed = GenericJourneyNeed<Stage>;
 
 /** Logos oficiales de las instituciones (public/images/bolivia/). */
 export const BOLIVIA_ASSETS = {
-  segip: "/images/bolivia/segip.webp",
-  seprec: "/images/bolivia/seprec.webp",
-  sin: "/images/bolivia/sin.webp",
-  agetic: "/images/bolivia/agetic.webp",
-  bancoUnion: "/images/bolivia/banco-union.webp",
+  segip: withBase("/images/bolivia/segip.webp"),
+  seprec: withBase("/images/bolivia/seprec.webp"),
+  sin: withBase("/images/bolivia/sin.webp"),
+  agetic: withBase("/images/bolivia/agetic.webp"),
+  bancoUnion: withBase("/images/bolivia/banco-union.webp"),
 };
 
 // ---------------------------- §1 · El Estado y sus instituciones

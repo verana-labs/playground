@@ -1,7 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { listPersonalWallets, WalletsFileSchema } from "./wallets";
 
 describe("personal wallets configuration", () => {
@@ -39,5 +39,35 @@ describe("personal wallets configuration", () => {
         fs.statSync(path.join(process.cwd(), "wallets", w.id)).isDirectory(),
       ).toBe(true);
     }
+  });
+});
+
+describe("PLAYGROUND_WALLETS allowlist", () => {
+  const load = async () => {
+    vi.resetModules();
+    const mod = await import("./wallets");
+    return mod.listPersonalWallets();
+  };
+  const prev = process.env.PLAYGROUND_WALLETS;
+  afterEach(() => {
+    if (prev === undefined) delete process.env.PLAYGROUND_WALLETS;
+    else process.env.PLAYGROUND_WALLETS = prev;
+  });
+
+  it("an empty value filters nothing", async () => {
+    process.env.PLAYGROUND_WALLETS = "";
+    const wallets = await load();
+    expect(wallets.length).toBeGreaterThan(1);
+  });
+
+  it("filters to the named wallets", async () => {
+    process.env.PLAYGROUND_WALLETS = "eudi";
+    const wallets = await load();
+    expect(wallets.map((w) => w.id)).toEqual(["eudi"]);
+  });
+
+  it("throws on unknown wallet ids", async () => {
+    process.env.PLAYGROUND_WALLETS = "eudi,notawallet";
+    await expect(load()).rejects.toThrow(/notawallet/);
   });
 });

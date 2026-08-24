@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
+import { BASE_PATH } from "./app/lib/base-path";
+
 const nextConfig: NextConfig = {
   output: "standalone",
+  ...(BASE_PATH ? { basePath: BASE_PATH } : {}),
   async redirects() {
     return [
       { source: "/explained", destination: "/usecases/vesta", permanent: true },

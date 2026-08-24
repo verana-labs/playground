@@ -4,6 +4,7 @@
 // per-wallet playground pages from these descriptors at build/render time.
 
 import fs from "node:fs";
+import { withBase } from "./base-path";
 import path from "node:path";
 import yaml from "js-yaml";
 import { parseIntegration } from "./integration-schema";
@@ -71,7 +72,7 @@ function publicAsset(slug: string, ref: string | undefined) {
   const rel = ref.replace(/^\.\//, "");
   const url = `/wallets/${slug}/${rel}`;
   return fs.existsSync(path.join(process.cwd(), "public", url.slice(1)))
-    ? url
+    ? withBase(url)
     : undefined;
 }
 

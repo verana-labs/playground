@@ -1,4 +1,5 @@
 "use client";
+import { withBase } from "../lib/base-path";
 
 import { BadgeCheck, ExternalLink, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -230,9 +231,9 @@ export function ServiceQr({
     setCredId(null);
     setCredStatus(null);
     fetch(
-      `/api/demo/${serviceId}?format=${encodeURIComponent(format)}${
+      withBase(`/api/demo/${serviceId}?format=${encodeURIComponent(format)}${
         credential ? `&credential=${encodeURIComponent(credential)}` : ""
-      }${demoParams ? `&${demoParams}` : ""}`,
+      }${demoParams ? `&${demoParams}` : ""}`),
     )
       .then((res) => (res.ok ? (res.json() as Promise<DemoApiResponse>) : null))
       .then((body) => {
@@ -264,7 +265,7 @@ export function ServiceQr({
     let timer: ReturnType<typeof setTimeout> | undefined;
     const poll = async () => {
       try {
-        const res = await fetch(`/api/demo/${serviceId}/proof/${proofId}?rail=${rail}`);
+        const res = await fetch(withBase(`/api/demo/${serviceId}/proof/${proofId}?rail=${rail}`));
         if (res.ok) {
           const body = (await res.json()) as ProofStatus;
           if (!alive) return;
@@ -294,7 +295,7 @@ export function ServiceQr({
     let timer: ReturnType<typeof setTimeout> | undefined;
     const poll = async () => {
       try {
-        const res = await fetch(`/api/demo/${serviceId}/credential/${credId}?rail=${rail}`);
+        const res = await fetch(withBase(`/api/demo/${serviceId}/credential/${credId}?rail=${rail}`));
         if (res.ok) {
           const body = (await res.json()) as CredentialStatus;
           if (!alive) return;

@@ -1,3 +1,4 @@
+import { withBase } from "../../lib/base-path";
 import { Suspense } from "react";
 import {
   BadgeCheck,
@@ -396,7 +397,7 @@ export function Section2() {
                         {n.title}
                       </span>
                       <a
-                        href={`/usecases/verandia/journey#need-${n.need}`}
+                        href={withBase(`/usecases/verandia/journey#need-${n.need}`)}
                         className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                       >
                         → The journey · {n.tag}

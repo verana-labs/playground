@@ -1,4 +1,5 @@
 "use client";
+import { withBase } from "../../lib/base-path";
 
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "qrcode";
@@ -142,7 +143,7 @@ export default function PortalLoginDemo({
   useEffect(() => {
     if (!started) return;
     let alive = true;
-    fetch(`/api/portal-login?format=${encodeURIComponent(format)}`)
+    fetch(withBase(`/api/portal-login?format=${encodeURIComponent(format)}`))
       .then((res) => (res.ok ? res.json() : null))
       .then((body) => {
         if (!alive) return;
@@ -222,7 +223,7 @@ export default function PortalLoginDemo({
         <div className="mx-auto max-w-sm text-center">
           {/* eslint-disable-next-line @next/next/no-img-element -- small brand asset */}
           <img
-            src="/images/logo.webp"
+            src={withBase("/images/logo.webp")}
             alt="Vesta Appliances"
             className="mx-auto h-12 w-12 rounded-xl"
           />

@@ -1,3 +1,4 @@
+import { withBase } from "../../lib/base-path";
 import { Suspense } from "react";
 import {
   Award,
@@ -528,7 +529,7 @@ export function Section2() {
                         {n.title}
                       </span>
                       <a
-                        href={`/usecases/vesta/journey#need-${n.need}`}
+                        href={withBase(`/usecases/vesta/journey#need-${n.need}`)}
                         className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                       >
                         → Marc&apos;s journey · {n.tag}
@@ -680,7 +681,7 @@ export function Section2() {
                 />
                 <div className="flex flex-wrap items-center gap-2">
                   <a
-                    href={`/usecases/vesta/journey#need-${ECOSYSTEM_BUILD.card.need}`}
+                    href={withBase(`/usecases/vesta/journey#need-${ECOSYSTEM_BUILD.card.need}`)}
                     className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
                   >
                     → Marc&apos;s journey · Vesta creates its own ecosystem

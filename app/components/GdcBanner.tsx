@@ -1,4 +1,5 @@
 "use client";
+import { withBase } from "../lib/base-path";
 
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
@@ -27,7 +28,7 @@ export default function GdcBanner() {
         aria-hidden
         className="h-2.5 w-full"
         style={{
-          backgroundImage: "url(/images/gdc-barcode.png)",
+          backgroundImage: `url(${withBase("/images/gdc-barcode.png")})`,
           backgroundRepeat: "repeat-x",
           backgroundSize: "auto 100%",
         }}

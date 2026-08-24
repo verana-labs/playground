@@ -5,6 +5,7 @@
 // is generated from it.
 
 import fs from "node:fs";
+import { BASE_PATH } from "./base-path";
 import path from "node:path";
 import yaml from "js-yaml";
 import { z } from "zod";
@@ -94,7 +95,7 @@ function publicAsset(ref: string | undefined): string | undefined {
   const rel = ref.replace(/^\.\//, "");
   const url = `/wallets/${rel}`;
   return fs.existsSync(path.join(process.cwd(), "public", url.slice(1)))
-    ? url
+    ? `${BASE_PATH}${url}`
     : undefined;
 }
 
@@ -115,8 +116,12 @@ export function listPersonalWallets(): PersonalWallet[] {
       .join("; ");
     throw new Error(`personal-wallets.yaml invalid - ${issues}`);
   }
+  const allow = process.env.PLAYGROUND_WALLETS?.split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
   cache = parsed.data.wallets
     .filter((w) => !w.hidden)
+    .filter((w) => !allow || allow.includes(w.id))
     .map((w) => {
     const videoSrc = publicAsset(w.video?.src);
     return {

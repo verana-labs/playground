@@ -1,4 +1,5 @@
 "use client";
+import { withBase } from "../lib/base-path";
 
 import { useEffect, useState } from "react";
 import { ShieldCheck, ShieldX, Building2, Server } from "lucide-react";
@@ -84,7 +85,7 @@ export default function ServiceTrustCard({ serviceId }: { serviceId: string }) {
   const [pot, setPot] = useState<Pot | null | undefined>(undefined);
 
   useEffect(() => {
-    fetch(`/api/pot/${serviceId}`)
+    fetch(withBase(`/api/pot/${serviceId}`))
       .then((res) => (res.ok ? (res.json() as Promise<PotApiResponse>) : null))
       .then((body) => setPot(toPot(body)))
       .catch(() => setPot(null));

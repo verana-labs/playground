@@ -1,4 +1,5 @@
 "use client";
+import { withBase } from "../lib/base-path";
 
 import {
   Building2,
@@ -383,7 +384,7 @@ export function ProofOfTrust({ serviceId, title }: { serviceId: string; title?: 
   useEffect(() => {
     let alive = true;
     setData(undefined);
-    fetch(`/api/pot/${serviceId}`)
+    fetch(withBase(`/api/pot/${serviceId}`))
       .then((res) => (res.ok ? (res.json() as Promise<PotApiResponse>) : null))
       .then((body) => {
         if (alive) setData(body);

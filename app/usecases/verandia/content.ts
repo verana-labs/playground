@@ -5,6 +5,7 @@
 // with the progressive scene graph; §4 the demos. Protocol facts target v3;
 // reproduce recipes follow the current verana-frontend UX.
 
+import { withBase } from "../../lib/base-path";
 import { ENDPOINTS, LINKS } from "../../lib/site";
 import { VERANDIA_CAST } from "../../lib/verandia-cast";
 import { VESTA_CAST } from "../../lib/vesta-cast";
@@ -25,16 +26,16 @@ export type JourneyNeed = GenericJourneyNeed<Stage>;
  *  emblem/initials placeholder while the brand kit is generated. */
 export const VERANDIA_ASSETS = {
   emblem: null as string | null, // by design: the generated SVG shield is the emblem
-  hero: "/images/verandia/hero.webp" as string | null,
+  hero: withBase("/images/verandia/hero.webp") as string | null,
   heroCaption:
     "The Republic of Verandia - a small democracy, and every one of its services about to become provable.",
-  institutions: "/images/verandia/institutions.webp" as string | null,
+  institutions: withBase("/images/verandia/institutions.webp") as string | null,
   institutionsCaption:
     "The civic institutions of the Republic: the Civil Registry, the Business Registry, the Tax Buro.",
-  pm: "/images/verandia/pm.webp" as string | null,
-  minister: "/images/verandia/minister.webp" as string | null,
-  phishing: "/images/verandia/phishing.webp" as string | null,
-  bank: "/images/verandia/bank.webp" as string | null,
+  pm: withBase("/images/verandia/pm.webp") as string | null,
+  minister: withBase("/images/verandia/minister.webp") as string | null,
+  phishing: withBase("/images/verandia/phishing.webp") as string | null,
+  bank: withBase("/images/verandia/bank.webp") as string | null,
   bankCaption:
     "Meridian Bank (demo) - the most phished brand category, about to become provable.",
 };

@@ -1,4 +1,5 @@
 "use client";
+import { withBase } from "../lib/base-path";
 
 import { useEffect, useState } from "react";
 
@@ -10,7 +11,7 @@ export default function NetworkChip() {
 
   useEffect(() => {
     let alive = true;
-    fetch("/api/status")
+    fetch(withBase("/api/status"))
       .then((r) => r.json())
       .then((d) => {
         if (alive) setResolver(d.resolver === "ok" ? "ok" : "down");

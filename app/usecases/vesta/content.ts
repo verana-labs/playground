@@ -6,6 +6,7 @@
 // follow the current verana-frontend UX: ecosystem → credential schema →
 // Participants tree → Join from the branch you want to join under.
 
+import { withBase } from "../../lib/base-path";
 import { ENDPOINTS, LINKS } from "../../lib/site";
 import {
   VESTA_CAST,
@@ -27,14 +28,14 @@ const participants = (schemaId: number) => `${app}/participants/${schemaId}`;
  *  public/images/ (PNG originals kept alongside). Set a path to null to fall
  *  back to the SVG/initials placeholder. */
 export const VESTA_ASSETS = {
-  logo: "/images/logo.webp" as string | null,
-  ceo: "/images/ceo.webp" as string | null,
-  hero: "/images/factory.webp" as string | null,
+  logo: withBase("/images/logo.webp") as string | null,
+  ceo: withBase("/images/ceo.webp") as string | null,
+  hero: withBase("/images/factory.webp") as string | null,
   heroCaption: "Vesta's assembly line - forty years of machines built to be repaired, not replaced.",
-  lineup: "/images/lineup.webp" as string | null,
-  cto: "/images/cto.webp" as string | null,
+  lineup: withBase("/images/lineup.webp") as string | null,
+  cto: withBase("/images/cto.webp") as string | null,
   lineupCaption: "The Vesta range: washer, oven, dryer - three product lines, one promise.",
-  fakeVan: "/images/fake-van3.webp" as string | null,
+  fakeVan: withBase("/images/fake-van3.webp") as string | null,
 };
 
 // --------------------------------- §1 · Meet Vesta Appliances (marketing)
@@ -53,7 +54,7 @@ export const COMPANY = {
   factoryText:
     "Every Vesta machine comes out of the company's own plant - forty years of engineering on one assembly line, designed from the first screw to be serviceable in a customer's kitchen.",
   certification: {
-    img: "/images/ISO_9001-2015.svg",
+    img: withBase("/images/ISO_9001-2015.svg"),
     label: "ISO 9001 certified",
     sub: "since 2003",
   },
@@ -518,7 +519,7 @@ export const JOURNEY: {
             "At the door, the worker presents their badge to the customer; the customer scans it and sees the Vesta Authorized Repairer seal.",
           ],
           image: {
-            src: "/images/zenith.webp",
+            src: withBase("/images/zenith.webp"),
             alt: "A Zenith Repairs technician at the door, showing a green trust check on their phone",
             caption: "The technician at your door, proving they're from an authorized repairer - trust before you open.",
           },

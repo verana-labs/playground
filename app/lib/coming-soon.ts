@@ -4,6 +4,7 @@
 // reader can see the roadmap and the ecosystem we are working through.
 
 import fs from "node:fs";
+import { BASE_PATH } from "./base-path";
 import path from "node:path";
 import yaml from "js-yaml";
 import { z } from "zod";
@@ -34,7 +35,7 @@ function publicAsset(ref: string | undefined): string | undefined {
   if (/^(https?:)?\/\//.test(ref)) return ref;
   const url = `/wallets/${ref.replace(/^\.\//, "")}`;
   return fs.existsSync(path.join(process.cwd(), "public", url.slice(1)))
-    ? url
+    ? `${BASE_PATH}${url}`
     : undefined;
 }
 

@@ -1,4 +1,5 @@
 "use client";
+import { withBase } from "../../lib/base-path";
 
 import { useCallback, useEffect, useState } from "react";
 import QRCode from "qrcode";
@@ -155,7 +156,7 @@ export default function CcmLoginDemo({ wallets }: { wallets: PersonalWallet[] })
   useEffect(() => {
     if (!active) return;
     let alive = true;
-    fetch(`/api/ccm-login?format=${encodeURIComponent(format)}`)
+    fetch(withBase(`/api/ccm-login?format=${encodeURIComponent(format)}`))
       .then((res) => (res.ok ? res.json() : null))
       .then((body) => {
         if (!alive) return;

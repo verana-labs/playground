@@ -1,3 +1,4 @@
+import { withBase } from "./lib/base-path";
 import Link from "next/link";
 import {
   ArrowDown,
@@ -326,7 +327,7 @@ export default function Home() {
               <span className="relative block aspect-[16/9] overflow-hidden bg-gray-100">
                 {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized WebP illustration from public/ */}
                 <img
-                  src="/images/factory-fides.webp"
+                  src={withBase("/images/factory-fides.webp")}
                   alt="The Vesta Appliances factory"
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                 />
@@ -358,7 +359,7 @@ export default function Home() {
               <span className="relative block aspect-[16/9] overflow-hidden bg-gray-100">
                 {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized WebP illustration from public/ */}
                 <img
-                  src="/images/verandia/hero-fides.webp"
+                  src={withBase("/images/verandia/hero-fides.webp")}
                   alt="The capital of the Republic of Verandia"
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                 />
@@ -390,7 +391,7 @@ export default function Home() {
               <span className="relative block aspect-[16/9] overflow-hidden bg-gray-100">
                 {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized WebP illustration from public/ */}
                 <img
-                  src="/images/cexa/hero-branded.webp"
+                  src={withBase("/images/cexa/hero-branded.webp")}
                   alt="The Crypto Exchange Association (demo) boardroom, with the issuer-holder-verifier trust triangle on screen"
                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
                 />

@@ -1,0 +1,57 @@
+name: Sync Unfold Playground
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "public/**"
+      - "personal-wallets.yaml"
+      - "wallets/**"
+      - "integrations/**"
+      - "scripts/**"
+      - "package.json"
+      - "package-lock.json"
+      - "Dockerfile"
+      - "next.config.ts"
+      - ".github/workflows/unfold-sync.yml"
+
+concurrency:
+  group: unfold-sync
+  cancel-in-progress: false
+
+jobs:
+  push-to-france-identite:
+    name: Push playground to the France Identité GitLab
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Checkout unfold integration
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: AirKyzzZ/unfold-verana-integration
+          path: unfold
+
+      - name: Push to FI GitLab
+        env:
+          FI_GITLAB_TOKEN: ${{ secrets.FI_GITLAB_TOKEN }}
+          PLAYGROUND_DIR: ${{ github.workspace }}
+          PLAYGROUND_REF: ${{ github.sha }}
+        run: |
+          if [ -z "$FI_GITLAB_TOKEN" ]; then
+            echo "FI_GITLAB_TOKEN secret is not set - create a project access token with write_repository on plg/partners/verana and add it as a repo secret" >&2
+            exit 1
+          fi
+          git config --global user.name "verana-playground-sync"
+          git config --global user.email "playground-sync@verana.network"
+          bash unfold/scripts/push-to-gitlab.sh
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Unfold sync" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Pushed:** playground @ ${{ github.sha }} -> FI GitLab verana + helm-verana" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Live:** https://api.playground.france-identite.gouv.fr/verana/verana/ (after Kaniko + ArgoCD, ~5-20 min)" >> "$GITHUB_STEP_SUMMARY"

@@ -374,7 +374,7 @@ export default function Home() {
                   </span>
                 </span>
                 <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
-                  Verana, explained by a democracy: an eIDAS-2-compatible
+                  Verana, explained by a country: an eIDAS-2-compatible
                   Citizen ID, Business IDs from the national register, legal
                   representation as proof - and passwordless sign-in at the
                   Tax Buro and the bank, fail-closed.

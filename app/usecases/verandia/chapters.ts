@@ -14,7 +14,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     title: "Meet the Republic of Verandia",
     short: "Meet Verandia",
     intro:
-      "A democracy with real institutions, real services, and scammers trading on the Republic's name. Nothing can be proven.",
+      "A country with real institutions, real services, and scammers trading on the Republic's name. Nothing can be proven.",
   },
   {
     n: 2,

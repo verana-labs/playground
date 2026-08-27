@@ -28,7 +28,7 @@ export const VERANDIA_ASSETS = {
   emblem: null as string | null, // by design: the generated SVG shield is the emblem
   hero: withBase("/images/verandia/hero.webp") as string | null,
   heroCaption:
-    "The Republic of Verandia - a small democracy, and every one of its services about to become provable.",
+    "The Republic of Verandia - a small country, and every one of its services about to become provable.",
   institutions: withBase("/images/verandia/institutions.webp") as string | null,
   institutionsCaption:
     "The civic institutions of the Republic: the Civil Registry, the Business Registry, the Tax Buro.",
@@ -52,7 +52,7 @@ export const REPUBLIC = {
     "~310,000 registered companies",
   ],
   intro:
-    "Verandia is a small democracy that runs on trust: a Civil Registry that knows every citizen, a Business Registry that knows every company, and a Tax Buro everyone deals with once a year. The institutions work. Their digital front doors do not.",
+    "Verandia is a small country that runs on trust: a Civil Registry that knows every citizen, a Business Registry that knows every company, and a Tax Buro everyone deals with once a year. The institutions work. Their digital front doors do not.",
   institutions: [
     {
       icon: "id",

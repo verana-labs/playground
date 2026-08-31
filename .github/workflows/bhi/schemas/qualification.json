@@ -1,0 +1,44 @@
+{
+  "$id": "https://caledonian.bhi.playground.testnet.verana.network/schemas/qualification.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "QualificationCredential",
+  "description": "A qualification awarded by an educational or certification body (demo): one credential per qualification, degrees and professional certifications alike. For demonstration only.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID of the credential holder"
+        },
+        "issuingEstablishment": {
+          "type": "string",
+          "description": "Issuing educational or certification establishment"
+        },
+        "dateAwarded": {
+          "type": "string",
+          "description": "Date the qualification was awarded (ISO 8601)"
+        },
+        "qualificationSubject": {
+          "type": "string",
+          "description": "Subject of the qualification"
+        },
+        "qualificationType": {
+          "type": "string",
+          "description": "Type of the qualification (e.g. BSc, PhD, professional certification)"
+        },
+        "gradeAwarded": {
+          "type": "string",
+          "description": "Grade awarded, when the qualification carries one"
+        }
+      },
+      "required": [
+        "issuingEstablishment",
+        "dateAwarded",
+        "qualificationSubject",
+        "qualificationType"
+      ]
+    }
+  }
+}

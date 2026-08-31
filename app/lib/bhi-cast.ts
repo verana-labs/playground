@@ -8,10 +8,11 @@
 // deploys; replace with the real did:webvh value from each host's
 // did.jsonl log (state.id).
 //
-// PENDING (source: verana-spec playground/submission/oid-bhi.md, build
-// notes): the deployment inventory for this cast has NOT been provided by
-// OID yet - host list, which participants get live agents, and the demo
-// claim sets are our proposal and await confirmation in the OID meeting.
+// The cast is deployed and provisioned by the bhi-* workflows
+// (.github/workflows/bhi/README.md), one vs-agent per participant.
+// PENDING: hosts and demo claim sets are our proposal and await
+// confirmation from OID; OID's Companies House number and certification
+// scope are placeholders in its config.env until confirmed in writing.
 
 import type { CastMember } from "./vesta-cast";
 
@@ -23,8 +24,8 @@ const PENDING = "QmBhiCastPending1111111111111111111111111111";
 export const BHI_CAST = {
   /** Better Hiring Institute - anchor + the Recruitment Trust Network. */
   bhi: {
-    host: `bhi.${ZONE}`,
-    did: `did:webvh:${PENDING}:bhi.${ZONE}`,
+    host: `institute.${ZONE}`,
+    did: `did:webvh:${PENDING}:institute.${ZONE}`,
   },
   /** Orchestrating Identity - certified Orchestration Service Provider
    *  (real org); operates the DVS-Aligned Provider Ecosystem (demo). */

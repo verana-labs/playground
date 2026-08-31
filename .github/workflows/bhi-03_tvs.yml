@@ -1,0 +1,33 @@
+name: "BHI 03 · Trustworthy Verification Services (second grantor)"
+
+# Deploys Trustworthy Verification Services (demo): ECS creds from
+# Orchestrating Identity plus its DVS-Aligned Provider credential. Re-run
+# 'BHI 02' afterwards to accredit it as an ECS-Organization issuer.
+# Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  tvs:
+    uses: ./.github/workflows/bhi-00_core.yml
+    with:
+      org: tvs
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

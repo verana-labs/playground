@@ -1,0 +1,62 @@
+# BHI cast vs-agent deployment — Helm chart values template
+#
+# One template for every cast member. The bhi-00_core workflow substitutes
+# __RELEASE__, __HOST__ and __NETWORK__ from the org's config.env before
+# installing. Hosts follow <org>.bhi.playground.<network>.verana.network.
+chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
+chartVersion: v1.12.0-oidc4vc-uiprofile.30
+
+global:
+  domain: bhi.playground.__NETWORK__.verana.network
+
+name: __RELEASE__
+replicas: 1
+
+# All cast members run the same vs-agent build; openid4vc ships in the default
+# image and is activated per org via oid4vc.plugins (bhi-00_core).
+image:
+  repository: veranalabs/vs-agent
+  tag: v1.12.0-oidc4vc-uiprofile.34
+
+adminPort: 3000
+enablePublicApiSwagger: true
+didcommPort: 3001
+eventsBaseUrl: "https://__HOST__"
+publicDidMethod: "webvh"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+ingress:
+  host: "__HOST__"
+  tlsSecret: "__HOST__-cert"
+  public:
+    enableCors: true
+  private:
+    enableCors: true
+    whitelistSourceRange: ""
+    tlsSecret: ""
+    host: ""
+
+extraEnv:
+  - name: AGENT_LOG_LEVEL
+    value: "3"
+  - name: USE_CORS
+    value: "true"
+  # Declared Verana network for the public UI (accreditations, deep links,
+  # header badge). UI-only: does not enable the backend indexer integration.
+  - name: UI_VERANA_CHAIN_ID
+    value: "vna-__NETWORK__-1"
+  - name: UI_VERANA_INDEXER_BASE_URL
+    value: "https://idx.__NETWORK__.verana.network"
+  - name: UI_NETWORK_BADGE
+    value: "Testnet"
+
+storage:
+  size: 1Gi
+  storageClassName: csi-cinder-high-speed

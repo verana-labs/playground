@@ -1,0 +1,32 @@
+name: "BHI 05 · Northbank Identity (DVS issuer)"
+
+# Deploys Northbank Identity (demo): ECS creds, its registry with the
+# Right to Work and Employment schemas, and the OpenID4VC issuer rail.
+# Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  northbank:
+    uses: ./.github/workflows/bhi-00_core.yml
+    with:
+      org: northbank
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

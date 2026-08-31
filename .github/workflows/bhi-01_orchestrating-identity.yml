@@ -1,0 +1,32 @@
+name: "BHI 01 · Orchestrating Identity (OSP + DVS ecosystem)"
+
+# Deploys Orchestrating Identity, bootstraps its ECS-Organization (Helvetia) +
+# ECS-Service and creates the DVS-Aligned Provider Ecosystem (demo).
+# Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  orchestrating-identity:
+    uses: ./.github/workflows/bhi-00_core.yml
+    with:
+      org: orchestrating-identity
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

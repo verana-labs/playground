@@ -1,0 +1,53 @@
+{
+  "$id": "https://northbank.bhi.playground.testnet.verana.network/schemas/right-to-work.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RightToWorkCredential",
+  "description": "UK right-to-work status established by a certified DVS provider (demo). Exactly one credential per person. For demonstration only.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID of the credential holder"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "First name of the holder"
+        },
+        "surname": {
+          "type": "string",
+          "description": "Surname of the holder"
+        },
+        "birthDate": {
+          "type": "string",
+          "description": "Date of birth as a dateint (YYYYMMDD), so AnonCreds predicate proofs work without revealing the date"
+        },
+        "portrait": {
+          "type": "string",
+          "description": "Portrait photo of the holder as a data URI"
+        },
+        "nationality": {
+          "type": "string",
+          "description": "Nationality of the holder (alpha-2 code)"
+        },
+        "rtwEstablishedDate": {
+          "type": "string",
+          "description": "Date the right to work was established (ISO 8601)"
+        },
+        "rtwExpiryDate": {
+          "type": "string",
+          "description": "Expiry date of the right to work (ISO 8601); absent when the right to work does not expire"
+        }
+      },
+      "required": [
+        "firstName",
+        "surname",
+        "birthDate",
+        "nationality",
+        "rtwEstablishedDate"
+      ]
+    }
+  }
+}

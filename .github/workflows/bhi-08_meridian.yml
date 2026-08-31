@@ -1,0 +1,33 @@
+name: "BHI 08 · Meridian Technologies (Verified Employer)"
+
+# Deploys Meridian Technologies (demo): ECS creds, the Verified Employer
+# credential issued by Orchestrating Identity, and VERIFIER permissions on
+# the three candidate schemas.
+# Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  meridian:
+    uses: ./.github/workflows/bhi-00_core.yml
+    with:
+      org: meridian
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

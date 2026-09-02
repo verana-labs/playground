@@ -1,0 +1,33 @@
+{
+  "$id": "https://institute.bhi.playground.testnet.verana.network/schemas/verified-employer.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VerifiedEmployerCredential",
+  "description": "Verified Employer of the Recruitment Trust Network (demo): issued by a certified DVS provider on the strength of the employer's verified organisation identity. For demonstration only.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID of the credential holder"
+        },
+        "companyName": {
+          "type": "string",
+          "description": "Registered company name of the employer"
+        },
+        "companyRegistryId": {
+          "type": "string",
+          "description": "Company register identifier"
+        },
+        "verifiedDate": {
+          "type": "string",
+          "description": "Date the employer was verified (ISO 8601)"
+        }
+      },
+      "required": [
+        "companyName"
+      ]
+    }
+  }
+}

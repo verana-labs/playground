@@ -1,0 +1,34 @@
+{
+  "$id": "https://orchestrating-identity.bhi.playground.testnet.verana.network/schemas/dvs-aligned-provider.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DVSAlignedProviderCredential",
+  "description": "Mirrors an organisation's presence on the UK DVS register (demo): eligibility is register status and nothing else. This ecosystem mirrors the register, does not constitute it, and is neither operated by nor endorsed by OfDIA. For demonstration only.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID of the credential holder"
+        },
+        "providerName": {
+          "type": "string",
+          "description": "Registered name of the certified provider"
+        },
+        "registerStatus": {
+          "type": "string",
+          "description": "Status on the DVS register (e.g. registered)"
+        },
+        "lastCheckedDate": {
+          "type": "string",
+          "description": "Date the register entry was last checked (ISO 8601)"
+        }
+      },
+      "required": [
+        "providerName",
+        "registerStatus"
+      ]
+    }
+  }
+}

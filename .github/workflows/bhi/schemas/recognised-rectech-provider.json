@@ -1,0 +1,29 @@
+{
+  "$id": "https://institute.bhi.playground.testnet.verana.network/schemas/recognised-rectech-provider.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RecognisedRecTechProviderCredential",
+  "description": "Recognised RecTech Provider of the Recruitment Trust Network (demo): membership of the sector body's provider association, revocable by the network. For demonstration only.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID of the credential holder"
+        },
+        "providerName": {
+          "type": "string",
+          "description": "Name of the recognised provider"
+        },
+        "memberSince": {
+          "type": "string",
+          "description": "Date the provider was recognised (ISO 8601)"
+        }
+      },
+      "required": [
+        "providerName"
+      ]
+    }
+  }
+}

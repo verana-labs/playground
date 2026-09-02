@@ -25,9 +25,10 @@
 //  3. [AGREEMENT] Nothing referencing the Orchestrating Identity-Verana
 //     relationship may be published before the agreement is signed. The
 //     whole use case is therefore unlisted + noindex for now.
-//  4. [CAST] The deployment inventory (which participants get live
-//     vs-agents, hosts) has not been provided; chapter 4 demos render as
-//     "coming soon" until the cast ships. Draft claim sets were received
+//  4. [CAST] The cast CI/CD exists (bhi-* workflows, one vs-agent per
+//     participant); hosts are our proposal, pending OID confirmation.
+//     Chapter 4 demos render as "coming soon" until the cast is deployed
+//     and bhi-cast.ts carries the real DIDs. Draft claim sets were received
 //     on 2026-08-19 and revised per partner review on 2026-08-20 (see
 //     SCHEMAS): three schema families, per-credential repeating
 //     confirmed, employment reference dropped. BHI formally defines each

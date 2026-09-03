@@ -35,6 +35,10 @@ ensure_jsc "$API" "$RRP_SCHEMA_BASE_ID" "$RRP_CS_ID" > /dev/null
 
 VE_JSON=$(jq -c '.' "${CAST_DIR}/schemas/${VE_SCHEMA_FILE}")
 VE_CS_ID=$(ensure_schema_with_root "$TR_ID" "$VE_JSON" "$AGENT_DID")
+# The registry owner publishes the canonical VTJSC on its own DID document -
+# bhi-08/09 discover the schema id from the institute host (the vesta ISO
+# pattern: owner JSC for discovery, issuer-local JSC for issuance).
+ensure_jsc "$API" "$VE_SCHEMA_BASE_ID" "$VE_CS_ID" > /dev/null
 
 # The certified DVS providers issue Verified Employer under BHI's ecosystem
 OID_DID=$(get_agent_did "$OID_API")

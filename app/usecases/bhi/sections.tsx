@@ -21,6 +21,9 @@ import {
 import { Chip, Container, Section } from "../../components/ui";
 import { listPersonalWallets } from "../../lib/wallets";
 import { WalletChooser } from "../vesta/DemoWalletFlow";
+import LiveTrustCard from "../../components/LiveTrustCard";
+import VerandiaOffers from "../verandia/VerandiaOffers";
+import VerandiaRequestQr from "../verandia/VerandiaRequestQr";
 import { SubHeading, SubStepBlock } from "../story-blocks";
 import { BHI_SCENES } from "./scenes";
 import { CLOSING, DEMOS, INSTITUTE, JOURNEY, SCHEMAS, SOLUTION } from "./content";
@@ -564,10 +567,8 @@ export function Section3() {
 
 // ---------------------------------------------------------------- Chapter 4
 
-/** PENDING [CAST]: the BHI cast deployment inventory has not been
- *  provided by OID yet (hosts, live agents, demo claim sets). Every demo
- *  renders this placeholder; the cards activate when bhi-cast.ts carries
- *  real DIDs (the CCM/Vesta pattern). */
+/** Demos 4 and 5 (revocation, directory) are follow-ups; the rest of the
+ *  chapter runs live against the deployed BHI cast (bhi-cast.ts). */
 function DemoComingSoon() {
   return (
     <div className="mx-auto mt-5 max-w-xl rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-6 py-5 text-center">
@@ -607,7 +608,70 @@ export function Section4() {
             </Suspense>
           </div>
 
-          {DEMOS.demos.map((d) => (
+          {/* Demo 1 · Receive your credentials - live offers from the three
+              accredited issuers of the cast. */}
+          <div id={DEMOS.receive.id} className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.receive.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.receive.intro}
+            </p>
+            <Suspense>
+              <VerandiaOffers wallets={wallets} offers={DEMOS.receive.offers} />
+            </Suspense>
+            <div className="mt-6 grid gap-4 sm:grid-cols-3">
+              <LiveTrustCard serviceId="northbank" />
+              <LiveTrustCard serviceId="caledonian" />
+              <LiveTrustCard serviceId="cirrus" />
+            </div>
+          </div>
+
+          {/* Demo 2 · Apply to Meridian - live presentation requests, one per
+              credential (same card component: the verifier role of the
+              service makes each QR a request, not an offer). */}
+          <div id={DEMOS.apply.id} className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.apply.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.apply.intro}
+            </p>
+            <Suspense>
+              <VerandiaOffers wallets={wallets} offers={DEMOS.apply.requests} />
+            </Suspense>
+            <div className="mx-auto mt-6 max-w-md">
+              <LiveTrustCard serviceId="meridian-tech" />
+            </div>
+          </div>
+
+          {/* Demo 3 · Halcyon - a verifiable organisation with no Verified
+              Employer and no verifier permission: the refusal is the lesson. */}
+          <div id={DEMOS.halcyon.id} className="mt-14 scroll-mt-24">
+            <SubHeading>{DEMOS.halcyon.title}</SubHeading>
+            <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
+              {DEMOS.halcyon.intro}
+            </p>
+            <div className="mt-6 rounded-2xl border border-red-100 bg-white p-5 shadow-sm">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="font-bold text-gray-900">{DEMOS.halcyon.org}</h3>
+                <Chip tone="verified">TRUSTED</Chip>
+                <Chip>no Verified Employer credential</Chip>
+              </div>
+              <p className="mt-2 text-sm leading-relaxed text-red-600">
+                {DEMOS.halcyon.expect}
+              </p>
+              <div className="mt-4 space-y-3">
+                <Suspense>
+                  <VerandiaRequestQr
+                    wallets={wallets}
+                    serviceId={DEMOS.halcyon.serviceId}
+                    label={DEMOS.halcyon.org}
+                    credential={DEMOS.halcyon.credential}
+                  />
+                </Suspense>
+                <LiveTrustCard serviceId={DEMOS.halcyon.serviceId} />
+              </div>
+            </div>
+          </div>
+
+          {DEMOS.comingSoon.map((d) => (
             <div key={d.id} id={d.id} className="mt-14 scroll-mt-24">
               <SubHeading>{d.title}</SubHeading>
               <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">

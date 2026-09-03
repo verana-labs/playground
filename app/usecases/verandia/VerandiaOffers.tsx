@@ -96,8 +96,8 @@ export default function VerandiaOffers({
         ))}
       </div>
       <p className="text-xs text-gray-400">
-        Each QR is minted live by the issuing service when you reveal it - a
-        single-use credential offer for your wallet.
+        Each QR is minted live by the service when you reveal it - a
+        single-use credential offer or presentation request for your wallet.
       </p>
       {!format ? null : (
         <Chip tone="verified">

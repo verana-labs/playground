@@ -113,9 +113,8 @@ draft.
 
 ## After a bootstrap
 
-`app/lib/bhi-cast.ts` still carries the `QmBhiCastPending…` placeholder
-DIDs. Once the cast is live, replace each DID with the real `did:webvh`
-value from `https://<host>/.well-known/did.jsonl` (state.id) - the provision
-logs also print the on-chain registry/schema ids. The chapter-4 demo cards
-stay "coming soon" until the demo wiring lands (a follow-up, per the
-Verandia offers/login pattern).
+`app/lib/bhi-cast.ts` carries the live `did:webvh` values from the
+2026-09-02 bootstrap (read from each host's `did.jsonl` log, `state.id`);
+re-read them after any re-deploy that rotates a DID. The chapter-4 demos
+1-3 run live against the cast via `/api/demo` (Verandia offers/request
+pattern); demos 4-5 (revocation, directory) remain follow-ups.

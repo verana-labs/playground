@@ -36,6 +36,22 @@ import {
 } from "@/app/lib/demo-ccm";
 import { CCM_LEGAL_REP_JSC, CCM_LEGAL_REP_NAME } from "@/app/lib/ccm-cast";
 import { CEXA_KYC_JSC } from "@/app/lib/cexa-cast";
+import {
+  BHI_EMPLOYMENT_JSC,
+  BHI_EMPLOYMENT_NAME,
+  BHI_QUALIFICATION_JSC,
+  BHI_QUALIFICATION_NAME,
+  BHI_RTW_JSC,
+  BHI_RTW_NAME,
+} from "@/app/lib/bhi-cast";
+import {
+  employmentDemoClaims,
+  employmentOid4vcClaims,
+  qualificationDemoClaims,
+  qualificationOid4vcClaims,
+  rtwDemoClaims,
+  rtwOid4vcClaims,
+} from "@/app/lib/demo-bhi";
 import { cexaKycDemoClaims, cexaKycOid4vcClaims } from "@/app/lib/demo-cexa";
 import { VESTA_CAST } from "@/app/lib/vesta-cast";
 
@@ -144,6 +160,35 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     jscUrl: BOLIVIA_LEGAL_REP_JSC,
     claims: () => boliviaLegalRepDemoClaims(),
     oid4vcClaims: () => boliviaLegalRepOid4vcClaims(),
+  },
+  "bhi-qualification": {
+    label: "Qualification credential",
+    // One AnonCreds type name across BOTH issuers (Caledonian, Cirrus); the
+    // claims function decides which of Alex's qualifications each one mints.
+    credDefName: BHI_QUALIFICATION_NAME,
+    oid4vcConfig: process.env.DEMO_OID4VC_BHI_QUAL_CONFIG ?? "bhi-qualification",
+    oid4vcPolicy: process.env.DEMO_OID4VC_BHI_QUAL_POLICY ?? "bhi-qualification",
+    jscUrl: BHI_QUALIFICATION_JSC,
+    claims: (serviceId) => qualificationDemoClaims(serviceId),
+    oid4vcClaims: (serviceId) => qualificationOid4vcClaims(serviceId),
+  },
+  "bhi-employment": {
+    label: "Employment credential",
+    credDefName: BHI_EMPLOYMENT_NAME,
+    oid4vcConfig: process.env.DEMO_OID4VC_BHI_EMP_CONFIG ?? "bhi-employment",
+    oid4vcPolicy: process.env.DEMO_OID4VC_BHI_EMP_POLICY ?? "bhi-employment",
+    jscUrl: BHI_EMPLOYMENT_JSC,
+    claims: () => employmentDemoClaims(),
+    oid4vcClaims: () => employmentOid4vcClaims(),
+  },
+  "bhi-right-to-work": {
+    label: "Right to Work credential",
+    credDefName: BHI_RTW_NAME,
+    oid4vcConfig: process.env.DEMO_OID4VC_BHI_RTW_CONFIG ?? "bhi-right-to-work",
+    oid4vcPolicy: process.env.DEMO_OID4VC_BHI_RTW_POLICY ?? "bhi-right-to-work",
+    jscUrl: BHI_RTW_JSC,
+    claims: () => rtwDemoClaims(),
+    oid4vcClaims: () => rtwOid4vcClaims(),
   },
   "ccm-legal-rep": {
     label: "credencial de Representación Legal",

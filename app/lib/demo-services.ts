@@ -3,6 +3,7 @@ import { BOLIVIA_CAST } from "./bolivia-cast";
 import { CCM_CAST } from "./ccm-cast";
 import { CEXA_CAST } from "./cexa-cast";
 import { VERANDIA_CAST } from "./verandia-cast";
+import { BHI_CAST } from "./bhi-cast";
 
 const BASE = process.env.DEMOS_BASE_DOMAIN ?? "main.demos.testnet.verana.network";
 const CAST = process.env.CAST_BASE_DOMAIN ?? "playground.testnet.verana.network";
@@ -46,6 +47,19 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "impuestos", label: "Impuestos Nacionales (demo)", host: BOLIVIA_CAST.impuestos.host, appUrl: invite(BOLIVIA_CAST.impuestos.host), role: "verifier" },
   { id: "banco-union", label: "Banco Unión (demo)", host: BOLIVIA_CAST.bancoUnion.host, appUrl: invite(BOLIVIA_CAST.bancoUnion.host), role: "verifier" },
   { id: "prestamista", label: "Prestamista en línea (simulado)", host: BOLIVIA_CAST.prestamista.host, appUrl: invite(BOLIVIA_CAST.prestamista.host), role: "verifier" },
+  // The BHI cast (the UK Verifiable Hiring story at /usecases/bhi), deployed
+  // by .github/workflows/bhi-*. Ids equal the Helm release names (the
+  // in-cluster admin API addresses); note meridian-tech vs the meridian.…
+  // host, and the live did:webvh values in bhi-cast.ts.
+  { id: "institute", label: "Better Hiring Institute", host: BHI_CAST.bhi.host, did: BHI_CAST.bhi.did, role: "anchor" },
+  { id: "orchestrating-identity", label: "Orchestrating Identity", host: BHI_CAST.oid.host, did: BHI_CAST.oid.did, role: "issuer" },
+  { id: "tvs", label: "Trustworthy Verification Services (demo)", host: BHI_CAST.tvs.host, did: BHI_CAST.tvs.did, role: "issuer" },
+  { id: "northbank", label: "Northbank Identity (demo)", host: BHI_CAST.northbank.host, did: BHI_CAST.northbank.did, appUrl: invite(BHI_CAST.northbank.host), role: "issuer" },
+  { id: "caledonian", label: "Caledonian University (demo)", host: BHI_CAST.caledonian.host, did: BHI_CAST.caledonian.did, appUrl: invite(BHI_CAST.caledonian.host), role: "issuer" },
+  { id: "cirrus", label: "Cirrus Certification (demo)", host: BHI_CAST.cirrus.host, did: BHI_CAST.cirrus.did, appUrl: invite(BHI_CAST.cirrus.host), role: "issuer" },
+  { id: "meridian-tech", label: "Meridian Technologies (demo)", host: BHI_CAST.meridian.host, did: BHI_CAST.meridian.did, appUrl: invite(BHI_CAST.meridian.host), role: "verifier" },
+  { id: "jobsearch", label: "JobSearch (demo)", host: BHI_CAST.jobsearch.host, did: BHI_CAST.jobsearch.did, appUrl: invite(BHI_CAST.jobsearch.host), role: "verifier" },
+  { id: "halcyon", label: "Halcyon Talent (demo)", host: BHI_CAST.halcyon.host, did: BHI_CAST.halcyon.did, appUrl: invite(BHI_CAST.halcyon.host), role: "verifier" },
   // The CCM cast (the Colombian legal-representation story at /usecases/ccm),
   // deployed by .github/workflows/ccm-*. Real institutions (demo); DIDs come
   // from host discovery until ccm-cast.ts placeholders are replaced.

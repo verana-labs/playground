@@ -25,14 +25,15 @@
 //  3. [AGREEMENT] Nothing referencing the Orchestrating Identity-Verana
 //     relationship may be published before the agreement is signed. The
 //     whole use case is therefore unlisted + noindex for now.
-//  4. [CAST] The cast CI/CD exists (bhi-* workflows, one vs-agent per
-//     participant); hosts are our proposal, pending OID confirmation.
-//     Chapter 4 demos render as "coming soon" until the cast is deployed
-//     and bhi-cast.ts carries the real DIDs. Draft claim sets were received
-//     on 2026-08-19 and revised per partner review on 2026-08-20 (see
-//     SCHEMAS): three schema families, per-credential repeating
-//     confirmed, employment reference dropped. BHI formally defines each
-//     schema via a template David Rennie is preparing.
+//  4. [CAST] The cast is DEPLOYED on the testnet (2026-09-02 bootstrap;
+//     bhi-* workflows, one vs-agent per participant) and chapter 4 demos
+//     1-3 run live against it; demos 4-5 (revocation, directory) are
+//     follow-ups. Hosts remain our proposal, pending OID confirmation.
+//     Claim sets follow the partner review of 2026-08-20 (see SCHEMAS):
+//     three schema families, per-credential repeating confirmed,
+//     employment reference dropped. BHI formally defines each schema via
+//     a template David Rennie is preparing; treat the deployed claim sets
+//     as draft until then.
 // ---------------------------------------------------------------------
 
 import type { Stage } from "./scenes";
@@ -582,7 +583,7 @@ export const SCHEMAS = {
 
 export const DEMOS = {
   intro:
-    "Get your credentials, apply for a job, and watch a fake employer fail. Everything below will run live against the Verana testnet, one vs-agent per participant, once the BHI cast is deployed.",
+    "Get your credentials, apply for a job, and watch a fake employer fail. Everything below runs live against the Verana testnet: one vs-agent per participant, and every QR is minted at the moment you reveal it.",
   verifyRule:
     "Always verify the certified organisation name and data shown in the Proof-of-Trust card in your wallet before proceeding.",
   chooseWallet: {
@@ -590,22 +591,100 @@ export const DEMOS = {
     intro:
       "Pick any of the integrated personal wallets: every one reaches the same verdict by the same route. The demo QR codes are minted for the wallet you choose.",
   },
-  demos: [
-    {
-      id: "demo-credentials",
-      title: "Demo 1 · Receive your credentials",
-      desc: "Request the demo credentials and watch your wallet check each issuer's accreditation before offering to accept.",
-    },
-    {
-      id: "demo-apply",
-      title: "Demo 2 · Apply to Meridian Technologies (demo)",
-      desc: "The full flow: scan, review the requester, select, approve, submit. Note what you are shown before you are asked to share anything.",
-    },
-    {
-      id: "demo-halcyon",
-      title: "Demo 3 · Apply to Halcyon Talent (demo)",
-      desc: "Same flow, same-looking site. Watch the wallet stop you: a red Proof-of-Trust card.",
-    },
+  // Demo 1 - the four issuance cards. serviceId/credential key into
+  // demo-services.ts and the /api/demo CREDENTIALS registry; the claim sets
+  // (Alex Chen's story data) live in demo-bhi.ts.
+  receive: {
+    id: "demo-credentials",
+    title: "Demo 1 · Receive your credentials",
+    intro:
+      "Play Alex Chen (demo). Scan each issuer below: your wallet resolves it against the registry and shows its Proof-of-Trust card before offering to accept. The Employment card mints one credential per employment relationship, so scan it more than once to build the work history.",
+    offers: [
+      {
+        org: "Northbank Identity (demo)",
+        serviceId: "northbank",
+        credential: "bhi-right-to-work",
+        expect:
+          "Your Right to Work credential: exactly one per person, established against government records. Green Proof-of-Trust: a certified DVS issuer.",
+        tone: "emerald" as const,
+      },
+      {
+        org: "Northbank Identity (demo)",
+        serviceId: "northbank",
+        credential: "bhi-employment",
+        expect:
+          "An Employment credential: one per employment relationship, the newest with no end date. Scan again for the next entry in the history.",
+        tone: "emerald" as const,
+      },
+      {
+        org: "Caledonian University (demo)",
+        serviceId: "caledonian",
+        credential: "bhi-qualification",
+        expect:
+          "A Qualification credential for the BSc in Computer Science, issued by the awarding body itself.",
+        tone: "emerald" as const,
+      },
+      {
+        org: "Cirrus Certification (demo)",
+        serviceId: "cirrus",
+        credential: "bhi-qualification",
+        expect:
+          "A second Qualification credential, the professional cloud certification: same schema, a different accredited issuer.",
+        tone: "emerald" as const,
+      },
+    ],
+  },
+  // Demo 2 - the Verified Employer asks. Same card component: on a verifier
+  // service the QR is a live presentation request, not an offer.
+  apply: {
+    id: "demo-apply",
+    title: "Demo 2 · Apply to Meridian Technologies (demo)",
+    intro:
+      "The full flow: scan, review the requester, select, approve, submit. Before you share anything, the wallet shows who is asking - the certified organisation name, its Verified Employer credential, and its permission to request each credential.",
+    requests: [
+      {
+        org: "Meridian Technologies (demo)",
+        serviceId: "meridian-tech",
+        credential: "bhi-right-to-work",
+        expect:
+          "Meridian requests your Right to Work credential: the statutory check, answered from your wallet in seconds.",
+        tone: "emerald" as const,
+      },
+      {
+        org: "Meridian Technologies (demo)",
+        serviceId: "meridian-tech",
+        credential: "bhi-employment",
+        expect:
+          "Meridian requests an Employment credential: pick which employment to disclose - the wallet shares only what you select.",
+        tone: "emerald" as const,
+      },
+      {
+        org: "Meridian Technologies (demo)",
+        serviceId: "meridian-tech",
+        credential: "bhi-qualification",
+        expect:
+          "Meridian requests a Qualification credential: degree or certification, your choice of which to present.",
+        tone: "emerald" as const,
+      },
+    ],
+  },
+  // Demo 3 - the impostor. Halcyon IS a verifiable organisation (that is the
+  // point): the refusal comes from what its DID does NOT present - no
+  // Verified Employer credential, no verifier permission on the schemas.
+  halcyon: {
+    id: "demo-halcyon",
+    title: "Demo 3 · Apply to Halcyon Talent (demo)",
+    intro:
+      "Same flow, same-looking site. Halcyon Talent is a genuinely verifiable organisation, and that is exactly why the wallet can catch it: it presents no Verified Employer credential and holds no permission to request hiring credentials.",
+    org: "Halcyon Talent (demo)",
+    serviceId: "halcyon",
+    credential: "bhi-right-to-work",
+    expect:
+      "Halcyon asks for your Right to Work credential. Watch the wallet stop you: an organisation outside the Recruitment Trust Network, asking for a credential it has no right to see.",
+  },
+  // Demos 4 and 5 - follow-ups (revocation flow and the directory / Trust
+  // Graph, per the Vesta pattern); they keep the coming-soon card.
+  comingSoon: [
     {
       id: "demo-revoked",
       title: "Demo 4 · Present a revoked credential",
@@ -619,10 +698,8 @@ export const DEMOS = {
   ],
   freeNote:
     "Participation in the demonstrator is free. It runs on the Verana testnet, and no party charges a fee for joining, issuing or verifying within it.",
-  // PENDING [CAST]: all five demos render as "coming soon" until the BHI
-  // cast (bhi-cast.ts) is deployed and its DIDs replace the placeholders.
   pendingNote:
-    "This service of the BHI cast is not yet deployed on the testnet: the demo activates automatically once its agent is online.",
+    "This demo is not wired up yet: it activates in a follow-up while the rest of the cast runs live.",
 };
 
 export const CLOSING = {

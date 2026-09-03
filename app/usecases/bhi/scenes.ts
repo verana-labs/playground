@@ -3,8 +3,9 @@
 // the employer, the job board, the candidate and the impostors, revealed
 // and transformed stage by stage. Real organisations (BHI, Orchestrating
 // Identity) appear as themselves; everyone else is fictional and labeled
-// (demo). No DIDs: trust cards carry story data until the cast is
-// deployed (chapter 4 hosts the live cards, pending the cast).
+// (demo). Every deployed cast member carries its live did:webvh (bhi-cast),
+// so the trust cards resolve against the testnet; Northgate and HMRC stay
+// story-only (no agent, by design).
 //
 // The 3.3 stage is the one the source calls out as mattering most: two
 // grantor branches side by side, the visual form of the openness
@@ -16,6 +17,7 @@ import type {
   SceneEdge,
   SceneBadge,
 } from "../../components/scene-graph";
+import { BHI_CAST } from "../../lib/bhi-cast";
 
 export const STAGES = [
   "3.0",
@@ -33,6 +35,7 @@ const NODES: SceneNode[] = [
   // ---- the protagonist
   {
     id: "bhi",
+    did: BHI_CAST.bhi.did,
     x: 330,
     y: 450,
     r: 28,
@@ -52,6 +55,7 @@ const NODES: SceneNode[] = [
   // ---- the market, today
   {
     id: "meridian",
+    did: BHI_CAST.meridian.did,
     x: 760,
     y: 330,
     icon: "building",
@@ -69,6 +73,7 @@ const NODES: SceneNode[] = [
   },
   {
     id: "jobsearch",
+    did: BHI_CAST.jobsearch.did,
     x: 1060,
     y: 330,
     icon: "building",
@@ -102,6 +107,7 @@ const NODES: SceneNode[] = [
   // ---- the red world
   {
     id: "halcyon",
+    did: BHI_CAST.halcyon.did,
     x: 600,
     y: 620,
     icon: "ghost",
@@ -167,6 +173,7 @@ const NODES: SceneNode[] = [
   // ---- the two certified grantors (the openness argument)
   {
     id: "oid",
+    did: BHI_CAST.oid.did,
     x: 170,
     y: 260,
     icon: "stamp",
@@ -180,6 +187,7 @@ const NODES: SceneNode[] = [
   },
   {
     id: "tvs",
+    did: BHI_CAST.tvs.did,
     x: 520,
     y: 260,
     icon: "stamp",
@@ -194,6 +202,7 @@ const NODES: SceneNode[] = [
   // ---- the candidate's issuers (build 4)
   {
     id: "caledonian",
+    did: BHI_CAST.caledonian.did,
     x: 650,
     y: 740,
     icon: "award",
@@ -205,6 +214,7 @@ const NODES: SceneNode[] = [
   },
   {
     id: "northbank",
+    did: BHI_CAST.northbank.did,
     x: 950,
     y: 790,
     icon: "id",
@@ -216,6 +226,7 @@ const NODES: SceneNode[] = [
   },
   {
     id: "cirrus",
+    did: BHI_CAST.cirrus.did,
     x: 1200,
     y: 700,
     icon: "badge",
@@ -574,5 +585,5 @@ export const BHI_SCENES: SceneGraph = {
     },
   },
   verifiedNote:
-    "Illustrative data until the BHI cast is deployed on the testnet: the live trust cards arrive with chapter 4.",
+    "This organisation runs a live verifiable service on the Verana testnet (the deployed BHI cast): resolve it yourself in chapter 4.",
 };

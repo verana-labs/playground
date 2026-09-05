@@ -45,12 +45,14 @@ import {
   BHI_RTW_NAME,
 } from "@/app/lib/bhi-cast";
 import {
+  applicantFromParams,
   employmentDemoClaims,
   employmentOid4vcClaims,
   qualificationDemoClaims,
   qualificationOid4vcClaims,
   rtwDemoClaims,
   rtwOid4vcClaims,
+  type DemoApplicant,
 } from "@/app/lib/demo-bhi";
 import { cexaKycDemoClaims, cexaKycOid4vcClaims } from "@/app/lib/demo-cexa";
 import { VESTA_CAST } from "@/app/lib/vesta-cast";
@@ -81,8 +83,11 @@ type CredentialKind = {
   oid4vcPolicy: string;
   /** VTJSC the DIDComm presentation request asks for. */
   jscUrl: string;
-  claims: (serviceId: string) => Claim[];
-  oid4vcClaims: (serviceId: string) => Record<string, string>;
+  claims: (serviceId: string, applicant: DemoApplicant) => Claim[];
+  oid4vcClaims: (
+    serviceId: string,
+    applicant: DemoApplicant,
+  ) => Record<string, string>;
 };
 
 const CREDENTIALS: Record<string, CredentialKind> = {
@@ -187,8 +192,10 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     oid4vcConfig: process.env.DEMO_OID4VC_BHI_RTW_CONFIG ?? "bhi-right-to-work",
     oid4vcPolicy: process.env.DEMO_OID4VC_BHI_RTW_POLICY ?? "bhi-right-to-work",
     jscUrl: BHI_RTW_JSC,
-    claims: () => rtwDemoClaims(),
-    oid4vcClaims: () => rtwOid4vcClaims(),
+    // The one claim set that takes the wizard's applicant name (sanitized
+    // firstName/surname query params; Alex Chen otherwise).
+    claims: (_serviceId, applicant) => rtwDemoClaims(applicant),
+    oid4vcClaims: (_serviceId, applicant) => rtwOid4vcClaims(applicant),
   },
   "ccm-legal-rep": {
     label: "credencial de Representación Legal",
@@ -286,6 +293,7 @@ export async function GET(
   // its stack accepts, and the wallet-side check binds that cert back to the
   // DID it names in its URI SAN.
   const requestSigner = search.get("signer") === "x5c" ? "x5c" : undefined;
+  const applicant = applicantFromParams(search);
   const kind = CREDENTIALS[credentialId];
   const isBadge = credentialId === "ecs-badge";
   const service = getDemoService(serviceId);
@@ -340,7 +348,7 @@ export async function GET(
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             credentialConfigurationId: kind.oid4vcConfig,
-            claims: kind.oid4vcClaims(serviceId),
+            claims: kind.oid4vcClaims(serviceId, applicant),
           }),
         });
         const url =
@@ -391,7 +399,7 @@ export async function GET(
       // missing and adds nothing.
       // Copy before the attr-fill below: a claims function may hand out a
       // shared array, and pushing into it would pollute every later offer.
-      const claims = [...kind.claims(serviceId)];
+      const claims = [...kind.claims(serviceId, applicant)];
       const attrNames = await anoncredsAttrNames(kind.jscUrl);
       if (attrNames) {
         const present = new Set(claims.map((c) => c.name));

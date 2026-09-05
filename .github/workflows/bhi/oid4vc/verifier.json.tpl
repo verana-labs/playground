@@ -33,7 +33,6 @@
         "firstName",
         "surname",
         "birthDate",
-        "portrait",
         "nationality",
         "rtwEstablishedDate",
         "rtwExpiryDate"
@@ -42,7 +41,6 @@
         "firstName",
         "surname",
         "birthDate",
-        "portrait",
         "nationality",
         "rtwEstablishedDate",
         "rtwExpiryDate"

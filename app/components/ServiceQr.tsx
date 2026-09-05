@@ -3,6 +3,13 @@ import { withBase } from "../lib/base-path";
 
 import { BadgeCheck, ExternalLink, RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
+
+/** Terminal outcome of the minted action, for callers that react to the
+ *  wallet's answer (the BHI applicant-journey wizard auto-advances on it). */
+export type ServiceQrOutcome =
+  | { kind: "delivered" }
+  | { kind: "declined" }
+  | { kind: "presented"; verified: boolean; claims: { name: string; value: string }[] };
 import QRCode from "qrcode";
 
 type DemoApiResponse = {
@@ -169,6 +176,7 @@ export function ServiceQr({
   demoParams,
   openInWallet,
   bare = false,
+  onSettled,
 }: {
   serviceId: string;
   label: string;
@@ -185,6 +193,9 @@ export function ServiceQr({
   /** Render only the QR itself - no card wrapper, no URL, no caption.
    *  Used when the QR sits inside the caller's own card. */
   bare?: boolean;
+  /** Fires once per mint when the action settles - credential delivered or
+   *  declined, presentation received. A restart re-arms it. */
+  onSettled?: (outcome: ServiceQrOutcome) => void;
 }) {
   const [revealed, setRevealed] = useState(false);
   const [appUrl, setAppUrl] = useState<string | null | undefined>(undefined);
@@ -200,6 +211,8 @@ export function ServiceQr({
   const [attempt, setAttempt] = useState(0);
   const retry = useCallback(() => setAttempt((n) => n + 1), []);
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const onSettledRef = useRef(onSettled);
+  onSettledRef.current = onSettled;
 
   // Auto-reveal: mint and show the QR as soon as the card scrolls into
   // view (once). Environments without IntersectionObserver reveal at mount.
@@ -271,6 +284,11 @@ export function ServiceQr({
           if (!alive) return;
           if (body?.state === "done") {
             setProof(body);
+            onSettledRef.current?.({
+              kind: "presented",
+              verified: !!body.verified,
+              claims: body.claims ?? [],
+            });
             return;
           }
         }
@@ -301,6 +319,9 @@ export function ServiceQr({
           if (!alive) return;
           if (body?.done || body?.declined) {
             setCredStatus(body);
+            onSettledRef.current?.({
+              kind: body.declined ? "declined" : "delivered",
+            });
             return;
           }
         }

@@ -8,6 +8,7 @@ import {
   Briefcase,
   Check,
   ChevronRight,
+  QrCode,
   RotateCcw,
 } from "lucide-react";
 import type { PersonalWallet } from "../../lib/wallets";
@@ -408,6 +409,9 @@ function CollectStep({
   onNext: () => void;
 }) {
   const c = WIZARD.collect;
+  // One QR at a time (the Verandia offer-card pattern): revealing an item
+  // mints its offer and hides any other open QR.
+  const [active, setActive] = useState<string | null>(null);
   return (
     <div>
       <SubHeading>{c.title}</SubHeading>
@@ -441,27 +445,44 @@ function CollectStep({
                 ) : null}
               </p>
               <div className="mt-4 border-t border-gray-100 pt-4">
-                <ServiceQr
-                  serviceId={item.serviceId}
-                  label={item.org}
-                  format={format}
-                  credential={item.credential}
-                  demoParams={joinParams(
-                    wallet.demoParams,
-                    item.named ? nameParams : undefined,
-                  )}
-                  bare
-                  onSettled={(o: ServiceQrOutcome) => {
-                    if (o.kind === "delivered") onTick(item.id);
-                  }}
-                />
-                {count === 0 ? (
-                  <div className="mt-3 text-center">
-                    <GhostButton onClick={() => onTick(item.id)}>
-                      {c.manualTick}
-                    </GhostButton>
-                  </div>
-                ) : null}
+                {active === item.id ? (
+                  <>
+                    <ServiceQr
+                      serviceId={item.serviceId}
+                      label={item.org}
+                      format={format}
+                      credential={item.credential}
+                      demoParams={joinParams(
+                        wallet.demoParams,
+                        item.named ? nameParams : undefined,
+                      )}
+                      bare
+                      onSettled={(o: ServiceQrOutcome) => {
+                        if (o.kind === "delivered") onTick(item.id);
+                      }}
+                    />
+                    {count === 0 ? (
+                      <div className="mt-3 text-center">
+                        <GhostButton onClick={() => onTick(item.id)}>
+                          {c.manualTick}
+                        </GhostButton>
+                      </div>
+                    ) : null}
+                  </>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setActive(item.id)}
+                    className="flex w-full flex-col items-center gap-2 rounded-xl border-2 border-dashed border-gray-300 px-4 py-6 text-gray-400 transition-colors hover:border-violet-300 hover:text-violet-600"
+                  >
+                    <QrCode className="h-10 w-10" aria-hidden />
+                    <span className="text-xs font-medium">
+                      {count > 0 && item.repeat
+                        ? "Click to scan again"
+                        : "Click to reveal the QR code"}
+                    </span>
+                  </button>
+                )}
               </div>
             </div>
           );

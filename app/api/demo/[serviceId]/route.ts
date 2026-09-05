@@ -389,7 +389,9 @@ export async function GET(
       // values) - fill the gap with a per-scan subject urn. Self-healing:
       // if the derivation ever stops including id, the probe finds nothing
       // missing and adds nothing.
-      const claims = kind.claims(serviceId);
+      // Copy before the attr-fill below: a claims function may hand out a
+      // shared array, and pushing into it would pollute every later offer.
+      const claims = [...kind.claims(serviceId)];
       const attrNames = await anoncredsAttrNames(kind.jscUrl);
       if (attrNames) {
         const present = new Set(claims.map((c) => c.name));

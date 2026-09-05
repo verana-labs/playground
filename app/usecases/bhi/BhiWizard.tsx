@@ -767,17 +767,6 @@ function Debrief({ onRestart }: { onRestart: () => void }) {
           </li>
         ))}
       </ol>
-      <div className="mt-8 max-w-3xl rounded-2xl border border-gray-200 bg-gray-50 p-5">
-        <h3 className="text-sm font-bold text-gray-900">{d.comingTitle}</h3>
-        <ul className="mt-2 space-y-1.5">
-          {d.coming.map((c) => (
-            <li key={c} className="flex items-start gap-2 text-sm text-gray-600">
-              <Chip tone="pending">soon</Chip>
-              <span className="pt-0.5">{c}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
       <div className="mt-8">
         <GhostButton
           onClick={onRestart}

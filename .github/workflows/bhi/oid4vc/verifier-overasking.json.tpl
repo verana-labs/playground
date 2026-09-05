@@ -2,6 +2,7 @@
   "verifier": {
     "id": "demo",
     "displayName": "__SERVICE_NAME__",
+    "requestSigner": "did",
     "signing": {
       "development": {
         "enabled": true,
@@ -101,8 +102,7 @@
         "birthDate",
         "portrait",
         "nationality",
-        "rtwEstablishedDate",
-        "rtwExpiryDate"
+        "rtwEstablishedDate"
       ]
     },
     {
@@ -110,8 +110,7 @@
       "credentialConfigurationId": "bhi-employment",
       "requestedClaims": [
         "employer",
-        "startDate",
-        "endDate"
+        "startDate"
       ]
     },
     {

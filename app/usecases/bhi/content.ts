@@ -624,7 +624,9 @@ export const WIZARD = {
     cta: "Continue",
   },
   collect: {
-    title: "Collect your credentials",
+    // {name} is replaced with the applicant's chosen name; "their" stays
+    // neutral - a name cannot tell us which pronoun its owner uses.
+    title: "{name} collects their credentials",
     intro:
       "Scan each issuer. Your wallet resolves it against the registry and shows its Proof-of-Trust card before offering to accept, and this page ticks each item off the moment the credential lands in your wallet.",
     items: [

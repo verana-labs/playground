@@ -410,7 +410,7 @@ function CollectStep({
   const c = WIZARD.collect;
   return (
     <div>
-      <SubHeading>{c.title}</SubHeading>
+      <SubHeading>{c.title.replace("{name}", fullName || "Alex Chen")}</SubHeading>
       <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
         {c.intro}
       </p>

@@ -55,7 +55,10 @@ const EMPLOYMENTS: Claim[][] = [
 ];
 
 export function employmentDemoClaims(): Claim[] {
-  return EMPLOYMENTS[Math.floor(Math.random() * EMPLOYMENTS.length)];
+  // Copy: callers (the /api/demo AnonCreds attr-fill) append to the returned
+  // array, and the shared entries must not accumulate those additions.
+  const picked = EMPLOYMENTS[Math.floor(Math.random() * EMPLOYMENTS.length)];
+  return picked.map((c) => ({ ...c }));
 }
 
 /** Exactly one Right to Work credential per person. */

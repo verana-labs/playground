@@ -2,12 +2,49 @@
 // Employment and Right to Work offers (Run the demos, BHI chapter 4).
 // Same conventions as demo-verandia.ts: AnonCreds claims carry every schema
 // attribute the demo sets (the /api/demo attr-fill covers the rest); the
-// SD-JWT rail drops empty placeholders. The portrait reuses the generated
-// demo avatar. Alex Chen (demo) is the story's candidate.
-
-import { BADGE_DEMO_AVATAR } from "./demo-badge";
+// SD-JWT rail drops empty placeholders. Alex Chen (demo) is the default
+// candidate; the applicant-journey wizard lets the visitor rename them,
+// which flows into the Right to Work claims only. No portrait: a photo
+// claim makes wallets that support it (Inji) demand live face
+// verification, which the demo persona cannot pass.
 
 type Claim = { name: string; value: string };
+
+export type DemoApplicant = { firstName: string; surname: string };
+
+export const DEFAULT_APPLICANT: DemoApplicant = {
+  firstName: "Alex",
+  surname: "Chen",
+};
+
+/** Visitor-supplied names reach a real testnet credential: keep them short
+ *  and name-shaped (letters, spaces, hyphens, apostrophes, dots), falling
+ *  back to the default persona. */
+export function sanitizeApplicantName(
+  value: string | null | undefined,
+  fallback: string,
+): string {
+  const cleaned = (value ?? "")
+    .replace(/[^\p{L}\p{M}' .-]/gu, "")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 40)
+    .trim();
+  return cleaned || fallback;
+}
+
+export function applicantFromParams(params: URLSearchParams): DemoApplicant {
+  return {
+    firstName: sanitizeApplicantName(
+      params.get("firstName"),
+      DEFAULT_APPLICANT.firstName,
+    ),
+    surname: sanitizeApplicantName(
+      params.get("surname"),
+      DEFAULT_APPLICANT.surname,
+    ),
+  };
+}
 
 /** One credential per qualification: the issuing service decides which of
  *  Alex's two qualifications it mints - the BSc from Caledonian, the cloud
@@ -61,13 +98,15 @@ export function employmentDemoClaims(): Claim[] {
   return picked.map((c) => ({ ...c }));
 }
 
-/** Exactly one Right to Work credential per person. */
-export function rtwDemoClaims(): Claim[] {
+/** Exactly one Right to Work credential per person - the one credential
+ *  that carries the applicant's (possibly visitor-chosen) name. */
+export function rtwDemoClaims(
+  applicant: DemoApplicant = DEFAULT_APPLICANT,
+): Claim[] {
   return [
-    { name: "firstName", value: "Alex" },
-    { name: "surname", value: "Chen" },
+    { name: "firstName", value: applicant.firstName },
+    { name: "surname", value: applicant.surname },
     { name: "birthDate", value: "19940211" },
-    { name: "portrait", value: BADGE_DEMO_AVATAR },
     { name: "nationality", value: "GB" },
     { name: "rtwEstablishedDate", value: "2026-08-01" },
     // no rtwExpiryDate: a British citizen's right to work does not expire
@@ -82,4 +121,5 @@ const toOid4vc = (claims: Claim[]) =>
 export const qualificationOid4vcClaims = (serviceId: string) =>
   toOid4vc(qualificationDemoClaims(serviceId));
 export const employmentOid4vcClaims = () => toOid4vc(employmentDemoClaims());
-export const rtwOid4vcClaims = () => toOid4vc(rtwDemoClaims());
+export const rtwOid4vcClaims = (applicant?: DemoApplicant) =>
+  toOid4vc(rtwDemoClaims(applicant));

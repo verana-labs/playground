@@ -1,10 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
+  applicantFromParams,
   employmentDemoClaims,
   employmentOid4vcClaims,
   qualificationDemoClaims,
   rtwDemoClaims,
   rtwOid4vcClaims,
+  sanitizeApplicantName,
 } from "./demo-bhi";
 
 describe("BHI demo claims", () => {
@@ -36,6 +38,41 @@ describe("BHI demo claims", () => {
   it("omits the schema-optional claims instead of sending placeholders", () => {
     expect(Object.keys(rtwOid4vcClaims())).not.toContain("rtwExpiryDate");
     expect(rtwDemoClaims().map((c) => c.name)).not.toContain("rtwExpiryDate");
+  });
+
+  it("carries no portrait (wallets that support one demand live face verification)", () => {
+    expect(rtwDemoClaims().map((c) => c.name)).not.toContain("portrait");
+    expect(Object.keys(rtwOid4vcClaims())).not.toContain("portrait");
+  });
+
+  it("mints the Right to Work in the applicant's chosen name", () => {
+    const claims = rtwDemoClaims({ firstName: "Priya", surname: "O'Neill" });
+    expect(claims.find((c) => c.name === "firstName")?.value).toBe("Priya");
+    expect(claims.find((c) => c.name === "surname")?.value).toBe("O'Neill");
+  });
+
+  it("keeps visitor names name-shaped and falls back to the persona", () => {
+    expect(sanitizeApplicantName("  Priya  ", "Alex")).toBe("Priya");
+    expect(sanitizeApplicantName("O'Neill-Smythe", "Chen")).toBe("O'Neill-Smythe");
+    expect(sanitizeApplicantName("Zoë", "Alex")).toBe("Zoë");
+    expect(sanitizeApplicantName("<script>alert(1)</script>", "Alex")).toBe(
+      "scriptalertscript",
+    );
+    expect(sanitizeApplicantName("💥💥", "Alex")).toBe("Alex");
+    expect(sanitizeApplicantName(null, "Alex")).toBe("Alex");
+    expect(sanitizeApplicantName("x".repeat(80), "Alex")).toHaveLength(40);
+  });
+
+  it("reads sanitized applicant names from mint query params", () => {
+    const params = new URLSearchParams("firstName=Priya&surname=Patel%20Q1!");
+    expect(applicantFromParams(params)).toEqual({
+      firstName: "Priya",
+      surname: "Patel Q",
+    });
+    expect(applicantFromParams(new URLSearchParams())).toEqual({
+      firstName: "Alex",
+      surname: "Chen",
+    });
   });
 
   it("branches the qualification on the issuing service", () => {

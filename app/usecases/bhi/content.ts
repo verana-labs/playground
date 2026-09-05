@@ -583,123 +583,188 @@ export const SCHEMAS = {
 
 export const DEMOS = {
   intro:
-    "Get your credentials, apply for a job, and watch a fake employer fail. Everything below runs live against the Verana testnet: one vs-agent per participant, and every QR is minted at the moment you reveal it.",
+    "Chapter 4 is a simulation you play. Create an applicant, fill a wallet with verifiable credentials, then apply to two jobs that look alike: one posted by a Verified Employer, one by an organisation the network has never authorised. Everything runs live against the Verana testnet, and every QR is minted at the moment it appears.",
   verifyRule:
     "Always verify the certified organisation name and data shown in the Proof-of-Trust card in your wallet before proceeding.",
-  chooseWallet: {
-    title: "Choose a wallet",
-    intro:
-      "Pick any of the integrated personal wallets: every one reaches the same verdict by the same route. The demo QR codes are minted for the wallet you choose.",
-  },
-  // Demo 1 - the four issuance cards. serviceId/credential key into
-  // demo-services.ts and the /api/demo CREDENTIALS registry; the claim sets
-  // (Alex Chen's story data) live in demo-bhi.ts.
-  receive: {
-    id: "demo-credentials",
-    title: "Demo 1 · Receive your credentials",
-    intro:
-      "Play Alex Chen (demo). Scan each issuer below: your wallet resolves it against the registry and shows its Proof-of-Trust card before offering to accept. The Employment card mints one credential per employment relationship, so scan it more than once to build the work history.",
-    offers: [
-      {
-        org: "Northbank Identity (demo)",
-        serviceId: "northbank",
-        credential: "bhi-right-to-work",
-        expect:
-          "Your Right to Work credential: exactly one per person, established against government records. Green Proof-of-Trust: a certified DVS issuer.",
-        tone: "emerald" as const,
-      },
-      {
-        org: "Northbank Identity (demo)",
-        serviceId: "northbank",
-        credential: "bhi-employment",
-        expect:
-          "An Employment credential: one per employment relationship, the newest with no end date. Scan again for the next entry in the history.",
-        tone: "emerald" as const,
-      },
-      {
-        org: "Caledonian University (demo)",
-        serviceId: "caledonian",
-        credential: "bhi-qualification",
-        expect:
-          "A Qualification credential for the BSc in Computer Science, issued by the awarding body itself.",
-        tone: "emerald" as const,
-      },
-      {
-        org: "Cirrus Certification (demo)",
-        serviceId: "cirrus",
-        credential: "bhi-qualification",
-        expect:
-          "A second Qualification credential, the professional cloud certification: same schema, a different accredited issuer.",
-        tone: "emerald" as const,
-      },
-    ],
-  },
-  // Demo 2 - the Verified Employer asks. Same card component: on a verifier
-  // service the QR is a live presentation request, not an offer.
-  apply: {
-    id: "demo-apply",
-    title: "Demo 2 · Apply to Meridian Technologies (demo)",
-    intro:
-      "The full flow: scan, review the requester, select, approve, submit. Before you share anything, the wallet shows who is asking - the certified organisation name, its Verified Employer credential, and its permission to request each credential.",
-    requests: [
-      {
-        org: "Meridian Technologies (demo)",
-        serviceId: "meridian-tech",
-        credential: "bhi-right-to-work",
-        expect:
-          "Meridian requests your Right to Work credential: the statutory check, answered from your wallet in seconds.",
-        tone: "emerald" as const,
-      },
-      {
-        org: "Meridian Technologies (demo)",
-        serviceId: "meridian-tech",
-        credential: "bhi-employment",
-        expect:
-          "Meridian requests an Employment credential: pick which employment to disclose - the wallet shares only what you select.",
-        tone: "emerald" as const,
-      },
-      {
-        org: "Meridian Technologies (demo)",
-        serviceId: "meridian-tech",
-        credential: "bhi-qualification",
-        expect:
-          "Meridian requests a Qualification credential: degree or certification, your choice of which to present.",
-        tone: "emerald" as const,
-      },
-    ],
-  },
-  // Demo 3 - the impostor. Halcyon IS a verifiable organisation (that is the
-  // point): the refusal comes from what its DID does NOT present - no
-  // Verified Employer credential, no verifier permission on the schemas.
-  halcyon: {
-    id: "demo-halcyon",
-    title: "Demo 3 · Apply to Halcyon Talent (demo)",
-    intro:
-      "Same flow, same-looking site. Halcyon Talent is a genuinely verifiable organisation, and that is exactly why the wallet can catch it: it presents no Verified Employer credential and holds no permission to request hiring credentials.",
-    org: "Halcyon Talent (demo)",
-    serviceId: "halcyon",
-    credential: "bhi-right-to-work",
-    expect:
-      "Halcyon asks for your Right to Work credential. Watch the wallet stop you: an organisation outside the Recruitment Trust Network, asking for a credential it has no right to see.",
-  },
-  // Demos 4 and 5 - follow-ups (revocation flow and the directory / Trust
-  // Graph, per the Vesta pattern); they keep the coming-soon card.
-  comingSoon: [
-    {
-      id: "demo-revoked",
-      title: "Demo 4 · Present a revoked credential",
-      desc: "Verification fails at the registry check, not at the signature check.",
-    },
-    {
-      id: "demo-directory",
-      title: "Demo 5 · Search the directory",
-      desc: "Query the registry for organisations presenting a Verified Employer credential; narrow to those also presenting Recognised RecTech Provider. Discovery by proof, not by claim. (Trust Graph: coming later, per the Vesta pattern.)",
-    },
-  ],
   freeNote:
     "Participation in the demonstrator is free. It runs on the Verana testnet, and no party charges a fee for joining, issuing or verifying within it.",
-  pendingNote:
-    "This demo is not wired up yet: it activates in a follow-up while the rest of the cast runs live.",
+};
+
+// The applicant-journey wizard (chapter 4). Steps, personas, job ads and
+// outcome copy; the interactive shell lives in wizard/BhiWizard.tsx.
+export const WIZARD = {
+  steps: [
+    { id: "applicant", label: "Applicant" },
+    { id: "wallet", label: "Wallet" },
+    { id: "credentials", label: "Credentials" },
+    { id: "jobs", label: "Job board" },
+    { id: "debrief", label: "Debrief" },
+  ],
+  applicant: {
+    title: "Create your applicant",
+    intro:
+      "Give the candidate a name. The Right to Work credential you collect in step 3 will carry it, so the application you submit later is verifiably yours.",
+    firstNameLabel: "First name",
+    surnameLabel: "Surname",
+    privacyNote:
+      "The name goes only into a demo credential on the Verana testnet, nowhere else. Leave the defaults to play as Alex Chen (demo).",
+    backstoryTitle: "Your backstory",
+    backstory: [
+      "BSc in Computer Science, First Class Honours, Caledonian University (demo), 2017.",
+      "Professional cloud certification from Cirrus Certification (demo), 2024.",
+      "Three employments since 2019; the current one has no end date.",
+      "A British citizen: your right to work never expires.",
+    ],
+    cta: "Start the journey",
+  },
+  wallet: {
+    title: "Choose a wallet",
+    intro:
+      "Pick any of the integrated personal wallets: every one reaches the same verdict by the same route. Each QR in the journey is minted for the wallet you choose.",
+    cta: "Continue",
+  },
+  collect: {
+    title: "Collect your credentials",
+    intro:
+      "Scan each issuer. Your wallet resolves it against the registry and shows its Proof-of-Trust card before offering to accept, and this page ticks each item off the moment the credential lands in your wallet.",
+    items: [
+      {
+        id: "rtw",
+        serviceId: "northbank",
+        credential: "bhi-right-to-work",
+        org: "Northbank Identity (demo)",
+        title: "Right to Work",
+        desc: "Exactly one per person, established against government records, carrying the name you chose.",
+        named: true,
+        repeat: false,
+      },
+      {
+        id: "employment",
+        serviceId: "northbank",
+        credential: "bhi-employment",
+        org: "Northbank Identity (demo)",
+        title: "Employment history",
+        desc: "One credential per employment relationship. Scan again for the next entry; the newest has no end date.",
+        named: false,
+        repeat: true,
+      },
+      {
+        id: "degree",
+        serviceId: "caledonian",
+        credential: "bhi-qualification",
+        org: "Caledonian University (demo)",
+        title: "Degree",
+        desc: "The BSc in Computer Science, issued by the awarding body itself.",
+        named: false,
+        repeat: false,
+      },
+      {
+        id: "certification",
+        serviceId: "cirrus",
+        credential: "bhi-qualification",
+        org: "Cirrus Certification (demo)",
+        title: "Professional certification",
+        desc: "The cloud certification: same Qualification schema, a different accredited issuer.",
+        named: false,
+        repeat: false,
+      },
+    ],
+    manualTick: "Mark as received",
+    doneChip: "In your wallet",
+    cta: "To the job board",
+    skipNote:
+      "You can move on with a partial wallet; the applications below simply have less to present.",
+  },
+  jobs: {
+    title: "Browse the job board",
+    intro:
+      "Two openings on JobSearch (demo) catch your eye. They read almost the same. Apply to both, in any order, and let your wallet tell them apart.",
+    ads: [
+      {
+        id: "meridian",
+        serviceId: "meridian-tech",
+        company: "Meridian Technologies (demo)",
+        role: "Senior Cloud Engineer",
+        blurb:
+          "Hybrid, Manchester. £68,000 to £76,000. A growing platform team, pension and 28 days leave. Apply with verifiable credentials for a same-day decision.",
+        cta: "View and apply",
+      },
+      {
+        id: "halcyon",
+        serviceId: "halcyon",
+        company: "Halcyon Talent (demo)",
+        role: "Cloud Engineer, immediate start",
+        blurb:
+          "Fully remote. £95,000, no interview for strong profiles, limited places. Send your identity documents today and start on Monday.",
+        cta: "View and apply",
+      },
+    ],
+    appliedChip: "Application attempted",
+    cta: "To the debrief",
+    bothNote: "Visit both openings to finish the journey.",
+  },
+  meridian: {
+    title: "Apply to Meridian Technologies (demo)",
+    intro:
+      "Before you share anything, check who is asking: the Proof-of-Trust card shows the certified organisation name and its Verified Employer credential in the Recruitment Trust Network. Then answer the three requests, one credential each.",
+    requests: [
+      {
+        credential: "bhi-right-to-work",
+        title: "Right to work",
+        ask: "The statutory check. Meridian asks for the credential and nothing more; the wallet shows exactly what would leave it.",
+      },
+      {
+        credential: "bhi-employment",
+        title: "Employment",
+        ask: "Pick which employment to disclose. The wallet shares only the entry you select.",
+      },
+      {
+        credential: "bhi-qualification",
+        title: "Qualification",
+        ask: "Degree or certification, your choice of which to present.",
+      },
+    ],
+    progressLabel: "Request",
+    confirmManual: "My wallet confirmed, continue",
+    successTitle: "Application submitted and verified",
+    successBody:
+      "Meridian received three verified presentations, checked against the registry at the moment of asking. What used to take weeks of emailed PDFs and manual reference calls just took minutes, and Meridian saw only what you chose to disclose.",
+    receivedTitle: "What Meridian received",
+    backCta: "Back to the job board",
+  },
+  halcyon: {
+    title: "Apply to Halcyon Talent (demo)",
+    intro:
+      "Same flow, same-looking ad. Halcyon Talent is a genuinely verifiable organisation, and that is exactly why your wallet can catch it: it presents no Verified Employer credential and holds no permission to request hiring credentials. It also asks for your birth date, which no right-to-work check needs.",
+    expectByRail: {
+      anoncreds:
+        "Your wallet stops you with a red Proof-of-Trust card: an organisation outside the Recruitment Trust Network, asking for credentials it has no right to see. Decline and walk away.",
+      "openid4vc-sdjwt":
+        "Wallets that do not yet resolve Verana trust may show the request as if it were ordinary. That is the lesson: check the Proof-of-Trust card below before sharing, exactly as the rule at the top of this page says.",
+    },
+    outcomeTitle: "The scam fails at the moment of asking",
+    outcomeBody:
+      "Northgate Screening (demo) is not certified, Halcyon holds no Verified Employer credential, and no wallet that checks the registry will hand your identity to either. Nothing about this protection depended on you spotting the too-good salary.",
+    doneCta: "I saw the verdict, continue",
+    backCta: "Back to the job board",
+  },
+  debrief: {
+    title: "What just happened",
+    intro: "Your journey, replayed as the registry saw it.",
+    timeline: [
+      "You proved who you are once, to a certified DVS issuer, and received credentials you own and reuse.",
+      "Three issuers, one wallet: qualifications, employment history and right to work, none of them issued by BHI.",
+      "Meridian proved it was a Verified Employer before you shared a single claim, then verified your application in minutes.",
+      "Halcyon could not prove membership of the Recruitment Trust Network, so the application never left your wallet.",
+      "Nobody called a university, chased a referee or emailed a passport scan.",
+    ],
+    comingTitle: "Also in the pipeline",
+    coming: [
+      "Present a revoked credential: verification fails at the registry check, not at the signature check.",
+      "Search the directory: find every organisation presenting a Verified Employer credential. Discovery by proof, not by claim.",
+    ],
+    restartCta: "Play again as someone else",
+  },
 };
 
 export const CLOSING = {

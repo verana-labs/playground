@@ -758,11 +758,6 @@ export const WIZARD = {
       "Halcyon could not prove membership of the Recruitment Trust Network, so the application never left your wallet.",
       "Nobody called a university, chased a referee or emailed a passport scan.",
     ],
-    comingTitle: "Also in the pipeline",
-    coming: [
-      "Present a revoked credential: verification fails at the registry check, not at the signature check.",
-      "Search the directory: find every organisation presenting a Verified Employer credential. Discovery by proof, not by claim.",
-    ],
     restartCta: "Play again as someone else",
   },
 };

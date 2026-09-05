@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -20,22 +20,22 @@ import { WalletChooser, useSelectedWallet } from "../vesta/DemoWalletFlow";
 import { SubHeading } from "../story-blocks";
 import { WIZARD } from "./content";
 
-// The applicant-journey wizard (chapter 4): create an applicant, fill a
-// wallet, apply to two jobs - one from a Verified Employer, one from an
-// organisation outside the network. Every QR is a live single-use action
-// minted by the deployed cast; ServiceQr's onSettled callbacks drive the
-// auto-advance, with manual buttons as the fallback on every step.
+// The applicant journey (chapter 4), as one progressive page: every section
+// sits below the previous one, and creating the applicant is the single
+// gate that reveals the rest. Editing the name later re-mints the identity
+// credential QR (debounced - each mint is a real single-use offer on the
+// cast). Every QR is a live action minted by the deployed cast; ServiceQr's
+// onSettled callbacks drive the ticks, with manual buttons as fallback.
 
 type Claim = { name: string; value: string };
 type JobId = "meridian" | "halcyon";
 
-const STORAGE_KEY = "bhi-journey-v1";
+const STORAGE_KEY = "bhi-journey-v2";
 
 type SavedState = {
   first: string;
   last: string;
-  step: number;
-  maxStep: number;
+  created: boolean;
   ticks: Record<string, number>;
   applied: Record<JobId, boolean>;
 };
@@ -43,8 +43,7 @@ type SavedState = {
 const DEFAULTS: SavedState = {
   first: "Alex",
   last: "Chen",
-  step: 0,
-  maxStep: 0,
+  created: false,
   ticks: {},
   applied: { meridian: false, halcyon: false },
 };
@@ -120,55 +119,15 @@ function GhostButton({
   );
 }
 
-function Stepper({
-  step,
-  maxStep,
-  onSelect,
-}: {
-  step: number;
-  maxStep: number;
-  onSelect: (n: number) => void;
-}) {
+/** Numbered section heading of the journey page. */
+function JourneyHeading({ n, children }: { n: number; children: string }) {
   return (
-    <ol className="flex flex-wrap items-center gap-2">
-      {WIZARD.steps.map((s, i) => {
-        const reachable = i <= maxStep;
-        const current = i === step;
-        return (
-          <li key={s.id} className="flex items-center gap-2">
-            {i > 0 ? (
-              <span aria-hidden className="h-px w-4 bg-gray-300 sm:w-6" />
-            ) : null}
-            <button
-              type="button"
-              disabled={!reachable}
-              onClick={() => onSelect(i)}
-              aria-current={current ? "step" : undefined}
-              className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${
-                current
-                  ? "border-violet-300 bg-violet-50 text-violet-700"
-                  : reachable
-                    ? "border-gray-200 bg-white text-gray-600 hover:border-violet-200 hover:text-violet-600"
-                    : "border-gray-100 bg-gray-50 text-gray-300"
-              }`}
-            >
-              <span
-                className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] ${
-                  current
-                    ? "bg-violet-600 text-white"
-                    : reachable
-                      ? "bg-gray-200 text-gray-600"
-                      : "bg-gray-100 text-gray-400"
-                }`}
-              >
-                {i < step ? <Check className="h-3 w-3" aria-hidden /> : i + 1}
-              </span>
-              {s.label}
-            </button>
-          </li>
-        );
-      })}
-    </ol>
+    <div className="flex items-center gap-3">
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-600 text-sm font-bold text-white">
+        {n}
+      </span>
+      <SubHeading>{children}</SubHeading>
+    </div>
   );
 }
 
@@ -176,10 +135,12 @@ export default function BhiWizard({ wallets }: { wallets: PersonalWallet[] }) {
   const { wallet } = useSelectedWallet(wallets);
   const [state, setState] = useState<SavedState>(DEFAULTS);
   const [hydrated, setHydrated] = useState(false);
-  // Which job ad is open inside the job-board step; session-only.
+  // Which job ad's application is expanded under the board; session-only.
   const [job, setJob] = useState<JobId | null>(null);
   // Claims echoed back by the verifier per answered request; session-only.
   const [received, setReceived] = useState<Record<string, Claim[]>>({});
+  const walletSectionRef = useRef<HTMLDivElement | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const saved = loadSaved();
@@ -191,20 +152,37 @@ export default function BhiWizard({ wallets }: { wallets: PersonalWallet[] }) {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
     } catch {
-      // per-viewer convenience only - the wizard works without persistence
+      // per-viewer convenience only - the journey works without persistence
     }
   }, [state, hydrated]);
 
-  const patch = (p: Partial<SavedState>) =>
-    setState((s) => ({ ...s, ...p }));
-  const goTo = (n: number) =>
-    setState((s) => ({ ...s, step: n, maxStep: Math.max(s.maxStep, n) }));
+  const patch = (p: Partial<SavedState>) => setState((s) => ({ ...s, ...p }));
   const tick = (id: string) =>
     setState((s) => ({ ...s, ticks: { ...s.ticks, [id]: (s.ticks[id] ?? 0) + 1 } }));
 
+  // The name used for QR minting trails the inputs by a moment: every
+  // change re-mints the open identity offer, and each mint is a real
+  // single-use offer on the agent - not one per keystroke.
+  const [mintName, setMintName] = useState({ first: DEFAULTS.first, last: DEFAULTS.last });
+  useEffect(() => {
+    const t = setTimeout(
+      () => setMintName({ first: state.first, last: state.last }),
+      600,
+    );
+    return () => clearTimeout(t);
+  }, [state.first, state.last]);
+
   const format = wallet ? walletFormat(wallet) : null;
-  const nameParams = `firstName=${encodeURIComponent(state.first)}&surname=${encodeURIComponent(state.last)}`;
+  const nameParams = `firstName=${encodeURIComponent(mintName.first)}&surname=${encodeURIComponent(mintName.last)}`;
   const fullName = `${state.first} ${state.last}`.trim();
+
+  const create = () => {
+    patch({ created: true });
+    // Scroll once the newly revealed sections have committed.
+    setTimeout(() => {
+      walletSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  };
 
   const restart = () => {
     try {
@@ -215,118 +193,96 @@ export default function BhiWizard({ wallets }: { wallets: PersonalWallet[] }) {
     setReceived({});
     setJob(null);
     setState(DEFAULTS);
+    setTimeout(() => {
+      rootRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
   };
 
   if (!wallet) return null;
 
   return (
-    <div id="applicant-journey" className="mt-10 scroll-mt-24">
-      <Stepper
-        step={state.step}
-        maxStep={state.maxStep}
-        onSelect={(n) => {
-          setJob(null);
-          goTo(n);
-        }}
+    <div id="applicant-journey" ref={rootRef} className="mt-10 scroll-mt-24">
+      <ApplicantSection
+        first={state.first}
+        last={state.last}
+        created={state.created}
+        onChange={(first, last) => patch({ first, last })}
+        onCreate={create}
       />
 
-      <div className="mt-8">
-        {state.step === 0 ? (
-          <ApplicantStep
-            first={state.first}
-            last={state.last}
-            onChange={(first, last) => patch({ first, last })}
-            onNext={() => goTo(1)}
-          />
-        ) : null}
-
-        {state.step === 1 ? (
-          <div>
-            <SubHeading>{WIZARD.wallet.title}</SubHeading>
+      {state.created ? (
+        <>
+          <div ref={walletSectionRef} className="mt-14 scroll-mt-24">
+            <JourneyHeading n={2}>{WIZARD.wallet.title}</JourneyHeading>
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {WIZARD.wallet.intro}
             </p>
             <WalletChooser wallets={wallets} />
-            <div className="mt-8">
-              <PrimaryButton onClick={() => goTo(2)} disabled={!format}>
-                {WIZARD.wallet.cta}
-              </PrimaryButton>
-              {!format ? (
-                <p className="mt-3 text-xs text-gray-500">
-                  This journey does not support {wallet.name}&apos;s credential
-                  formats yet - pick another wallet above.
-                </p>
-              ) : null}
-            </div>
+            {!format ? (
+              <p className="mt-3 text-xs text-gray-500">
+                This journey does not support {wallet.name}&apos;s credential
+                formats yet - pick another wallet above.
+              </p>
+            ) : null}
           </div>
-        ) : null}
 
-        {state.step === 2 && format ? (
-          <CollectStep
-            format={format}
-            wallet={wallet}
-            nameParams={nameParams}
-            fullName={fullName}
-            ticks={state.ticks}
-            onTick={tick}
-            onNext={() => goTo(3)}
-          />
-        ) : null}
+          {format ? (
+            <>
+              <CollectSection
+                format={format}
+                wallet={wallet}
+                nameParams={nameParams}
+                fullName={fullName}
+                ticks={state.ticks}
+                onTick={tick}
+              />
 
-        {state.step === 3 && format ? (
-          job === null ? (
-            <JobBoard
-              applied={state.applied}
-              onOpen={setJob}
-              onNext={() => goTo(4)}
-            />
-          ) : job === "meridian" ? (
-            <MeridianFlow
-              format={format}
-              wallet={wallet}
-              received={received}
-              onReceived={(credential, claims) =>
-                setReceived((r) => ({ ...r, [credential]: claims }))
-              }
-              onApplied={() =>
-                patch({ applied: { ...state.applied, meridian: true } })
-              }
-              onBack={() => setJob(null)}
-            />
-          ) : (
-            <HalcyonFlow
-              format={format}
-              wallet={wallet}
-              onDone={() => {
-                patch({ applied: { ...state.applied, halcyon: true } });
-                setJob(null);
-              }}
-              onBack={() => setJob(null)}
-            />
-          )
-        ) : null}
+              <JobsSection
+                format={format}
+                wallet={wallet}
+                applied={state.applied}
+                job={job}
+                onOpen={setJob}
+                received={received}
+                onReceived={(credential, claims) =>
+                  setReceived((r) => ({ ...r, [credential]: claims }))
+                }
+                onApplied={(id) =>
+                  setState((s) => ({
+                    ...s,
+                    applied: { ...s.applied, [id]: true },
+                  }))
+                }
+              />
 
-        {state.step === 4 ? <Debrief onRestart={restart} /> : null}
-      </div>
+              {state.applied.meridian && state.applied.halcyon ? (
+                <DebriefSection onRestart={restart} />
+              ) : null}
+            </>
+          ) : null}
+        </>
+      ) : null}
     </div>
   );
 }
 
-function ApplicantStep({
+function ApplicantSection({
   first,
   last,
+  created,
   onChange,
-  onNext,
+  onCreate,
 }: {
   first: string;
   last: string;
+  created: boolean;
   onChange: (first: string, last: string) => void;
-  onNext: () => void;
+  onCreate: () => void;
 }) {
   const a = WIZARD.applicant;
   return (
     <div>
-      <SubHeading>{a.title}</SubHeading>
+      <JourneyHeading n={1}>{a.title}</JourneyHeading>
       <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
         {a.intro}
       </p>
@@ -345,6 +301,7 @@ function ApplicantStep({
               </div>
               <div className="text-xs text-gray-500">Applicant (demo)</div>
             </div>
+            {created ? <Chip tone="verified">{a.createdChip}</Chip> : null}
           </div>
           <div className="mt-5 grid gap-3 sm:grid-cols-2">
             <label className="block text-xs font-semibold text-gray-600">
@@ -385,20 +342,25 @@ function ApplicantStep({
         </div>
       </div>
       <div className="mt-8">
-        <PrimaryButton onClick={onNext}>{a.cta}</PrimaryButton>
+        {created ? (
+          <p className="max-w-3xl text-xs leading-relaxed text-gray-500">
+            {a.createdNote}
+          </p>
+        ) : (
+          <PrimaryButton onClick={onCreate}>{a.cta}</PrimaryButton>
+        )}
       </div>
     </div>
   );
 }
 
-function CollectStep({
+function CollectSection({
   format,
   wallet,
   nameParams,
   fullName,
   ticks,
   onTick,
-  onNext,
 }: {
   format: string;
   wallet: PersonalWallet;
@@ -406,15 +368,16 @@ function CollectStep({
   fullName: string;
   ticks: Record<string, number>;
   onTick: (id: string) => void;
-  onNext: () => void;
 }) {
   const c = WIZARD.collect;
   // One QR at a time (the Verandia offer-card pattern): revealing an item
   // mints its offer and hides any other open QR.
   const [active, setActive] = useState<string | null>(null);
   return (
-    <div>
-      <SubHeading>{c.title.replace("{name}", fullName || "Alex Chen")}</SubHeading>
+    <div className="mt-14 scroll-mt-24">
+      <JourneyHeading n={3}>
+        {c.title.replace("{name}", fullName || "Alex Chen")}
+      </JourneyHeading>
       <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
         {c.intro}
       </p>
@@ -488,64 +451,113 @@ function CollectStep({
           );
         })}
       </div>
-      <div className="mt-8 flex flex-wrap items-center gap-4">
-        <PrimaryButton onClick={onNext}>{c.cta}</PrimaryButton>
-        <p className="text-xs text-gray-500">{c.skipNote}</p>
-      </div>
+      <p className="mt-6 text-xs text-gray-500">{c.skipNote}</p>
     </div>
   );
 }
 
-function JobBoard({
+function JobsSection({
+  format,
+  wallet,
   applied,
+  job,
   onOpen,
-  onNext,
+  received,
+  onReceived,
+  onApplied,
 }: {
+  format: string;
+  wallet: PersonalWallet;
   applied: Record<JobId, boolean>;
-  onOpen: (job: JobId) => void;
-  onNext: () => void;
+  job: JobId | null;
+  onOpen: (job: JobId | null) => void;
+  received: Record<string, Claim[]>;
+  onReceived: (credential: string, claims: Claim[]) => void;
+  onApplied: (id: JobId) => void;
 }) {
   const j = WIZARD.jobs;
   const both = applied.meridian && applied.halcyon;
+  const flowRef = useRef<HTMLDivElement | null>(null);
+  const open = (id: JobId) => {
+    onOpen(id);
+    setTimeout(() => {
+      flowRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 80);
+  };
   return (
-    <div>
-      <SubHeading>{j.title}</SubHeading>
+    <div className="mt-14 scroll-mt-24">
+      <JourneyHeading n={4}>{j.title}</JourneyHeading>
       <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
         {j.intro}
       </p>
       <div className="reveal-stagger mt-6 grid gap-4 sm:grid-cols-2">
-        {j.ads.map((ad) => (
-          <div
-            key={ad.id}
-            className="flex flex-col rounded-2xl border border-gray-200 bg-white p-6 shadow-sm"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50 text-violet-700">
-                <Briefcase className="h-5 w-5" aria-hidden />
-              </span>
-              {applied[ad.id as JobId] ? (
-                <Chip tone="verified">{j.appliedChip}</Chip>
-              ) : null}
+        {j.ads.map((ad) => {
+          const id = ad.id as JobId;
+          return (
+            <div
+              key={ad.id}
+              className={`flex flex-col rounded-2xl border bg-white p-6 shadow-sm ${
+                job === id ? "border-violet-300" : "border-gray-200"
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50 text-violet-700">
+                  <Briefcase className="h-5 w-5" aria-hidden />
+                </span>
+                {applied[id] ? (
+                  <Chip tone="verified">{j.appliedChip}</Chip>
+                ) : null}
+              </div>
+              <h3 className="mt-3 text-lg font-bold text-gray-900">{ad.role}</h3>
+              <div className="text-sm text-gray-500">{ad.company}</div>
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-gray-600">
+                {ad.blurb}
+              </p>
+              <div className="mt-5">
+                {job === id ? (
+                  <GhostButton
+                    onClick={() => onOpen(null)}
+                    icon={<ArrowLeft className="h-3.5 w-3.5" aria-hidden />}
+                  >
+                    {j.closeCta}
+                  </GhostButton>
+                ) : (
+                  <PrimaryButton onClick={() => open(id)}>{ad.cta}</PrimaryButton>
+                )}
+              </div>
             </div>
-            <h3 className="mt-3 text-lg font-bold text-gray-900">{ad.role}</h3>
-            <div className="text-sm text-gray-500">{ad.company}</div>
-            <p className="mt-3 flex-1 text-sm leading-relaxed text-gray-600">
-              {ad.blurb}
-            </p>
-            <div className="mt-5">
-              <PrimaryButton onClick={() => onOpen(ad.id as JobId)}>
-                {ad.cta}
-              </PrimaryButton>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
-      <div className="mt-8 flex flex-wrap items-center gap-4">
-        <PrimaryButton onClick={onNext} disabled={!both}>
-          {j.cta}
-        </PrimaryButton>
-        {!both ? <p className="text-xs text-gray-500">{j.bothNote}</p> : null}
-      </div>
+      {!both && job === null ? (
+        <p className="mt-6 text-xs text-gray-500">{j.bothNote}</p>
+      ) : null}
+
+      {/* The chosen application expands here, below the board. */}
+      {job !== null ? (
+        <div ref={flowRef} className="mt-8 scroll-mt-24 border-t border-gray-100 pt-8">
+          {job === "meridian" ? (
+            <MeridianFlow
+              format={format}
+              wallet={wallet}
+              received={received}
+              onReceived={onReceived}
+              onApplied={() => onApplied("meridian")}
+              onBack={() => onOpen(null)}
+            />
+          ) : (
+            <HalcyonFlow
+              format={format}
+              wallet={wallet}
+              onDone={() => {
+                onApplied("halcyon");
+                onOpen(null);
+              }}
+              onBack={() => onOpen(null)}
+            />
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -584,14 +596,7 @@ function MeridianFlow({
   const request = m.requests[active];
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-3">
-        <GhostButton onClick={onBack} icon={<ArrowLeft className="h-3.5 w-3.5" aria-hidden />}>
-          {m.backCta}
-        </GhostButton>
-      </div>
-      <div className="mt-4">
-        <SubHeading>{m.title}</SubHeading>
-      </div>
+      <SubHeading>{m.title}</SubHeading>
       <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
         {m.intro}
       </p>
@@ -661,6 +666,11 @@ function MeridianFlow({
           <LiveTrustCard serviceId="meridian-tech" />
         </div>
       </div>
+      <div className="mt-6">
+        <GhostButton onClick={onBack} icon={<ArrowLeft className="h-3.5 w-3.5" aria-hidden />}>
+          {m.backCta}
+        </GhostButton>
+      </div>
     </div>
   );
 }
@@ -714,12 +724,7 @@ function HalcyonFlow({
     h.expectByRail.anoncreds;
   return (
     <div>
-      <GhostButton onClick={onBack} icon={<ArrowLeft className="h-3.5 w-3.5" aria-hidden />}>
-        {h.backCta}
-      </GhostButton>
-      <div className="mt-4">
-        <SubHeading>{h.title}</SubHeading>
-      </div>
+      <SubHeading>{h.title}</SubHeading>
       <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
         {h.intro}
       </p>
@@ -760,15 +765,20 @@ function HalcyonFlow({
           <LiveTrustCard serviceId="halcyon" />
         </div>
       </div>
+      <div className="mt-6">
+        <GhostButton onClick={onBack} icon={<ArrowLeft className="h-3.5 w-3.5" aria-hidden />}>
+          {h.backCta}
+        </GhostButton>
+      </div>
     </div>
   );
 }
 
-function Debrief({ onRestart }: { onRestart: () => void }) {
+function DebriefSection({ onRestart }: { onRestart: () => void }) {
   const d = WIZARD.debrief;
   return (
-    <div>
-      <SubHeading>{d.title}</SubHeading>
+    <div className="mt-14 scroll-mt-24">
+      <JourneyHeading n={5}>{d.title}</JourneyHeading>
       <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
         {d.intro}
       </p>

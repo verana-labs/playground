@@ -593,13 +593,6 @@ export const DEMOS = {
 // The applicant-journey wizard (chapter 4). Steps, personas, job ads and
 // outcome copy; the interactive shell lives in wizard/BhiWizard.tsx.
 export const WIZARD = {
-  steps: [
-    { id: "applicant", label: "Applicant" },
-    { id: "wallet", label: "Wallet" },
-    { id: "credentials", label: "Credentials" },
-    { id: "jobs", label: "Job board" },
-    { id: "debrief", label: "Debrief" },
-  ],
   applicant: {
     title: "Create your applicant",
     intro:
@@ -615,13 +608,15 @@ export const WIZARD = {
       "Three employments since 2019; the current one has no end date.",
       "A British citizen: your right to work never expires.",
     ],
-    cta: "Start the journey",
+    cta: "Create applicant",
+    createdChip: "Created",
+    createdNote:
+      "Applicant created: the journey continues below. You can still edit the name; the identity credential QR re-mints with the new name a moment after you stop typing.",
   },
   wallet: {
     title: "Choose a wallet",
     intro:
       "Pick any of the integrated personal wallets: every one reaches the same verdict by the same route. Each QR in the journey is minted for the wallet you choose.",
-    cta: "Continue",
   },
   collect: {
     // {name} is replaced with the applicant's chosen name; "their" stays
@@ -673,7 +668,6 @@ export const WIZARD = {
     ],
     manualTick: "Mark as received",
     doneChip: "In your wallet",
-    cta: "To the job board",
     skipNote:
       "You can move on with a partial wallet; the applications below simply have less to present.",
   },
@@ -702,8 +696,8 @@ export const WIZARD = {
       },
     ],
     appliedChip: "Application attempted",
-    cta: "To the debrief",
-    bothNote: "Visit both openings to finish the journey.",
+    closeCta: "Close the application",
+    bothNote: "Visit both openings to unlock the debrief below.",
   },
   meridian: {
     title: "Apply to Meridian Technologies (demo)",

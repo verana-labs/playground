@@ -1,7 +1,7 @@
 "use client";
 import { withBase } from "../lib/base-path";
 
-import { BadgeCheck, ExternalLink, RefreshCw } from "lucide-react";
+import { BadgeCheck, ExternalLink, RefreshCw, ShieldAlert } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 
 /** Terminal outcome of the minted action, for callers that react to the
@@ -36,6 +36,11 @@ type ProofStatus = {
 
 type HostedWallet = { name: string; url: string };
 
+/** What an integrated wallet is supposed to do with this action. The demo
+ *  services that fail Q1/Q2/Q3 expect a refusal, and a completed exchange
+ *  there is a finding rather than a success. */
+export type Expectation = "accept" | "refuse";
+
 function StartOverButton({ onClick }: { onClick: () => void }) {
   return (
     <button
@@ -53,9 +58,11 @@ function StartOverButton({ onClick }: { onClick: () => void }) {
  *  offer the QR is replaced by the outcome and a fresh start. */
 function IssuanceOutcome({
   declined,
+  expect,
   onRestart,
 }: {
   declined: boolean;
+  expect: Expectation;
   onRestart: () => void;
 }) {
   if (declined) {
@@ -66,6 +73,25 @@ function IssuanceOutcome({
         </p>
         <p className="mt-1 text-xs text-gray-500">
           Each QR is single-use - start over to mint a fresh offer.
+        </p>
+        <StartOverButton onClick={onRestart} />
+      </div>
+    );
+  }
+  // A completed issuance session means the credential left the issuer, not
+  // that you accepted it: several wallets fetch it before showing consent.
+  if (expect === "refuse") {
+    return (
+      <div className="rounded-xl border border-amber-200 bg-amber-50 p-5 text-center">
+        <div className="flex items-center justify-center gap-2 text-amber-800">
+          <ShieldAlert className="h-5 w-5 shrink-0" aria-hidden />
+          <span className="font-semibold">The issuer completed the exchange</span>
+        </div>
+        <p className="mt-2 text-xs leading-relaxed text-amber-800/80">
+          That is the service&apos;s side of the story, and some wallets fetch a
+          credential before they show you anything. What counts is your wallet:
+          it should have refused this offer and kept nothing. If the
+          DemoCredential is in it, that wallet is not enforcing the check.
         </p>
         <StartOverButton onClick={onRestart} />
       </div>
@@ -90,35 +116,59 @@ function IssuanceOutcome({
  *  has presented the DemoCredential. */
 function PresentedCredential({
   proof,
+  expect,
   onRestart,
 }: {
   proof: ProofStatus;
+  expect: Expectation;
   onRestart: () => void;
 }) {
+  const refused = expect === "refuse";
+  const tone = refused
+    ? {
+        box: "rounded-xl border border-red-200 bg-red-50 p-5",
+        head: "flex items-center justify-center gap-2 text-red-700",
+        term: "text-xs font-semibold uppercase tracking-wider text-red-700/70",
+        value: "break-all font-mono text-sm text-red-900",
+        note: "mt-3 text-center text-xs leading-relaxed text-red-700/80",
+      }
+    : {
+        box: "rounded-xl border border-emerald-200 bg-emerald-50 p-5",
+        head: "flex items-center justify-center gap-2 text-emerald-700",
+        term: "text-xs font-semibold uppercase tracking-wider text-emerald-700/70",
+        value: "break-all font-mono text-sm text-emerald-900",
+        note: "mt-3 text-center text-xs text-emerald-700/80",
+      };
   return (
-    <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-5">
-      <div className="flex items-center justify-center gap-2 text-emerald-700">
-        <BadgeCheck className="h-5 w-5 shrink-0" aria-hidden />
-        <span className="font-semibold">DemoCredential presented</span>
+    <div className={tone.box}>
+      <div className={tone.head}>
+        {refused ? (
+          <ShieldAlert className="h-5 w-5 shrink-0" aria-hidden />
+        ) : (
+          <BadgeCheck className="h-5 w-5 shrink-0" aria-hidden />
+        )}
+        <span className="font-semibold">
+          {refused
+            ? "Your wallet shared it anyway"
+            : "DemoCredential presented"}
+        </span>
       </div>
       {proof.claims?.length ? (
         <dl className="mx-auto mt-4 max-w-xs space-y-1.5">
           {proof.claims.map((c) => (
             <div key={c.name} className="flex items-baseline justify-between gap-4">
-              <dt className="text-xs font-semibold uppercase tracking-wider text-emerald-700/70">
-                {c.name}
-              </dt>
-              <dd className="break-all font-mono text-sm text-emerald-900">
-                {c.value}
-              </dd>
+              <dt className={tone.term}>{c.name}</dt>
+              <dd className={tone.value}>{c.value}</dd>
             </div>
           ))}
         </dl>
       ) : null}
-      <p className="mt-3 text-center text-xs text-emerald-700/80">
-        {proof.verified
-          ? "Cryptographically verified by the service - you're in, no password, no account."
-          : "Presentation received - verification still pending on the service."}
+      <p className={tone.note}>
+        {refused
+          ? "This service is not authorized to ask for the DemoCredential, so a wallet that enforces the check would have refused. These claims reached it."
+          : proof.verified
+            ? "Cryptographically verified by the service - you're in, no password, no account."
+            : "Presentation received - verification still pending on the service."}
       </p>
       <StartOverButton onClick={onRestart} />
     </div>
@@ -176,6 +226,7 @@ export function ServiceQr({
   demoParams,
   openInWallet,
   bare = false,
+  expect = "accept",
   onSettled,
 }: {
   serviceId: string;
@@ -193,6 +244,9 @@ export function ServiceQr({
   /** Render only the QR itself - no card wrapper, no URL, no caption.
    *  Used when the QR sits inside the caller's own card. */
   bare?: boolean;
+  /** Whether a wallet honouring the registry should accept this action or
+   *  refuse it. Decides how a completed exchange is reported. */
+  expect?: Expectation;
   /** Fires once per mint when the action settles - credential delivered or
    *  declined, presentation received. A restart re-arms it. */
   onSettled?: (outcome: ServiceQrOutcome) => void;
@@ -357,10 +411,16 @@ export function ServiceQr({
   let content: React.ReactNode;
   if (credSettled && credStatus) {
     content = (
-      <IssuanceOutcome declined={!!credStatus.declined} onRestart={retry} />
+      <IssuanceOutcome
+        declined={!!credStatus.declined}
+        expect={expect}
+        onRestart={retry}
+      />
     );
   } else if (proof && proof.state === "done") {
-    content = <PresentedCredential proof={proof} onRestart={retry} />;
+    content = (
+      <PresentedCredential proof={proof} expect={expect} onRestart={retry} />
+    );
   } else if (unsupported) {
     content = (
       <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-5 py-4 text-xs text-gray-500">

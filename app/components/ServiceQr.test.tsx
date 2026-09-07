@@ -171,6 +171,69 @@ describe("ServiceQr", () => {
     expect(link.getAttribute("rel")).toBe("noopener noreferrer");
   });
 
+  it("does not call a completed exchange a delivery when the wallet was meant to refuse", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes("/credential/")) return ok({ state: "Completed", done: true });
+        return ok({
+          kind: "oid4vc-credential-offer",
+          url: "openid-credential-offer://?credential_offer_uri=https%3A%2F%2Fdemo-issuer-unaccredited.playground.testnet.verana.network%2Foid4vci%2Foffers%2Fabcd1234",
+          issuanceSessionId: "session-1",
+        });
+      }),
+    );
+
+    render(
+      <ServiceQr
+        serviceId="demo-issuer-unaccredited"
+        label="Unaccredited Issuer (demo)"
+        format="openid4vc-sdjwt"
+        expect="refuse"
+      />,
+    );
+
+    expect(
+      await screen.findByText("The issuer completed the exchange"),
+    ).toBeDefined();
+    expect(screen.queryByText("Credential delivered")).toBeNull();
+    expect(screen.getByText(/not enforcing the check/)).toBeDefined();
+  });
+
+  it("flags a presentation the wallet should have refused", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: RequestInfo | URL) => {
+        const url = String(input);
+        if (url.includes("/proof/")) {
+          return ok({
+            state: "done",
+            verified: true,
+            claims: [{ name: "demoId", value: "demo-12345678" }],
+          });
+        }
+        return ok({
+          kind: "presentation-request",
+          url: "https://demo-verifier-unaccredited.playground.testnet.verana.network/s?id=wxyz7890",
+          proofExchangeId: "proof-1",
+        });
+      }),
+    );
+
+    render(
+      <ServiceQr
+        serviceId="demo-verifier-unaccredited"
+        label="Unaccredited Verifier (demo)"
+        expect="refuse"
+      />,
+    );
+
+    expect(await screen.findByText("Your wallet shared it anyway")).toBeDefined();
+    expect(screen.queryByText("DemoCredential presented")).toBeNull();
+    expect(screen.getByText("demo-12345678")).toBeDefined();
+  });
+
   it("does not offer to open the action in a wallet when none is hosted", async () => {
     vi.stubGlobal(
       "fetch",

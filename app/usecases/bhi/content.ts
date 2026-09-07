@@ -720,6 +720,7 @@ export const WIZARD = {
         ask: "Degree or certification, your choice of which to present.",
       },
     ],
+    progressTitle: "Present three credentials to complete the application",
     progressLabel: "Request",
     confirmManual: "My wallet confirmed, continue",
     successTitle: "Application submitted and verified",

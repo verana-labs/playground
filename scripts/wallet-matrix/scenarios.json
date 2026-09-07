@@ -1,0 +1,68 @@
+{
+  "$comment": "Every action a visitor can take on the playground, with the verdict an integrated wallet must reach. See README.md.",
+  "suites": {
+    "personal-wallets": {
+      "page": "/personal-wallets",
+      "scenarios": [
+        { "id": "issue-accredited", "service": "demo-issuer-accredited", "kind": "issue", "expect": "accept" },
+        { "id": "issue-unaccredited", "service": "demo-issuer-unaccredited", "kind": "issue", "expect": "refuse" },
+        { "id": "issue-untrusted", "service": "demo-issuer-untrusted", "kind": "issue", "expect": "refuse" },
+        { "id": "present-accredited", "service": "demo-verifier-accredited", "kind": "present", "expect": "accept" },
+        { "id": "present-unaccredited", "service": "demo-verifier-unaccredited", "kind": "present", "expect": "refuse" },
+        { "id": "present-untrusted", "service": "demo-verifier-untrusted", "kind": "present", "expect": "refuse" }
+      ]
+    },
+    "bhi": {
+      "page": "/usecases/bhi/demos",
+      "scenarios": [
+        { "id": "rtw", "service": "northbank", "credential": "bhi-right-to-work", "kind": "issue", "expect": "accept", "extra": "firstName=Amara&surname=Osei" },
+        { "id": "employment", "service": "northbank", "credential": "bhi-employment", "kind": "issue", "expect": "accept" },
+        { "id": "degree", "service": "caledonian", "credential": "bhi-qualification", "kind": "issue", "expect": "accept" },
+        { "id": "certification", "service": "cirrus", "credential": "bhi-qualification", "kind": "issue", "expect": "accept" },
+        { "id": "meridian-rtw", "service": "meridian-tech", "credential": "bhi-right-to-work", "kind": "present", "expect": "accept" },
+        { "id": "meridian-employment", "service": "meridian-tech", "credential": "bhi-employment", "kind": "present", "expect": "accept" },
+        { "id": "meridian-qualification", "service": "meridian-tech", "credential": "bhi-qualification", "kind": "present", "expect": "accept", "note": "Collect BOTH qualifications first: this is where a wallet without a per-query chooser submits two credentials and is rejected." },
+        { "id": "halcyon", "service": "halcyon", "credential": "bhi-right-to-work", "kind": "present", "expect": "refuse", "note": "The point of the demo. Halcyon is a real verifiable company with no verifier permission." }
+      ]
+    },
+    "vesta": {
+      "page": "/usecases/vesta",
+      "scenarios": [
+        { "id": "badge-vesta", "service": "vesta", "credential": "ecs-badge", "kind": "issue", "expect": "accept" },
+        { "id": "badge-zenith", "service": "zenith", "credential": "ecs-badge", "kind": "issue", "expect": "refuse" },
+        { "id": "badge-umbra", "service": "umbra", "credential": "ecs-badge", "kind": "issue", "expect": "refuse" },
+        { "id": "portal-login", "route": "/api/portal-login", "kind": "present", "expect": "accept" }
+      ]
+    },
+    "verandia": {
+      "page": "/usecases/verandia",
+      "scenarios": [
+        { "id": "citizen-id", "service": "civil-registry", "credential": "verandia-citizen-id", "kind": "issue", "expect": "accept" },
+        { "id": "legal-rep", "service": "business-registry", "credential": "verandia-legal-rep", "kind": "issue", "expect": "accept" },
+        { "id": "login", "route": "/api/verandia-login", "kind": "present", "expect": "accept" }
+      ]
+    },
+    "bolivia": {
+      "page": "/usecases/bolivia",
+      "scenarios": [
+        { "id": "cedula", "service": "segip", "credential": "bolivia-cedula", "kind": "issue", "expect": "accept" },
+        { "id": "legal-rep", "service": "seprec", "credential": "bolivia-legal-rep", "kind": "issue", "expect": "accept" },
+        { "id": "login", "route": "/api/bolivia-login", "kind": "present", "expect": "accept" }
+      ]
+    },
+    "cexa": {
+      "page": "/usecases/cexa",
+      "scenarios": [
+        { "id": "kyc-aurum", "service": "aurum", "credential": "cexa-kyc", "kind": "issue", "expect": "accept" },
+        { "id": "kyc-novara", "service": "novara", "credential": "cexa-kyc", "kind": "issue", "expect": "accept" },
+        { "id": "borealis", "service": "borealis", "credential": "cexa-kyc", "kind": "present", "expect": "accept" },
+        { "id": "darkpool", "service": "darkpool", "credential": "cexa-kyc", "kind": "present", "expect": "refuse" }
+      ]
+    },
+    "ccm": {
+      "page": "/usecases/ccm",
+      "skip": "Published live but never deployed: neither ccm workflow has ever run, both services return no trust record, and the hosts serve the Kubernetes ingress default certificate. Every visitor gets an error on every wallet.",
+      "scenarios": []
+    }
+  }
+}

@@ -602,8 +602,62 @@ function MeridianFlow({
       </p>
       <div className="mt-6 grid gap-6 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)]">
         <div>
+          {/* The three-credential tracker: the application needs one
+              presentation per credential, and this makes that count hard
+              to miss (partner feedback). Stays visible when finished. */}
+          <div className="rounded-2xl border border-violet-200 bg-violet-50/70 p-4">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h4 className="text-sm font-bold text-violet-900">
+                {m.progressTitle}
+              </h4>
+              {!finished ? (
+                <span className="text-xs font-semibold text-violet-600">
+                  {m.progressLabel} {active + 1} of {m.requests.length}
+                </span>
+              ) : null}
+            </div>
+            <ol className="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center">
+              {m.requests.map((r, i) => (
+                <li
+                  key={r.credential}
+                  className="flex items-center gap-2 sm:flex-1"
+                  aria-current={!finished && i === active ? "step" : undefined}
+                >
+                  <span
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
+                      done[i]
+                        ? "bg-emerald-500 text-white"
+                        : !finished && i === active
+                          ? "bg-violet-600 text-white"
+                          : "border border-violet-200 bg-white text-violet-400"
+                    }`}
+                  >
+                    {done[i] ? <Check className="h-4 w-4" aria-hidden /> : i + 1}
+                  </span>
+                  <span
+                    className={`text-sm ${
+                      done[i]
+                        ? "font-medium text-emerald-700"
+                        : !finished && i === active
+                          ? "font-bold text-violet-900"
+                          : "text-violet-400"
+                    }`}
+                  >
+                    {r.title}
+                  </span>
+                  {i < m.requests.length - 1 ? (
+                    <span
+                      aria-hidden
+                      className="mx-1 hidden h-px flex-1 bg-violet-200 sm:block"
+                    />
+                  ) : null}
+                </li>
+              ))}
+            </ol>
+          </div>
+
           {finished ? (
-            <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-6">
+            <div className="mt-4 rounded-2xl border border-emerald-200 bg-emerald-50 p-6">
               <div className="flex items-center gap-2 text-emerald-700">
                 <BadgeCheck className="h-5 w-5 shrink-0" aria-hidden />
                 <h3 className="font-bold">{m.successTitle}</h3>
@@ -614,26 +668,8 @@ function MeridianFlow({
               <ReceivedClaims received={received} />
             </div>
           ) : (
-            <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-              <div className="flex flex-wrap items-center gap-2">
-                <Chip>
-                  {m.progressLabel} {active + 1} of {m.requests.length}
-                </Chip>
-                {m.requests.map((r, i) => (
-                  <span
-                    key={r.credential}
-                    className={`h-1.5 w-6 rounded-full ${
-                      done[i]
-                        ? "bg-emerald-400"
-                        : i === active
-                          ? "bg-violet-400"
-                          : "bg-gray-200"
-                    }`}
-                    aria-hidden
-                  />
-                ))}
-              </div>
-              <h3 className="mt-3 font-semibold text-gray-900">{request.title}</h3>
+            <div className="mt-4 rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+              <h3 className="font-semibold text-gray-900">{request.title}</h3>
               <p className="mt-1 text-sm leading-relaxed text-gray-500">
                 {request.ask}
               </p>

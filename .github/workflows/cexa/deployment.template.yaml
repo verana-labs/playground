@@ -9,7 +9,7 @@
 # credential is served over both rails: AnonCreds/DIDComm (Track N wallets)
 # and OpenID4VCI/OpenID4VP (Track B wallets).
 chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
-chartVersion: v1.12.0-oidc4vc-uiprofile.1
+chartVersion: v1.12.0-oidc4vc-uiprofile.39
 
 global:
   domain: playground.__NETWORK__.verana.network
@@ -20,7 +20,7 @@ replicas: 1
 # vs-agent app image (defaults to chartVersion when tag is empty)
 image:
   repository: veranalabs/vs-agent
-  tag: v1.12.0-oidc4vc-uiprofile.1
+  tag: v1.12.0-oidc4vc-uiprofile.39
 
 adminPort: 3000
 enablePublicApiSwagger: true

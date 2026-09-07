@@ -4,7 +4,7 @@
 # __RELEASE__, __HOST__ and __NETWORK__ from the org's config.env before
 # installing. Hosts follow <org>.bolivia.playground.<network>.verana.network.
 chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
-chartVersion: v1.12.0-oidc4vc-uiprofile.37
+chartVersion: v1.12.0-oidc4vc-uiprofile.38
 
 global:
   domain: bolivia.playground.__NETWORK__.verana.network
@@ -16,7 +16,7 @@ replicas: 1
 # image and is activated per org via oid4vc.plugins (bolivia-00_core).
 image:
   repository: veranalabs/vs-agent
-  tag: v1.12.0-oidc4vc-uiprofile.37
+  tag: v1.12.0-oidc4vc-uiprofile.38
 
 adminPort: 3000
 enablePublicApiSwagger: true

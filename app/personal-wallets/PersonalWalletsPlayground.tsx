@@ -348,6 +348,7 @@ function ScenarioCard({
             label={s.title}
             format={format}
             demoParams={demoParams}
+            expect={s.trusted && s.accredited ? "accept" : "refuse"}
             openInWallet={
               hosted ? { name: walletName, url: hosted } : undefined
             }

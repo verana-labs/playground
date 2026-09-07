@@ -1,0 +1,118 @@
+{
+  "$comment": "Device registry for the wallet compatibility matrix. See README.md.",
+  "wallets": {
+    "swiyu": {
+      "package": "ch.admin.foitt.swiyu.dev",
+      "activity": "ch.admin.foitt.wallet.app.MainActivity",
+      "format": "openid4vc-sdjwt",
+      "demoParams": "signer=x5c",
+      "unlock": "password",
+      "secret": "playground1",
+      "coldStart": true,
+      "notes": "Locks on every backgrounding, so each delivery needs a re-login and a slow one lets the request expire. Asks again mid-flow before releasing a presentation. Rejects a cast whose did:webvh log or DID document is malformed, before any consent screen. Never serve it key_attestations_required: it then demands a key attestation from attestations.trust-infra.swiyu.admin.ch that a test device cannot obtain."
+    },
+    "inji": {
+      "package": "io.mosip.residentapp",
+      "activity": ".MainActivity",
+      "format": "openid4vc-sdjwt",
+      "demoParams": "query=pe",
+      "unlock": "passcode",
+      "secret": "123456",
+      "coldStart": true,
+      "notes": "Drops a VIEW intent when already idle at home, so force-stop before delivering. Its biometric prompt sometimes stops responding to taps; force-stop and retry. Skips the consent screen entirely for an issuer host it has already trusted."
+    },
+    "authbound": {
+      "package": "io.authbound.wallet.dev",
+      "activity": "eu.europa.ec.assemblylogic.ui.MainActivity",
+      "format": "openid4vc-sdjwt",
+      "demoParams": "signer=x5c",
+      "unlock": "keypad6",
+      "secret": "123456",
+      "coldStart": false,
+      "notes": "EUDI codebase on a build that pins eudi-lib-android-wallet-core 0.28.1. Lists every credential matching a query with no way to choose and submits all of them, so a query matching two held credentials is rejected by the verifier."
+    },
+    "eudi": {
+      "package": "eu.europa.ec.euidi",
+      "activity": "eu.europa.ec.assemblylogic.ui.MainActivity",
+      "format": "openid4vc-sdjwt",
+      "demoParams": "signer=x5c",
+      "unlock": "pinfield",
+      "secret": "123456",
+      "coldStart": false,
+      "notes": "Pins eudi-lib-android-wallet-core 0.29.0, which requires key_attestations_required in the advertised jwt proof type. Its accept header is identical to swiyu's, so the server cannot serve one without the other; this needs a wallet-side fix, not a server accommodation."
+    },
+    "procivis": {
+      "package": "ch.procivis.one.wallet.dev",
+      "activity": "com.wallet.MainActivity",
+      "format": "openid4vc-sdjwt",
+      "demoParams": "",
+      "unlock": "keypad6",
+      "secret": "123456",
+      "coldStart": false,
+      "notes": "Discards the verifier DID unless the request arrives as a DID identifier, then queries the resolver with an empty did and renders COULD NOT VERIFY while leaving Share enabled. Fetches a credential as soon as an offer resolves, before any verdict exists, so the issuer marks the session Completed even when the wallet refuses."
+    },
+    "sphereon": {
+      "package": "com.sphereon.ssi.wallet",
+      "activity": ".MainActivity",
+      "format": "openid4vc-sdjwt",
+      "demoParams": "",
+      "unlock": "keypad6",
+      "secret": "251839",
+      "coldStart": false,
+      "notes": "Identifies a verifier by its did:web alias, which carries no trust evaluation, so verifier requests fall back to a federation warning. The Maybe later button on the biometrics step has malformed bounds on a 1080x2412 screen and cannot be tapped."
+    },
+    "talao": {
+      "package": "co.altme.alt.me.altme.dev",
+      "activity": "io.flutter.embedding.android.FlutterFragmentActivity",
+      "format": "openid4vc-sdjwt",
+      "demoParams": "query=pe",
+      "unlock": "keypad6",
+      "secret": "123456",
+      "coldStart": true,
+      "notes": "Only acts on the link at cold start; delivered while running it logs onAppLink and drops it. Rejects the dc+sd-jwt format the casts issue."
+    },
+    "paradym": {
+      "package": "id.paradym.wallet.dev",
+      "activity": ".MainActivity",
+      "format": "openid4vc-sdjwt",
+      "demoParams": "",
+      "unlock": "biometric-only",
+      "secret": null,
+      "coldStart": false,
+      "skip": "Unlocks only through a biometric prompt with no PIN fallback, even when biometrics is deferred during onboarding. Needs a finger on the sensor."
+    },
+    "bcwallet": {
+      "package": "ca.bc.gov.BCWallet",
+      "activity": ".MainActivity",
+      "format": "anoncreds",
+      "demoParams": "",
+      "unlock": "none",
+      "secret": "241536",
+      "coldStart": false,
+      "notes": "AnonCreds and DIDComm only; declares no OpenID4VC schemes. Accepts the OOB link and increments its notification badge, but the offer row never renders in the list."
+    },
+    "nl-wallet": {
+      "package": "nl.ictu.edi.wallet.latest",
+      "activity": "nl.rijksoverheid.edi.wallet.MainActivity",
+      "format": "openid4vc-sdjwt",
+      "demoParams": "",
+      "unlock": "none",
+      "secret": null,
+      "skip": "Distinguishes a scanned QR from a link: the scan path sets a cross-device session type that the verifier request is checked against, so a link delivery is rejected. Needs a real optical scan."
+    },
+    "wwwallet": {
+      "package": null,
+      "activity": null,
+      "format": "openid4vc-sdjwt",
+      "demoParams": "signer=x5c",
+      "skip": "Browser wallet at wwwallet.playground.testnet.verana.network; needs a passkey sign-in."
+    },
+    "hologram": {
+      "package": "io.twentysixty.mobileagent.m",
+      "activity": "io.twentysixty.mobileagent.MainActivity",
+      "format": "anoncreds",
+      "demoParams": "",
+      "skip": "Store build resolves Q1 only; the Q2/Q3 work is unreleased upstream."
+    }
+  }
+}

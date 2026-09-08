@@ -63,7 +63,12 @@
       "unlock": "pinfield",
       "secret": "123456",
       "coldStart": false,
-      "notes": "Pins eudi-lib-android-wallet-core 0.29.0, which requires key_attestations_required in the advertised jwt proof type. Its accept header is identical to swiyu's, so the server cannot serve one without the other; this needs a wallet-side fix, not a server accommodation."
+      "notes": "Pins eudi-lib-android-wallet-core 0.29.0, which requires key_attestations_required in the advertised jwt proof type. Its accept header is identical to swiyu's, so the server cannot serve one without the other; this needs a wallet-side fix, not a server accommodation. Device-confirmed 8 September: every issuance on every cast dies on 'Oups! Something went wrong' after fetching the offer URI, so the wallet is unusable as an issuance target today. Presentations do render, with the Q1 trust card, the service and operated-by blocks and a TESTNET chip, but no Q2/Q3 permission sentence at all, so an unauthorized verifier looks exactly like an authorized one.",
+      "verified": {
+        "personal-wallets": "0/3 issuance (ERROR), 3 presentations render Q1 only",
+        "bolivia": "0/2, both ERROR",
+        "cexa": "0/2 issuance ERROR; presentations render Q1 only"
+      }
     },
     "procivis": {
       "package": "ch.procivis.one.wallet.dev",
@@ -131,7 +136,11 @@
       "unlock": "none",
       "secret": "241536",
       "coldStart": false,
-      "notes": "AnonCreds and DIDComm only; declares no OpenID4VC schemes. Accepts the OOB link and increments its notification badge, but the offer row never renders in the list."
+      "notes": "AnonCreds and DIDComm only; declares no OpenID4VC schemes. Accepts the OOB link and increments its notification badge, but the offer row never renders in the list. Device-confirmed 8 September: the anoncreds rail returns no session id, so the runner has no server state to compare against and every row reads '?'. Not drivable by this harness.",
+      "skip": "AnonCreds/DIDComm only and the anoncreds rail returns no session id, so neither the wallet screen nor the server state can be read. Needs a DIDComm-aware runner.",
+      "verified": {
+        "personal-wallets": "not drivable, no server state on the anoncreds rail"
+      }
     },
     "nl-wallet": {
       "package": "nl.ictu.edi.wallet.latest",

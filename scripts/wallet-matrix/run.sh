@@ -130,6 +130,13 @@ run_one() {
     server=$(curl -sS -m 20 "$BASE/api/demo/$svc/credential/$issuance?rail=oid4vc" 2>/dev/null | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("state","?"))' 2>/dev/null)
   fi
 
+  # OfferCreated/RequestCreated means the wallet never fetched the payload, so
+  # whatever is on screen belongs to the previous scenario. Reporting its verdict
+  # produces a confident wrong answer, which is the one thing this runner must not do.
+  case "$server" in
+    OfferCreated|RequestCreated) verdict="NOT-DELIVERED" ;;
+  esac
+
   printf '%-26s expect=%-7s screen=%-18s server=%s\n' "$sid" "$expect" "$verdict" "$server"
   { echo "### $WALLET / $SUITE / $sid  (expect $expect)"
     echo "screen verdict: $verdict"

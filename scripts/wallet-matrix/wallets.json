@@ -159,11 +159,18 @@
       "skip": "Browser wallet at wwwallet.playground.testnet.verana.network; needs a passkey sign-in."
     },
     "hologram": {
-      "package": "io.twentysixty.mobileagent.m",
+      "package": "io.twentysixty.mobileagent.dev",
       "activity": "io.twentysixty.mobileagent.MainActivity",
       "format": "anoncreds",
       "demoParams": "",
-      "skip": "Store build resolves Q1 only; the Q2/Q3 work is unreleased upstream."
+      "skip": "Built from 2060-io/hologram-app#514 (feat: verana trust integration) and installed as io.twentysixty.mobileagent.dev on 8 September, but it gates launch behind an Android device-credential prompt (fingerprint, with a Use PIN fallback) that is a FLAG_SECURE screen: uiautomator dumps nothing and adb cannot type into it. Needs the phone's lock PIN entered by hand once per session before the runner can drive it.",
+      "unlock": "device-credential",
+      "secret": null,
+      "coldStart": false,
+      "notes": "Store build (io.twentysixty.mobileagent.m) resolves Q1 only; the Q2/Q3 work is in PR #514. Hologram is DIDComm/AnonCreds and declares no OpenID4VC scheme, so it takes the anoncreds rail: mint with format=anoncreds, which returns an OOB invitation, and deliver that. Its manifest handles didcomm://, the app scheme and https://hologram.zone. The debug variant carries no JS bundle and dies on 'Error parsing source map' unless Metro is running: pnpm start, then adb reverse tcp:8081 tcp:8081. Building it needs JDK 17 plus -Porg.gradle.java.installations.paths pointing at the local JDKs, otherwise Gradle 9 calls the old foojay resolver and fails on JvmVendorSpec.IBM_SEMERU before compiling anything.",
+      "verified": {
+        "$build": "PR #514 head, assembleDevDebug green in 16m34s, installed; not yet exercised, blocked at the device-credential prompt"
+      }
     }
   }
 }

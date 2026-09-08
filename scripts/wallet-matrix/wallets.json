@@ -9,7 +9,7 @@
       "unlock": "password",
       "secret": "playground1",
       "coldStart": true,
-      "notes": "Locks on every backgrounding, so each delivery needs a re-login and a slow one lets the request expire. Asks again mid-flow before releasing a presentation. Never serve it key_attestations_required: it then demands a key attestation from attestations.trust-infra.swiyu.admin.ch that a test device cannot obtain. Its Rust resolver (ch.admin.eid.didresolver) is the strictest of any wallet here and replays the did:webvh log from version 1, so a single malformed historical entry kills the DID permanently: the whole vesta cast fails on 'not a valid DID log: did:key:... does not match ^did:key:z...#z...$'. It also rejects novara.cexa on 'invalid DID document: publicKeyMultibase must not be used' while aurum on the same cast, same image and a structurally identical DID log passes; reproduced four times, cause not found.",
+      "notes": "The only wallet confirmed on the device to hard-block: on a Q2 denial its Add is inert while Decline responds at the same coordinates, which is what [PW-POT-2] requires. It shows no TESTNET chip, which [PW-CFG-2] requires. Locks on every backgrounding, so each delivery needs a re-login and a slow one lets the request expire. Asks again mid-flow before releasing a presentation. Never serve it key_attestations_required: it then demands a key attestation from attestations.trust-infra.swiyu.admin.ch that a test device cannot obtain. Its Rust resolver (ch.admin.eid.didresolver) is the strictest of any wallet here and replays the did:webvh log from version 1, so a single malformed historical entry kills the DID permanently: the whole vesta cast fails on 'not a valid DID log: did:key:... does not match ^did:key:z...#z...$'. It also rejects novara.cexa on 'invalid DID document: publicKeyMultibase must not be used' while aurum on the same cast, same image and a structurally identical DID log passes; reproduced four times, cause not found.",
       "verified": {
         "personal-wallets": "6/6",
         "bhi": "8/8 end to end",
@@ -27,7 +27,7 @@
       "unlock": "passcode",
       "secret": "123456",
       "coldStart": true,
-      "notes": "Drops a VIEW intent when already idle at home, so force-stop before delivering. Its biometric prompt sometimes stops responding to taps; force-stop and retry. Renders the fullest spec screen of any wallet tested, with both the Q2 issuer sentence and the Q3 verifier sentence, and it is the only wallet that got every cexa scenario right including the darkpool refusal. The blocker is the trust gate itself: for an issuer host it has already trusted it skips consent entirely and the card lands with 'Your Card has been downloaded successfully' and no screen at all, so nothing is re-checked and no consent is collected on any later interaction. Reproduced on personal-wallets and bhi; the newer casts, which it had not seen before, all render correctly.",
+      "notes": "Drops a VIEW intent when already idle at home, so force-stop before delivering. Its biometric prompt sometimes stops responding to taps; force-stop and retry. Renders the fullest spec screen of any wallet tested, with both the Q2 issuer sentence and the Q3 verifier sentence, and it is the only wallet that got every cexa scenario right including the darkpool refusal. Its 'Yes, I Trust This Verifier' control is still drawn on a Q3 denial; whether it is inert was not tested. The blocker is the trust gate itself: for an issuer host it has already trusted it skips consent entirely and the card lands with 'Your Card has been downloaded successfully' and no screen at all, so nothing is re-checked and no consent is collected on any later interaction. Reproduced on personal-wallets and bhi; the newer casts, which it had not seen before, all render correctly.",
       "verified": {
         "personal-wallets": "4/6, both accept cases skip consent entirely",
         "bhi": "presentations ok, issuance skips consent",
@@ -73,13 +73,13 @@
       "unlock": "keypad6",
       "secret": "123456",
       "coldStart": false,
-      "notes": "Discards the verifier DID unless the request arrives as a DID identifier, then queries the resolver with an empty did and renders COULD NOT VERIFY while leaving Share enabled. Fetches a credential as soon as an offer resolves, before any verdict exists, so the issuer marks the session Completed even when the wallet refuses. On bolivia, verandia and cexa it is otherwise the second best wallet tested: full Q1 plus the Q2/Q3 sentence, and it gets the darkpool refusal right with 'DarkPool Exchange (demo) is not an authorized verifier of Cexa kyc'. It still leaves Share credential enabled on that screen, so the refusal is text only.",
+      "notes": "Discards the verifier DID unless the request arrives as a DID identifier, then queries the resolver with an empty did and renders COULD NOT VERIFY while leaving Share enabled. Fetches a credential as soon as an offer resolves, before any verdict exists, so the issuer marks the session Completed even when the wallet refuses. On bolivia, verandia and cexa it is otherwise the second best wallet tested: full Q1 plus the Q2/Q3 sentence, and it gets the darkpool refusal right with 'DarkPool Exchange (demo) is not an authorized verifier of Cexa kyc'. A Share credential control is still drawn on that denial screen; whether it is inert was not tested, tapping it is the only way to tell.",
       "verified": {
         "personal-wallets": "6/6",
         "bhi": "presentations fail",
         "bolivia": "2/2",
         "verandia": "2/2",
-        "cexa": "4/4 verdicts correct, but Share stays enabled on the denial"
+        "cexa": "4/4 verdicts correct; Share still drawn on the denial, not tapped"
       }
     },
     "sphereon": {

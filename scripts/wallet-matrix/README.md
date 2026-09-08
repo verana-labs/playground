@@ -8,6 +8,8 @@ Drives a real Android wallet through the playground's demos on a connected phone
 ./run.sh procivis personal-wallets
 ```
 
+`./grade-consent.py` grades the screens already captured under `results/` against the [PW-POT] blocks and [PW-CFG-2] of the personal-wallet integration guideline, so a rendering gap shows up as a clause rather than a feeling. It cannot judge whether a denial actually blocks the accept action: every wallet here draws Compose buttons as non-clickable TextViews with `enabled="true"`, so that one has to be tapped on the device.
+
 `./check-dids.sh` needs no device and no wallet: it checks every cast's did:webvh log for the history problem described under "Things that will waste your time".
 
 Requires `adb` on PATH with a phone connected and USB debugging on. Runs against `https://playground.testnet.verana.network` unless `PLAYGROUND_BASE` says otherwise. Screen text for every run lands in `results/<wallet>-<suite>.txt`, which is where you look when a verdict surprises you.

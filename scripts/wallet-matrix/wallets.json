@@ -9,7 +9,15 @@
       "unlock": "password",
       "secret": "playground1",
       "coldStart": true,
-      "notes": "Locks on every backgrounding, so each delivery needs a re-login and a slow one lets the request expire. Asks again mid-flow before releasing a presentation. Rejects a cast whose did:webvh log or DID document is malformed, before any consent screen. Never serve it key_attestations_required: it then demands a key attestation from attestations.trust-infra.swiyu.admin.ch that a test device cannot obtain."
+      "notes": "Locks on every backgrounding, so each delivery needs a re-login and a slow one lets the request expire. Asks again mid-flow before releasing a presentation. Never serve it key_attestations_required: it then demands a key attestation from attestations.trust-infra.swiyu.admin.ch that a test device cannot obtain. Its Rust resolver (ch.admin.eid.didresolver) is the strictest of any wallet here and replays the did:webvh log from version 1, so a single malformed historical entry kills the DID permanently: the whole vesta cast fails on 'not a valid DID log: did:key:... does not match ^did:key:z...#z...$'. It also rejects novara.cexa on 'invalid DID document: publicKeyMultibase must not be used' while aurum on the same cast, same image and a structurally identical DID log passes; reproduced four times, cause not found.",
+      "verified": {
+        "personal-wallets": "6/6",
+        "bhi": "8/8 end to end",
+        "bolivia": "issuance ok",
+        "verandia": "issuance ok",
+        "cexa": "aurum ok, novara ERROR (Invalid credential)",
+        "vesta": "0/3, whole cast rejected before consent"
+      }
     },
     "inji": {
       "package": "io.mosip.residentapp",
@@ -19,7 +27,16 @@
       "unlock": "passcode",
       "secret": "123456",
       "coldStart": true,
-      "notes": "Drops a VIEW intent when already idle at home, so force-stop before delivering. Its biometric prompt sometimes stops responding to taps; force-stop and retry. Skips the consent screen entirely for an issuer host it has already trusted."
+      "notes": "Drops a VIEW intent when already idle at home, so force-stop before delivering. Its biometric prompt sometimes stops responding to taps; force-stop and retry. Renders the fullest spec screen of any wallet tested, with both the Q2 issuer sentence and the Q3 verifier sentence, and it is the only wallet that got every cexa scenario right including the darkpool refusal. The blocker is the trust gate itself: for an issuer host it has already trusted it skips consent entirely and the card lands with 'Your Card has been downloaded successfully' and no screen at all, so nothing is re-checked and no consent is collected on any later interaction. Reproduced on personal-wallets and bhi; the newer casts, which it had not seen before, all render correctly.",
+      "verified": {
+        "personal-wallets": "4/6, both accept cases skip consent entirely",
+        "bhi": "presentations ok, issuance skips consent",
+        "bolivia": "2/2",
+        "verandia": "2/2",
+        "cexa": "4/4 including darkpool refusal",
+        "vesta": "3/3 issuance",
+        "$build": "device APK 2026-08-12, predates verana-labs/inji-wallet#2 which merged 2026-09-08"
+      }
     },
     "authbound": {
       "package": "io.authbound.wallet.dev",
@@ -29,7 +46,14 @@
       "unlock": "keypad6",
       "secret": "123456",
       "coldStart": false,
-      "notes": "EUDI codebase on a build that pins eudi-lib-android-wallet-core 0.28.1. Lists every credential matching a query with no way to choose and submits all of them, so a query matching two held credentials is rejected by the verifier."
+      "notes": "EUDI codebase on a build that pins eudi-lib-android-wallet-core 0.28.1. Lists every credential matching a query with no way to choose and submits all of them, so a query matching two held credentials is rejected by the verifier. Separately, it renders no issuer-permission sentence on any issuance: on bolivia, verandia, cexa and vesta alike it shows the Q1 trust card and 'OFFERS YOU <credential>' with Add enabled, and never states whether the issuer is authorized, so Q2 is not gated on the issuance path at all. On cexa verifier requests it shows 'No ECS-Service credential presented' and 'The Verana resolver could not be reached'.",
+      "verified": {
+        "bhi": "7/8, fails meridian-qualification",
+        "bolivia": "2/2 trust, no Q2 sentence",
+        "verandia": "2/2 trust, no Q2 sentence",
+        "cexa": "issuance trust ok, both verifiers COULD NOT VERIFY",
+        "vesta": "3/3 trust, no Q2 sentence"
+      }
     },
     "eudi": {
       "package": "eu.europa.ec.euidi",
@@ -49,7 +73,14 @@
       "unlock": "keypad6",
       "secret": "123456",
       "coldStart": false,
-      "notes": "Discards the verifier DID unless the request arrives as a DID identifier, then queries the resolver with an empty did and renders COULD NOT VERIFY while leaving Share enabled. Fetches a credential as soon as an offer resolves, before any verdict exists, so the issuer marks the session Completed even when the wallet refuses."
+      "notes": "Discards the verifier DID unless the request arrives as a DID identifier, then queries the resolver with an empty did and renders COULD NOT VERIFY while leaving Share enabled. Fetches a credential as soon as an offer resolves, before any verdict exists, so the issuer marks the session Completed even when the wallet refuses. On bolivia, verandia and cexa it is otherwise the second best wallet tested: full Q1 plus the Q2/Q3 sentence, and it gets the darkpool refusal right with 'DarkPool Exchange (demo) is not an authorized verifier of Cexa kyc'. It still leaves Share credential enabled on that screen, so the refusal is text only.",
+      "verified": {
+        "personal-wallets": "6/6",
+        "bhi": "presentations fail",
+        "bolivia": "2/2",
+        "verandia": "2/2",
+        "cexa": "4/4 verdicts correct, but Share stays enabled on the denial"
+      }
     },
     "sphereon": {
       "package": "com.sphereon.ssi.wallet",
@@ -59,7 +90,14 @@
       "unlock": "keypad6",
       "secret": "251839",
       "coldStart": false,
-      "notes": "Identifies a verifier by its did:web alias, which carries no trust evaluation, so verifier requests fall back to a federation warning. The Maybe later button on the biometrics step has malformed bounds on a 1080x2412 screen and cannot be tapped."
+      "notes": "Identifies a verifier by its did:web alias, which carries no trust evaluation, so verifier requests fall back to a federation warning. The Maybe later button on the biometrics step has malformed bounds on a 1080x2412 screen and cannot be tapped. Renders Q1 only: '<service> is a trusted party, Verified against the Verana Trust Registry' with a 'Yes, continue' button, and never prints an issuer or verifier permission sentence on any cast, so Q2 and Q3 are invisible to the user.",
+      "verified": {
+        "personal-wallets": "6/6",
+        "bhi": "presentations fail",
+        "bolivia": "Q1 only",
+        "verandia": "Q1 only",
+        "cexa": "Q1 only"
+      }
     },
     "talao": {
       "package": "co.altme.alt.me.altme.dev",
@@ -69,7 +107,11 @@
       "unlock": "keypad6",
       "secret": "123456",
       "coldStart": true,
-      "notes": "Only acts on the link at cold start; delivered while running it logs onAppLink and drops it. Rejects the dc+sd-jwt format the casts issue."
+      "notes": "Only acts on the link at cold start; delivered while running it logs onAppLink and drops it. Rejects the dc+sd-jwt format the casts issue. Its PIN pad is a 1-9 then 0 layout that does not match the keypad6 tap coordinates, so the runner cannot unlock it and every delivery stops at 'Type your PIN code to open the wallet' with the offer never retrieved. Needs its own unlock branch before it can be driven at all.",
+      "verified": {
+        "bolivia": "blocked at unlock",
+        "cexa": "blocked at unlock"
+      }
     },
     "paradym": {
       "package": "id.paradym.wallet.dev",

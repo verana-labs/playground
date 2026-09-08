@@ -8,6 +8,8 @@ Drives a real Android wallet through the playground's demos on a connected phone
 ./run.sh procivis personal-wallets
 ```
 
+`./check-dids.sh` needs no device and no wallet: it checks every cast's did:webvh log for the history problem described under "Things that will waste your time".
+
 Requires `adb` on PATH with a phone connected and USB debugging on. Runs against `https://playground.testnet.verana.network` unless `PLAYGROUND_BASE` says otherwise. Screen text for every run lands in `results/<wallet>-<suite>.txt`, which is where you look when a verdict surprises you.
 
 ## Reading the output
@@ -64,6 +66,25 @@ Never conclude a cast is broken from a reading taken soon after a roll.
 
 **Wallet quirks are recorded in `wallets.json`.** swiyu locks on every backgrounding and needs a prompt re-login or the request expires; Inji drops an intent when idle at home; Altme only acts at cold start. When a wallet behaves oddly, read its `notes` before debugging the platform.
 
+**A DID's history is immutable, so an old cast cannot be fixed by rolling it.** vs-agent before 2026-08-03 signed each did:webvh log entry with a bare `did:key:z...` verification method instead of the `did:key:z...#z...` reference the spec requires. swiyu's Rust resolver replays the log from version 1, so one bad historical entry rejects the DID forever with `not a valid DID log`. Rolling the image forward only fixes entries written from then on: umbra was already on a fixed image, its entries 20 to 27 are correct, and it still fails. Check before blaming a wallet:
+
+```bash
+curl -s https://<host>/.well-known/did.jsonl | head -1 | python3 -c \
+  "import json,sys;p=json.load(sys.stdin)['proof'];p=[p] if isinstance(p,dict) else p;print(p[0]['verificationMethod'])"
+```
+
+A `#` in the output is healthy. `./check-dids.sh` sweeps every cast service at once and exits non-zero if any is affected; today it flags 14 of 44. Every DID created on or after 2026-08-03 is fine; the whole vesta cast, `playground-demo` and `demo-untrusted` were created on 2026-07-30 and are not. The only repair is destructive: wipe the agent's PVCs so it boots a new DID, then re-provision. `reset_identity` exists for that but only on the demo wrappers, not for vesta.
+
+**A presentation needs the credential already in the wallet.** The runner stops before tapping accept, so a fresh wallet holds nothing and every `kind: present` scenario reports whatever the wallet says when it finds no match: swiyu prints "No matching credential available" and no verdict at all, authbound prints "The requested document is not available". That is not a trust failure. Collect the matching credential by hand first, then run the presentation.
+
 ## Known state
 
-Recorded 7 September 2026, all device-verified. `CCM` is published on the site but was never deployed: neither of its workflows has ever run, its services have no trust record, and its hosts serve the ingress default certificate, so every visitor gets an error on every wallet.
+Recorded 8 September 2026, all device-verified on the Honor LLY-NX1. Per-wallet results live in `wallets.json` under `verified`.
+
+Six wallets can be driven: swiyu, inji, authbound, procivis, sphereon and, in principle, talao. Talao is currently blocked at its PIN pad because the keypad6 coordinates do not match its layout. The other six entries in `wallets.json` carry a `skip` and the reason.
+
+On the three casts rolled to `.39` on 7 September, inji and procivis are the strongest: both render the Q2 issuer sentence and the Q3 verifier sentence, and both get the cexa darkpool refusal right. Neither actually disables the affirmative button on a denial, so the refusal is text only. authbound shows the trust card but never states whether an issuer is authorized, and sphereon shows Q1 alone. Inji's own gate is the real problem: for an issuer host it has already trusted it downloads the credential with no consent screen at all.
+
+Two cast-side failures are open. swiyu rejects the entire vesta cast on the did:webvh history above, and it rejects `novara.cexa` on `invalid DID document: publicKeyMultibase must not be used` while `aurum` on the same cast, same image and a structurally identical log passes; that one is reproducible but unexplained. `CCM` is published on the site but was never deployed: neither of its workflows has ever run, its services have no trust record, and its hosts serve the ingress default certificate, so every visitor gets an error on every wallet.
+
+The vesta suite's expectations were wrong until 8 September. All three organisations are legitimate ECS-Badge issuers and each holds a valid ISSUER permission on schema 250, so refusing a badge issuance was never the right verdict. The cast turns on the Authorized Repairer credential, which Umbra never receives, and the refusal belongs at the portal login.

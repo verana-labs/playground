@@ -27,11 +27,14 @@
     },
     "vesta": {
       "page": "/usecases/vesta",
+      "note": "Trust is not membership. All three organisations are verifiable and each holds a valid, unrevoked ISSUER permission on BadgeCredential (schema 250), so every badge issuance is correctly accepted. What separates them is the Authorized Repairer credential (schema 252, issued only by the Vesta Repair Network), which Umbra never receives. The refusal belongs at the portal, not at issuance.",
+      "blocked": "swiyu rejects every service in this cast before any consent screen: the did:webvh logs were created on 2026-07-30 by a vs-agent older than the 2026-08-03 fix, so entry 1 signs its proof with a bare did:key: verification method and swiyu replays the log from version 1. Rolling the image forward does not help, the bad entries are immutable. Other wallets resolve these DIDs fine.",
       "scenarios": [
         { "id": "badge-vesta", "service": "vesta", "credential": "ecs-badge", "kind": "issue", "expect": "accept" },
-        { "id": "badge-zenith", "service": "zenith", "credential": "ecs-badge", "kind": "issue", "expect": "refuse" },
-        { "id": "badge-umbra", "service": "umbra", "credential": "ecs-badge", "kind": "issue", "expect": "refuse" },
-        { "id": "portal-login", "route": "/api/portal-login", "kind": "present", "expect": "accept" }
+        { "id": "badge-zenith", "service": "zenith", "credential": "ecs-badge", "kind": "issue", "expect": "accept" },
+        { "id": "badge-umbra", "service": "umbra", "credential": "ecs-badge", "kind": "issue", "expect": "accept", "note": "Umbra issues real badges, so accepting here is correct. Expecting a refusal was wrong and made every wallet look broken." },
+        { "id": "portal-login", "route": "/api/portal-login", "kind": "present", "expect": "accept", "note": "Present a badge issued by Vesta or Zenith." },
+        { "id": "portal-login-umbra", "route": "/api/portal-login", "kind": "present", "expect": "refuse", "note": "Present an Umbra-issued badge. This is the scenario the cast exists for; it is not reachable from the runner, drive it from the page." }
       ]
     },
     "verandia": {

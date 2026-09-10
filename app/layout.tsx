@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Nav from "./components/Nav";
-import GdcBanner from "./components/GdcBanner";
 import Footer from "./components/Footer";
 import Reveal from "./components/Reveal";
 import JsonLd from "./components/JsonLd";
@@ -57,7 +56,6 @@ export default function RootLayout({
       </head>
       <body className="flex min-h-screen flex-col bg-[#fcfcff] text-gray-900 antialiased">
         <Reveal />
-        <GdcBanner />
         <Nav />
         <main className="flex-1">{children}</main>
         <Footer />

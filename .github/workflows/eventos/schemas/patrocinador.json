@@ -1,0 +1,53 @@
+{
+  "$id": "https://taquilla.eventos.playground.testnet.verana.network/schemas/patrocinador.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CredencialPatrocinadorEvento",
+  "description": "Credencial de patrocinador de un evento, emitida por la boletería al registrar la organización patrocinadora (demo). Una credencial por organización y por evento. Solo para demostración.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID del titular de la credencial"
+        },
+        "organizacion": {
+          "type": "string",
+          "description": "Nombre de la organización patrocinadora"
+        },
+        "lema": {
+          "type": "string",
+          "description": "Lema o descripción corta de la organización"
+        },
+        "tipo": {
+          "type": "string",
+          "description": "Tipo de credencial (Patrocinador)"
+        },
+        "evento": {
+          "type": "string",
+          "description": "Nombre del evento"
+        },
+        "pais": {
+          "type": "string",
+          "description": "País donde se celebra el evento"
+        },
+        "fecha": {
+          "type": "string",
+          "description": "Fecha del evento"
+        },
+        "horario": {
+          "type": "string",
+          "description": "Horario del evento"
+        }
+      },
+      "required": [
+        "organizacion",
+        "tipo",
+        "evento",
+        "pais",
+        "fecha"
+      ]
+    }
+  }
+}

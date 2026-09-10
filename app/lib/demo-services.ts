@@ -4,6 +4,7 @@ import { CCM_CAST } from "./ccm-cast";
 import { CEXA_CAST } from "./cexa-cast";
 import { VERANDIA_CAST } from "./verandia-cast";
 import { BHI_CAST } from "./bhi-cast";
+import { EVENTOS_CAST } from "./eventos-cast";
 
 const BASE = process.env.DEMOS_BASE_DOMAIN ?? "main.demos.testnet.verana.network";
 const CAST = process.env.CAST_BASE_DOMAIN ?? "playground.testnet.verana.network";
@@ -65,6 +66,15 @@ export const DEMO_SERVICES: DemoService[] = [
   // from host discovery until ccm-cast.ts placeholders are replaced.
   { id: "camara-medellin", label: "Cámara de Comercio de Medellín (demo)", host: CCM_CAST.camara.host, appUrl: invite(CCM_CAST.camara.host), role: "issuer" },
   { id: "bancolombia", label: "Bancolombia (demo)", host: CCM_CAST.bancolombia.host, appUrl: invite(CCM_CAST.bancolombia.host), role: "verifier" },
+  // The events cast (the Spanish ticket-broker demo at /eventos), deployed
+  // by .github/workflows/eventos-*: Taquilla (demo) issues the boletos, the
+  // three event services verify them. Ids equal the Helm release names
+  // (evento- prefixed, unlike their hosts); DIDs come from host discovery
+  // until the placeholder values in eventos-cast.ts are replaced.
+  { id: "taquilla", label: "Taquilla (demo)", host: EVENTOS_CAST.taquilla.host, appUrl: invite(EVENTOS_CAST.taquilla.host), role: "issuer" },
+  { id: "evento-costa-rica", label: "Revolución del Contenido Empresarial: Costa Rica", host: EVENTOS_CAST.costaRica.host, appUrl: invite(EVENTOS_CAST.costaRica.host), role: "verifier" },
+  { id: "evento-guatemala", label: "Revolución del Contenido Empresarial: Guatemala", host: EVENTOS_CAST.guatemala.host, appUrl: invite(EVENTOS_CAST.guatemala.host), role: "verifier" },
+  { id: "evento-panama", label: "Revolución del Contenido Empresarial: Panamá", host: EVENTOS_CAST.panama.host, appUrl: invite(EVENTOS_CAST.panama.host), role: "verifier" },
   // The CEXA cast (reusable KYC for exchanges and banks at /usecases/cexa,
   // unlisted), deployed by .github/workflows/cexa-*. DIDs come from host
   // discovery until the placeholder values in cexa-cast.ts are replaced.

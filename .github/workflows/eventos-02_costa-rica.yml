@@ -1,0 +1,34 @@
+name: "Eventos 02 · Evento Costa Rica (verificador)"
+
+# Deploys the Costa Rica event service (17 de septiembre): ECS creds from
+# Helvetia Trust, open VERIFIER permissions on the Asistente and Patrocinador
+# schemas, and the OpenID4VC verifier rail pinned to Taquilla. Run after
+# "Eventos 01". Part of the events cast CI/CD — see
+# .github/workflows/eventos/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  costa-rica:
+    uses: ./.github/workflows/eventos-00_core.yml
+    with:
+      org: costa-rica
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

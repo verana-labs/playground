@@ -1,0 +1,34 @@
+name: "Eventos 01 · Taquilla (boletería emisora)"
+
+# Deploys Taquilla (demo), the ticket broker of the events cast: ECS creds
+# from Helvetia Trust, the Ecosistema de Eventos (demo) registry with the
+# Asistente and Patrocinador schemas, the AnonCreds credential types and the
+# OpenID4VC issuer rail. Part of the events cast CI/CD — see
+# .github/workflows/eventos/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      force_refresh:
+        description: "Re-issue credentials even when already linked"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  taquilla:
+    uses: ./.github/workflows/eventos-00_core.yml
+    with:
+      org: taquilla
+      step: ${{ inputs.step }}
+      force_refresh: ${{ inputs.force_refresh }}
+    secrets: inherit

@@ -38,6 +38,7 @@ import {
 } from "../lib/eventos";
 import LiveTrustCard from "../components/LiveTrustCard";
 import { ArteEvento } from "./arte";
+import { VeranaBadge } from "./VeranaBadge";
 import {
   CredencialPreview,
   LangEs,
@@ -1086,19 +1087,24 @@ export default function TaquillaSite({ wallets }: { wallets: PersonalWallet[] })
       </section>
 
       <footer className="border-t border-gray-200/70 bg-[#f7f6fb]">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <Marca className="text-gray-700" />
-          <p>
-            {TAQUILLA.etiqueta}: boletería verificable sobre la red de pruebas de Verana.
-            Organiza los eventos: {ORGANIZADOR}.
-          </p>
-          <a
-            href={withBase("/")}
-            className="inline-flex items-center gap-1 text-gray-400 transition hover:text-gray-700"
-          >
-            Verana Playground
-            <ExternalLink className="h-3 w-3" aria-hidden />
-          </a>
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+            <Marca className="text-gray-700" />
+            <p className="max-w-md text-xs leading-relaxed text-gray-500">
+              {TAQUILLA.etiqueta}: boletería verificable sobre la red de pruebas de
+              Verana. Organiza los eventos: {ORGANIZADOR}.
+            </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-4">
+            <VeranaBadge />
+            <a
+              href={withBase("/")}
+              className="inline-flex items-center gap-1 text-xs text-gray-400 transition hover:text-gray-700"
+            >
+              Verana Playground
+              <ExternalLink className="h-3 w-3" aria-hidden />
+            </a>
+          </div>
         </div>
       </footer>
     </div>

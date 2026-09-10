@@ -31,6 +31,7 @@ import {
 } from "../../lib/eventos";
 import LiveTrustCard from "../../components/LiveTrustCard";
 import { ArteEvento } from "../arte";
+import { VeranaBadge } from "../VeranaBadge";
 import {
   CredencialPreview,
   LangEs,
@@ -768,25 +769,30 @@ export default function EventoSite({
       </section>
 
       <footer className="border-t border-gray-200/70 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-8 text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-          <div className="flex items-center gap-3">
-            {/* eslint-disable-next-line @next/next/no-img-element -- partner brand asset */}
-            <img src={withBase("/images/eventos/intexus.png")} alt={ORGANIZADOR} className="h-5 w-auto" />
-            <span>
-              {EVENTO_TITULO} · {evento.pais}
-            </span>
+        <div className="mx-auto flex max-w-6xl flex-col gap-6 px-4 py-10 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-5">
+            <div className="flex items-center gap-3 text-xs text-gray-500">
+              {/* eslint-disable-next-line @next/next/no-img-element -- partner brand asset */}
+              <img src={withBase("/images/eventos/intexus.png")} alt={ORGANIZADOR} className="h-5 w-auto" />
+              <span>
+                {EVENTO_TITULO} · {evento.pais}
+              </span>
+            </div>
+            <p className="max-w-md text-xs leading-relaxed text-gray-500">
+              Organiza {ORGANIZADOR}. Boletos por {TAQUILLA.etiqueta}. Demostración sobre
+              la red de pruebas de Verana.
+            </p>
           </div>
-          <p>
-            Organiza {ORGANIZADOR}. Boletos por {TAQUILLA.etiqueta}. Demostración sobre la red
-            de pruebas de Verana.
-          </p>
-          <a
-            href={withBase("/")}
-            className="inline-flex items-center gap-1 text-gray-400 transition hover:text-gray-700"
-          >
-            Verana Playground
-            <ExternalLink className="h-3 w-3" aria-hidden />
-          </a>
+          <div className="flex flex-wrap items-center gap-4">
+            <VeranaBadge />
+            <a
+              href={withBase("/")}
+              className="inline-flex items-center gap-1 text-xs text-gray-400 transition hover:text-gray-700"
+            >
+              Verana Playground
+              <ExternalLink className="h-3 w-3" aria-hidden />
+            </a>
+          </div>
         </div>
       </footer>
     </div>

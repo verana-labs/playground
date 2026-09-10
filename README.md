@@ -20,6 +20,8 @@ app/                     Next.js 15 (App Router) + Tailwind v4, verana.io design
   personal-wallets/[slug]/   Per-personal-wallet playground (identical template, spec §4)
   business-wallets/[slug]/  Per-business-wallet playground (identical template, spec §5)
   integrate/             Add your wallet (guidelines + PR process)
+  eventos/               The events demo (Spanish, unlisted): the Taquilla ticket broker and
+                         three event landings, live against the eventos-* cast
 integrations/            The integration registry: one folder per wallet with integration.yaml
                          (submitted by PR — this is how a wallet gets listed and gets its page)
 ```

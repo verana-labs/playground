@@ -1,0 +1,53 @@
+{
+  "$id": "https://taquilla.eventos.playground.testnet.verana.network/schemas/asistente.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "CredencialAsistenteEvento",
+  "description": "Boleto de asistente a un evento, emitido por la boletería al registrarse (demo). Una credencial por asistente y por evento. Solo para demostración.",
+  "type": "object",
+  "properties": {
+    "credentialSubject": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "DID del titular de la credencial"
+        },
+        "nombre": {
+          "type": "string",
+          "description": "Nombre del asistente"
+        },
+        "tipo": {
+          "type": "string",
+          "description": "Tipo de credencial (Asistente)"
+        },
+        "evento": {
+          "type": "string",
+          "description": "Nombre del evento"
+        },
+        "pais": {
+          "type": "string",
+          "description": "País donde se celebra el evento"
+        },
+        "fecha": {
+          "type": "string",
+          "description": "Fecha del evento"
+        },
+        "horario": {
+          "type": "string",
+          "description": "Horario del evento"
+        },
+        "patrocinadores": {
+          "type": "string",
+          "description": "Patrocinadores y aliados del evento"
+        }
+      },
+      "required": [
+        "nombre",
+        "tipo",
+        "evento",
+        "pais",
+        "fecha"
+      ]
+    }
+  }
+}

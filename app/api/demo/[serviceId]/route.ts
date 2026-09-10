@@ -55,6 +55,19 @@ import {
   type DemoApplicant,
 } from "@/app/lib/demo-bhi";
 import { cexaKycDemoClaims, cexaKycOid4vcClaims } from "@/app/lib/demo-cexa";
+import {
+  EVENTOS_ASISTENTE_JSC,
+  EVENTOS_ASISTENTE_NAME,
+  EVENTOS_PATROCINADOR_JSC,
+  EVENTOS_PATROCINADOR_NAME,
+} from "@/app/lib/eventos-cast";
+import {
+  asistenteDemoClaims,
+  asistenteOid4vcClaims,
+  eventosMintFromParams,
+  patrocinadorDemoClaims,
+  patrocinadorOid4vcClaims,
+} from "@/app/lib/demo-eventos";
 import { VESTA_CAST } from "@/app/lib/vesta-cast";
 
 // Live demo-action link for a Playground cast service (spec §4): what the
@@ -83,10 +96,17 @@ type CredentialKind = {
   oid4vcPolicy: string;
   /** VTJSC the DIDComm presentation request asks for. */
   jscUrl: string;
-  claims: (serviceId: string, applicant: DemoApplicant) => Claim[];
+  /** The events kinds read their mint params (event, name, organization)
+   *  from the request query; every other kind ignores the third argument. */
+  claims: (
+    serviceId: string,
+    applicant: DemoApplicant,
+    search: URLSearchParams,
+  ) => Claim[];
   oid4vcClaims: (
     serviceId: string,
     applicant: DemoApplicant,
+    search: URLSearchParams,
   ) => Record<string, string>;
 };
 
@@ -205,6 +225,35 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     jscUrl: CCM_LEGAL_REP_JSC,
     claims: () => ccmLegalRepDemoClaims(),
     oid4vcClaims: () => ccmLegalRepOid4vcClaims(),
+  },
+  "eventos-asistente": {
+    label: "boleto de Asistente",
+    credDefName: EVENTOS_ASISTENTE_NAME,
+    oid4vcConfig:
+      process.env.DEMO_OID4VC_EVENTOS_ASISTENTE_CONFIG ?? "eventos-asistente",
+    oid4vcPolicy:
+      process.env.DEMO_OID4VC_EVENTOS_ASISTENTE_POLICY ?? "eventos-asistente",
+    jscUrl: EVENTOS_ASISTENTE_JSC,
+    // The broker form travels in the query: which event, the visitor's name.
+    claims: (_serviceId, _applicant, search) =>
+      asistenteDemoClaims(eventosMintFromParams(search)),
+    oid4vcClaims: (_serviceId, _applicant, search) =>
+      asistenteOid4vcClaims(eventosMintFromParams(search)),
+  },
+  "eventos-patrocinador": {
+    label: "credencial de Patrocinador",
+    credDefName: EVENTOS_PATROCINADOR_NAME,
+    oid4vcConfig:
+      process.env.DEMO_OID4VC_EVENTOS_PATROCINADOR_CONFIG ??
+      "eventos-patrocinador",
+    oid4vcPolicy:
+      process.env.DEMO_OID4VC_EVENTOS_PATROCINADOR_POLICY ??
+      "eventos-patrocinador",
+    jscUrl: EVENTOS_PATROCINADOR_JSC,
+    claims: (_serviceId, _applicant, search) =>
+      patrocinadorDemoClaims(eventosMintFromParams(search)),
+    oid4vcClaims: (_serviceId, _applicant, search) =>
+      patrocinadorOid4vcClaims(eventosMintFromParams(search)),
   },
 };
 
@@ -348,7 +397,7 @@ export async function GET(
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             credentialConfigurationId: kind.oid4vcConfig,
-            claims: kind.oid4vcClaims(serviceId, applicant),
+            claims: kind.oid4vcClaims(serviceId, applicant, search),
           }),
         });
         const url =
@@ -399,7 +448,7 @@ export async function GET(
       // missing and adds nothing.
       // Copy before the attr-fill below: a claims function may hand out a
       // shared array, and pushing into it would pollute every later offer.
-      const claims = [...kind.claims(serviceId, applicant)];
+      const claims = [...kind.claims(serviceId, applicant, search)];
       const attrNames = await anoncredsAttrNames(kind.jscUrl);
       if (attrNames) {
         const present = new Set(claims.map((c) => c.name));

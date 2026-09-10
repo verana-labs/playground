@@ -69,12 +69,12 @@ export const DEMO_SERVICES: DemoService[] = [
   // The events cast (the Spanish ticket-broker demo at /eventos), deployed
   // by .github/workflows/eventos-*: Taquilla (demo) issues the boletos, the
   // three event services verify them. Ids equal the Helm release names
-  // (evento- prefixed, unlike their hosts); DIDs come from host discovery
-  // until the placeholder values in eventos-cast.ts are replaced.
-  { id: "taquilla", label: "Taquilla (demo)", host: EVENTOS_CAST.taquilla.host, appUrl: invite(EVENTOS_CAST.taquilla.host), role: "issuer" },
-  { id: "evento-costa-rica", label: "Revolución del Contenido Empresarial: Costa Rica", host: EVENTOS_CAST.costaRica.host, appUrl: invite(EVENTOS_CAST.costaRica.host), role: "verifier" },
-  { id: "evento-guatemala", label: "Revolución del Contenido Empresarial: Guatemala", host: EVENTOS_CAST.guatemala.host, appUrl: invite(EVENTOS_CAST.guatemala.host), role: "verifier" },
-  { id: "evento-panama", label: "Revolución del Contenido Empresarial: Panamá", host: EVENTOS_CAST.panama.host, appUrl: invite(EVENTOS_CAST.panama.host), role: "verifier" },
+  // (evento- prefixed, unlike their hosts); the live did:webvh values are
+  // in eventos-cast.ts.
+  { id: "taquilla", label: "Taquilla (demo)", host: EVENTOS_CAST.taquilla.host, did: EVENTOS_CAST.taquilla.did, appUrl: invite(EVENTOS_CAST.taquilla.host), role: "issuer" },
+  { id: "evento-costa-rica", label: "Revolución del Contenido Empresarial: Costa Rica", host: EVENTOS_CAST.costaRica.host, did: EVENTOS_CAST.costaRica.did, appUrl: invite(EVENTOS_CAST.costaRica.host), role: "verifier" },
+  { id: "evento-guatemala", label: "Revolución del Contenido Empresarial: Guatemala", host: EVENTOS_CAST.guatemala.host, did: EVENTOS_CAST.guatemala.did, appUrl: invite(EVENTOS_CAST.guatemala.host), role: "verifier" },
+  { id: "evento-panama", label: "Revolución del Contenido Empresarial: Panamá", host: EVENTOS_CAST.panama.host, did: EVENTOS_CAST.panama.did, appUrl: invite(EVENTOS_CAST.panama.host), role: "verifier" },
   // The CEXA cast (reusable KYC for exchanges and banks at /usecases/cexa,
   // unlisted), deployed by .github/workflows/cexa-*. DIDs come from host
   // discovery until the placeholder values in cexa-cast.ts are replaced.

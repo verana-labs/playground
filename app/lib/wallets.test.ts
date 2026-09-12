@@ -66,9 +66,10 @@ describe("scoped wallets", () => {
     const w = getPersonalWallet("intexus-wallet");
     expect(w?.browser).toBe(true);
     expect(w?.hosted).toMatch(/^https:/);
-    expect(w?.icon).toBeDefined();
+    // The resolved icon depends on scripts/sync-media.mjs having run (it does
+    // before dev/build, not before tests), so check the source file instead.
     expect(
-      fs.statSync(path.join(process.cwd(), "wallets", "intexus-wallet")).isDirectory(),
+      fs.statSync(path.join(process.cwd(), "wallets", "intexus-wallet", "logo.svg")).isFile(),
     ).toBe(true);
   });
 });

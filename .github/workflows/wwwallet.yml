@@ -1,8 +1,18 @@
 name: Deploy wwWallet
 
+# One fork, one commit, N branded instances. Each directory of
+# .github/workflows/wwwallet/brands/<brand>/ is an instance: brand.env
+# carries the release name, hosts and wallet name; an optional branding/
+# subdirectory is copied to wallet-frontend/branding/custom/ before the
+# build (logos, favicon, theme; see the fork's branding/README.md). A push
+# redeploys every instance; a dispatch deploys the chosen one.
+
 on:
   workflow_dispatch:
     inputs:
+      brand:
+        description: "Instance to deploy: a directory of .github/workflows/wwwallet/brands/ (wwwallet = default, intexus = the INTEXUS wallet of /eventos)"
+        default: "wwwallet"
       frontend_ref:
         description: "verana-labs/wallet-frontend ref to build"
         default: "master"
@@ -20,9 +30,45 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  deploy-wwwallet:
-    name: Build and Deploy wwWallet
+  backend:
+    name: Build wwWallet backend image
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout wallet-backend-server
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          repository: wwWallet/wallet-backend-server
+          ref: ${{ inputs.backend_ref || 'a92809bfa82ba2c23615b12f9307619b1e376cb0' }}
+          path: wallet-backend-server
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+
+      - name: Log in to container registry
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_LOGIN }}
+          password: ${{ secrets.DOCKER_HUB_PWD }}
+
+      - name: Build and push backend image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: wallet-backend-server
+          push: true
+          tags: |
+            veranalabs/wwwallet-backend:${{ github.sha }}
+            veranalabs/wwwallet-backend:latest
+          cache-from: type=gha,scope=wwwallet-backend
+          cache-to: type=gha,mode=max,scope=wwwallet-backend
+
+  deploy:
+    name: Build and deploy ${{ matrix.brand }}
+    needs: backend
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        brand: ${{ fromJSON(github.event_name == 'workflow_dispatch' && format('["{0}"]', inputs.brand) || '["wwwallet", "intexus"]') }}
     steps:
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
@@ -34,12 +80,37 @@ jobs:
           ref: ${{ inputs.frontend_ref || 'master' }}
           path: wallet-frontend
 
-      - name: Checkout wallet-backend-server
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-        with:
-          repository: wwWallet/wallet-backend-server
-          ref: ${{ inputs.backend_ref || 'a92809bfa82ba2c23615b12f9307619b1e376cb0' }}
-          path: wallet-backend-server
+      - name: Load the brand
+        run: |
+          BRAND="${{ matrix.brand }}"
+          BRAND_DIR=".github/workflows/wwwallet/brands/${BRAND}"
+          if [ ! -f "${BRAND_DIR}/brand.env" ]; then
+            echo "Unknown brand '${BRAND}': no ${BRAND_DIR}/brand.env" >&2
+            exit 1
+          fi
+          grep -v '^#' "${BRAND_DIR}/brand.env" | grep . >> "$GITHUB_ENV"
+
+          # branding/custom is gitignored in the fork but not dockerignored, so
+          # what we copy here is what the image ships.
+          rm -rf wallet-frontend/branding/custom
+          if [ -d "${BRAND_DIR}/branding" ]; then
+            cp -R "${BRAND_DIR}/branding" wallet-frontend/branding/custom
+            echo "Custom branding:"
+            find wallet-frontend/branding/custom -type f | sort
+          else
+            echo "No custom branding: upstream wwWallet look"
+          fi
+
+          if [ "${BRAND}" = "wwwallet" ]; then
+            TAG_PREFIX=""
+            LATEST_TAG="latest"
+          else
+            TAG_PREFIX="${BRAND}-"
+            LATEST_TAG="${BRAND}"
+          fi
+          echo "FRONTEND_IMAGE=veranalabs/wwwallet-frontend:${TAG_PREFIX}${{ github.sha }}" >> "$GITHUB_ENV"
+          echo "FRONTEND_LATEST=veranalabs/wwwallet-frontend:${LATEST_TAG}" >> "$GITHUB_ENV"
+          echo "BACKEND_IMAGE=veranalabs/wwwallet-backend:${{ github.sha }}" >> "$GITHUB_ENV"
 
       - name: Set up kubeconfig
         run: |
@@ -68,27 +139,16 @@ jobs:
           context: wallet-frontend
           push: true
           tags: |
-            veranalabs/wwwallet-frontend:${{ github.sha }}
-            veranalabs/wwwallet-frontend:latest
-          cache-from: type=gha,scope=wwwallet-frontend
-          cache-to: type=gha,mode=max,scope=wwwallet-frontend
-
-      - name: Build and push backend image
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
-        with:
-          context: wallet-backend-server
-          push: true
-          tags: |
-            veranalabs/wwwallet-backend:${{ github.sha }}
-            veranalabs/wwwallet-backend:latest
-          cache-from: type=gha,scope=wwwallet-backend
-          cache-to: type=gha,mode=max,scope=wwwallet-backend
+            ${{ env.FRONTEND_IMAGE }}
+            ${{ env.FRONTEND_LATEST }}
+          cache-from: type=gha,scope=wwwallet-frontend-${{ matrix.brand }}
+          cache-to: type=gha,mode=max,scope=wwwallet-frontend-${{ matrix.brand }}
 
       - name: Ensure wwwallet secrets
         run: |
           NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
-          if ! kubectl -n "$NAMESPACE" get secret wwwallet-secrets >/dev/null 2>&1; then
-            kubectl -n "$NAMESPACE" create secret generic wwwallet-secrets \
+          if ! kubectl -n "$NAMESPACE" get secret "${RELEASE}-secrets" >/dev/null 2>&1; then
+            kubectl -n "$NAMESPACE" create secret generic "${RELEASE}-secrets" \
               --from-literal=APP_SECRET="$(openssl rand -hex 32)" \
               --from-literal=DB_PASSWORD="$(openssl rand -hex 24)"
           fi
@@ -96,24 +156,22 @@ jobs:
       - name: Deploy wwWallet
         run: |
           export NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
-          export FRONTEND_IMAGE="veranalabs/wwwallet-frontend:${{ github.sha }}"
-          export BACKEND_IMAGE="veranalabs/wwwallet-backend:${{ github.sha }}"
-          export HOST="wwwallet.playground.testnet.verana.network"
-          export API_HOST="wwwallet-api.playground.testnet.verana.network"
           export DEPLOY_TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          # RELEASE, HOST, API_HOST, WALLET_NAME, WALLET_TAGLINE come from brand.env;
+          # FRONTEND_IMAGE and BACKEND_IMAGE from the brand step.
 
-          envsubst '${NAMESPACE} ${FRONTEND_IMAGE} ${BACKEND_IMAGE} ${HOST} ${API_HOST} ${DEPLOY_TS}' \
+          envsubst '${NAMESPACE} ${RELEASE} ${FRONTEND_IMAGE} ${BACKEND_IMAGE} ${HOST} ${API_HOST} ${WALLET_NAME} ${WALLET_TAGLINE} ${DEPLOY_TS}' \
             < .github/workflows/wwwallet/manifests.yaml | kubectl apply -f -
 
-          kubectl rollout status statefulset/wwwallet-backend -n "$NAMESPACE" --timeout=300s
-          kubectl rollout status deployment/wwwallet-frontend -n "$NAMESPACE" --timeout=300s
+          kubectl rollout status "statefulset/${RELEASE}-backend" -n "$NAMESPACE" --timeout=300s
+          kubectl rollout status "deployment/${RELEASE}-frontend" -n "$NAMESPACE" --timeout=300s
 
       - name: Summary
         if: always()
         run: |
-          echo "## wwWallet" >> "$GITHUB_STEP_SUMMARY"
+          echo "## ${WALLET_NAME} (${{ matrix.brand }})" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Wallet:** https://wwwallet.playground.testnet.verana.network" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Backend:** https://wwwallet-api.playground.testnet.verana.network" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Frontend image:** veranalabs/wwwallet-frontend:${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **Backend image:** veranalabs/wwwallet-backend:${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Wallet:** https://${HOST}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Backend:** https://${API_HOST}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Frontend image:** ${FRONTEND_IMAGE}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Backend image:** ${BACKEND_IMAGE}" >> "$GITHUB_STEP_SUMMARY"

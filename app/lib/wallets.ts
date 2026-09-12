@@ -48,6 +48,11 @@ const WalletSchema = z.object({
   fork: z.string().url().optional(),
   recommended: z.boolean().optional(),
   hidden: z.boolean().optional(),
+  // Restricts the wallet to one use case: a scoped wallet is left out of the default
+  // list (the main playground, /personal-wallets, every use-case chooser) and only
+  // shows up for callers that ask for its scope, e.g.
+  // `listPersonalWallets({ scope: "eventos" })`.
+  scope: z.string().regex(/^[a-z0-9-]+$/).optional(),
   // Extra query the demo mint needs for THIS wallet. OpenID4VP rails are mutually
   // exclusive per request: a wallet that never implemented DCQL needs `query=pe`, and one
   // that resolves no DIDs needs `signer=x5c` for an x509_hash client_id. Without this the
@@ -101,7 +106,9 @@ function publicAsset(ref: string | undefined): string | undefined {
 
 let cache: PersonalWallet[] | null = null;
 
-export function listPersonalWallets(): PersonalWallet[] {
+// Every wallet of the file (minus `hidden` and the PLAYGROUND_WALLETS allowlist),
+// resolved once, in file order. The public listing filters and sorts this.
+function loadPersonalWallets(): PersonalWallet[] {
   if (cache) return cache;
   const file = path.join(process.cwd(), "personal-wallets.yaml");
   if (!fs.existsSync(file)) {
@@ -146,13 +153,28 @@ export function listPersonalWallets(): PersonalWallet[] {
       video: videoSrc ? { src: videoSrc, note: w.video?.note } : undefined,
     };
   });
-  cache = [
-    ...cache.filter((w) => w.recommended),
-    ...cache.filter((w) => !w.recommended),
-  ];
   return cache;
 }
 
+export type ListPersonalWalletsOptions = {
+  // Also include the wallets scoped to this use case (they are never in the
+  // default list); they keep their place in the recommended-first order.
+  scope?: string;
+};
+
+export function listPersonalWallets({
+  scope,
+}: ListPersonalWalletsOptions = {}): PersonalWallet[] {
+  const wallets = loadPersonalWallets().filter(
+    (w) => !w.scope || w.scope === scope,
+  );
+  return [
+    ...wallets.filter((w) => w.recommended),
+    ...wallets.filter((w) => !w.recommended),
+  ];
+}
+
+// By id, whatever its scope.
 export function getPersonalWallet(id: string): PersonalWallet | undefined {
-  return listPersonalWallets().find((w) => w.id === id);
+  return loadPersonalWallets().find((w) => w.id === id);
 }

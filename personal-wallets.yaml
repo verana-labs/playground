@@ -25,6 +25,10 @@
 #   playstore/appstore/web   complementary install links
 #   website         vendor website; the vendor name links to it (new tab)
 #   repo, license, contact, notes
+#   recommended     true puts the wallet first in every picker
+#   scope           use-case id (e.g. eventos): the wallet is left out of the
+#                   main playground, /personal-wallets and every general
+#                   picker, and only listed where that use case asks for it
 #   captures        up to ONE screen capture per demo scenario (optional),
 #                   keyed by scenario id (issue-accredited,
 #                   issue-unaccredited, issue-untrusted, present-accredited,
@@ -35,6 +39,27 @@
 #                   conditions (speed, editing)
 
 wallets:
+  # INTEXUS Wallet: the hosted wwWallet instance branded for the events demo
+  # (/eventos and the three event landings). Same fork and commit as the
+  # wwwallet entry below, built and deployed by .github/workflows/wwwallet.yml
+  # (brand intexus, assets under .github/workflows/wwwallet/brands/intexus/).
+  # scope keeps it out of the main playground; recommended puts it first in
+  # the Taquilla and event pickers.
+  - id: intexus-wallet
+    name: INTEXUS Wallet
+    vendor: INTEXUS
+    icon: ./intexus-wallet/logo.svg
+    formats: [openid4vc-sdjwt]
+    demoParams: signer=x5c
+    browser: true
+    hosted: https://intexus-wallet.eventos.playground.testnet.verana.network
+    download: https://intexus-wallet.eventos.playground.testnet.verana.network
+    repo: https://github.com/wwWallet/wallet-frontend
+    fork: https://github.com/verana-labs/wallet-frontend
+    license: BSD-2-Clause
+    recommended: true
+    scope: eventos
+    notes: "The INTEXUS-branded browser wallet of the events tour: a hosted instance of our wwWallet fork with the same Verana integration (trust card and gate on both consent moments). Nothing to install: it opens in the browser, on the phone too, and the account is a passkey."
   - id: inji
     name: Inji Wallet
     vendor: MOSIP

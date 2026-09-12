@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { listPersonalWallets, WalletsFileSchema } from "./wallets";
+import { getPersonalWallet, listPersonalWallets, WalletsFileSchema } from "./wallets";
 
 describe("personal wallets configuration", () => {
   it("personal-wallets.yaml parses against the schema", () => {
@@ -39,6 +39,37 @@ describe("personal wallets configuration", () => {
         fs.statSync(path.join(process.cwd(), "wallets", w.id)).isDirectory(),
       ).toBe(true);
     }
+  });
+});
+
+describe("scoped wallets", () => {
+  it("stay out of the default list", () => {
+    expect(listPersonalWallets().some((w) => w.scope)).toBe(false);
+  });
+
+  it("lead their own scope, the general wallets unchanged behind them", () => {
+    const general = listPersonalWallets().map((w) => w.id);
+    const eventos = listPersonalWallets({ scope: "eventos" });
+    expect(eventos[0]?.id).toBe("intexus-wallet");
+    expect(eventos[0]?.scope).toBe("eventos");
+    expect(eventos[0]?.recommended).toBe(true);
+    expect(eventos.slice(1).map((w) => w.id)).toEqual(general);
+  });
+
+  it("an unknown scope lists the general wallets only", () => {
+    expect(listPersonalWallets({ scope: "nope" }).map((w) => w.id)).toEqual(
+      listPersonalWallets().map((w) => w.id),
+    );
+  });
+
+  it("are found by id and have their media directory", () => {
+    const w = getPersonalWallet("intexus-wallet");
+    expect(w?.browser).toBe(true);
+    expect(w?.hosted).toMatch(/^https:/);
+    expect(w?.icon).toBeDefined();
+    expect(
+      fs.statSync(path.join(process.cwd(), "wallets", "intexus-wallet")).isDirectory(),
+    ).toBe(true);
   });
 });
 

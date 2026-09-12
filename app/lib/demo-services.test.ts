@@ -56,6 +56,20 @@ describe("demo services", () => {
     );
   });
 
+  it("carries the live events cast DIDs, with the evento- release ids behind the bare country hosts", () => {
+    for (const id of ["taquilla", "evento-costa-rica", "evento-guatemala", "evento-panama"]) {
+      const s = getDemoService(id);
+      expect(s?.did).toMatch(/^did:webvh:Qm/);
+      expect(s?.host).toContain("eventos.playground.testnet.verana.network");
+    }
+    expect(getDemoService("evento-panama")?.host).toBe(
+      "panama.eventos.playground.testnet.verana.network",
+    );
+    expect(getDemoService("taquilla")?.appUrl).toBe(
+      "https://taquilla.eventos.playground.testnet.verana.network/invitation",
+    );
+  });
+
   it("gives every playground cast demo service its DIDComm invitation link", () => {
     for (const id of [
       "demo-issuer-accredited", "demo-issuer-unaccredited",

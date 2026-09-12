@@ -23,8 +23,9 @@ import { ArteEvento } from "./arte";
 
 // Shared pieces of the events demo: the Taquilla broker and the three event
 // landings are Spanish, real-looking sites that share the boleto artwork,
-// the wallet picker (every integrated personal wallet, not one) and the
-// mint-a-QR-then-poll loop of the playground demos.
+// the wallet picker (every integrated personal wallet plus the ones scoped
+// to eventos, INTEXUS Wallet first) and the mint-a-QR-then-poll loop of the
+// playground demos.
 
 /** Both sites are Spanish while the root layout declares English. */
 export function LangEs() {
@@ -78,7 +79,9 @@ export function WalletIcon({ w, size = 40 }: { w: PersonalWallet; size?: number 
 }
 
 /** Wallet picker + install panel: every integrated personal wallet, with
- *  the same download options as the /personal-wallets page, in Spanish. */
+ *  the same download options as the /personal-wallets page, in Spanish. A
+ *  browser wallet (INTEXUS Wallet) has nothing to install: its main action
+ *  opens the hosted instance. */
 export function WalletPicker({
   wallets,
   selectedId,
@@ -138,20 +141,30 @@ export function WalletPicker({
           </span>
         </div>
         <p className="mt-3 text-sm leading-relaxed text-gray-600">
-          {wallet.verana_builtin
-            ? `${wallet.name} es compatible con Verana de fábrica: instala la versión estándar desde los enlaces de abajo.`
-            : `Descarga la versión de ${wallet.name} integrada con Verana (compilación para la red de pruebas). Las versiones de tienda pueden no incluir la integración.`}
+          {wallet.browser
+            ? `${wallet.name} es una wallet web: no hay nada que instalar. Ábrela en tu navegador, también desde tu teléfono, y crea tu cuenta con huella, rostro o PIN.`
+            : wallet.verana_builtin
+              ? `${wallet.name} es compatible con Verana de fábrica: instala la versión estándar desde los enlaces de abajo.`
+              : `Descarga la versión de ${wallet.name} integrada con Verana (compilación para la red de pruebas). Las versiones de tienda pueden no incluir la integración.`}
         </p>
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <a
-            href={wallet.download}
+            href={wallet.browser ? (wallet.hosted ?? wallet.download) : wallet.download}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
             style={{ backgroundColor: acento }}
           >
-            <Download className="h-4 w-4" aria-hidden />
-            {wallet.verana_builtin ? "Obtener la wallet" : "Descargar el APK"}
+            {wallet.browser ? (
+              <ExternalLink className="h-4 w-4" aria-hidden />
+            ) : (
+              <Download className="h-4 w-4" aria-hidden />
+            )}
+            {wallet.browser
+              ? "Abrir la wallet web"
+              : wallet.verana_builtin
+                ? "Obtener la wallet"
+                : "Descargar el APK"}
           </a>
           {wallet.playstore ? (
             <a

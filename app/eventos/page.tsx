@@ -15,5 +15,5 @@ export const metadata: Metadata = {
 };
 
 export default function TaquillaPage() {
-  return <TaquillaSite wallets={listPersonalWallets()} />;
+  return <TaquillaSite wallets={listPersonalWallets({ scope: "eventos" })} />;
 }

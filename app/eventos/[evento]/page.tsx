@@ -43,5 +43,5 @@ export default async function EventoPage({
 }) {
   const { evento } = await params;
   if (!isEventoSlug(evento)) notFound();
-  return <EventoSite evento={EVENTOS[evento]} wallets={listPersonalWallets()} />;
+  return <EventoSite evento={EVENTOS[evento]} wallets={listPersonalWallets({ scope: "eventos" })} />;
 }

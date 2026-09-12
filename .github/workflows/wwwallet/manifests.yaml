@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: wwwallet-backend
+  name: ${RELEASE}-backend
   namespace: ${NAMESPACE}
   labels:
-    app: wwwallet-backend
+    app: ${RELEASE}-backend
 spec:
   selector:
-    app: wwwallet-backend
+    app: ${RELEASE}-backend
   ports:
     - port: 8002
       targetPort: 8002
@@ -15,13 +15,13 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: wwwallet-frontend
+  name: ${RELEASE}-frontend
   namespace: ${NAMESPACE}
   labels:
-    app: wwwallet-frontend
+    app: ${RELEASE}-frontend
 spec:
   selector:
-    app: wwwallet-frontend
+    app: ${RELEASE}-frontend
   ports:
     - port: 80
       targetPort: 80
@@ -29,20 +29,20 @@ spec:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: wwwallet-backend
+  name: ${RELEASE}-backend
   namespace: ${NAMESPACE}
   labels:
-    app: wwwallet-backend
+    app: ${RELEASE}-backend
 spec:
-  serviceName: wwwallet-backend
+  serviceName: ${RELEASE}-backend
   replicas: 1
   selector:
     matchLabels:
-      app: wwwallet-backend
+      app: ${RELEASE}-backend
   template:
     metadata:
       labels:
-        app: wwwallet-backend
+        app: ${RELEASE}-backend
       annotations:
         deploy-timestamp: "${DEPLOY_TS}"
     spec:
@@ -67,7 +67,7 @@ spec:
             - name: APP_SECRET
               valueFrom:
                 secretKeyRef:
-                  name: wwwallet-secrets
+                  name: ${RELEASE}-secrets
                   key: APP_SECRET
             - name: DB_HOST
               value: "127.0.0.1"
@@ -78,7 +78,7 @@ spec:
             - name: DB_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: wwwallet-secrets
+                  name: ${RELEASE}-secrets
                   key: DB_PASSWORD
             - name: DB_NAME
               value: "wallet"
@@ -89,7 +89,7 @@ spec:
             - name: WEBAUTHN_RP_ID
               value: "${HOST}"
             - name: WEBAUTHN_RP_NAME
-              value: "wwWallet"
+              value: "${WALLET_NAME}"
           readinessProbe:
             tcpSocket:
               port: 8002
@@ -107,7 +107,7 @@ spec:
             - name: MARIADB_ROOT_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: wwwallet-secrets
+                  name: ${RELEASE}-secrets
                   key: DB_PASSWORD
             - name: MARIADB_DATABASE
               value: "wallet"
@@ -140,19 +140,19 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: wwwallet-frontend
+  name: ${RELEASE}-frontend
   namespace: ${NAMESPACE}
   labels:
-    app: wwwallet-frontend
+    app: ${RELEASE}-frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: wwwallet-frontend
+      app: ${RELEASE}-frontend
   template:
     metadata:
       labels:
-        app: wwwallet-frontend
+        app: ${RELEASE}-frontend
       annotations:
         deploy-timestamp: "${DEPLOY_TS}"
     spec:
@@ -168,9 +168,9 @@ spec:
             - name: STATIC_PUBLIC_URL
               value: "https://${HOST}"
             - name: WALLET_NAME
-              value: "wwWallet"
+              value: "${WALLET_NAME}"
             - name: WALLET_TAGLINE
-              value: "Verifiable Trust web wallet"
+              value: "${WALLET_TAGLINE}"
             - name: OPENID4VCI_REDIRECT_URI
               value: "https://${HOST}/"
             - name: WS_URL
@@ -237,7 +237,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: wwwallet-frontend
+  name: ${RELEASE}-frontend
   namespace: ${NAMESPACE}
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -246,7 +246,7 @@ spec:
   tls:
     - hosts:
         - ${HOST}
-      secretName: wwwallet-frontend-tls
+      secretName: ${RELEASE}-frontend-tls
   rules:
     - host: ${HOST}
       http:
@@ -255,14 +255,14 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: wwwallet-frontend
+                name: ${RELEASE}-frontend
                 port:
                   number: 80
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: wwwallet-backend
+  name: ${RELEASE}-backend
   namespace: ${NAMESPACE}
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-prod
@@ -272,7 +272,7 @@ spec:
   tls:
     - hosts:
         - ${API_HOST}
-      secretName: wwwallet-backend-tls
+      secretName: ${RELEASE}-backend-tls
   rules:
     - host: ${API_HOST}
       http:
@@ -281,6 +281,6 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: wwwallet-backend
+                name: ${RELEASE}-backend
                 port:
                   number: 8002

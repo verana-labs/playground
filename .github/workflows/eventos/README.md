@@ -38,6 +38,19 @@ Every ECS-Organization comes from Helvetia Trust (demo), the accredited
 ECS issuer of the Vesta cast, so this cast needs **no** ECS-ecosystem
 accreditation workflow (no `ECS_ECOSYSTEM_MNEMONIC`).
 
+## The INTEXUS wallet
+
+The pickers on `/eventos` and the three event landings lead with **INTEXUS
+Wallet**, a hosted instance of our wwWallet fork carrying the INTEXUS
+branding, at `intexus-wallet.eventos.playground.testnet.verana.network`
+(backend at `intexus-wallet-api.eventos…`, both under the eventos wildcard).
+It is built and deployed by `.github/workflows/wwwallet.yml` (brand
+`intexus`: `brand.env` and the `branding/` assets live under
+`wwwallet/brands/intexus/`), from the same fork and commit as the default
+wwWallet instance; only the logos, favicon, theme and the runtime wallet
+name differ. Its `personal-wallets.yaml` entry is scoped to `eventos`, so
+it never appears on the main playground or in the other use cases.
+
 ## The two schemas
 
 - **Asistente** (`asistente`, AnonCreds type `AsistenteEvento`, OID4VC id

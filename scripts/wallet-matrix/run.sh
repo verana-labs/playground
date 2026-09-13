@@ -142,6 +142,20 @@ settle() {
   done
 }
 
+# DIDComm wallets deliver an offer as a chat entry, so the consent screen is one tap deeper than
+# the screen the link lands on. Without this the runner reads a chat list and reports no verdict.
+open_consent() {
+  [ "$FMT" = "anoncreds" ] || return 0
+  local screen; screen="$(read_screen)"
+  grep -qiE "conversacion|chats|mensajes" <<<"$screen" || return 0
+  adb shell input tap 540 385 </dev/null 2>/dev/null
+  sleep 3
+  screen="$(read_screen)"
+  grep -qiE "ofrecida|credential offer|solicitud|presentation request" <<<"$screen" || return 0
+  adb shell input tap 600 1200 </dev/null 2>/dev/null
+  sleep 3
+}
+
 classify() {
   local screen="$1"
   local trust="?" perm="?"
@@ -185,6 +199,8 @@ run_one() {
   settle 6
   unlock
   settle 8
+  open_consent
+  settle 6
 
   local screen verdict server
   screen="$(read_screen)"

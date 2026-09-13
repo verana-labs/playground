@@ -64,9 +64,28 @@ for n in t.iter("node"):
     if lab: print(lab)'
 }
 
+# Some wallets (React Native new architecture) draw into a single view: uiautomator returns an
+# empty tree, so the screen has to be read from a screenshot instead.
+ocr() {
+  local png="/tmp/matrix-ocr.png"
+  adb exec-out screencap -p </dev/null > "$png" 2>/dev/null
+  [ -s "$png" ] || return 0
+  tesseract "$png" stdout --psm 6 -l eng+spa 2>/dev/null | sed '/^[[:space:]]*$/d'
+}
+
+read_screen() {
+  local text
+  text="$(ui)"
+  if [ -n "$text" ]; then
+    printf '%s\n' "$text"
+  else
+    ocr
+  fi
+}
+
 unlock() {
   for _ in 1 2 3 4 5; do
-    local screen; screen="$(ui)"
+    local screen; screen="$(read_screen)"
     case "$UNLOCK" in
       password)
         grep -q "enter your password" <<<"${screen,,}" || return 0
@@ -83,8 +102,8 @@ unlock() {
       device-credential)
         # Hologram-based builds show an in-app lock card first ("Autenticar"), then the system
         # prompt, which is FLAG_SECURE: uiautomator reads nothing on either, so drive both blind.
-        if [ -n "$screen" ] && ! grep -qiE "bloquead|locked|autenticar" <<<"$screen"; then return 0; fi
-        adb shell input tap 535 1630 </dev/null; sleep 3
+        if [ -n "$screen" ] && ! grep -qiE "bloquead|locked|autentic|fingerprint|use pin" <<<"$screen"; then return 0; fi
+        grep -qiE "fingerprint|use pin" <<<"$screen" || { adb shell input tap 535 1630 </dev/null; sleep 3; }
         adb shell dumpsys window </dev/null 2>/dev/null | grep -q BiometricPrompt && {
           adb shell input tap 198 2268 </dev/null; sleep 1
           adb shell input text "$SECRET" </dev/null; sleep 1
@@ -116,7 +135,7 @@ unlock() {
 settle() {
   local tries="${1:-6}" previous="" current=""
   for _ in $(seq 1 "$tries"); do
-    current="$(ui | head -40)"
+    current="$(read_screen | head -40)"
     [ -n "$current" ] && [ "$current" = "$previous" ] && return 0
     previous="$current"
     sleep 1.5
@@ -168,7 +187,7 @@ run_one() {
   settle 8
 
   local screen verdict server
-  screen="$(ui)"
+  screen="$(read_screen)"
   verdict="$(classify "$screen")"
   server="-"
   if [ -n "$state" ] && [ "$state" != "null" ]; then

@@ -77,6 +77,13 @@ unlock() {
         elif grep -qi "enter your passcode" <<<"$screen"; then
           for k in 8 9 10 11 12 13; do adb shell input keyevent $k </dev/null; sleep 0.5; done; sleep 8; return 0
         else return 0; fi ;;
+      device-credential)
+        # Hologram-based builds gate launch behind the system biometric prompt, which is
+        # FLAG_SECURE: uiautomator reads nothing, so drive it blind through "Use PIN".
+        adb shell dumpsys window </dev/null 2>/dev/null | grep -q BiometricPrompt || return 0
+        adb shell input tap 198 2268 </dev/null; sleep 1
+        adb shell input text "$SECRET" </dev/null; sleep 1
+        adb shell input keyevent 66 </dev/null; sleep 6; return 0 ;;
       keypad6-1234)
         # Paradym's store build draws its own keypad: digits 1-6 in two rows, and it
         # takes no injected text, only taps.

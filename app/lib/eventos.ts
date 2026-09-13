@@ -166,7 +166,7 @@ export const AGENDA: { hora: string; titulo: string; detalle: string; a_cargo?: 
   },
   {
     hora: "9:00",
-    titulo: "La revolución del contenido empresarial",
+    titulo: "Creando un mundo confiable",
     detalle: "Cómo el contenido impulsa experiencias y decisiones más inteligentes en la empresa.",
     a_cargo: "HYLAND",
   },

@@ -227,12 +227,15 @@ spec:
               port: 80
             initialDelaySeconds: 5
             periodSeconds: 10
+          # Startup runs config/_cli_.ts (tsx + sharp + jsdom: icons, manifest,
+          # Open Graph image) before nginx starts and peaks around 190 MB; a
+          # 128Mi limit OOM-kills the container in a crash loop.
           resources:
             requests:
               cpu: 50m
-              memory: 64Mi
-            limits:
               memory: 128Mi
+            limits:
+              memory: 384Mi
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress

@@ -98,6 +98,17 @@ unlock() {
 
 # The overall verdict is a standalone line; per-block notes like "Service claims
 # not verified" are sentences and must not be mistaken for it.
+# Screen-change poll: returns as soon as two consecutive dumps match, or after N tries.
+settle() {
+  local tries="${1:-6}" previous="" current=""
+  for _ in $(seq 1 "$tries"); do
+    current="$(ui | head -40)"
+    [ -n "$current" ] && [ "$current" = "$previous" ] && return 0
+    previous="$current"
+    sleep 1.5
+  done
+}
+
 classify() {
   local screen="$1"
   local trust="?" perm="?"
@@ -133,9 +144,11 @@ run_one() {
   [ "$COLD" = "True" ] || [ "$COLD" = "true" ] && { adb shell am force-stop "$PKG" </dev/null; sleep 3; }
   adb logcat -c </dev/null 2>/dev/null
   adb shell am start -W -a android.intent.action.VIEW -d "'$url'" -n "$PKG/$ACT" </dev/null >/dev/null 2>&1
-  sleep 13
+  # Wait for the wallet to show something rather than for a fixed count: most scenarios settle in
+  # a couple of seconds, and the fixed sleeps were the whole cost of a sweep.
+  settle 6
   unlock
-  sleep 7
+  settle 8
 
   local screen verdict server
   screen="$(ui)"

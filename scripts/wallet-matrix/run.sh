@@ -40,6 +40,9 @@ COLD=$(q "$HERE/wallets.json" "wallets.$WALLET.coldStart")
 SKIP=$(q "$HERE/wallets.json" "wallets.$WALLET.skip")
 [ -n "${MATRIX_PACKAGE:-}" ] && SKIP=""
 LABEL="${MATRIX_LABEL:-$WALLET}"
+# The state endpoints are per rail: an anoncreds exchange is invisible on the oid4vc rail.
+RAIL="oid4vc"
+[ "$FMT" = "anoncreds" ] && RAIL="anoncreds"
 
 [ -n "$SKIP" ] && { echo "SKIP $WALLET: $SKIP"; exit 0; }
 [ -z "$PKG" ] && { echo "unknown wallet '$WALLET'"; exit 2; }
@@ -139,9 +142,9 @@ run_one() {
   verdict="$(classify "$screen")"
   server="-"
   if [ -n "$proof" ]; then
-    server=$(curl -sS -m 20 "$BASE/api/demo/$svc/proof/$proof?rail=oid4vc" 2>/dev/null | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("state","?"))' 2>/dev/null)
+    server=$(curl -sS -m 20 "$BASE/api/demo/$svc/proof/$proof?rail=$RAIL" 2>/dev/null | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("state","?"))' 2>/dev/null)
   elif [ -n "$issuance" ]; then
-    server=$(curl -sS -m 20 "$BASE/api/demo/$svc/credential/$issuance?rail=oid4vc" 2>/dev/null | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("state","?"))' 2>/dev/null)
+    server=$(curl -sS -m 20 "$BASE/api/demo/$svc/credential/$issuance?rail=$RAIL" 2>/dev/null | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("state","?"))' 2>/dev/null)
   fi
 
   # OfferCreated/RequestCreated means the wallet never fetched the payload, so

@@ -99,7 +99,10 @@ Every workflow is idempotent: permissions, registries, schemas and VTJSCs
 are looked up before they are created, and credentials are skipped when the
 DID document already presents the linked VP. Use `force_refresh` to re-issue
 credentials after changing claims in an org's `config.env`; the `step` input
-splits a run into `deploy` and `provision`.
+splits a run into `deploy` and `provision`. A change to the OID4VC templates
+(`oid4vc/*.json.tpl`, e.g. the `claimDisplay` labels of the Taquilla
+credentials) or to the image tag only needs step `deploy`: the config is
+re-rendered into the Helm values and the pod is restarted.
 
 All cast runs share the `vesta-cast` concurrency group (one signing account
 across every playground cast): start workflows one at a time.

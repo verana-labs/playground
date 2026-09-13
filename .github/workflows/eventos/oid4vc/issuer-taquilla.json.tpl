@@ -30,6 +30,15 @@
         "horario",
         "patrocinadores"
       ],
+      "claimDisplay": {
+        "nombre": [{"locale": "es", "label": "Nombre", "description": "Nombre del asistente"}, {"locale": "en", "label": "Name", "description": "Attendee name"}],
+        "tipo": [{"locale": "es", "label": "Tipo de boleto"}, {"locale": "en", "label": "Ticket type"}],
+        "evento": [{"locale": "es", "label": "Evento"}, {"locale": "en", "label": "Event"}],
+        "pais": [{"locale": "es", "label": "País"}, {"locale": "en", "label": "Country"}],
+        "fecha": [{"locale": "es", "label": "Fecha"}, {"locale": "en", "label": "Date"}],
+        "horario": [{"locale": "es", "label": "Horario"}, {"locale": "en", "label": "Time"}],
+        "patrocinadores": [{"locale": "es", "label": "Patrocinadores"}, {"locale": "en", "label": "Sponsors"}]
+      },
       "disclosureFrame": [
         "nombre",
         "tipo",
@@ -57,6 +66,15 @@
         "fecha",
         "horario"
       ],
+      "claimDisplay": {
+        "organizacion": [{"locale": "es", "label": "Organización"}, {"locale": "en", "label": "Organization"}],
+        "lema": [{"locale": "es", "label": "Lema"}, {"locale": "en", "label": "Tagline"}],
+        "tipo": [{"locale": "es", "label": "Tipo de credencial"}, {"locale": "en", "label": "Credential type"}],
+        "evento": [{"locale": "es", "label": "Evento"}, {"locale": "en", "label": "Event"}],
+        "pais": [{"locale": "es", "label": "País"}, {"locale": "en", "label": "Country"}],
+        "fecha": [{"locale": "es", "label": "Fecha"}, {"locale": "en", "label": "Date"}],
+        "horario": [{"locale": "es", "label": "Horario"}, {"locale": "en", "label": "Time"}]
+      },
       "disclosureFrame": [
         "organizacion",
         "lema",

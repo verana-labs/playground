@@ -72,9 +72,9 @@ export const DEMO_SERVICES: DemoService[] = [
   // (evento- prefixed, unlike their hosts); the live did:webvh values are
   // in eventos-cast.ts.
   { id: "taquilla", label: "Taquilla (demo)", host: EVENTOS_CAST.taquilla.host, did: EVENTOS_CAST.taquilla.did, appUrl: invite(EVENTOS_CAST.taquilla.host), role: "issuer" },
-  { id: "evento-costa-rica", label: "Revolución del Contenido Empresarial: Costa Rica", host: EVENTOS_CAST.costaRica.host, did: EVENTOS_CAST.costaRica.did, appUrl: invite(EVENTOS_CAST.costaRica.host), role: "verifier" },
-  { id: "evento-guatemala", label: "Revolución del Contenido Empresarial: Guatemala", host: EVENTOS_CAST.guatemala.host, did: EVENTOS_CAST.guatemala.did, appUrl: invite(EVENTOS_CAST.guatemala.host), role: "verifier" },
-  { id: "evento-panama", label: "Revolución del Contenido Empresarial: Panamá", host: EVENTOS_CAST.panama.host, did: EVENTOS_CAST.panama.did, appUrl: invite(EVENTOS_CAST.panama.host), role: "verifier" },
+  { id: "evento-costa-rica", label: "Creando un mundo confiable: Costa Rica", host: EVENTOS_CAST.costaRica.host, did: EVENTOS_CAST.costaRica.did, appUrl: invite(EVENTOS_CAST.costaRica.host), role: "verifier" },
+  { id: "evento-guatemala", label: "Creando un mundo confiable: Guatemala", host: EVENTOS_CAST.guatemala.host, did: EVENTOS_CAST.guatemala.did, appUrl: invite(EVENTOS_CAST.guatemala.host), role: "verifier" },
+  { id: "evento-panama", label: "Creando un mundo confiable: Panamá", host: EVENTOS_CAST.panama.host, did: EVENTOS_CAST.panama.did, appUrl: invite(EVENTOS_CAST.panama.host), role: "verifier" },
   // The CEXA cast (reusable KYC for exchanges and banks at /usecases/cexa,
   // unlisted), deployed by .github/workflows/cexa-*. DIDs come from host
   // discovery until the placeholder values in cexa-cast.ts are replaced.

@@ -3,7 +3,7 @@ import { adminBase, adminJson } from "@/app/lib/demo-admin";
 import { getDemoService } from "@/app/lib/demo-services";
 import { didHost } from "@/app/lib/did";
 import { issuerDidFromRecord, toClaims, type Claim } from "@/app/lib/presentation";
-import { EVENTO_CLAIM, EVENTOS, isEventoSlug, isRol } from "@/app/lib/eventos";
+import { EVENTO_CLAIMS_RECONOCIDOS, EVENTOS, isEventoSlug, isRol } from "@/app/lib/eventos";
 import { EVENTOS_CAST } from "@/app/lib/eventos-cast";
 
 // Status + access decision for an event landing's presentation. Once the
@@ -24,9 +24,11 @@ const claim = (claims: Claim[], name: string) =>
   claims.find((c) => c.name === name)?.value;
 
 /** AnonCreds fallback when the record carries no resolvable issuer DID: the
- *  demo claim set is recognizable by the exact event title Taquilla mints. */
+ *  demo claim set is recognizable by the exact event title Taquilla mints
+ *  (current or previous tour name). */
 function fallbackIssuerDid(claims: Claim[]): string | null {
-  return claim(claims, "evento") === EVENTO_CLAIM
+  const evento = claim(claims, "evento");
+  return evento !== undefined && EVENTO_CLAIMS_RECONOCIDOS.includes(evento)
     ? EVENTOS_CAST.taquilla.did
     : null;
 }

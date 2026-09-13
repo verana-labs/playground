@@ -51,6 +51,9 @@ SUITE_SKIP=$(q "$HERE/scenarios.json" "suites.$SUITE.skip")
 [ -n "$SUITE_SKIP" ] && { echo "SKIP suite $SUITE: $SUITE_SKIP"; exit 0; }
 
 ui() {
+  # Delete first: a failed dump on a secure screen leaves the previous app's XML in place, and
+  # reading that grades one wallet by another wallet's screen.
+  adb shell rm -f /sdcard/ui.xml </dev/null >/dev/null 2>&1
   adb shell uiautomator dump /sdcard/ui.xml >/dev/null </dev/null 2>&1
   adb exec-out cat /sdcard/ui.xml </dev/null 2>/dev/null | python3 -c '
 import sys,xml.etree.ElementTree as ET

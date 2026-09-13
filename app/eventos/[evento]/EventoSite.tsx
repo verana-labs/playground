@@ -488,7 +488,7 @@ export default function EventoSite({
           <ul className="mt-6 grid gap-3 sm:grid-cols-2">
             {[
               "Casos reales de gestión inteligente de contenidos y procesos con Alfresco.",
-              "Biometría integrada a los procesos: identidad verificada sin fricción.",
+              "Identidad digital y credenciales verificables: interacciones más seguras y simples.",
               "IA aplicada a la captura, clasificación y automatización documental.",
               "Demostraciones en vivo en los stands de los patrocinadores.",
             ].map((t) => (

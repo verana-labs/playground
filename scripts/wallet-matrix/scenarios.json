@@ -42,6 +42,28 @@
     }
    ]
   },
+  "eventos": {
+   "page": "/eventos",
+   "scenarios": [
+    {
+     "id": "boleto-asistente",
+     "service": "taquilla",
+     "credential": "eventos-asistente",
+     "kind": "issue",
+     "expect": "accept",
+     "extra": "evento=costa-rica&nombre=Prueba%20Matrix"
+    },
+    {
+     "id": "boleto-patrocinador",
+     "service": "taquilla",
+     "credential": "eventos-patrocinador",
+     "kind": "issue",
+     "expect": "accept",
+     "extra": "evento=panama&organizacion=INTEXUS&lema=Beyond%20the%20content"
+    }
+   ],
+   "$comment": "The door checks live on /api/eventos-login rather than /api/demo/<service>, so they need the runner to learn a second mint route before they can be listed here."
+  },
   "bhi": {
    "page": "/usecases/bhi/demos",
    "scenarios": [

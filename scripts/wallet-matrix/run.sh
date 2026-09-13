@@ -81,12 +81,16 @@ unlock() {
           for k in 8 9 10 11 12 13; do adb shell input keyevent $k </dev/null; sleep 0.5; done; sleep 8; return 0
         else return 0; fi ;;
       device-credential)
-        # Hologram-based builds gate launch behind the system biometric prompt, which is
-        # FLAG_SECURE: uiautomator reads nothing, so drive it blind through "Use PIN".
-        adb shell dumpsys window </dev/null 2>/dev/null | grep -q BiometricPrompt || return 0
-        adb shell input tap 198 2268 </dev/null; sleep 1
-        adb shell input text "$SECRET" </dev/null; sleep 1
-        adb shell input keyevent 66 </dev/null; sleep 6; return 0 ;;
+        # Hologram-based builds show an in-app lock card first ("Autenticar"), then the system
+        # prompt, which is FLAG_SECURE: uiautomator reads nothing on either, so drive both blind.
+        if [ -n "$screen" ] && ! grep -qiE "bloquead|locked|autenticar" <<<"$screen"; then return 0; fi
+        adb shell input tap 535 1630 </dev/null; sleep 3
+        adb shell dumpsys window </dev/null 2>/dev/null | grep -q BiometricPrompt && {
+          adb shell input tap 198 2268 </dev/null; sleep 1
+          adb shell input text "$SECRET" </dev/null; sleep 1
+          adb shell input keyevent 66 </dev/null; sleep 6
+        }
+        return 0 ;;
       keypad6-1234)
         # Paradym's store build draws its own keypad: digits 1-6 in two rows, and it
         # takes no injected text, only taps.
@@ -135,13 +139,16 @@ classify() {
 }
 
 run_one() {
-  local sid="$1" svc="$2" cred="$3" extra="$4" expect="$5"
+  local sid="$1" svc="$2" cred="$3" extra="$4" expect="$5" mint="${6:-}" state="${7:-}"
   local qs="format=$FMT"
   [ -n "$cred" ] && [ "$cred" != "null" ] && qs="$qs&credential=$cred"
   [ -n "$extra" ] && [ "$extra" != "null" ] && qs="$qs&$extra"
   [ -n "$PARAMS" ] && qs="$qs&$PARAMS"
 
-  curl -sS -m 30 "$BASE/api/demo/$svc?$qs" -o /tmp/matrix-mint.json 2>/dev/null
+  local mint_url="$BASE/api/demo/$svc?$qs"
+  # Use-case logins (the eventos gates) live on their own route and take their own query.
+  [ -n "$mint" ] && [ "$mint" != "null" ] && mint_url="$BASE/$mint&format=$FMT${PARAMS:+&$PARAMS}"
+  curl -sS -m 30 "$mint_url" -o /tmp/matrix-mint.json 2>/dev/null
   local url; url=$(q /tmp/matrix-mint.json url)
   if [ -z "$url" ] || [ "$url" = "null" ]; then
     printf '%-26s %-10s %s\n' "$sid" "MINT-FAIL" "$(head -c 120 /tmp/matrix-mint.json)"
@@ -164,7 +171,10 @@ run_one() {
   screen="$(ui)"
   verdict="$(classify "$screen")"
   server="-"
-  if [ -n "$proof" ]; then
+  if [ -n "$state" ] && [ "$state" != "null" ]; then
+    local sid_value; sid_value=$(q /tmp/matrix-mint.json id)
+    server=$(curl -sS -m 20 "$BASE/${state//\{id\}/$sid_value}" 2>/dev/null | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("decision") or d.get("state","?"))' 2>/dev/null)
+  elif [ -n "$proof" ]; then
     server=$(curl -sS -m 20 "$BASE/api/demo/$svc/proof/$proof?rail=$RAIL" 2>/dev/null | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("state","?"))' 2>/dev/null)
   elif [ -n "$issuance" ]; then
     server=$(curl -sS -m 20 "$BASE/api/demo/$svc/credential/$issuance?rail=$RAIL" 2>/dev/null | python3 -c 'import json,sys;d=json.load(sys.stdin);print(d.get("state","?"))' 2>/dev/null)
@@ -194,11 +204,13 @@ for i in $(seq 0 $((count - 1))); do
   sid=$(q "$HERE/scenarios.json" "suites.$SUITE.scenarios.$i.id")
   [ -n "$ONLY" ] && [ "$ONLY" != "$sid" ] && continue
   svc=$(q "$HERE/scenarios.json" "suites.$SUITE.scenarios.$i.service")
-  [ -z "$svc" ] && { printf '%-26s %s\n' "$sid" "SKIP (login route, drive it from the page)"; continue; }
+  [ -z "$svc" ] && [ -z "$(q "$HERE/scenarios.json" "suites.$SUITE.scenarios.$i.mint")" ] && { printf '%-26s %s\n' "$sid" "SKIP (no mint route)"; continue; }
   cred=$(q "$HERE/scenarios.json" "suites.$SUITE.scenarios.$i.credential")
   extra=$(q "$HERE/scenarios.json" "suites.$SUITE.scenarios.$i.extra")
   expect=$(q "$HERE/scenarios.json" "suites.$SUITE.scenarios.$i.expect")
-  run_one "$sid" "$svc" "$cred" "$extra" "$expect"
+  mint=$(q "$HERE/scenarios.json" "suites.$SUITE.scenarios.$i.mint")
+  state=$(q "$HERE/scenarios.json" "suites.$SUITE.scenarios.$i.state")
+  run_one "$sid" "$svc" "$cred" "$extra" "$expect" "$mint" "$state"
 done
 
 echo

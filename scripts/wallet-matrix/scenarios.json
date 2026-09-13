@@ -60,9 +60,24 @@
      "kind": "issue",
      "expect": "accept",
      "extra": "evento=panama&organizacion=INTEXUS&lema=Beyond%20the%20content"
+    },
+    {
+     "id": "entrada-costa-rica",
+     "service": "",
+     "kind": "present",
+     "expect": "accept",
+     "mint": "api/eventos-login?evento=costa-rica&rol=asistente",
+     "state": "api/eventos-login/{id}?rail=didcomm&evento=costa-rica&rol=asistente"
+    },
+    {
+     "id": "entrada-otro-evento",
+     "service": "",
+     "kind": "present",
+     "expect": "refuse",
+     "mint": "api/eventos-login?evento=guatemala&rol=asistente",
+     "state": "api/eventos-login/{id}?rail=didcomm&evento=guatemala&rol=asistente"
     }
-   ],
-   "$comment": "The door checks live on /api/eventos-login rather than /api/demo/<service>, so they need the runner to learn a second mint route before they can be listed here."
+   ]
   },
   "bhi": {
    "page": "/usecases/bhi/demos",

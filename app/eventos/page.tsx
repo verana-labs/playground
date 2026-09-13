@@ -10,7 +10,7 @@ import TaquillaSite from "./TaquillaSite";
 export const metadata: Metadata = {
   title: { absolute: "Taquilla · Boletería de eventos (demo)" },
   description:
-    "Regístrate a la gira Revolución del Contenido Empresarial (Costa Rica, Guatemala, Panamá) y recibe tu boleto como credencial verificable en tu wallet.",
+    "Regístrate a la gira Creando un mundo confiable (Costa Rica, Guatemala, Panamá) y recibe tu boleto como credencial verificable en tu wallet.",
   robots: { index: false, follow: false },
 };
 

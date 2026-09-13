@@ -17,12 +17,19 @@ export const isRol = (value: unknown): value is Rol =>
   value === "asistente" || value === "patrocinador";
 
 /** The one event, held three times: the title of the partner's deck. */
-export const EVENTO_TITULO = "Revolución del contenido empresarial";
+export const EVENTO_TITULO = "Creando un mundo confiable";
+/** The tour's name before 2026-09-13; boletos minted under it are still out
+ *  there, so the issuer fallback recognizes both claim values. */
+export const EVENTO_TITULO_ANTERIOR = "Revolución del contenido empresarial";
 export const EVENTO_SUBTITULO =
   "Alfresco, Gestión Inteligente de Contenidos y Procesos, Biometría e IA";
 /** Value of the `evento` claim - the same on the three boletos, which is why
  *  a landing tells its own boletos apart by `pais`. */
 export const EVENTO_CLAIM = `${EVENTO_TITULO}: ${EVENTO_SUBTITULO}`;
+export const EVENTO_CLAIMS_RECONOCIDOS: readonly string[] = [
+  EVENTO_CLAIM,
+  `${EVENTO_TITULO_ANTERIOR}: ${EVENTO_SUBTITULO}`,
+];
 export const HORARIO = "9:00 a 11:00 a.m.";
 export const ORGANIZADOR = "INTEXUS";
 /** Value of the `patrocinadores` claim. */

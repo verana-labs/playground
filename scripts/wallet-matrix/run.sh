@@ -26,12 +26,20 @@ print(d if not isinstance(d,(dict,list)) else json.dumps(d))" "$1" "$2" 2>/dev/n
 
 PKG=$(q "$HERE/wallets.json" "wallets.$WALLET.package")
 ACT=$(q "$HERE/wallets.json" "wallets.$WALLET.activity")
+# sweep.sh drives the same wallet in more than one build (ours and the store's),
+# which differ in package id and unlock, so the build wins over wallets.json.
+PKG="${MATRIX_PACKAGE:-$PKG}"
+ACT="${MATRIX_ACTIVITY:-$ACT}"
 FMT=$(q "$HERE/wallets.json" "wallets.$WALLET.format")
 PARAMS=$(q "$HERE/wallets.json" "wallets.$WALLET.demoParams")
 UNLOCK=$(q "$HERE/wallets.json" "wallets.$WALLET.unlock")
+UNLOCK="${MATRIX_UNLOCK:-$UNLOCK}"
 SECRET=$(q "$HERE/wallets.json" "wallets.$WALLET.secret")
+SECRET="${MATRIX_SECRET:-$SECRET}"
 COLD=$(q "$HERE/wallets.json" "wallets.$WALLET.coldStart")
 SKIP=$(q "$HERE/wallets.json" "wallets.$WALLET.skip")
+[ -n "${MATRIX_PACKAGE:-}" ] && SKIP=""
+LABEL="${MATRIX_LABEL:-$WALLET}"
 
 [ -n "$SKIP" ] && { echo "SKIP $WALLET: $SKIP"; exit 0; }
 [ -z "$PKG" ] && { echo "unknown wallet '$WALLET'"; exit 2; }
@@ -138,16 +146,16 @@ run_one() {
   esac
 
   printf '%-26s expect=%-7s screen=%-18s server=%s\n' "$sid" "$expect" "$verdict" "$server"
-  { echo "### $WALLET / $SUITE / $sid  (expect $expect)"
+  { echo "### $LABEL / $SUITE / $sid  (expect $expect) pkg=$PKG version=${MATRIX_BUILD_VERSION:-?}"
     echo "screen verdict: $verdict"
     echo "server state:   $server"
     echo "--- screen text ---"
     echo "$screen"
-    echo; } >> "$OUT/$WALLET-$SUITE.txt"
+    echo; } >> "$OUT/$LABEL-$SUITE.txt"
 }
 
-echo "wallet=$WALLET suite=$SUITE format=$FMT params=${PARAMS:-none}"
-: > "$OUT/$WALLET-$SUITE.txt"
+echo "wallet=$LABEL suite=$SUITE format=$FMT params=${PARAMS:-none} pkg=$PKG version=${MATRIX_BUILD_VERSION:-?} installer=${MATRIX_BUILD_INSTALLER:-?}"
+: > "$OUT/$LABEL-$SUITE.txt"
 
 count=$(python3 -c "import json;print(len(json.load(open('$HERE/scenarios.json'))['suites']['$SUITE']['scenarios']))")
 for i in $(seq 0 $((count - 1))); do

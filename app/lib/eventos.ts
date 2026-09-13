@@ -156,35 +156,35 @@ export const TAQUILLA = {
   host: EVENTOS_CAST.taquilla.host,
 } as const;
 
-/** The programme, the same at the three stops (from the event title's own
- *  topics; no speakers are named). */
+/** The programme, the same at the three stops, as agreed with INTEXUS
+ *  (2026-09-13): each talk is presented by a sponsor, no speakers are named. */
 export const AGENDA: { hora: string; titulo: string; detalle: string; a_cargo?: string }[] = [
   {
     hora: "8:30",
     titulo: "Registro y bienvenida",
-    detalle: "Presenta tu boleto desde la wallet: sin impresiones ni listas.",
+    detalle: "Accede a tu boleto desde la wallet web, sin descargar aplicaciones ni imprimir.",
   },
   {
     hora: "9:00",
-    titulo: "La revolución del contenido empresarial",
-    detalle: "Por qué el contenido, los procesos y la identidad convergen en la empresa que viene.",
-    a_cargo: "INTEXUS",
+    titulo: "Creando un mundo confiable",
+    detalle: "Cómo el contenido impulsa experiencias y decisiones más inteligentes en la empresa.",
+    a_cargo: "HYLAND",
   },
   {
     hora: "9:35",
     titulo: "Gestión inteligente de contenidos y procesos con Alfresco",
-    detalle: "Automatización documental, flujos de trabajo y cumplimiento sobre una plataforma abierta.",
-    a_cargo: "HYLAND",
+    detalle: "Automatización documental y flujos de trabajo que conectan la información con la operación.",
+    a_cargo: "B-TECH",
   },
   {
     hora: "10:10",
-    titulo: "Biometría e IA aplicadas a los procesos",
-    detalle: "Verificación de identidad, firma y captura inteligente integradas al proceso.",
-    a_cargo: "B-TECH",
+    titulo: "Identidad digital: la confianza que transforma los procesos",
+    detalle: "Identidad digital y credenciales verificables. Interacciones más seguras y simples.",
+    a_cargo: "INTEXUS",
   },
   {
     hora: "10:40",
     titulo: "Networking y cierre",
-    detalle: "Café, demostraciones en los stands y espacio para conversar con los expertos.",
+    detalle: "Café, demostraciones y conversación con los expertos.",
   },
 ];

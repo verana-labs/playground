@@ -4,7 +4,7 @@
 # substitutes __RELEASE__, __HOST__ and __NETWORK__ from the org's config.env
 # before installing. Hosts follow <org>.eventos.playground.<network>.verana.network.
 chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
-chartVersion: v1.12.0-oidc4vc-uiprofile.39
+chartVersion: v1.12.0-oidc4vc-uiprofile.40
 
 global:
   domain: eventos.playground.__NETWORK__.verana.network
@@ -16,7 +16,7 @@ replicas: 1
 # image and is activated per org via oid4vc.plugins (eventos-00_core).
 image:
   repository: veranalabs/vs-agent
-  tag: v1.12.0-oidc4vc-uiprofile.39
+  tag: v1.12.0-oidc4vc-uiprofile.40
 
 adminPort: 3000
 enablePublicApiSwagger: true

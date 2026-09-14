@@ -45,7 +45,7 @@ const PresentationSchema = z.object({
 const OpenId4VcSchema = z.object({
   library: z.string().min(1),
   proxy: z.string().min(1),
-  vciDraft: z.enum(VCI_DRAFTS),
+  vciDrafts: z.array(z.enum(VCI_DRAFTS)).min(1),
   offerSchemes: z.array(scheme).min(1),
   requestSchemes: z.array(scheme).min(1),
   asDiscovery: z.array(z.enum(AS_DOCUMENTS)).min(1),
@@ -107,6 +107,8 @@ const QuirksSchema = z.object({
   notes: z.string().optional(),
 });
 
+const BRANCH_LIKE = /\/|^(main|master|develop|dev|trunk)$/;
+
 function demoParamsIssues(presentation: z.infer<typeof PresentationSchema>, demoParams: string): string[] {
   const parts = new Set(demoParams.split("&").filter(Boolean));
   const issues: string[] = [];
@@ -114,10 +116,10 @@ function demoParamsIssues(presentation: z.infer<typeof PresentationSchema>, demo
     issues.push("presentation_exchange needs query=pe");
   if (presentation.query === "dcql" && parts.has("query=pe"))
     issues.push("dcql must not carry query=pe");
-  if (presentation.clientId === "did" && !parts.has("signer=did") && presentation.query === "dcql")
-    issues.push("a did client id on the dcql rail needs signer=did");
-  if (presentation.clientId === "x509_hash" && parts.has("signer=did"))
-    issues.push("an x509_hash client id must not carry signer=did");
+  if (presentation.clientId === "x509_hash" && !parts.has("signer=x5c"))
+    issues.push("an x509_hash client id needs signer=x5c");
+  if (presentation.clientId === "did" && parts.has("signer=x5c"))
+    issues.push("a did client id must not carry signer=x5c: without a signer the service signs with its DID");
   return issues;
 }
 
@@ -149,9 +151,14 @@ export const WalletProfileSchema = z
       if (build.kind === "browser" && !build.identity.url) issue("a browser build needs identity.url", at("identity"));
       if (build.kind !== "browser" && build.platforms.includes("android") && !build.identity.package)
         issue("an android build needs identity.package", at("identity"));
-      if (build.kind !== "browser" && build.kind !== "store" && build.platforms.includes("android") && !build.device)
+      if (build.kind !== "browser" && build.platforms.includes("android") && !build.device)
         issue("an android build needs a device block", at("device"));
       if (build.kind === "browser" && build.device) issue("a browser build has no device block", at("device"));
+      if (build.kind === "fork") {
+        const { repo, ref } = build.identity;
+        if (!repo || !ref) issue("a fork build needs identity.repo and identity.ref (a commit or a tag)", at("identity"));
+        else if (BRANCH_LIKE.test(ref)) issue(`identity.ref ${ref} looks like a branch; name a commit or a tag`, at("identity", "ref"));
+      }
       const presentation = build.presentation ?? profile.openid4vc?.presentation;
       const demoParams = build.demoParams ?? profile.openid4vc?.demoParams;
       if (presentation && demoParams !== undefined)

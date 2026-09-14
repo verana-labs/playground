@@ -10,6 +10,7 @@
     "t1": "vitest run tier1"
   },
   "dependencies": {
+    "@openid4vc/openid4vci": "0.5.5",
     "js-yaml": "^4.1.0",
     "zod": "^4.4.3"
   },

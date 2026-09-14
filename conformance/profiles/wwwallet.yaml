@@ -1,0 +1,26 @@
+id: wwwallet
+rails: [openid4vc-sdjwt]
+openid4vc:
+  library: "wwWallet/wallet-frontend 0.6.x, hand-rolled TypeScript on @sd-jwt/core, dcql and jose"
+  proxy: "@openid4vc/openid4vci, @openid4vc/openid4vp, @sd-jwt/core"
+  vciDrafts: [v1]
+  offerSchemes: [openid-credential-offer]
+  requestSchemes: [openid4vp]
+  asDiscovery: [oauth-authorization-server]
+  presentation: { query: dcql, clientId: x509_hash, responseMode: direct_post.jwt }
+  demoParams: signer=x5c
+builds:
+  - kind: browser
+    listed: true
+    label: "Hosted Verana fork, built from verana-labs/wallet-frontend master by .github/workflows/wwwallet.yml"
+    obtain: https://wwwallet.playground.testnet.verana.network
+    identity:
+      url: https://wwwallet.playground.testnet.verana.network
+      repo: https://github.com/verana-labs/wallet-frontend
+    platforms: [web]
+    promises: "Proof-of-Trust on both consent screens; accept and share are gated on Q2 and Q3"
+quirks:
+  actsOnLinkOnlyAtColdStart: false
+  locksOnBackground: false
+  viewTree: browser
+  notes: "Links are handed over as the hosted URL plus the offer or request query string. Sign-in is WebAuthn only, so a device run needs a passkey already enrolled"

@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
+import yaml from "js-yaml";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   effectiveDemoParams,
@@ -9,6 +10,7 @@ import {
   listedBuild,
   WalletProfileSchema,
 } from "./wallet-profiles";
+import { WalletsFileSchema } from "./wallets";
 
 const device = { activity: ".Main", unlock: "passcode", secret: "123456", coldStart: false };
 
@@ -163,5 +165,42 @@ describe("listWalletProfiles", () => {
   it("refuses a file whose name does not match its id", () => {
     fs.writeFileSync(path.join(dir, "wrong.yaml"), JSON.stringify(valid));
     expect(() => listWalletProfiles(dir)).toThrow(/wrong\.yaml/);
+  });
+});
+
+describe("profiles match the listing", () => {
+  const listing = WalletsFileSchema.parse(
+    yaml.load(fs.readFileSync(path.join(process.cwd(), "personal-wallets.yaml"), "utf8")),
+  ).wallets;
+  const visible = listing.filter((w) => !w.hidden);
+  const profiles = listWalletProfiles();
+  const byId = new Map(profiles.map((p) => [p.id, p]));
+
+  it("every visible wallet has a profile, whatever its scope", () => {
+    expect(profiles.map((p) => p.id).sort()).toEqual(visible.map((w) => w.id).sort());
+  });
+
+  it("every profile names a wallet that exists in the listing", () => {
+    for (const p of profiles) expect(listing.some((w) => w.id === p.id), p.id).toBe(true);
+  });
+
+  it("rails equal the listing formats", () => {
+    for (const w of visible)
+      expect([...(byId.get(w.id)?.rails ?? [])].sort(), w.id).toEqual([...w.formats].sort());
+  });
+
+  it("the listed build is the one the listing links to", () => {
+    for (const w of visible) {
+      const build = listedBuild(byId.get(w.id)!);
+      expect(build.obtain, w.id).toBe(w.browser ? w.hosted : w.download);
+    }
+  });
+
+  it("the listing mints with the listed build's parameters", () => {
+    for (const w of visible) {
+      const profile = byId.get(w.id)!;
+      const expected = effectiveDemoParams(profile, listedBuild(profile)).split("&").filter(Boolean).sort();
+      expect((w.demoParams ?? "").split("&").filter(Boolean).sort(), w.id).toEqual(expected);
+    }
   });
 });

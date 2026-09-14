@@ -1,0 +1,24 @@
+networks:
+  - id: testnet-v3
+    vpr: vna-testnet-1
+    protocol: v3
+    production: false
+    castToken: testnet
+    resolver: https://resolver.testnet.verana.network
+    indexer: https://idx.testnet.verana.network
+    rpc: https://rpc.testnet.verana.network
+    playground: https://playground.testnet.verana.network
+    vocabulary: { ecosystem: Trust Registry, participant: Permission }
+    testable: true
+  - id: devnet-v4
+    vpr: vna-devnet-1
+    protocol: v4
+    production: false
+    castToken: devnet
+    resolver: null
+    indexer: null
+    rpc: null
+    playground: null
+    vocabulary: { ecosystem: Ecosystem, participant: Participant }
+    testable: false
+    reason: "devnet exposes no resolver and no deployed cast services; its indexer url is not confirmed yet"

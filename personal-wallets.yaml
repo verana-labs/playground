@@ -29,6 +29,7 @@
 #   scope           use-case id (e.g. eventos): the wallet is left out of the
 #                   main playground, /personal-wallets and every general
 #                   picker, and only listed where that use case asks for it
+#   hidden          true          # keep the entry, icons and captures; drop it from the site until maintenance resumes
 #   captures        up to ONE screen capture per demo scenario (optional),
 #                   keyed by scenario id (issue-accredited,
 #                   issue-unaccredited, issue-untrusted, present-accredited,
@@ -144,6 +145,7 @@ wallets:
   - id: authbound
     name: Authbound Wallet
     vendor: Authbound
+    hidden: true
     icon: ./authbound/logo.webp
     formats: [openid4vc-sdjwt]
     demoParams: signer=x5c
@@ -184,6 +186,7 @@ wallets:
   - id: paradym
     name: Paradym Wallet
     vendor: Animo Solutions
+    hidden: true
     icon: ./paradym/logo.webp
     formats: [openid4vc-sdjwt]
     download: https://github.com/AirKyzzZ/paradym-wallet-verana/releases/download/verana-2026-08-01/paradym-wallet-verana-release-2026-08-01.apk
@@ -224,6 +227,7 @@ wallets:
   - id: procivis
     name: Procivis One Wallet
     vendor: Procivis
+    hidden: true
     icon: ./procivis/logo.webp
     formats: [openid4vc-sdjwt]
     download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/download/verana-2026-08-17/app-debug.apk
@@ -263,6 +267,7 @@ wallets:
   - id: bcwallet
     name: BC Wallet
     vendor: Government of British Columbia
+    hidden: true
     icon: ./bcwallet/logo.webp
     formats: [anoncreds]
     download: https://github.com/AirKyzzZ/bc-wallet-mobile/releases/download/verana-2026-08-07.1/BCWallet-Verana-verana-2026-08-07.1.apk
@@ -371,6 +376,7 @@ wallets:
   - id: sphereon
     name: Sphereon Wallet
     vendor: Sphereon
+    hidden: true
     icon: ./sphereon/logo.webp
     formats: [openid4vc-sdjwt]
     download: https://github.com/AirKyzzZ/sphereon-mobile-wallet-verana/releases/download/verana-2026-08-03/sphereon-wallet-verana-release-2026-08-03.apk
@@ -451,6 +457,7 @@ wallets:
   - id: talao
     name: Altme Wallet
     vendor: Talao
+    hidden: true
     icon: ./talao/logo.webp
     formats: [openid4vc-sdjwt]
     demoParams: query=pe
@@ -492,6 +499,7 @@ wallets:
   - id: nl-wallet
     name: NL Wallet
     vendor: MinBZK (Dutch Ministry of the Interior)
+    hidden: true
     icon: ./nl-wallet/logo.png
     formats: [openid4vc-sdjwt]
     download: https://github.com/AirKyzzZ/nl-wallet/releases/download/verana-2026-08-12/nl-wallet-verana-demo-2026-08-12.apk

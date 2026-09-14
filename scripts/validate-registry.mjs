@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync, statSync } from "node:fs";
+import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
 import yaml from "js-yaml";
 
@@ -29,6 +29,8 @@ try {
     if (w.video != null && !w.video.src) throw new Error(`${w.id}: video missing src`);
     if (!statSync(join(process.cwd(), "wallets", w.id)).isDirectory())
       throw new Error(`${w.id}: wallets/${w.id}/ directory missing`);
+    if (!w.hidden && !existsSync(join(process.cwd(), "conformance", "profiles", `${w.id}.yaml`)))
+      throw new Error(`${w.id}: conformance/profiles/${w.id}.yaml missing (hidden wallets are exempt)`);
   }
   console.log(`ok personal-wallets.yaml (${raw.wallets.length} personal wallets)`);
 } catch (e) {

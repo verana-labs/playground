@@ -1,0 +1,55 @@
+id: swiyu
+rails: [openid4vc-sdjwt]
+openid4vc:
+  library: "swiyu-admin-ch/eidch-android-wallet openid4vc module (Kotlin: nimbus-jose-jwt, ch.admin.swiyu didresolver 2.8.x, dcql-android), SD-JWT VC only"
+  proxy: "@openid4vc/openid4vci, @openid4vc/openid4vp, @sd-jwt/sd-jwt-vc"
+  vciDrafts: [v1]
+  offerSchemes: [openid-credential-offer, swiyu]
+  requestSchemes: [openid4vp, swiyu-verifier]
+  asDiscovery: [oauth-authorization-server]
+  presentation: { query: dcql, clientId: x509_hash, responseMode: direct_post.jwt }
+  demoParams: signer=x5c
+builds:
+  - kind: fork
+    listed: true
+    label: "Verana trust fork, universal debug APK"
+    obtain: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-08-17/swiyu-verana-universal-debug.apk
+    identity:
+      package: ch.admin.foitt.swiyu.dev
+      version: verana-2026-08-17
+      repo: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana
+      ref: verana-2026-08-17
+    platforms: [android]
+    promises: "Q1, Q2 and Q3 rendered. The only wallet confirmed to hard-block Add on a Q2 denial. No TESTNET chip"
+    device:
+      activity: ch.admin.foitt.wallet.app.MainActivity
+      unlock: password
+      secret: playground1
+      coldStart: true
+  - kind: store
+    label: "swiyu on Google Play"
+    obtain: https://play.google.com/store/apps/details?id=ch.admin.foitt.swiyu
+    identity:
+      package: ch.admin.foitt.swiyu
+      version: "1.18.0"
+    platforms: [android]
+    promises: "Swiss profile: verifiers identified by DID only, signed issuer metadata, strict did:webvh log replay"
+    presentation: { query: dcql, clientId: did, responseMode: direct_post.jwt }
+    demoParams: ""
+    policies: [did-client-id-only, signed-issuer-metadata, strict-webvh-log]
+    incompatibilities:
+      - cause: "Its Rust resolver replays the did:webvh log from version 1 and rejects any DID whose history holds an entry signed with a bare did:key verification method. Services created before vs-agent fixed this on 2026-08-03 cannot be repaired by rolling the image"
+        reference: https://github.com/swiyu-admin-ch/eidch-android-wallet
+        scenarios: all
+        services: [playground-demo, demo-untrusted]
+        verified: "2026-09-08"
+    device:
+      activity: ch.admin.foitt.wallet.app.MainActivity
+      unlock: password
+      secret: playground1
+      coldStart: true
+quirks:
+  actsOnLinkOnlyAtColdStart: true
+  locksOnBackground: true
+  viewTree: readable
+  notes: "Locks on every backgrounding and a slow re-login lets the request expire. Asks again mid-flow before releasing a presentation. Never serve key_attestations_required: it then demands an attestation from attestations.trust-infra.swiyu.admin.ch that a test device cannot obtain"

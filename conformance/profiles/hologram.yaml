@@ -1,0 +1,45 @@
+id: hologram
+rails: [anoncreds]
+didcomm:
+  library: "@credo-ts/didcomm and @credo-ts/anoncreds 0.7.1-pr-2704: DIDComm v1, AnonCreds over the v2 credential and proof protocols, mediator pickup, WebSocket outbound"
+  proxy: "@credo-ts/didcomm and @credo-ts/anoncreds on the same 0.7.1-pr-2704 line, WebSocket outbound with return routing"
+  invitationSchemes: [didcomm, https]
+  demoParams: ""
+builds:
+  - kind: store
+    listed: true
+    label: "Hologram Messaging on Google Play"
+    obtain: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
+    identity:
+      package: io.twentysixty.mobileagent.m
+      version: "2.0.0"
+    platforms: [android, ios]
+    presumptive: [ios]
+    promises: "Q1 only. Renders the trust card, then reports Q1 as a safety verdict on offers with Accept enabled, even for an unaccredited issuer"
+    device:
+      activity: io.twentysixty.mobileagent.MainActivity
+      unlock: device-credential
+      secret: "132006"
+      coldStart: false
+      neverForceStop: true
+  - kind: fork
+    label: "Verana trust fork, staging build of hologram-app#514"
+    obtain: https://github.com/AirKyzzZ/hologram-app/tree/e6992fccc654
+    identity:
+      package: io.twentysixty.mobileagent.st
+      version: e6992fccc654
+      repo: https://github.com/AirKyzzZ/hologram-app
+      ref: e6992fccc654
+    platforms: [android]
+    promises: "Q1, Q2 and Q3 with the guideline wording"
+    device:
+      activity: io.twentysixty.mobileagent.MainActivity
+      unlock: device-credential
+      secret: "132006"
+      coldStart: false
+      neverForceStop: true
+quirks:
+  actsOnLinkOnlyAtColdStart: false
+  locksOnBackground: false
+  viewTree: ocr
+  notes: "React Native new architecture: uiautomator returns an empty tree, so screens are read by OCR. Cold start sits behind the system biometric prompt (tap Use PIN, then the phone PIN over adb), so deliver links while it is already open and never force-stop it"

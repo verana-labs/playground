@@ -1,0 +1,52 @@
+id: eudi
+rails: [openid4vc-sdjwt]
+openid4vc:
+  library: "eudi-lib-jvm-openid4vci-kt 0.13.1, eudi-lib-jvm-openid4vp-kt 0.15.1 and eudi-lib-jvm-sdjwt-kt 0.20.0 through eudi-lib-android-wallet-core (Kotlin)"
+  proxy: "@openid4vc/openid4vci, @openid4vc/openid4vp, @sd-jwt/sd-jwt-vc"
+  vciDrafts: [v1]
+  offerSchemes: [openid-credential-offer, haip-vci]
+  requestSchemes: [openid4vp, eudi-openid4vp, haip]
+  asDiscovery: [oauth-authorization-server]
+  presentation: { query: dcql, clientId: x509_hash, responseMode: direct_post.jwt }
+  demoParams: signer=x5c
+builds:
+  - kind: fork
+    listed: true
+    label: "Verana fork APK, wallet-core 0.29.0, signed metadata off, trust policy INFORM"
+    obtain: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/releases/download/verana-2026-08-06.1/eudi-wallet-verana-2026-08-06.1.apk
+    identity:
+      package: eu.europa.ec.euidi
+      version: verana-2026-08-06.1
+      repo: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui
+      ref: verana-2026-08-06.1
+    platforms: [android]
+    promises: "Q1 trust card with the service and operator blocks and a TESTNET chip. No Q2 or Q3 sentence, so an unauthorised verifier looks like an authorised one"
+    device:
+      activity: eu.europa.ec.assemblylogic.ui.MainActivity
+      unlock: pinfield
+      secret: "123456"
+      coldStart: false
+  - kind: publisher
+    label: "Demo APK from the EU reference wallet releases"
+    obtain: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui/releases
+    identity:
+      package: eu.europa.ec.euidi
+      version: "2026.07.39"
+    platforms: [android]
+    promises: "Refuses any issuer whose metadata is not signed by a certificate anchored in the EU trusted list"
+    policies: [signed-issuer-metadata, eu-trusted-list-anchor, no-did-issuers]
+    incompatibilities:
+      - cause: "TrustPolicy.Action.ENFORCE with requireSignedMetadata() is hard-coded in the dev and demo flavours. A demo issuer with a self-signed development certificate and a did:webvh identity is refused before any offer is shown, and there is no runtime toggle"
+        reference: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui/issues/659
+        scenarios: all
+        verified: "2026-09-13"
+    device:
+      activity: eu.europa.ec.assemblylogic.ui.MainActivity
+      unlock: pinfield
+      secret: "123456"
+      coldStart: false
+quirks:
+  actsOnLinkOnlyAtColdStart: false
+  locksOnBackground: false
+  viewTree: readable
+  notes: "wallet-core 0.29.0 requires key_attestations_required in the advertised jwt proof type; swiyu sends the same Accept header and must never receive that flag, so the server tells them apart per request"

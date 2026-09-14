@@ -29,7 +29,9 @@ describeNetworks("transport [CONF-T1-6]", (network) => {
           const redirected = res.status >= 300 && res.status < 400 && location.startsWith("https://");
           return { outcome: redirected ? "works" : "broken", cause: redirected ? undefined : `cleartext answered ${res.status} -> ${location}`, evidence: { status: res.status, location } };
         } catch (e) {
-          return { outcome: "works", evidence: { refused: e instanceof Error ? e.message : String(e) } };
+          const message = e instanceof Error ? e.message + " " + String((e as { cause?: { code?: string } }).cause?.code ?? "") : String(e);
+          if (/ECONNREFUSED|ECONNRESET/.test(message)) return { outcome: "works", evidence: { refused: message } };
+          return { outcome: "unknown", cause: `cleartext probe could not complete: ${message}` };
         }
       }),
     );
@@ -42,7 +44,7 @@ describeNetworks("transport [CONF-T1-6]", (network) => {
           const mint = await mintIssuance(network, service, { format: "anoncreds", demoParams: "", ...issuanceParamsFor(service) });
           const res = await fetchWithTimeout(mint.url, { headers: { accept: "text/html,application/xhtml+xml" }, redirect: "manual" });
           const location = res.headers.get("location") ?? "";
-          const ok = res.status < 500;
+          const ok = res.status >= 200 && res.status < 400;
           return {
             outcome: ok ? "works" : "broken",
             cause: ok ? undefined : `HTTP ${res.status} with Accept: text/html`,

@@ -21,7 +21,7 @@ export const CellSchema = z.object({
   cause: z.string().optional(),
   reference: z.string().optional(),
   evidence: z.record(z.string(), z.unknown()).optional(),
-});
+}).refine((c) => c.outcome !== "incompatible-by-design" || Boolean(c.cause), { message: "incompatible-by-design needs a cause", path: ["cause"] });
 export type Cell = z.infer<typeof CellSchema>;
 export type CellBase = Omit<Cell, "outcome" | "cause" | "reference" | "evidence">;
 export type Verdict = Pick<Cell, "outcome" | "cause" | "reference" | "evidence">;

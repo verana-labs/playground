@@ -9,6 +9,7 @@
     "test:lib": "vitest run lib",
     "typecheck": "tsc --noEmit",
     "t1": "vitest run tier1",
+    "t2": "vitest run tier2",
     "summary": "node bin/summary.mjs"
   },
   "dependencies": {

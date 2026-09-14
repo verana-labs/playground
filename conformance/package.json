@@ -6,13 +6,19 @@
   "license": "Apache-2.0",
   "scripts": {
     "test": "vitest run",
-    "test:lib": "vitest run lib",
+    "test:lib": "vitest run lib --exclude '**/*.live.test.ts'",
     "typecheck": "tsc --noEmit",
     "t1": "vitest run tier1",
+    "t2": "vitest run tier2",
     "summary": "node bin/summary.mjs"
   },
   "dependencies": {
+    "@openid4vc/oauth2": "0.5.5",
     "@openid4vc/openid4vci": "0.5.5",
+    "@openid4vc/openid4vp": "0.5.5",
+    "@sd-jwt/core": "0.20.1",
+    "@sd-jwt/sd-jwt-vc": "0.20.1",
+    "jose": "^6.2.12",
     "js-yaml": "^4.1.0",
     "zod": "^4.4.3"
   },

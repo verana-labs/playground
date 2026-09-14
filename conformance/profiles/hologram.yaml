@@ -24,7 +24,7 @@ builds:
       neverForceStop: true
   - kind: fork
     label: "Verana trust fork, staging build of hologram-app#514"
-    obtain: https://github.com/AirKyzzZ/hologram-app/tree/feat/verana-trust
+    obtain: https://github.com/AirKyzzZ/hologram-app/tree/e6992fccc654
     identity:
       package: io.twentysixty.mobileagent.st
       version: e6992fccc654

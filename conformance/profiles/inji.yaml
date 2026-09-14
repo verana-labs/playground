@@ -6,7 +6,7 @@ openid4vc:
   vciDrafts: [draft11, draft13]
   offerSchemes: [openid-credential-offer]
   requestSchemes: [openid4vp]
-  asDiscovery: [oauth-authorization-server, openid-configuration]
+  asDiscovery: [oauth-authorization-server]
   presentation: { query: presentation_exchange, clientId: did, responseMode: direct_post }
   demoParams: query=pe
 builds:

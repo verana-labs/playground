@@ -6,7 +6,7 @@ openid4vc:
   vciDrafts: [v1]
   offerSchemes: [openid-credential-offer, haip-vci]
   requestSchemes: [openid4vp, eudi-openid4vp, haip]
-  asDiscovery: [oauth-authorization-server, openid-configuration]
+  asDiscovery: [oauth-authorization-server]
   presentation: { query: dcql, clientId: x509_hash, responseMode: direct_post.jwt }
   demoParams: signer=x5c
 builds:
@@ -31,7 +31,7 @@ builds:
     obtain: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui/releases
     identity:
       package: eu.europa.ec.euidi
-      version: "2026.07.39 and later"
+      version: "2026.07.39"
     platforms: [android]
     promises: "Refuses any issuer whose metadata is not signed by a certificate anchored in the EU trusted list"
     policies: [signed-issuer-metadata, eu-trusted-list-anchor, no-did-issuers]

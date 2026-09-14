@@ -21,4 +21,4 @@ networks:
     playground: null
     vocabulary: { ecosystem: Ecosystem, participant: Participant }
     testable: false
-    reason: "devnet serves an indexer documentation page only: no resolver and no deployed cast services"
+    reason: "devnet exposes no resolver and no deployed cast services; its indexer url is not confirmed yet"

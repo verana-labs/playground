@@ -7,9 +7,9 @@ Proves, on every change, which listed wallets work against the deployed playgrou
   wallet-specific is hard-coded anywhere else. Validated by `app/lib/wallet-profiles.ts` in the main CI.
 - `networks.yaml` the networks a run can target. `CONFORMANCE_NETWORK=testnet-v3` selects one; by
   default every testable network runs and the others are reported as not yet testable.
-- `tier1/` contract checks: what a wallet fetches, asserted without running a wallet.
-- `tier2/` headless flows with the wallets' libraries, asserting the resolver inputs of the verdict.
-- `tier3/` device spot-checks: rendering and gating only.
+- `tier1/` (planned, next PR) contract checks: what a wallet fetches, asserted without running a wallet.
+- `tier2/` (planned) headless flows with the wallets' libraries, asserting the resolver inputs of the verdict.
+- `tier3/` (planned) device spot-checks: rendering and gating only.
 
 This directory is its own npm package so that the Tier 2 native dependencies never enter the site build.
 

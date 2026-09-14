@@ -6,6 +6,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import {
   effectiveDemoParams,
   effectivePresentation,
+  getWalletProfile,
   listWalletProfiles,
   listedBuild,
   WalletProfileSchema,
@@ -130,6 +131,16 @@ describe("WalletProfileSchema", () => {
     };
     expect(WalletProfileSchema.safeParse(bad).success).toBe(false);
   });
+
+  it("rejects a browser build that carries a device block", () => {
+    const browser = { ...valid, builds: [{ ...valid.builds[0], kind: "browser", platforms: ["web"], identity: { url: "https://example.org", repo: "https://example.org/repo", ref: "v1" } }] };
+    expect(WalletProfileSchema.safeParse(browser).success).toBe(false);
+  });
+
+  it("rejects query=pe on the dcql rail", () => {
+    const bad = { ...valid, openid4vc: { ...valid.openid4vc, demoParams: "signer=x5c&query=pe" } };
+    expect(WalletProfileSchema.safeParse(bad).success).toBe(false);
+  });
 });
 
 describe("profile helpers", () => {
@@ -144,6 +155,17 @@ describe("profile helpers", () => {
     expect(effectivePresentation(profile, store)?.clientId).toBe("did");
     expect(effectiveDemoParams(profile, store)).toBe("");
     expect(effectiveDemoParams(profile, profile.builds[0])).toBe("signer=x5c");
+  });
+
+  it("keys the mint parameters by rail", () => {
+    const dual = WalletProfileSchema.parse({
+      ...valid,
+      rails: ["anoncreds", "openid4vc-sdjwt"],
+      didcomm: { library: "credo", proxy: "credo", invitationSchemes: ["didcomm"], demoParams: "" },
+    });
+    expect(effectiveDemoParams(dual, dual.builds[0], "anoncreds")).toBe("");
+    expect(effectiveDemoParams(dual, dual.builds[0], "openid4vc-sdjwt")).toBe("signer=x5c");
+    expect(effectiveDemoParams(dual, dual.builds[0])).toBe("signer=x5c");
   });
 });
 
@@ -166,6 +188,12 @@ describe("listWalletProfiles", () => {
     fs.writeFileSync(path.join(dir, "wrong.yaml"), JSON.stringify(valid));
     expect(() => listWalletProfiles(dir)).toThrow(/wrong\.yaml/);
   });
+
+  it("finds one profile by id", () => {
+    fs.writeFileSync(path.join(dir, "a.yaml"), JSON.stringify({ ...valid, id: "a" }));
+    expect(getWalletProfile("a", dir)?.id).toBe("a");
+    expect(getWalletProfile("zz", dir)).toBeUndefined();
+  });
 });
 
 describe("profiles match the listing", () => {
@@ -178,10 +206,6 @@ describe("profiles match the listing", () => {
 
   it("every visible wallet has a profile, whatever its scope", () => {
     expect(profiles.map((p) => p.id).sort()).toEqual(visible.map((w) => w.id).sort());
-  });
-
-  it("every profile names a wallet that exists in the listing", () => {
-    for (const p of profiles) expect(listing.some((w) => w.id === p.id), p.id).toBe(true);
   });
 
   it("rails equal the listing formats", () => {

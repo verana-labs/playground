@@ -2324,6 +2324,8 @@ Expected: a markdown summary of the latest local run with separate tables for br
 
 - [ ] **Step 2: Add the per-change CI job**
 
+The `ci` job already installs, typechecks and runs `npm test` inside `conformance/` (added by plan A's final fix). Once `tier1/` exists, `npm test` would run the network checks there too. Add the script `"test:lib": "vitest run lib"` to `conformance/package.json` and change that `ci` job step from `npm test` to `npm run test:lib`, so the site job keeps only the unit tests and the network checks live in their own job.
+
 In `.github/workflows/ci.yml`, add a second job after `ci`:
 
 ```yaml

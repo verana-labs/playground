@@ -31,7 +31,7 @@ export const OobInvitationSchema = z.looseObject({
   "@type": z.string().regex(/out-of-band\/1\.[01]\/invitation$/),
   "@id": z.string().min(1),
   label: z.string().min(1),
-  services: z.array(z.union([z.string(), z.looseObject({ serviceEndpoint: z.string().min(1) })])).min(1),
+  services: z.array(z.union([z.string().min(1), z.looseObject({ serviceEndpoint: z.string().min(1) })])).min(1),
   "requests~attach": z.array(z.unknown()).optional(),
 });
 

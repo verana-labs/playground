@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clientIdMatches, decodeJwtParts, parseWalletLink } from "./links";
+import { clientIdMatches, decodeJwtParts, OobInvitationSchema, parseWalletLink } from "./links";
 
 describe("parseWalletLink", () => {
   it("splits a custom scheme link into scheme and params", () => {
@@ -26,6 +26,18 @@ describe("clientIdMatches", () => {
     expect(clientIdMatches("decentralized_identifier:did:webvh:Qm:h", "did")).toBe(true);
     expect(clientIdMatches("did:web:h", "x509_hash")).toBe(false);
     expect(clientIdMatches("x509_hash:abc", "did")).toBe(false);
+  });
+});
+
+describe("OobInvitationSchema", () => {
+  it("accepts a did-referenced service endpoint", () => {
+    const invitation = {
+      "@type": "https://didcomm.org/out-of-band/1.1/invitation",
+      "@id": "abc",
+      label: "issuer",
+      services: ["did:webvh:abc:host"],
+    };
+    expect(() => OobInvitationSchema.parse(invitation)).not.toThrow();
   });
 });
 

@@ -77,7 +77,7 @@ async function checkInvitation(t: Target, mint: Mint): Promise<string[]> {
   if (hostOf(mint.url) !== t.service.host) problems.push(`link host ${hostOf(mint.url)} is not ${t.service.host}`);
   const invitation = await fetchOobInvitation(mint.url);
   const endpoints = invitation.services.map((s) => (typeof s === "string" ? s : s.serviceEndpoint));
-  if (!endpoints.some((e) => e.startsWith("wss://") || e.startsWith("https://"))) problems.push(`no secure service endpoint in ${endpoints.join(", ")}`);
+  if (!endpoints.some((e) => e.startsWith("did:") || e.startsWith("wss://") || e.startsWith("https://"))) problems.push(`no secure service endpoint in ${endpoints.join(", ")}`);
   if (!invitation["requests~attach"]?.length) problems.push("no attached request");
   return problems;
 }

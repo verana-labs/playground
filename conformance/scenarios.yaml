@@ -1,0 +1,52 @@
+scenarios:
+  - id: issue-accredited
+    kind: issue
+    expect: accept
+    service: demo-issuer-accredited
+  - id: issue-unaccredited
+    kind: issue
+    expect: refuse
+    service: demo-issuer-unaccredited
+  - id: issue-untrusted
+    kind: issue
+    expect: refuse
+    service: { anoncreds: demo-untrusted, openid4vc-sdjwt: demo-issuer-untrusted }
+  - id: present-accredited
+    kind: present
+    expect: accept
+    service: demo-verifier-accredited
+    needs: issue-accredited
+  - id: present-unaccredited
+    kind: present
+    expect: refuse
+    service: demo-verifier-unaccredited
+    needs: issue-accredited
+  - id: present-untrusted
+    kind: present
+    expect: refuse
+    service: { anoncreds: demo-untrusted, openid4vc-sdjwt: demo-verifier-untrusted }
+    needs: issue-accredited
+  - id: boleto-asistente
+    kind: issue
+    expect: accept
+    service: taquilla
+    credential: eventos-asistente
+    params: { evento: costa-rica, nombre: Conformance }
+  - id: boleto-patrocinador
+    kind: issue
+    expect: accept
+    service: taquilla
+    credential: eventos-patrocinador
+    params: { evento: panama, organizacion: INTEXUS, lema: Beyond the content }
+  - id: entrada-costa-rica
+    kind: present
+    expect: accept
+    service: evento-costa-rica
+    login: { evento: costa-rica, rol: asistente }
+    needs: boleto-asistente
+  - id: entrada-otro-evento
+    kind: present
+    expect: refuse
+    service: evento-guatemala
+    login: { evento: guatemala, rol: asistente }
+    needs: boleto-asistente

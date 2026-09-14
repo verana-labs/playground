@@ -19,6 +19,22 @@ const SERVICES: Record<string, CastService> = {
   taquilla: service("taquilla", null, "issuer"),
   "evento-costa-rica": service("evento-costa-rica", null, "verifier"),
   "evento-guatemala": service("evento-guatemala", null, "verifier"),
+  northbank: service("northbank", null, "issuer"),
+  caledonian: service("caledonian", null, "issuer"),
+  cirrus: service("cirrus", null, "issuer"),
+  "meridian-tech": service("meridian-tech", null, "verifier"),
+  halcyon: service("halcyon", null, "verifier"),
+  segip: service("segip", null, "issuer"),
+  seprec: service("seprec", null, "issuer"),
+  aurum: service("aurum", null, "issuer"),
+  novara: service("novara", null, "issuer"),
+  borealis: service("borealis", null, "verifier"),
+  darkpool: service("darkpool", null, "verifier"),
+  "civil-registry": service("civil-registry", null, "issuer"),
+  "business-registry": service("business-registry", null, "issuer"),
+  vesta: service("vesta", null, "issuer"),
+  zenith: service("zenith", null, "issuer"),
+  umbra: service("umbra", null, "issuer"),
 };
 
 const EXPECTED: Record<string, TrustExpectation> = {
@@ -32,10 +48,27 @@ const EXPECTED: Record<string, TrustExpectation> = {
   "boleto-patrocinador": { q1: "TRUSTED", q2: true, q3: null },
   "entrada-costa-rica": { q1: "TRUSTED", q2: null, q3: true },
   "entrada-otro-evento": { q1: "TRUSTED", q2: null, q3: true },
+  "bhi-northbank-issue-bhi-right-to-work": { q1: "TRUSTED", q2: true, q3: null },
+  "bhi-northbank-issue-bhi-employment": { q1: "TRUSTED", q2: true, q3: null },
+  "bhi-caledonian-issue-bhi-qualification": { q1: "TRUSTED", q2: true, q3: null },
+  "bhi-cirrus-issue-bhi-qualification": { q1: "TRUSTED", q2: true, q3: null },
+  "bhi-meridian-tech-present": { q1: "TRUSTED", q2: null, q3: true },
+  "bhi-halcyon-present": { q1: "TRUSTED", q2: null, q3: false },
+  "bolivia-segip-issue-bolivia-cedula": { q1: "TRUSTED", q2: true, q3: null },
+  "bolivia-seprec-issue-bolivia-legal-rep": { q1: "TRUSTED", q2: true, q3: null },
+  "cexa-aurum-issue-cexa-kyc": { q1: "TRUSTED", q2: true, q3: null },
+  "cexa-novara-issue-cexa-kyc": { q1: "TRUSTED", q2: true, q3: null },
+  "cexa-borealis-present": { q1: "TRUSTED", q2: null, q3: true },
+  "cexa-darkpool-present": { q1: "TRUSTED", q2: null, q3: false },
+  "verandia-civil-registry-issue-verandia-citizen-id": { q1: "TRUSTED", q2: true, q3: null },
+  "verandia-business-registry-issue-verandia-legal-rep": { q1: "TRUSTED", q2: true, q3: null },
+  "vesta-vesta-issue-ecs-badge": { q1: "TRUSTED", q2: true, q3: null },
+  "vesta-zenith-issue-ecs-badge": { q1: "TRUSTED", q2: true, q3: null },
+  "vesta-umbra-issue-ecs-badge": { q1: "TRUSTED", q2: true, q3: null },
 };
 
 describe("expectedTrust", () => {
-  it("covers exactly the ten scenarios", () => {
+  it("covers every scenario", () => {
     expect(Object.keys(EXPECTED).sort()).toEqual(
       listScenarios()
         .map((s) => s.id)

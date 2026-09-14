@@ -57,14 +57,14 @@ export async function mintIssuance(
 export async function mintPresentation(
   network: Network,
   service: CastService,
-  opts: { format: Rail; demoParams: string; login?: Login },
+  opts: { format: Rail; demoParams: string; credential?: string; login?: Login },
 ): Promise<Mint> {
   if (opts.login) {
     const url = withParams(`${playground(network)}/api/eventos-login`, { evento: opts.login.evento, rol: opts.login.rol, format: opts.format }, opts.demoParams);
     const mint = LoginMintSchema.parse(await fetchJson(url, { timeoutMs: 40_000 }));
     return { rail: mint.rail, kind: "eventos-login", url: mint.url, id: mint.id };
   }
-  const url = withParams(`${playground(network)}/api/demo/${service.id}`, { format: opts.format }, opts.demoParams);
+  const url = withParams(`${playground(network)}/api/demo/${service.id}`, { format: opts.format, credential: opts.credential }, opts.demoParams);
   return fromDemo(await fetchJson(url, { timeoutMs: 40_000 }), opts.format);
 }
 

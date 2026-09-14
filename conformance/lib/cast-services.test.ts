@@ -72,7 +72,7 @@ describe("listCastServices", () => {
   });
 
   it("scopes casts from the environment", () => {
-    expect(scopedCasts()).toEqual(["demo", "eventos"]);
+    expect(scopedCasts()).toEqual(["bhi", "bolivia", "cexa", "demo", "eventos", "verandia", "vesta"]);
     process.env.CONFORMANCE_CASTS = "vesta, bhi";
     expect(scopedCasts()).toEqual(["vesta", "bhi"]);
     const [a] = listCastServices(testnet, dir);

@@ -87,7 +87,7 @@ export function listCastServices(network: Network, workflowsDir: string = DEFAUL
 }
 
 export function scopedCasts(): string[] {
-  return (process.env.CONFORMANCE_CASTS ?? "demo,eventos")
+  return (process.env.CONFORMANCE_CASTS ?? "bhi,bolivia,cexa,demo,eventos,verandia,vesta")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);

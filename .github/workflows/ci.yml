@@ -25,5 +25,36 @@ jobs:
         working-directory: conformance
       - run: npm run typecheck
         working-directory: conformance
-      - run: npm test
+      - run: npm run test:lib
         working-directory: conformance
+
+  conformance-t1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            conformance/package-lock.json
+      - run: npm ci
+      - run: npm ci
+        working-directory: conformance
+      - run: npm run typecheck
+        working-directory: conformance
+      - run: npm run t1
+        working-directory: conformance
+        continue-on-error: true
+        env:
+          CONFORMANCE_RUN_ID: ci-${{ github.run_id }}-${{ github.run_attempt }}
+      - if: always()
+        run: npm run summary >> "$GITHUB_STEP_SUMMARY"
+        working-directory: conformance
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: conformance-t1-${{ github.run_id }}-${{ github.run_attempt }}
+          path: conformance/results/
+          retention-days: 90

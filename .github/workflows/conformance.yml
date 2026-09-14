@@ -1,0 +1,51 @@
+name: conformance
+on:
+  schedule:
+    - cron: "17 3 * * *"
+  workflow_dispatch:
+    inputs:
+      network:
+        description: "network id from conformance/networks.yaml (empty = every testable network)"
+        default: ""
+      casts:
+        description: "casts that receive live mints"
+        default: "demo,eventos"
+jobs:
+  tier1:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            conformance/package-lock.json
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          cat > ~/.kube/config <<'KUBEEOF'
+          ${{ secrets.KUBECONFIG_VERANA_DEV }}
+          KUBEEOF
+          chmod 600 ~/.kube/config
+      - run: npm ci
+      - run: npm ci
+        working-directory: conformance
+      - run: npm run t1
+        working-directory: conformance
+        env:
+          CONFORMANCE_RUN_ID: nightly-${{ github.run_id }}-${{ github.run_attempt }}
+          CONFORMANCE_NETWORK: ${{ inputs.network }}
+          CONFORMANCE_CASTS: ${{ inputs.casts || 'demo,eventos' }}
+          CONFORMANCE_MINTS: "1"
+          CONFORMANCE_K8S_NAMESPACE: ${{ secrets.K8S_NAMESPACE }}
+      - if: always()
+        run: npm run summary >> "$GITHUB_STEP_SUMMARY"
+        working-directory: conformance
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: conformance-nightly-${{ github.run_id }}-${{ github.run_attempt }}
+          path: conformance/results/
+          retention-days: 90

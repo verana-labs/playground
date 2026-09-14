@@ -6,9 +6,13 @@
   "license": "Apache-2.0",
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "test:lib": "vitest run lib",
+    "typecheck": "tsc --noEmit",
+    "t1": "vitest run tier1",
+    "summary": "node bin/summary.mjs"
   },
   "dependencies": {
+    "@openid4vc/openid4vci": "0.5.5",
     "js-yaml": "^4.1.0",
     "zod": "^4.4.3"
   },

@@ -1,22 +1,31 @@
 import fs from "node:fs";
 import yaml from "js-yaml";
 import { z } from "zod";
-import { CONFORMANCE_SCENARIOS } from "../../app/lib/wallet-profiles";
 import type { Rail } from "./playground-client";
 
+const scenarioId = z.string().regex(/^[a-z0-9-]+$/);
+
 const ScenarioSchema = z.object({
-  id: z.enum(CONFORMANCE_SCENARIOS),
+  id: scenarioId,
   kind: z.enum(["issue", "present"]),
   expect: z.enum(["accept", "refuse"]),
   service: z.union([z.string().min(1), z.object({ anoncreds: z.string().min(1), "openid4vc-sdjwt": z.string().min(1) })]),
   credential: z.string().min(1).optional(),
   params: z.record(z.string(), z.string()).optional(),
   login: z.object({ evento: z.string().min(1), rol: z.string().min(1) }).optional(),
-  needs: z.enum(CONFORMANCE_SCENARIOS).optional(),
+  needs: scenarioId.optional(),
 });
 export type Scenario = z.infer<typeof ScenarioSchema>;
 
-const FileSchema = z.object({ scenarios: z.array(ScenarioSchema).min(1) });
+const FileSchema = z
+  .object({ scenarios: z.array(ScenarioSchema).min(1) })
+  .superRefine((file, ctx) => {
+    const ids = new Set(file.scenarios.map((s) => s.id));
+    file.scenarios.forEach((s, i) => {
+      if (s.needs && !ids.has(s.needs))
+        ctx.addIssue({ code: "custom", message: `needs unknown scenario ${s.needs}`, path: ["scenarios", i, "needs"] });
+    });
+  });
 const SCENARIOS_FILE = new URL("../scenarios.yaml", import.meta.url);
 
 export function listScenarios(): Scenario[] {
@@ -24,7 +33,6 @@ export function listScenarios(): Scenario[] {
   const { scenarios } = FileSchema.parse(raw);
   const ids = new Set(scenarios.map((s) => s.id));
   if (ids.size !== scenarios.length) throw new Error("scenarios.yaml: duplicate scenario id");
-  for (const s of scenarios) if (s.needs && !ids.has(s.needs)) throw new Error(`${s.id}: needs unknown scenario ${s.needs}`);
   return scenarios;
 }
 

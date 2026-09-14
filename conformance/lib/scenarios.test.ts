@@ -5,8 +5,9 @@ import { listScenarios, serviceFor } from "./scenarios";
 describe("scenarios.yaml", () => {
   const scenarios = listScenarios();
 
-  it("declares every conformance scenario exactly once", () => {
-    expect(scenarios.map((s) => s.id).sort()).toEqual([...CONFORMANCE_SCENARIOS].sort());
+  it("declares every conformance scenario", () => {
+    const ids = new Set(scenarios.map((s) => s.id));
+    for (const id of CONFORMANCE_SCENARIOS) expect(ids.has(id), id).toBe(true);
   });
 
   it("names the untrusted service per rail", () => {

@@ -50,3 +50,93 @@ scenarios:
     service: evento-guatemala
     login: { evento: guatemala, rol: asistente }
     needs: boleto-asistente
+  - id: bhi-northbank-issue-bhi-right-to-work
+    kind: issue
+    expect: accept
+    service: northbank
+    credential: bhi-right-to-work
+    params: { firstName: Amara, surname: Osei }
+  - id: bhi-northbank-issue-bhi-employment
+    kind: issue
+    expect: accept
+    service: northbank
+    credential: bhi-employment
+  - id: bhi-caledonian-issue-bhi-qualification
+    kind: issue
+    expect: accept
+    service: caledonian
+    credential: bhi-qualification
+  - id: bhi-cirrus-issue-bhi-qualification
+    kind: issue
+    expect: accept
+    service: cirrus
+    credential: bhi-qualification
+  - id: bhi-meridian-tech-present
+    kind: present
+    expect: accept
+    service: meridian-tech
+    credential: bhi-right-to-work
+    needs: bhi-northbank-issue-bhi-right-to-work
+  - id: bhi-halcyon-present
+    kind: present
+    expect: refuse
+    service: halcyon
+    credential: bhi-right-to-work
+    needs: bhi-northbank-issue-bhi-right-to-work
+  - id: bolivia-segip-issue-bolivia-cedula
+    kind: issue
+    expect: accept
+    service: segip
+    credential: bolivia-cedula
+  - id: bolivia-seprec-issue-bolivia-legal-rep
+    kind: issue
+    expect: accept
+    service: seprec
+    credential: bolivia-legal-rep
+  - id: cexa-aurum-issue-cexa-kyc
+    kind: issue
+    expect: accept
+    service: aurum
+    credential: cexa-kyc
+  - id: cexa-novara-issue-cexa-kyc
+    kind: issue
+    expect: accept
+    service: novara
+    credential: cexa-kyc
+  - id: cexa-borealis-present
+    kind: present
+    expect: accept
+    service: borealis
+    credential: cexa-kyc
+    needs: cexa-aurum-issue-cexa-kyc
+  - id: cexa-darkpool-present
+    kind: present
+    expect: refuse
+    service: darkpool
+    credential: cexa-kyc
+    needs: cexa-aurum-issue-cexa-kyc
+  - id: verandia-civil-registry-issue-verandia-citizen-id
+    kind: issue
+    expect: accept
+    service: civil-registry
+    credential: verandia-citizen-id
+  - id: verandia-business-registry-issue-verandia-legal-rep
+    kind: issue
+    expect: accept
+    service: business-registry
+    credential: verandia-legal-rep
+  - id: vesta-vesta-issue-ecs-badge
+    kind: issue
+    expect: accept
+    service: vesta
+    credential: ecs-badge
+  - id: vesta-zenith-issue-ecs-badge
+    kind: issue
+    expect: accept
+    service: zenith
+    credential: ecs-badge
+  - id: vesta-umbra-issue-ecs-badge
+    kind: issue
+    expect: accept
+    service: umbra
+    credential: ecs-badge

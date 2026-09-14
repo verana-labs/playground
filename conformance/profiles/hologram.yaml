@@ -15,7 +15,7 @@ builds:
       version: "2.0.0"
     platforms: [android, ios]
     presumptive: [ios]
-    promises: "Q1 only. Renders the trust card, then reports Q1 as a safety verdict on offers with Accept enabled, even for an unaccredited issuer"
+    promises: "Full Proof-of-Trust on offers and requests: Q1 card with service and operator blocks, the Q2 issuer sentence and the Q3 verifier sentence; on a Q2 denial the offer renders no Accept control at all (device-verified 2026-09-14 on Play version 2.0.0)"
     device:
       activity: io.twentysixty.mobileagent.MainActivity
       unlock: device-credential

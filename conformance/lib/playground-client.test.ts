@@ -34,6 +34,16 @@ describe("playground client", () => {
     await expect(mintIssuance(testnet, issuer, { format: "openid4vc-sdjwt", demoParams: "" })).rejects.toThrow(/degraded/);
   });
 
+  it("mints a direct presentation request for the named credential", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(json({ kind: "oid4vc-presentation-request", url: "openid4vp://?request_uri=x", verificationSessionId: "v2" }));
+    vi.stubGlobal("fetch", fetchMock);
+    const mint = await mintPresentation(testnet, verifier, { format: "openid4vc-sdjwt", demoParams: "", credential: "bhi-right-to-work" });
+    expect(mint).toEqual({ rail: "oid4vc", kind: "oid4vc-presentation-request", url: "openid4vp://?request_uri=x", id: "v2" });
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(
+      "https://playground.testnet.verana.network/api/demo/evento-costa-rica?format=openid4vc-sdjwt&credential=bhi-right-to-work",
+    );
+  });
+
   it("mints an event login through eventos-login", async () => {
     const fetchMock = vi.fn().mockResolvedValue(json({ rail: "oid4vc", url: "openid4vp://?x", id: "v1" }));
     vi.stubGlobal("fetch", fetchMock);

@@ -93,7 +93,7 @@ describeNetworks("offer and request links [CONF-T1-4]", (network) => {
           const demoParams = effectiveDemoParams(t.profile, t.build, t.rail);
           const mint = t.scenario.kind === "issue"
             ? await mintIssuance(network, t.service, { format: t.rail, demoParams, credential: t.scenario.credential, params: t.scenario.params })
-            : await mintPresentation(network, t.service, { format: t.rail, demoParams, login: t.scenario.login });
+            : await mintPresentation(network, t.service, { format: t.rail, demoParams, credential: t.scenario.credential, login: t.scenario.login });
           const evidence = { url: mint.url, kind: mint.kind, rail: mint.rail, demoParams };
           if (mint.kind === "invitation")
             return { outcome: "unknown", cause: "the service answers with its plain invitation page; connection-level scenarios are proven by Tier 2", evidence };

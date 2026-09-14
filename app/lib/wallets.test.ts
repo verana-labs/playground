@@ -40,6 +40,25 @@ describe("personal wallets configuration", () => {
       ).toBe(true);
     }
   });
+
+  it("lists only the maintained wallets", () => {
+    const ids = listPersonalWallets().map((w) => w.id).sort();
+    expect(ids).toEqual(
+      ["eudi", "hologram", "inji", "swiyu", "wwwallet"].sort(),
+    );
+  });
+
+  it("keeps the paused wallets in the file, hidden", () => {
+    const raw = WalletsFileSchema.parse(
+      yaml.load(
+        fs.readFileSync(path.join(process.cwd(), "personal-wallets.yaml"), "utf8"),
+      ),
+    );
+    const hidden = raw.wallets.filter((w) => w.hidden).map((w) => w.id).sort();
+    expect(hidden).toEqual(
+      ["authbound", "bcwallet", "nl-wallet", "paradym", "procivis", "sphereon", "talao"].sort(),
+    );
+  });
 });
 
 describe("scoped wallets", () => {

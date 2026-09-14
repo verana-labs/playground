@@ -8,7 +8,8 @@ Proves, on every change, which listed wallets work against the deployed playgrou
 - `networks.yaml` the networks a run can target. `CONFORMANCE_NETWORK=testnet-v3` selects one; by
   default every testable network runs and the others are reported as not yet testable.
 - `tier1/` (planned, next PR) contract checks: what a wallet fetches, asserted without running a wallet.
-- `tier2/` (planned) headless flows with the wallets' libraries, asserting the resolver inputs of the verdict.
+- `tier2/` headless OpenID4VCI/OpenID4VP flows with the wallets' own libraries, asserting the resolver inputs of
+  the verdict. Nightly only, behind `CONFORMANCE_MINTS=1`. See "Tier 2" below.
 - `tier3/` (planned) device spot-checks: rendering and gating only.
 
 This directory is its own npm package so that the Tier 2 native dependencies never enter the site build.
@@ -33,3 +34,19 @@ Environment: `CONFORMANCE_NETWORK` selects one network; `CONFORMANCE_CASTS` limi
 live mints (default `demo,eventos`); `CONFORMANCE_MINTS=1` enables the checks that create sessions on the
 services (off in the per-change CI job, on nightly); `CONFORMANCE_K8S_NAMESPACE` enables the cluster read of
 the image tag actually serving and the detection of services that rolled during the run (nightly only).
+
+## Tier 2
+
+`npm run t2` (nightly only, `CONFORMANCE_MINTS=1`) runs the OpenID4VCI and OpenID4VP protocols end to end as a
+headless holder (`@openid4vc/*`, `@sd-jwt/sd-jwt-vc`), once per listed wallet build on the `openid4vc-sdjwt` rail
+and canonical scenario, and asserts the resolver inputs a real wallet's accept/refuse verdict depends on: the Q1
+trust status by field, Q2 and Q3 from the issuer/verifier authorization endpoints, and the service's own exchange
+state (`done`, `verified`, and for eventos the `decision`). A scenario is `works` only when the protocol completes
+and every resolver answer matches what the scenario expects; a flow that completes but disagrees with the
+resolver is `broken` with the resolver evidence as the cause, never weakened to pass.
+
+Tier 2 proves the protocol and the trust inputs are correct end to end. It does not prove a wallet: the headless
+holder never decides accept or refuse, it always completes the flow so the resolver assertions can run regardless
+of what a real wallet's own policy would have done. Whether a wallet's UI reads the same inputs correctly and
+gates Add/Share on them is Tier 3, the only tier that runs against a device. The DIDComm/AnonCreds rail
+(Hologram) is not covered yet.

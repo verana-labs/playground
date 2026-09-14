@@ -6,7 +6,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "test": "vitest run",
-    "test:lib": "vitest run lib",
+    "test:lib": "vitest run lib --exclude '**/*.live.test.ts'",
     "typecheck": "tsc --noEmit",
     "t1": "vitest run tier1",
     "t2": "vitest run tier2",

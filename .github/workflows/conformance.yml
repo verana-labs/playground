@@ -34,6 +34,16 @@ jobs:
         working-directory: conformance
       - run: npm run t1
         working-directory: conformance
+        continue-on-error: false
+        env:
+          CONFORMANCE_RUN_ID: nightly-${{ github.run_id }}-${{ github.run_attempt }}
+          CONFORMANCE_NETWORK: ${{ inputs.network }}
+          CONFORMANCE_CASTS: ${{ inputs.casts || 'demo,eventos' }}
+          CONFORMANCE_MINTS: "1"
+          CONFORMANCE_K8S_NAMESPACE: ${{ secrets.K8S_NAMESPACE }}
+      - run: npm run t2
+        working-directory: conformance
+        continue-on-error: false
         env:
           CONFORMANCE_RUN_ID: nightly-${{ github.run_id }}-${{ github.run_attempt }}
           CONFORMANCE_NETWORK: ${{ inputs.network }}

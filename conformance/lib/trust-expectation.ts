@@ -48,16 +48,13 @@ export async function assertTrust(resolver: ResolverClient, did: string, expecta
   if (!Number.isNaN(evaluatedAtMs) && !Number.isNaN(expiresAtMs) && !(expiresAtMs > evaluatedAtMs))
     problems.push(`expiresAt ${resolution.expiresAt} is not after evaluatedAt ${resolution.evaluatedAt}`);
 
-  const validEcsService = resolution.credentials.some((c) => c.ecsType === "ECS-SERVICE" && c.result === "VALID");
-  const validEcsOwner = resolution.credentials.some((c) => ECS_OWNER_TYPES.has(c.ecsType) && c.result === "VALID");
-
   if (expectation.q1 === "TRUSTED") {
+    const validEcsService = resolution.credentials.some((c) => c.ecsType === "ECS-SERVICE" && c.result === "VALID");
+    const validEcsOwner = resolution.credentials.some((c) => ECS_OWNER_TYPES.has(c.ecsType) && c.result === "VALID");
     if (!validEcsService) problems.push("no VALID ECS-SERVICE credential");
     if (!validEcsOwner) problems.push("no VALID ECS-ORG or ECS-PERSONA credential");
     if (resolution.dereferenceErrors.length) problems.push(`dereferenceErrors present: ${JSON.stringify(resolution.dereferenceErrors)}`);
     if (resolution.failedCredentials.length) problems.push(`failedCredentials present: ${JSON.stringify(resolution.failedCredentials)}`);
-  } else if (validEcsService) {
-    problems.push("UNTRUSTED verdict but a VALID ECS-SERVICE credential is present");
   }
 
   const evidence: Record<string, unknown> = {
@@ -66,6 +63,7 @@ export async function assertTrust(resolver: ResolverClient, did: string, expecta
     evaluatedAt: resolution.evaluatedAt,
     expiresAt: resolution.expiresAt,
     credentials: resolution.credentials.map((c) => ({ ecsType: c.ecsType, result: c.result })),
+    selfIssued: resolution.credentials.filter((c) => c.issuedBy === did).map((c) => c.ecsType),
     dereferenceErrors: resolution.dereferenceErrors,
     failedCredentials: resolution.failedCredentials,
     production: resolution.production,

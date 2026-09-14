@@ -103,7 +103,8 @@ git commit -m "chore: hide the seven paused wallets from the listing"
   - `getWalletProfile(id: string, dir?: string): WalletProfile | undefined`
   - `listedBuild(profile: WalletProfile): WalletBuild`
   - `effectivePresentation(profile, build): WalletPresentation | undefined`
-  - `effectiveDemoParams(profile, build): string`
+  - `effectiveDemoParams(profile, build, rail?: WalletRail): string` (rail defaults to `openid4vc-sdjwt` when the profile has it, else `anoncreds`; the DIDComm rail reads `didcomm.demoParams`, the OpenID4VC rail the build's or the profile's `demoParams`)
+  - `defaultRail(profile): WalletRail`, `defaultProfilesDir(): string`
   - constants `RAILS`, `BUILD_KINDS`, `PLATFORMS`, `CONFORMANCE_SCENARIOS`
 - Default profile directory is `path.join(process.cwd(), "conformance", "profiles")`, correct when the site or its tests run from the repository root; the harness always passes its own directory (`fileURLToPath(new URL("../profiles", import.meta.url))`) because its cwd is `conformance/`.
 - `vciDrafts` is a list: a wallet whose library reads more than one OpenID4VCI draft (Inji: 11 and 13) names them all, and Tier 1 parses the metadata once per draft.
@@ -359,14 +360,14 @@ const DidCommSchema = z.object({
 const IdentitySchema = z.object({
   package: z.string().min(1).optional(),
   version: z.string().min(1).optional(),
-  repo: z.string().url().optional(),
+  repo: z.url().optional(),
   ref: z.string().min(1).optional(),
-  url: z.string().url().optional(),
+  url: z.url().optional(),
 });
 
 const IncompatibilitySchema = z.object({
   cause: z.string().min(1),
-  reference: z.string().url().optional(),
+  reference: z.url().optional(),
   scenarios: z.union([z.literal("all"), z.array(z.enum(CONFORMANCE_SCENARIOS)).min(1)]),
   services: z.array(z.string().min(1)).optional(),
   verified: isoDate,
@@ -384,7 +385,7 @@ const BuildSchema = z.object({
   kind: z.enum(BUILD_KINDS),
   listed: z.boolean().optional(),
   label: z.string().min(1),
-  obtain: z.string().url(),
+  obtain: z.url(),
   identity: IdentitySchema,
   platforms: z.array(z.enum(PLATFORMS)).min(1),
   presumptive: z.array(z.enum(PLATFORMS)).optional(),
@@ -466,9 +467,9 @@ export type WalletProfile = z.infer<typeof WalletProfileSchema>;
 export type WalletBuild = WalletProfile["builds"][number];
 export type WalletPresentation = z.infer<typeof PresentationSchema>;
 
-export const DEFAULT_PROFILES_DIR = path.join(process.cwd(), "conformance", "profiles");
+export const defaultProfilesDir = (): string => path.join(process.cwd(), "conformance", "profiles");
 
-export function listWalletProfiles(dir: string = DEFAULT_PROFILES_DIR): WalletProfile[] {
+export function listWalletProfiles(dir: string = defaultProfilesDir()): WalletProfile[] {
   return fs
     .readdirSync(dir)
     .filter((f) => f.endsWith(".yaml"))
@@ -482,9 +483,14 @@ export function listWalletProfiles(dir: string = DEFAULT_PROFILES_DIR): WalletPr
     });
 }
 
-export function getWalletProfile(id: string, dir: string = DEFAULT_PROFILES_DIR): WalletProfile | undefined {
+export function getWalletProfile(id: string, dir: string = defaultProfilesDir()): WalletProfile | undefined {
   return listWalletProfiles(dir).find((p) => p.id === id);
 }
+
+export type WalletRail = (typeof RAILS)[number];
+
+export const defaultRail = (profile: WalletProfile): WalletRail =>
+  profile.rails.includes("openid4vc-sdjwt") ? "openid4vc-sdjwt" : "anoncreds";
 
 export function listedBuild(profile: WalletProfile): WalletBuild {
   const build = profile.builds.find((b) => b.listed);
@@ -496,8 +502,9 @@ export function effectivePresentation(profile: WalletProfile, build: WalletBuild
   return build.presentation ?? profile.openid4vc?.presentation;
 }
 
-export function effectiveDemoParams(profile: WalletProfile, build: WalletBuild): string {
-  return build.demoParams ?? profile.openid4vc?.demoParams ?? profile.didcomm?.demoParams ?? "";
+export function effectiveDemoParams(profile: WalletProfile, build: WalletBuild, rail: WalletRail = defaultRail(profile)): string {
+  if (rail === "anoncreds") return profile.didcomm?.demoParams ?? "";
+  return build.demoParams ?? profile.openid4vc?.demoParams ?? "";
 }
 ```
 
@@ -657,7 +664,7 @@ openid4vc:
   vciDrafts: [v1]
   offerSchemes: [openid-credential-offer, haip-vci]
   requestSchemes: [openid4vp, eudi-openid4vp, haip]
-  asDiscovery: [oauth-authorization-server, openid-configuration]
+  asDiscovery: [oauth-authorization-server]
   presentation: { query: dcql, clientId: x509_hash, responseMode: direct_post.jwt }
   demoParams: signer=x5c
 builds:
@@ -714,7 +721,7 @@ openid4vc:
   vciDrafts: [draft11, draft13]
   offerSchemes: [openid-credential-offer]
   requestSchemes: [openid4vp]
-  asDiscovery: [oauth-authorization-server, openid-configuration]
+  asDiscovery: [oauth-authorization-server]
   presentation: { query: presentation_exchange, clientId: did, responseMode: direct_post }
   demoParams: query=pe
 builds:
@@ -1095,10 +1102,10 @@ const NetworkSchema = z.object({
   protocol: z.enum(["v3", "v4"]),
   production: z.boolean(),
   castToken: z.string().min(1),
-  resolver: z.string().url().nullable(),
-  indexer: z.string().url().nullable(),
-  rpc: z.string().url().nullable(),
-  playground: z.string().url().nullable(),
+  resolver: z.url().nullable(),
+  indexer: z.url().nullable(),
+  rpc: z.url().nullable(),
+  playground: z.url().nullable(),
   vocabulary: z.object({ ecosystem: z.string().min(1), participant: z.string().min(1) }),
   testable: z.boolean(),
   reason: z.string().min(1).optional(),

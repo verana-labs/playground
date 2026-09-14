@@ -1345,8 +1345,8 @@ export const LegacyConfigurationSchema = z.looseObject({
 });
 
 export const LegacyIssuerMetadataSchema = z.looseObject({
-  credential_issuer: z.string().url(),
-  credential_endpoint: z.string().url(),
+  credential_issuer: z.url(),
+  credential_endpoint: z.url(),
   credentials_supported: z.array(LegacyConfigurationSchema).min(1),
 });
 
@@ -1473,7 +1473,7 @@ git commit -m "feat: tier 1 issuer metadata checks per draft the fleet speaks"
 **Files:**
 - Create: `conformance/tier1/authorization-server.test.ts`
 
-Both discovery forms must answer for every document a profile lists: the fleet's clients differ (oauth4webapi uses the RFC 8414 path-insertion form, the Kotlin and Credo readers try the suffix form) and a profile cannot say which its library tries first, so the contract is both.
+Both discovery forms must answer for every document a profile lists. Verified in the wallets' sources (2026-09-14): EUDI's `eudi-lib-jvm-openid4vci-kt` fetches only the RFC 8414 path-insertion form (`https://host/.well-known/oauth-authorization-server/oid4vci/demo-did`) and fails on a 404; Inji's `inji-vci-client` fetches only the suffix form (`https://host/oid4vci/demo-did/.well-known/oauth-authorization-server`); swiyu, wwWallet and openid4vc-ts try insertion then suffix. Every one of them stops at the first success and none requires `openid-configuration`, so the profiles list `oauth-authorization-server` alone and this check asserts both forms of it.
 
 - [ ] **Step 1: Write the check**
 
@@ -1490,7 +1490,7 @@ import { check } from "../lib/report";
 import { describeNetworks } from "../lib/suite";
 
 const documents = [...new Set(listWalletProfiles(profilesDir()).flatMap((p) => p.openid4vc?.asDiscovery ?? []))].sort();
-const AsMetadataSchema = z.looseObject({ issuer: z.string().url(), token_endpoint: z.string().url() });
+const AsMetadataSchema = z.looseObject({ issuer: z.url(), token_endpoint: z.url() });
 
 function forms(authorizationServer: string, document: string): { insertion: string; suffix: string } {
   const u = new URL(authorizationServer);
@@ -1909,7 +1909,7 @@ export function clientIdMatches(clientId: string, expected: "x509_hash" | "did")
 }
 
 export const CredentialOfferSchema = z.looseObject({
-  credential_issuer: z.string().url(),
+  credential_issuer: z.url(),
   credential_configuration_ids: z.array(z.string().min(1)).min(1),
   grants: z.record(z.string(), z.unknown()),
 });
@@ -2053,7 +2053,7 @@ describeNetworks("offer and request links [CONF-T1-4]", (network) => {
         check(base, async (): Promise<Verdict> => {
           const incompatible = incompatibilityFor(t.build, t.scenario.id, t.service.id);
           if (incompatible) return { outcome: "incompatible-by-design", cause: incompatible.cause, reference: incompatible.reference };
-          const demoParams = effectiveDemoParams(t.profile, t.build);
+          const demoParams = effectiveDemoParams(t.profile, t.build, t.rail);
           const mint = t.scenario.kind === "issue"
             ? await mintIssuance(network, t.service, { format: t.rail, demoParams, credential: t.scenario.credential, params: t.scenario.params })
             : await mintPresentation(network, t.service, { format: t.rail, demoParams, login: t.scenario.login });

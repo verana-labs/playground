@@ -19,3 +19,17 @@ Hazards the checks encode, so nobody rediscovers them: the resolver caches a neg
 hour (refresh before asserting); a green workflow is not a deployment (the version actually serving is
 read from the cluster); casts drift in version (every result names the tag it ran against); cast rolls
 share one concurrency group and must be dispatched one at a time.
+
+## Reading a run
+
+`npm run t1` writes `results/<run id>/results.json` and copies it to `results/latest.json`; `npm run summary`
+renders the latest run as markdown (CI puts it in the job summary). Every cell names its check, the clause it
+proves, the network, the service and, for wallet-specific checks, the wallet, build and scenario, with one
+outcome: `works`, `broken`, `incompatible-by-design` (with cause and reference), `unknown` (the check could
+not read what it needed and says why) or `not-testable` (a network without resolver or casts). Cells are
+sorted by code point, so `diff` between two `results.json` shows exactly what changed.
+
+Environment: `CONFORMANCE_NETWORK` selects one network; `CONFORMANCE_CASTS` limits the casts that receive
+live mints (default `demo,eventos`); `CONFORMANCE_MINTS=1` enables the checks that create sessions on the
+services (off in the per-change CI job, on nightly); `CONFORMANCE_K8S_NAMESPACE` enables the cluster read of
+the image tag actually serving and the detection of services that rolled during the run (nightly only).

@@ -77,8 +77,6 @@ export class ResolverClient {
 
   private async authorization(endpoint: string, did: string, vtjscId: string): Promise<Authorization> {
     const url = `${this.base}/v1/trust/${endpoint}?did=${encodeURIComponent(did)}&vtjscId=${encodeURIComponent(vtjscId)}`;
-    const res = await fetchWithTimeout(url, { headers: { accept: "application/json" }, timeoutMs: 30_000 });
-    if (!res.ok) throw new Error(`${endpoint} ${did} -> HTTP ${res.status}`);
-    return AuthorizationSchema.parse(await res.clone().json());
+    return AuthorizationSchema.parse(await fetchJson(url, { timeoutMs: 30_000 }));
   }
 }

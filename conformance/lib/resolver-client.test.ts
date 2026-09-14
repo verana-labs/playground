@@ -56,7 +56,7 @@ describe("ResolverClient", () => {
   });
 
   it("asks the issuer and verifier authorization endpoints by schema id", async () => {
-    const fetchMock = vi.fn().mockResolvedValue(json({ did: "d", vtjscId: "s", authorized: true, evaluatedAt: "t" }));
+    const fetchMock = vi.fn((..._args: unknown[]) => json({ did: "d", vtjscId: "s", authorized: true, evaluatedAt: "t" }));
     vi.stubGlobal("fetch", fetchMock);
     const client = new ResolverClient("https://r");
     expect((await client.issuerAuthorization("d", "https://s")).authorized).toBe(true);

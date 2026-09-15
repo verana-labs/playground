@@ -43,6 +43,10 @@ builds:
         scenarios: all
         services: [playground-demo, demo-untrusted]
         verified: "2026-09-08"
+      - cause: "Release 1.18.0 pins every issuer and verifier to the Swiss trust infrastructure: a presentation request from a DID outside identifier-reg.trust-infra.swiyu.admin.ch is blocked before consent with unknown_registry (DID or StatusList is not hosted on a swiyu registry), and an offer from such an issuer ends in Invalid credential. No metadata or request shape on our side changes that"
+        reference: https://github.com/swiyu-admin-ch/eidch-android-wallet
+        scenarios: all
+        verified: "2026-09-15"
     device:
       activity: ch.admin.foitt.wallet.app.MainActivity
       unlock: password

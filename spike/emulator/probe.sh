@@ -4,9 +4,12 @@ set -uo pipefail
 HERE=$(cd "$(dirname "$0")" && pwd)
 OUT="$HERE/out"
 PROFILES="$HERE/../../conformance/profiles"
+BASE=https://playground.testnet.verana.network
+DEVICE_PIN=132006
 mkdir -p "$OUT"
 
 log() { echo "[$(date +%T)] $*" | tee -a "$OUT/probe.log"; }
+json() { python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(next((d[k] for k in sys.argv[2:] if d.get(k)), ""))' "$@" 2> /dev/null; }
 
 capture() {
   adb exec-out screencap -p > "$OUT/$1.png"
@@ -23,18 +26,18 @@ type_secret() {
 }
 
 walk() {
-  local id=$1 secret=$2 prev="" step action x y label hash
+  local name=$1 secret=$2 mode=$3 prev="" step action x y label hash
   for step in $(seq -w 1 12); do
     sleep 4
-    capture "$id-walk-$step"
-    hash=$(md5sum < "$OUT/$id-walk-$step.xml" 2> /dev/null | cut -c1-12)
+    capture "$name-$step"
+    hash=$(md5sum < "$OUT/$name-$step.xml" 2> /dev/null | cut -c1-12)
     if [[ -z $hash || $hash == "$prev" ]]; then
-      log "$id walk stopped at $step (unchanged or unreadable screen)"
+      log "$name stopped at $step (unchanged or unreadable screen)"
       return
     fi
     prev=$hash
-    read -r action x y label <<< "$(python3 "$HERE/next_action.py" "$OUT/$id-walk-$step.xml")"
-    log "$id walk $step: $action ${label:-}"
+    read -r action x y label <<< "$(python3 "$HERE/next_action.py" "$OUT/$name-$step.xml" "$mode")"
+    log "$name $step: $action ${label:-}"
     case $action in
       tap) adb shell input tap "$x" "$y" ;;
       type) adb shell input tap "$x" "$y" && type_secret "$secret" ;;
@@ -44,52 +47,71 @@ walk() {
   done
 }
 
-probe_wallet() {
-  local id=$1 build='.builds[] | select(.listed == true)'
-  local profile="$PROFILES/$id.yaml" url pkg act secret t0
-  url=$(yq "$build | .obtain" "$profile")
-  pkg=$(yq "$build | .identity.package" "$profile")
-  act=$(yq "$build | .device.activity" "$profile")
-  secret=$(yq "$build | .device.secret" "$profile")
-
-  t0=$SECONDS
-  if ! curl -fsSL -o "$OUT/$id.apk" "$url"; then
-    log "$id download failed: $url"
+scenario() {
+  local id=$1 name=$2 svc=$3 kind=$4 mode=$5 mint session url state
+  mint="$OUT/$id-$name-mint.json"
+  curl -sS -m 30 "$BASE/api/demo/$svc?format=openid4vc-sdjwt&$PARAMS" > "$mint"
+  url=$(json "$mint" url)
+  session=$(json "$mint" issuanceSessionId verificationSessionId)
+  if [[ -z $url ]]; then
+    log "$id $name mint failed: $(head -c 200 "$mint")"
     return
   fi
-  log "$id abis in apk: $(unzip -l "$OUT/$id.apk" | grep -oE 'lib/[^/]+/' | sort -u | tr '\n' ' ')"
-  log "$id install: $(adb install -r -g "$OUT/$id.apk" 2>&1 | tail -1) ($((SECONDS - t0))s)"
-  rm -f "$OUT/$id.apk"
-  adb shell pm path "$pkg" > /dev/null 2>&1 || return
-
-  adb logcat -c
-  t0=$SECONDS
-  adb shell am start -W -n "$pkg/$act" > "$OUT/$id-start.txt" 2>&1
-  grep -q Error "$OUT/$id-start.txt" && adb shell monkey -p "$pkg" -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
-  sleep 10
-  capture "$id-launch"
-  log "$id launched, pid=$(adb shell pidof "$pkg") ($((SECONDS - t0))s)"
-
-  walk "$id" "$secret"
-  capture "$id-final"
-  adb logcat -d -b crash > "$OUT/$id-crash.txt" 2>&1
-  adb logcat -d > "$OUT/$id-logcat.txt" 2>&1
-  log "$id still running: pid=$(adb shell pidof "$pkg")"
-  adb shell am force-stop "$pkg"
+  [[ $COLD == true ]] && adb shell am force-stop "$PKG" && sleep 2
+  adb shell am start -W -a android.intent.action.VIEW -d "'$url'" -n "$PKG/$ACT" > /dev/null 2>&1
+  sleep 8
+  capture "$id-$name-consent"
+  if [[ $mode == accept ]]; then
+    walk "$id-$name" "$SECRET" accept
+  else
+    sleep 10
+    capture "$id-$name-held"
+  fi
+  sleep 5
+  state=$(curl -sS -m 20 "$BASE/api/demo/$svc/$kind/$session?rail=oid4vc" > "$OUT/$id-$name-state.json" && json "$OUT/$id-$name-state.json" state)
+  log "$id $name ($mode) server=$state"
 }
 
-log "uptime $(adb shell cat /proc/uptime)"
-log "abilist $(adb shell getprop ro.product.cpu.abilist)"
-log "android $(adb shell getprop ro.build.version.release) sdk $(adb shell getprop ro.build.version.sdk)"
-log "native bridge $(adb shell getprop ro.dalvik.vm.native.bridge)"
-log "emulator $("$ANDROID_HOME/emulator/emulator" -version 2> /dev/null | head -1)"
-log "screen $(adb shell wm size)"
-adb emu help > "$OUT/emu-help.txt" 2>&1
-log "finger touch: $(adb emu finger touch 1 2>&1 | tr '\n' ' ')"
-log "virtualscene-image: $(adb emu virtualscene-image 2>&1 | tr '\n' ' ')"
+probe_wallet() {
+  local id=$1 build='.builds[] | select(.listed == true)' profile t0
+  profile="$PROFILES/$id.yaml"
+  PKG=$(yq "$build | .identity.package" "$profile")
+  ACT=$(yq "$build | .device.activity" "$profile")
+  SECRET=$(yq "$build | .device.secret" "$profile")
+  COLD=$(yq "$build | .device.coldStart" "$profile")
+  PARAMS=$(yq "$build | .demoParams // .openid4vc.demoParams" "$profile")
+  [[ $PARAMS == null ]] && PARAMS=$(yq '.openid4vc.demoParams' "$profile")
 
-for id in eudi swiyu inji; do
-  probe_wallet "$id"
-done
+  t0=$SECONDS
+  curl -fsSL -o "$OUT/$id.apk" "$(yq "$build | .obtain" "$profile")" || { log "$id download failed"; return; }
+  log "$id install: $(adb install -r -g "$OUT/$id.apk" 2>&1 | tail -1) ($((SECONDS - t0))s)"
+  rm -f "$OUT/$id.apk"
+
+  adb logcat -c
+  adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
+  sleep 10
+  capture "$id-launch"
+  walk "$id-onboard" "$SECRET" onboard
+  capture "$id-home"
+
+  t0=$SECONDS
+  scenario "$id" issue-accredited demo-issuer-accredited credential accept
+  scenario "$id" issue-unaccredited demo-issuer-unaccredited credential hold
+  scenario "$id" present-accredited demo-verifier-accredited proof accept
+  log "$id scenarios took $((SECONDS - t0))s"
+
+  adb logcat -d > "$OUT/$id-logcat.txt" 2>&1
+  adb shell am force-stop "$PKG"
+}
+
+adb shell svc power stayon true
+adb shell settings put system screen_off_timeout 1800000
+log "uptime $(adb shell cat /proc/uptime)"
+
+probe_wallet eudi
+
+adb shell locksettings set-pin "$DEVICE_PIN" > /dev/null
+log "device pin set: $(adb shell locksettings get-disabled 2>&1)"
+probe_wallet swiyu
 
 log "done in ${SECONDS}s"

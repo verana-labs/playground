@@ -23,6 +23,7 @@ jobs:
           - { wallet: eudi, delivery: link, camera: emulated }
           - { wallet: swiyu, delivery: link, camera: emulated }
           - { wallet: eudi, delivery: scan, camera: virtualscene }
+          - { wallet: swiyu, delivery: scan, camera: virtualscene }
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 

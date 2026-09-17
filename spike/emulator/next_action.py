@@ -11,7 +11,9 @@ LABELS = {
 }
 ACCEPT_CONTROLS = ["share", "add", "issue", "accept", "allow"]
 SECRET_HINT = re.compile(r"\b(pin|passcode|password)\b", re.I)
-WAIT_HINT = re.compile(r"please wait|loading|may take up to", re.I)
+WAIT_HINT = re.compile(r"please wait|loading|may take up to|resolving", re.I)
+ERROR_HINT = re.compile(r"something went wrong|went wrong|error|failed|invalid|not supported|no matching credential", re.I)
+TERMINAL = {"close", "done", "go to home"}
 
 
 def center(bounds):
@@ -64,6 +66,11 @@ if mode == "find":
     print(*center(node.get("bounds"))) if node is not None else print("none")
     sys.exit()
 
+if mode == "error":
+    match = ERROR_HINT.search(screen_text)
+    print(match.group(0) if match else "")
+    sys.exit()
+
 if mode == "gate":
     wanted, node = first_labelled(all_nodes, ACCEPT_CONTROLS)
     print(f"{wanted}:enabled={str(enabled(node)).lower()}" if node is not None else "none")
@@ -73,7 +80,8 @@ if WAIT_HINT.search(screen_text):
     print("wait")
     sys.exit()
 
-fields = [n for n in nodes if is_field(n)]
+asks_secret = bool(SECRET_HINT.search(screen_text))
+fields = [n for n in nodes if is_field(n)] if asks_secret else []
 empty = next((n for n in fields if is_empty(n)), None)
 if empty is not None:
     print("type", *center(empty.get("bounds")))
@@ -81,10 +89,11 @@ if empty is not None:
 
 wanted, node = first_labelled(nodes, LABELS[mode])
 if node is not None:
-    print("tap", *center(node.get("bounds")), wanted.replace(" ", "_"))
+    action = "finish" if mode == "accept" and wanted in TERMINAL else "tap"
+    print(action, *center(node.get("bounds")), wanted.replace(" ", "_"))
 elif fields:
     print("enter")
-elif SECRET_HINT.search(screen_text):
+elif asks_secret:
     print("type-blind")
 else:
     print("stop")

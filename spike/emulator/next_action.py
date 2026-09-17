@@ -4,7 +4,7 @@ import sys
 import xml.etree.ElementTree as ET
 
 LABELS = {
-    "onboard": ["get started", "start", "continue", "next", "skip", "accept", "agree", "i agree", "confirm",
+    "onboard": ["create password", "get started", "start", "continue", "next", "skip", "accept", "agree", "i agree", "confirm",
                 "done", "ok", "allow", "not now", "maybe later", "later", "no thanks", "decline", "got it", "go to home", "close"],
     "accept": ["share", "add", "issue", "accept", "confirm", "continue", "next", "allow",
                "done", "ok", "go to home", "close"],

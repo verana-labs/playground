@@ -113,10 +113,12 @@ adb shell svc power stayon true
 adb shell settings put system screen_off_timeout 1800000
 log "uptime $(adb shell cat /proc/uptime)"
 
-probe_wallet eudi
-
-adb shell locksettings set-pin "$DEVICE_PIN" > /dev/null
-log "device pin set: $(adb shell locksettings get-disabled 2>&1)"
-probe_wallet swiyu
+for id in ${WALLETS:-eudi swiyu}; do
+  if [[ $id == swiyu ]]; then
+    adb shell locksettings set-pin "$DEVICE_PIN" > /dev/null
+    log "device pin set, lock disabled: $(adb shell locksettings get-disabled 2>&1)"
+  fi
+  probe_wallet "$id"
+done
 
 log "done in ${SECONDS}s"

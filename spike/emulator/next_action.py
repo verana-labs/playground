@@ -1,15 +1,17 @@
-import hashlib
 import re
 import sys
 import xml.etree.ElementTree as ET
 
 LABELS = {
-    "onboard": ["create password", "get started", "start", "continue", "next", "skip", "accept", "agree", "i agree", "confirm",
-                "done", "ok", "allow", "not now", "maybe later", "later", "no thanks", "decline", "got it", "go to home", "close"],
-    "accept": ["share", "add", "issue", "accept", "confirm", "continue", "next", "allow",
-               "done", "ok", "go to home", "close"],
+    "onboard": ["create password", "get started", "start", "continue", "next", "skip", "accept", "agree",
+                "i agree", "confirm", "done", "ok", "allow", "not now", "maybe later", "later", "no thanks",
+                "decline", "got it", "go to home", "close"],
+    "accept": ["unlock", "log in", "login", "share", "add", "issue", "accept", "confirm", "continue", "next",
+               "allow", "done", "ok", "go to home", "close"],
 }
+ACCEPT_CONTROLS = ["share", "add", "issue", "accept", "allow"]
 SECRET_HINT = re.compile(r"\b(pin|passcode|password)\b", re.I)
+WAIT_HINT = re.compile(r"please wait|loading|may take up to", re.I)
 
 
 def center(bounds):
@@ -21,26 +23,68 @@ def label(node):
     return (node.get("text") or node.get("content-desc") or "").strip().lower()
 
 
+def is_field(node):
+    return "EditText" in (node.get("class") or "")
+
+
+def is_empty(node):
+    text = (node.get("text") or "").strip()
+    return not text or text == (node.get("hint") or "").strip()
+
+
+def first_labelled(nodes, wanted_labels):
+    for wanted in wanted_labels:
+        node = next((n for n in nodes if not is_field(n) and label(n).startswith(wanted)), None)
+        if node is not None:
+            return wanted, node
+    return None, None
+
+
 xml_path, mode = sys.argv[1], sys.argv[2]
-nodes = [n for n in ET.parse(xml_path).iter("node") if n.get("enabled") == "true"]
-signature = hashlib.md5(
-    "|".join(label(n) for n in nodes if "EditText" not in (n.get("class") or "")).encode()
-).hexdigest()[:12]
+root = ET.parse(xml_path).getroot()
+parents = {child: parent for parent in root.iter() for child in parent}
 
 
-def emit(*parts):
-    print(signature, *parts)
+def enabled(node):
+    current = node
+    while current is not None and current.tag == "node":
+        if current.get("clickable") == "true":
+            return current.get("enabled") == "true"
+        current = parents.get(current)
+    return node.get("enabled") == "true"
+
+
+all_nodes = list(root.iter("node"))
+nodes = [n for n in all_nodes if enabled(n)]
+screen_text = " ".join(label(n) for n in all_nodes)
+
+if mode == "find":
+    wanted = sys.argv[3].lower()
+    node = next((n for n in nodes if label(n).startswith(wanted)), None)
+    print(*center(node.get("bounds"))) if node is not None else print("none")
     sys.exit()
 
+if mode == "gate":
+    wanted, node = first_labelled(all_nodes, ACCEPT_CONTROLS)
+    print(f"{wanted}:enabled={str(enabled(node)).lower()}" if node is not None else "none")
+    sys.exit()
 
-field = next((n for n in nodes if "EditText" in (n.get("class") or "")), None)
-if field is not None:
-    emit("type", *center(field.get("bounds")))
+if WAIT_HINT.search(screen_text):
+    print("wait")
+    sys.exit()
 
-for wanted in LABELS[mode]:
-    node = next((n for n in nodes if label(n).startswith(wanted)), None)
-    if node is not None:
-        emit("tap", *center(node.get("bounds")), wanted.replace(" ", "_"))
+fields = [n for n in nodes if is_field(n)]
+empty = next((n for n in fields if is_empty(n)), None)
+if empty is not None:
+    print("type", *center(empty.get("bounds")))
+    sys.exit()
 
-screen_text = " ".join(label(n) for n in nodes)
-emit("type-blind" if SECRET_HINT.search(screen_text) else "stop")
+wanted, node = first_labelled(nodes, LABELS[mode])
+if node is not None:
+    print("tap", *center(node.get("bounds")), wanted.replace(" ", "_"))
+elif fields:
+    print("enter")
+elif SECRET_HINT.search(screen_text):
+    print("type-blind")
+else:
+    print("stop")

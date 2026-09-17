@@ -6,6 +6,12 @@ OUT="$HERE/out"
 PROFILES="$HERE/../../conformance/profiles"
 BASE=https://playground.testnet.verana.network
 DEVICE_PIN=132006
+WALLET=${WALLET:?set WALLET to a profile id}
+DELIVERY=${DELIVERY:-link}
+declare -A SCAN_PATH=(
+  [eudi-issue]="documents|add|scan qr"
+  [eudi-present]="home|authenticate|scan qr"
+)
 mkdir -p "$OUT"
 
 log() { echo "[$(date +%T)] $*" | tee -a "$OUT/probe.log"; }
@@ -24,101 +30,153 @@ type_secret() {
   fi
 }
 
-walk() {
-  local name=$1 secret=$2 mode=$3 prev="" last="" step sig action x y label
-  for step in $(seq -w 1 14); do
-    sleep 4
-    capture "$name-$step"
-    read -r sig action x y label <<< "$(python3 "$HERE/next_action.py" "$OUT/$name-$step.xml" "$mode" 2> /dev/null)"
-    if [[ -n $sig && $sig == "$prev" && $last == typed ]]; then
-      log "$name $step: enter"
-      adb shell input keyevent 66
-      last=entered
-      continue
-    fi
-    if [[ -z $sig || $sig == "$prev" ]]; then
-      log "$name stopped at $step (unchanged or unreadable screen)"
-      return
-    fi
-    prev=$sig
-    log "$name $step: $action ${label:-}"
-    last=$action
-    case $action in
-      tap) adb shell input tap "$x" "$y" ;;
-      type) adb shell input tap "$x" "$y" && type_secret "$secret" && last=typed ;;
-      type-blind) type_secret "$secret" && last=typed ;;
-      *) return ;;
-    esac
+tap_label() {
+  local name=$1 wanted=$2 x y
+  capture "$name"
+  read -r x y <<< "$(python3 "$HERE/next_action.py" "$OUT/$name.xml" find "$wanted" 2> /dev/null)"
+  if [[ -z $x || $x == none ]]; then
+    log "$name: no '$wanted' on screen"
+    return 1
+  fi
+  adb shell input tap "$x" "$y"
+  sleep 3
+}
+
+show_qr() {
+  python3 -c 'import sys, qrcode, qrcode.image.pure; qrcode.make(sys.argv[1], image_factory=qrcode.image.pure.PyPNGImage, border=4, box_size=12).save(sys.argv[2])' "$1" "$2" \
+    && log "virtualscene-image: $(adb emu virtualscene-image table "$2" 2>&1 | tr '\n' ' ')"
+}
+
+open_scanner() {
+  local name=$1 kind=$2 step=0 wanted
+  adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
+  sleep 4
+  IFS='|' read -ra steps <<< "${SCAN_PATH[$WALLET-$kind]:-}"
+  if ((${#steps[@]} == 0)); then
+    log "$name: no scanner path for $WALLET $kind"
+    return 1
+  fi
+  for wanted in "${steps[@]}"; do
+    step=$((step + 1))
+    tap_label "$name-nav-$step" "$wanted" || return 1
   done
 }
 
+walk() {
+  local name=$1 mode=$2 limit=$3 prev="" step=0 action x y label hash
+  while ((step < limit)); do
+    step=$((step + 1))
+    sleep 4
+    capture "$name-$(printf %02d $step)"
+    hash=$(md5sum < "$OUT/$name-$(printf %02d $step).xml" 2> /dev/null | cut -c1-12)
+    read -r action x y label <<< "$(python3 "$HERE/next_action.py" "$OUT/$name-$(printf %02d $step).xml" "$mode" 2> /dev/null)"
+    if [[ $action == wait ]]; then
+      log "$name $step: wait"
+      continue
+    fi
+    if [[ -z $hash || $hash == "$prev" ]]; then
+      log "$name stopped at $step (unchanged or unreadable screen)"
+      return
+    fi
+    prev=$hash
+    log "$name $step: $action ${label:-}"
+    case $action in
+      tap) adb shell input tap "$x" "$y" ;;
+      type) adb shell input tap "$x" "$y" && type_secret "$SECRET" ;;
+      type-blind) type_secret "$SECRET" ;;
+      enter) adb shell input keyevent 66 ;;
+      *) return ;;
+    esac
+  done
+  log "$name hit its $limit step limit"
+}
+
 scenario() {
-  local id=$1 name=$2 svc=$3 kind=$4 mode=$5 mint session url state
-  mint="$OUT/$id-$name-mint.json"
+  local name=$1 svc=$2 kind=$3 expect=$4 mint session url state handlers gate delivered verdict
+  mint="$OUT/$name-mint.json"
   curl -sS -m 30 "$BASE/api/demo/$svc?format=openid4vc-sdjwt&$PARAMS" > "$mint"
   url=$(json "$mint" url)
   session=$(json "$mint" issuanceSessionId verificationSessionId)
   if [[ -z $url ]]; then
-    log "$id $name mint failed: $(head -c 200 "$mint")"
+    log "$name mint failed: $(head -c 200 "$mint")"
     return
   fi
-  [[ $COLD == true ]] && adb shell am force-stop "$PKG" && sleep 2
-  adb shell am start -W -a android.intent.action.VIEW -d "'$url'" -n "$PKG/$ACT" > /dev/null 2>&1
-  sleep 8
-  capture "$id-$name-consent"
-  if [[ $mode == accept ]]; then
-    walk "$id-$name" "$SECRET" accept
+
+  handlers=$(adb shell cmd package query-activities --brief -a android.intent.action.VIEW -d "'$url'" 2>&1 | grep '/' | tr -d ' ' | tr '\n' ' ')
+  if [[ $DELIVERY == scan ]]; then
+    show_qr "$url" "$OUT/$name-qr.png" || log "$name: qr injection failed"
+    local flow=present
+    [[ $kind == credential ]] && flow=issue
+    open_scanner "$name" "$flow" || log "$name: scanner not reached"
   else
-    sleep 10
-    capture "$id-$name-held"
+    [[ $COLD == true ]] && adb shell am force-stop "$PKG" && sleep 2
+    adb shell am start -W -a android.intent.action.VIEW -d "'$url'" > "$OUT/$name-start.txt" 2>&1
   fi
+  sleep 8
+  capture "$name-consent"
+  gate=$(python3 "$HERE/next_action.py" "$OUT/$name-consent.xml" gate 2> /dev/null)
+  walk "$name" accept 12
   sleep 5
-  state=$(curl -sS -m 20 "$BASE/api/demo/$svc/$kind/$session?rail=oid4vc" > "$OUT/$id-$name-state.json" && json "$OUT/$id-$name-state.json" state)
-  log "$id $name ($mode) server=$state"
+
+  curl -sS -m 20 "$BASE/api/demo/$svc/$kind/$session?rail=oid4vc" > "$OUT/$name-state.json"
+  state=$(json "$OUT/$name-state.json" state)
+  delivered=true
+  [[ $state == OfferCreated || $state == RequestCreated || -z $state ]] && delivered=false
+  if [[ $delivered == false ]]; then
+    verdict=unknown
+  elif [[ $expect == accept ]]; then
+    [[ $state == Completed || $state == done ]] && verdict=works || verdict=broken
+  elif [[ $state == Completed || $state == done || $gate == *enabled=true* ]]; then
+    verdict=broken
+  elif [[ $gate == *enabled=false* ]]; then
+    verdict=works
+  else
+    verdict=unknown
+  fi
+
+  log "$name delivery=$DELIVERY expect=$expect server=$state gate=$gate handlers=[$handlers] verdict=$verdict"
+  printf '{"wallet":"%s","delivery":"%s","scenario":"%s","expect":"%s","server":"%s","gate":"%s","handlers":"%s","verdict":"%s"}\n' \
+    "$WALLET" "$DELIVERY" "$name" "$expect" "$state" "$gate" "$handlers" "$verdict" >> "$OUT/cells.jsonl"
 }
 
-probe_wallet() {
-  local id=$1 build='.builds[] | select(.listed == true)' profile t0
-  profile="$PROFILES/$id.yaml"
-  PKG=$(yq "$build | .identity.package" "$profile")
-  ACT=$(yq "$build | .device.activity" "$profile")
-  SECRET=$(yq "$build | .device.secret" "$profile")
-  COLD=$(yq "$build | .device.coldStart" "$profile")
-  PARAMS=$(yq "$build | .demoParams // .openid4vc.demoParams" "$profile")
-  [[ $PARAMS == null ]] && PARAMS=$(yq '.openid4vc.demoParams' "$profile")
-
-  t0=$SECONDS
-  curl -fsSL -o "$OUT/$id.apk" "$(yq "$build | .obtain" "$profile")" || { log "$id download failed"; return; }
-  log "$id install: $(adb install -r -g "$OUT/$id.apk" 2>&1 | tail -1) ($((SECONDS - t0))s)"
-  rm -f "$OUT/$id.apk"
-
-  adb logcat -c
-  adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
-  sleep 10
-  capture "$id-launch"
-  walk "$id-onboard" "$SECRET" onboard
-  capture "$id-home"
-
-  t0=$SECONDS
-  scenario "$id" issue-accredited demo-issuer-accredited credential accept
-  scenario "$id" issue-unaccredited demo-issuer-unaccredited credential hold
-  scenario "$id" present-accredited demo-verifier-accredited proof accept
-  log "$id scenarios took $((SECONDS - t0))s"
-
-  adb logcat -d > "$OUT/$id-logcat.txt" 2>&1
-  adb shell am force-stop "$PKG"
-}
+build='.builds[] | select(.listed == true)'
+profile="$PROFILES/$WALLET.yaml"
+PKG=$(yq "$build | .identity.package" "$profile")
+SECRET=$(yq "$build | .device.secret" "$profile")
+COLD=$(yq "$build | .device.coldStart" "$profile")
+PARAMS=$(yq "$build | .demoParams // \"\"" "$profile")
+[[ -z $PARAMS ]] && PARAMS=$(yq '.openid4vc.demoParams // ""' "$profile")
 
 adb shell svc power stayon true
 adb shell settings put system screen_off_timeout 1800000
-log "uptime $(adb shell cat /proc/uptime)"
+adb shell locksettings set-pin "$DEVICE_PIN" > /dev/null
+log "uptime $(adb shell cat /proc/uptime), device lock disabled=$(adb shell locksettings get-disabled)"
 
-for id in ${WALLETS:-eudi swiyu}; do
-  if [[ $id == swiyu ]]; then
-    adb shell locksettings set-pin "$DEVICE_PIN" > /dev/null
-    log "device pin set, lock disabled: $(adb shell locksettings get-disabled 2>&1)"
-  fi
-  probe_wallet "$id"
-done
+t0=$SECONDS
+curl -fsSL -o "$OUT/$WALLET.apk" "$(yq "$build | .obtain" "$profile")" || { log "download failed"; exit 1; }
+log "install: $(adb install -r -g "$OUT/$WALLET.apk" 2>&1 | tail -1) ($((SECONDS - t0))s)"
+rm -f "$OUT/$WALLET.apk"
 
-log "done in ${SECONDS}s"
+adb logcat -c
+adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
+sleep 10
+walk onboard onboard 24
+sleep 10
+capture home
+
+if [[ $DELIVERY == scan ]]; then
+  pip install --quiet --break-system-packages qrcode pypng > /dev/null 2>&1
+  show_qr "https://playground.testnet.verana.network/camera-probe" "$OUT/camera-probe-qr.png"
+  adb shell am start -a android.media.action.STILL_IMAGE_CAMERA > /dev/null 2>&1
+  sleep 8
+  capture camera-probe
+  adb shell input keyevent 3
+fi
+
+t0=$SECONDS
+scenario issue-accredited demo-issuer-accredited credential accept
+scenario issue-unaccredited demo-issuer-unaccredited credential refuse
+scenario present-accredited demo-verifier-accredited proof accept
+log "scenarios took $((SECONDS - t0))s, whole run ${SECONDS}s"
+
+adb logcat -d > "$OUT/logcat.txt" 2>&1

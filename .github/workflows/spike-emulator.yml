@@ -15,6 +15,14 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        include:
+          - { wallet: eudi, delivery: link, camera: emulated }
+          - { wallet: swiyu, delivery: link, camera: emulated }
+          - { wallet: eudi, delivery: scan, camera: virtualscene }
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
@@ -34,13 +42,14 @@ jobs:
           profile: pixel_6
           ram-size: 4096M
           disk-size: 6000M
-          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back ${{ matrix.camera }}
+          pre-emulator-launch-script: printf 'poster wall\nsize 2 2\nposition -0.807 0.320 5.316\nrotation 0 -150 0\ndefault poster.png\n\nposter table\nsize 1 1\nposition 0 0 -1.5\nrotation 0 0 0\n' > "$ANDROID_HOME/emulator/resources/Toren1BD.posters"
           disable-animations: true
-          script: WALLETS=swiyu bash spike/emulator/probe.sh
+          script: WALLET=${{ matrix.wallet }} DELIVERY=${{ matrix.delivery }} bash spike/emulator/probe.sh
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         if: always()
         with:
-          name: spike-emulator-out
+          name: spike-emulator-${{ matrix.wallet }}-${{ matrix.delivery }}
           path: spike/emulator/out/
           retention-days: 7

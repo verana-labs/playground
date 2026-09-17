@@ -1,3 +1,4 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { cellKey, evaluate, matches, parseKnownIssues, renderMarkdown, type GateCell, type KnownIssue } from "./gate";
 
@@ -130,5 +131,13 @@ describe("renderMarkdown", () => {
     expect(text).toContain("## Conformance gate: 1 failing");
     expect(text).toContain("self-signed");
     expect(text.indexOf("New failures")).toBeLessThan(text.indexOf("Known broken"));
+  });
+});
+
+describe("known-issues.yaml", () => {
+  it("parses, and every entry names a cause and an expiry", () => {
+    const issues = parseKnownIssues(readFileSync(new URL("../known-issues.yaml", import.meta.url), "utf8"));
+    expect(issues.length).toBeGreaterThan(0);
+    for (const i of issues) expect(i.expires >= "2026-09-17").toBe(true);
   });
 });

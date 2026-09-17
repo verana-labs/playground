@@ -20,9 +20,11 @@ jobs:
 
       - name: Enable KVM
         run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules/99-kvm4all.rules
-          sudo udevadm control --reload-rules
-          sudo udevadm trigger --name-match=kvm
+          grep -E '^(PRETTY_NAME|VERSION_ID)=' /etc/os-release
+          echo "cpus $(nproc), virt flags $(grep -cE 'vmx|svm' /proc/cpuinfo)"
+          ls -ld /etc/udev /etc/udev/rules /dev/kvm || true
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
 
       - uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
         with:

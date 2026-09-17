@@ -32,8 +32,8 @@ sorted by code point, so `diff` between two `results.json` shows exactly what ch
 
 Environment: `CONFORMANCE_NETWORK` selects one network; `CONFORMANCE_CASTS` limits the casts that receive
 live mints (default `demo,eventos`); `CONFORMANCE_MINTS=1` enables the checks that create sessions on the
-services (off in the per-change CI job, on nightly); `CONFORMANCE_K8S_NAMESPACE` enables the cluster read of
-the image tag actually serving and the detection of services that rolled during the run (nightly only).
+services (on in every CI run); `CONFORMANCE_K8S_NAMESPACE` enables the cluster read of the image tag actually
+serving and the detection of services that rolled during the run (on in every CI run).
 
 ## Gate
 

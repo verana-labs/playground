@@ -114,5 +114,6 @@ issues:
   - match:
       tier: t2
       check: resolver-production-flag
+      network: testnet-v3
     cause: the resolver reports production true for demo DIDs while networks.yaml marks testnet as not production; to raise with the team
     expires: 2026-09-30

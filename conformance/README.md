@@ -7,9 +7,9 @@ Proves, on every change, which listed wallets work against the deployed playgrou
   wallet-specific is hard-coded anywhere else. Validated by `app/lib/wallet-profiles.ts` in the main CI.
 - `networks.yaml` the networks a run can target. `CONFORMANCE_NETWORK=testnet-v3` selects one; by
   default every testable network runs and the others are reported as not yet testable.
-- `tier1/` (planned, next PR) contract checks: what a wallet fetches, asserted without running a wallet.
+- `tier1/` contract checks: what a wallet fetches, asserted without running a wallet.
 - `tier2/` headless OpenID4VCI/OpenID4VP flows with the wallets' own libraries, asserting the resolver inputs of
-  the verdict. Nightly only, behind `CONFORMANCE_MINTS=1`. See "Tier 2" below.
+  the verdict. Behind `CONFORMANCE_MINTS=1`. See "Tier 2" below.
 - `tier3/` (planned) device spot-checks: rendering and gating only.
 
 This directory is its own npm package so that the Tier 2 native dependencies never enter the site build.
@@ -35,9 +35,24 @@ live mints (default `demo,eventos`); `CONFORMANCE_MINTS=1` enables the checks th
 services (off in the per-change CI job, on nightly); `CONFORMANCE_K8S_NAMESPACE` enables the cluster read of
 the image tag actually serving and the detection of services that rolled during the run (nightly only).
 
+## Gate
+
+CI never trusts a tier's exit code. `.github/workflows/conformance.yml` runs tier 1 and tier 2 in parallel on the
+nightly schedule, on dispatch, on push to `main` and on same-repository pull requests that touch conformance, the
+wallet list or the profile schema. The `gate` job then merges their `latest.json` files and runs:
+
+    node --experimental-strip-types lib/gate.ts --issues known-issues.yaml --results <latest.json>... --require-tier t1 --require-tier t2
+
+It fails on a `broken` or `unknown` cell that no active entry in `known-issues.yaml` covers, on a required tier with
+no cells, and, on the nightly only, on a cell that existed in the previous nightly and is gone. An entry names the
+cells it covers (`tier` and `check` required, then `network`, `cast`, `service`, `wallet`, `build`, `scenario`, each a
+value or a list), a `cause` and an `expires` date; after that date its cells fail again. The gate lists entries that
+matched nothing so they can be deleted. Add an entry only for a failure that is understood and has an owner; never
+widen an entry to silence a new cell.
+
 ## Tier 2
 
-`npm run t2` (nightly only, `CONFORMANCE_MINTS=1`) runs the OpenID4VCI and OpenID4VP protocols end to end as a
+`npm run t2` (`CONFORMANCE_MINTS=1`) runs the OpenID4VCI and OpenID4VP protocols end to end as a
 headless holder (`@openid4vc/*`, `@sd-jwt/sd-jwt-vc`), once per listed wallet build on the `openid4vc-sdjwt` rail
 and canonical scenario, and asserts the resolver inputs a real wallet's accept/refuse verdict depends on: the Q1
 trust status by field, Q2 and Q3 from the issuer/verifier authorization endpoints, and the service's own exchange

@@ -1,10 +1,11 @@
+import hashlib
 import re
 import sys
 import xml.etree.ElementTree as ET
 
 LABELS = {
-    "onboard": ["get started", "continue", "next", "skip", "accept", "agree", "i agree", "confirm",
-                "done", "ok", "allow", "not now", "maybe later", "later", "got it", "go to home", "close"],
+    "onboard": ["get started", "start", "continue", "next", "skip", "accept", "agree", "i agree", "confirm",
+                "done", "ok", "allow", "not now", "maybe later", "later", "no thanks", "decline", "got it", "go to home", "close"],
     "accept": ["share", "add", "issue", "accept", "confirm", "continue", "next", "allow",
                "done", "ok", "go to home", "close"],
 }
@@ -22,17 +23,24 @@ def label(node):
 
 xml_path, mode = sys.argv[1], sys.argv[2]
 nodes = [n for n in ET.parse(xml_path).iter("node") if n.get("enabled") == "true"]
+signature = hashlib.md5(
+    "|".join(label(n) for n in nodes if "EditText" not in (n.get("class") or "")).encode()
+).hexdigest()[:12]
+
+
+def emit(*parts):
+    print(signature, *parts)
+    sys.exit()
+
 
 field = next((n for n in nodes if "EditText" in (n.get("class") or "")), None)
 if field is not None:
-    print("type", *center(field.get("bounds")))
-    sys.exit()
+    emit("type", *center(field.get("bounds")))
 
 for wanted in LABELS[mode]:
     node = next((n for n in nodes if label(n).startswith(wanted)), None)
     if node is not None:
-        print("tap", *center(node.get("bounds")), wanted.replace(" ", "_"))
-        sys.exit()
+        emit("tap", *center(node.get("bounds")), wanted.replace(" ", "_"))
 
 screen_text = " ".join(label(n) for n in nodes)
-print("type-blind" if SECRET_HINT.search(screen_text) else "stop")
+emit("type-blind" if SECRET_HINT.search(screen_text) else "stop")

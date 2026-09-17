@@ -22,26 +22,31 @@ type_secret() {
   else
     adb shell input text "$1"
   fi
-  adb shell input keyevent 66
 }
 
 walk() {
-  local name=$1 secret=$2 mode=$3 prev="" step action x y label hash
-  for step in $(seq -w 1 12); do
+  local name=$1 secret=$2 mode=$3 prev="" last="" step sig action x y label
+  for step in $(seq -w 1 14); do
     sleep 4
     capture "$name-$step"
-    hash=$(md5sum < "$OUT/$name-$step.xml" 2> /dev/null | cut -c1-12)
-    if [[ -z $hash || $hash == "$prev" ]]; then
+    read -r sig action x y label <<< "$(python3 "$HERE/next_action.py" "$OUT/$name-$step.xml" "$mode" 2> /dev/null)"
+    if [[ -n $sig && $sig == "$prev" && $last == typed ]]; then
+      log "$name $step: enter"
+      adb shell input keyevent 66
+      last=entered
+      continue
+    fi
+    if [[ -z $sig || $sig == "$prev" ]]; then
       log "$name stopped at $step (unchanged or unreadable screen)"
       return
     fi
-    prev=$hash
-    read -r action x y label <<< "$(python3 "$HERE/next_action.py" "$OUT/$name-$step.xml" "$mode")"
+    prev=$sig
     log "$name $step: $action ${label:-}"
+    last=$action
     case $action in
       tap) adb shell input tap "$x" "$y" ;;
-      type) adb shell input tap "$x" "$y" && type_secret "$secret" ;;
-      type-blind) type_secret "$secret" ;;
+      type) adb shell input tap "$x" "$y" && type_secret "$secret" && last=typed ;;
+      type-blind) type_secret "$secret" && last=typed ;;
       *) return ;;
     esac
   done

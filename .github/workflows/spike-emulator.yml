@@ -17,13 +17,17 @@ jobs:
     timeout-minutes: 25
     strategy:
       fail-fast: false
-      max-parallel: 4
+      max-parallel: 8
       matrix:
         include:
-          - { wallet: eudi, delivery: link, camera: emulated }
-          - { wallet: swiyu, delivery: link, camera: emulated }
           - { wallet: eudi, delivery: scan, camera: virtualscene }
           - { wallet: swiyu, delivery: scan, camera: virtualscene }
+          - { wallet: paradym, delivery: link, camera: virtualscene }
+          - { wallet: sphereon, delivery: link, camera: virtualscene }
+          - { wallet: procivis, delivery: link, camera: virtualscene }
+          - { wallet: talao, delivery: link, camera: virtualscene }
+          - { wallet: nl-wallet, delivery: link, camera: virtualscene }
+          - { wallet: authbound, delivery: link, camera: virtualscene }
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 

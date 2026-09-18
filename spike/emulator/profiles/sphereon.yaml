@@ -1,0 +1,17 @@
+id: sphereon
+rails:
+- openid4vc-sdjwt
+openid4vc:
+  demoParams: ''
+builds:
+- kind: fork
+  listed: true
+  obtain: https://github.com/AirKyzzZ/sphereon-mobile-wallet-verana/releases/download/verana-2026-08-03/sphereon-wallet-verana-release-2026-08-03.apk
+  identity:
+    package: com.sphereon.ssi.wallet
+  device:
+    activity: com.sphereon.ssi.wallet.MainActivity
+    secret: '251839'
+    coldStart: false
+quirks:
+  note: ''

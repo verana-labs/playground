@@ -1,0 +1,17 @@
+id: talao
+rails:
+- openid4vc-sdjwt
+openid4vc:
+  demoParams: query=pe
+builds:
+- kind: fork
+  listed: true
+  obtain: https://github.com/AirKyzzZ/AltMe-verana/releases/download/verana-2026-08-04/altme-wallet-verana-release-2026-08-04.apk
+  identity:
+    package: co.altme.alt.me.altme.dev
+  device:
+    activity: co.altme.alt.me.altme.dev.MainActivity
+    secret: '123456'
+    coldStart: false
+quirks:
+  note: ''

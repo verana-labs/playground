@@ -1,0 +1,17 @@
+id: authbound
+rails:
+- openid4vc-sdjwt
+openid4vc:
+  demoParams: signer=x5c
+builds:
+- kind: fork
+  listed: true
+  obtain: https://github.com/AirKyzzZ/eudi-app-android-wallet/releases/download/authbound-verana-2026-08-08/authbound-wallet-verana-2026-08-08.apk
+  identity:
+    package: io.authbound.wallet.dev
+  device:
+    activity: io.authbound.wallet.dev.MainActivity
+    secret: '123456'
+    coldStart: false
+quirks:
+  note: ''

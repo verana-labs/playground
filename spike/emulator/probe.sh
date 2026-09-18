@@ -8,6 +8,7 @@ BASE=https://playground.testnet.verana.network
 DEVICE_PIN=132006
 WALLET=${WALLET:?set WALLET to a profile id}
 DELIVERY=${DELIVERY:-link}
+ISSUED=false
 declare -A SCAN_PATH=(
   [eudi-issue]="documents|add|scan qr"
   [eudi-present]="home|authenticate|scan qr"
@@ -58,7 +59,10 @@ open_scanner() {
   walk "$name-unlock" onboard 3
   IFS='|' read -ra steps <<< "${SCAN_PATH[$WALLET-$kind]:-}"
   if ((${#steps[@]} == 0)); then
-    log "$name: no scanner path for $WALLET $kind"
+    for wanted in scan qr camera; do
+      tap_label "$name-nav-generic" "$wanted" && return 0
+    done
+    log "$name: no scanner path for $WALLET $kind and no scan, qr or camera control on screen"
     return 1
   fi
   for wanted in "${steps[@]}"; do
@@ -148,7 +152,9 @@ scenario() {
   curl -sS -m 20 "$BASE/api/demo/$svc/$kind/$session?rail=oid4vc" > "$OUT/$name-state.json"
   state=$(json "$OUT/$name-state.json" state)
   errors=$(sort -u "$OUT/$name-errors.txt" 2> /dev/null | tr '\n' ';')
-  if [[ $state == OfferCreated || $state == RequestCreated || -z $state ]]; then
+  if [[ $kind == proof && $ISSUED != true ]]; then
+    verdict=unknown reason="needs the credential from issue-accredited, which did not complete"
+  elif [[ $state == OfferCreated || $state == RequestCreated || -z $state ]]; then
     verdict=unknown reason="wallet never fetched the payload"
   elif [[ $expect == accept && ($state == Completed || $state == done) ]]; then
     verdict=works reason="server completed"
@@ -166,6 +172,7 @@ scenario() {
     verdict=unknown reason="no accept control found"
   fi
 
+  [[ $name == issue-accredited && $verdict == works ]] && ISSUED=true
   log "$name delivery=$DELIVERY expect=$expect server=$state gate=$gate handlers=[$handlers] verdict=$verdict ($reason)"
   printf '{"wallet":"%s","delivery":"%s","scenario":"%s","expect":"%s","server":"%s","gate":"%s","handlers":"%s","verdict":"%s","reason":"%s"}\n' \
     "$WALLET" "$DELIVERY" "$name" "$expect" "$state" "$gate" "$handlers" "$verdict" "$reason" >> "$OUT/cells.jsonl"
@@ -173,6 +180,7 @@ scenario() {
 
 build='.builds[] | select(.listed == true)'
 profile="$PROFILES/$WALLET.yaml"
+[[ -f $profile ]] || profile="$HERE/profiles/$WALLET.yaml"
 PKG=$(yq "$build | .identity.package" "$profile")
 SECRET=$(yq "$build | .device.secret" "$profile")
 COLD=$(yq "$build | .device.coldStart" "$profile")
@@ -187,11 +195,21 @@ log "uptime $(adb shell cat /proc/uptime), device lock disabled=$(adb shell lock
 t0=$SECONDS
 curl -fsSL -o "$OUT/$WALLET.apk" "$(yq "$build | .obtain" "$profile")" || { log "download failed"; exit 1; }
 log "install: $(adb install -r -g "$OUT/$WALLET.apk" 2>&1 | tail -1) ($((SECONDS - t0))s)"
-rm -f "$OUT/$WALLET.apk"
+log "apk abis: $(unzip -l "$OUT/$WALLET.apk" | grep -oE 'lib/[^/]+/' | sort -u | tr '\n' ' ')"
 
 adb logcat -c
 adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
 sleep 10
+if [[ -z $(adb shell pidof "$PKG" | tr -d '\r') ]]; then
+  log "no process after launch, reinstalling for arm64 translation"
+  adb uninstall "$PKG" > /dev/null 2>&1
+  log "install --abi arm64-v8a: $(adb install -r -g --abi arm64-v8a "$OUT/$WALLET.apk" 2>&1 | tail -1)"
+  adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
+  sleep 10
+fi
+rm -f "$OUT/$WALLET.apk"
+pid_now=$(adb shell pidof "$PKG" | tr -d '\r')
+log "process after launch: ${pid_now:-none}"
 walk onboard onboard 24
 sleep 10
 capture home

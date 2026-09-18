@@ -1,0 +1,17 @@
+id: nl-wallet
+rails:
+- openid4vc-sdjwt
+openid4vc:
+  demoParams: ''
+builds:
+- kind: fork
+  listed: true
+  obtain: https://github.com/AirKyzzZ/nl-wallet/releases/download/verana-2026-08-12/nl-wallet-verana-demo-2026-08-12.apk
+  identity:
+    package: nl.ictu.edi.wallet.latest
+  device:
+    activity: nl.ictu.edi.wallet.latest.MainActivity
+    secret: '123456'
+    coldStart: false
+quirks:
+  note: Rejects a link-delivered request by design; needs an optical scan.

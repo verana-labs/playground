@@ -1,0 +1,17 @@
+id: procivis
+rails:
+- openid4vc-sdjwt
+openid4vc:
+  demoParams: ''
+builds:
+- kind: fork
+  listed: true
+  obtain: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/download/verana-2026-08-17/app-debug.apk
+  identity:
+    package: ch.procivis.one.wallet.dev
+  device:
+    activity: ch.procivis.one.wallet.dev.MainActivity
+    secret: '123456'
+    coldStart: false
+quirks:
+  note: ''

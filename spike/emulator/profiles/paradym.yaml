@@ -1,0 +1,17 @@
+id: paradym
+rails:
+- openid4vc-sdjwt
+openid4vc:
+  demoParams: ''
+builds:
+- kind: fork
+  listed: true
+  obtain: https://github.com/AirKyzzZ/paradym-wallet-verana/releases/download/verana-2026-08-01/paradym-wallet-verana-release-2026-08-01.apk
+  identity:
+    package: id.paradym.wallet.dev
+  device:
+    activity: id.paradym.wallet.dev.MainActivity
+    secret: '123456'
+    coldStart: false
+quirks:
+  note: Biometric prompt with no PIN fallback.

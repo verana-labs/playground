@@ -21,6 +21,7 @@ log() { echo "[$(date +%T)] $*" | tee -a "$OUT/probe.log"; }
 json() { python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(next((d[k] for k in sys.argv[2:] if d.get(k)), ""))' "$@" 2> /dev/null; }
 
 capture() {
+  rm -f "$OUT/$1.xml" "$OUT/$1.png"
   adb exec-out screencap -p > "$OUT/$1.png"
   adb shell uiautomator dump /sdcard/ui.xml > /dev/null 2>&1 && adb exec-out cat /sdcard/ui.xml > "$OUT/$1.xml"
 }
@@ -72,12 +73,17 @@ open_scanner() {
 }
 
 settle() {
-  local name=$1 tries=0 action
+  local name=$1 tries=0 action prev="" prev_action="" hash
   while ((tries < 10)); do
     sleep 3
     capture "$name"
+    hash=$(md5sum 2> /dev/null < "$OUT/$name.xml" | cut -c1-12)
     read -r action _ <<< "$(python3 "$HERE/next_action.py" "$OUT/$name.xml" accept 2> /dev/null)"
-    [[ $action != wait ]] && return
+    if [[ -n $hash && $hash == "$prev" && $action != wait && $prev_action != wait ]]; then
+      return
+    fi
+    prev=$hash
+    prev_action=$action
     tries=$((tries + 1))
   done
   log "$name still resolving after 30s"
@@ -109,8 +115,8 @@ walk() {
         adb shell input tap "$x" "$y"
         return
         ;;
-      type) adb shell input tap "$x" "$y" && type_secret "$SECRET" ;;
-      type-blind) type_secret "$SECRET" ;;
+      type) adb shell input tap "$x" "$y" && sleep 1 && type_secret "$SECRET"; sleep 1 ;;
+      type-blind) type_secret "$SECRET"; sleep 1 ;;
       enter) adb shell input keyevent 66 ;;
       *) return ;;
     esac
@@ -119,7 +125,7 @@ walk() {
 }
 
 scenario() {
-  local name=$1 svc=$2 kind=$3 expect=$4 mint session url state handlers gate errors verdict reason pid exception
+  local name=$1 svc=$2 kind=$3 expect=$4 mint session url state state_done completed http handlers gate errors verdict reason pid exception
   mint="$OUT/$name-mint.json"
   curl -sS -m 30 "$BASE/api/demo/$svc?format=openid4vc-sdjwt&$PARAMS" > "$mint"
   url=$(json "$mint" url)
@@ -144,19 +150,28 @@ scenario() {
   rm -f "$OUT/$name-errors.txt"
   walk "$name" accept 12
   sleep 5
-  pid=$(adb shell pidof "$PKG" | tr -d '\r')
+  pid=$(adb shell pidof "$PKG" | tr -d '\r' | awk '{print $1}')
   adb logcat -d > "$OUT/$name-logcat.txt" 2>&1
   adb logcat -c
   exception=$(grep -E " ${pid:-none} .* E .*(Exception|Error):" "$OUT/$name-logcat.txt" | grep -vE 'PushNotification|Firebase|TypefaceCompat' | head -1 | sed -E 's/^.* E [^:]+: //' | tr -d '"' | cut -c1-160)
 
-  curl -sS -m 20 "$BASE/api/demo/$svc/$kind/$session?rail=oid4vc" > "$OUT/$name-state.json"
+  http=$(curl -sS -m 20 -o "$OUT/$name-state.json" -w '%{http_code}' "$BASE/api/demo/$svc/$kind/$session?rail=oid4vc")
+  if [[ $http != 200 ]]; then
+    sleep 3
+    http=$(curl -sS -m 20 -o "$OUT/$name-state.json" -w '%{http_code}' "$BASE/api/demo/$svc/$kind/$session?rail=oid4vc")
+  fi
   state=$(json "$OUT/$name-state.json" state)
+  state_done=$(json "$OUT/$name-state.json" done)
+  completed=false
+  [[ ${state_done,,} == true || $state == Completed || $state == done || $state == *Issued* ]] && completed=true
   errors=$(sort -u "$OUT/$name-errors.txt" 2> /dev/null | tr '\n' ';')
   if [[ $kind == proof && $ISSUED != true ]]; then
     verdict=unknown reason="needs the credential from issue-accredited, which did not complete"
+  elif [[ $http != 200 ]]; then
+    verdict=unknown reason="state endpoint answered HTTP $http"
   elif [[ $state == OfferCreated || $state == RequestCreated || -z $state ]]; then
     verdict=unknown reason="wallet never fetched the payload"
-  elif [[ $expect == accept && ($state == Completed || $state == done) ]]; then
+  elif [[ $expect == accept && $completed == true ]]; then
     verdict=works reason="server completed"
   elif [[ $expect == accept && $gate == *enabled=false* ]]; then
     verdict=broken reason="accept blocked on a trusted service"
@@ -164,7 +179,7 @@ scenario() {
     verdict=broken reason="wallet showed: $errors ${exception:+app logged: $exception}"
   elif [[ $expect == accept ]]; then
     verdict=unknown reason="not completed, no error seen"
-  elif [[ $state == Completed || $state == done || $gate == *enabled=true* ]]; then
+  elif [[ $completed == true || $gate == *enabled=true* ]]; then
     verdict=broken reason="untrusted payload could be accepted"
   elif [[ $gate == *enabled=false* ]]; then
     verdict=works reason="accept disabled and server not completed"
@@ -200,7 +215,7 @@ log "apk abis: $(unzip -l "$OUT/$WALLET.apk" | grep -oE 'lib/[^/]+/' | sort -u |
 adb logcat -c
 adb shell monkey -p "$PKG" -c android.intent.category.LAUNCHER 1 > /dev/null 2>&1
 sleep 10
-if [[ -z $(adb shell pidof "$PKG" | tr -d '\r') ]]; then
+if [[ -z $(adb shell pidof "$PKG" | tr -d '\r' | awk '{print $1}') ]]; then
   log "no process after launch, reinstalling for arm64 translation"
   adb uninstall "$PKG" > /dev/null 2>&1
   log "install --abi arm64-v8a: $(adb install -r -g --abi arm64-v8a "$OUT/$WALLET.apk" 2>&1 | tail -1)"
@@ -208,7 +223,7 @@ if [[ -z $(adb shell pidof "$PKG" | tr -d '\r') ]]; then
   sleep 10
 fi
 rm -f "$OUT/$WALLET.apk"
-pid_now=$(adb shell pidof "$PKG" | tr -d '\r')
+pid_now=$(adb shell pidof "$PKG" | tr -d '\r' | awk '{print $1}')
 log "process after launch: ${pid_now:-none}"
 walk onboard onboard 24
 sleep 10

@@ -12,7 +12,8 @@ LABELS = {
 ACCEPT_CONTROLS = ["share", "add", "issue", "accept", "allow"]
 SECRET_HINT = re.compile(r"\b(pin|passcode|password)\b", re.I)
 WAIT_HINT = re.compile(r"please wait|loading|may take up to|resolving", re.I)
-ERROR_HINT = re.compile(r"something went wrong|went wrong|error|failed|invalid|not supported|no matching credential", re.I)
+SUCCESS_HINT = re.compile(r"success|added to your wallet|successfully|shared|issued|completed", re.I)
+ERROR_HINT = re.compile(r"something went wrong|went wrong|failed|invalid|not supported|no matching credential|unable to", re.I)
 TERMINAL = {"close", "done", "go to home"}
 
 
@@ -47,13 +48,20 @@ root = ET.parse(xml_path).getroot()
 parents = {child: parent for parent in root.iter() for child in parent}
 
 
-def enabled(node):
+def clickable_node(node):
     current = node
     while current is not None and current.tag == "node":
         if current.get("clickable") == "true":
-            return current.get("enabled") == "true"
+            return current
         current = parents.get(current)
-    return node.get("enabled") == "true"
+    return None
+
+
+def enabled(node):
+    current = clickable_node(node)
+    if current is None:
+        current = node
+    return current.get("enabled") == "true"
 
 
 all_nodes = list(root.iter("node"))
@@ -72,7 +80,12 @@ if mode == "error":
     sys.exit()
 
 if mode == "gate":
-    wanted, node = first_labelled(all_nodes, ACCEPT_CONTROLS)
+    wanted = node = None
+    for word in ACCEPT_CONTROLS:
+        node = next((n for n in all_nodes if not is_field(n) and clickable_node(n) is not None and label(n).startswith(word)), None)
+        if node is not None:
+            wanted = word
+            break
     print(f"{wanted}:enabled={str(enabled(node)).lower()}" if node is not None else "none")
     sys.exit()
 
@@ -88,7 +101,9 @@ if empty is not None:
     sys.exit()
 
 wanted, node = first_labelled(nodes, LABELS[mode])
-if node is not None:
+if node is not None and mode == "accept" and wanted in TERMINAL and not SUCCESS_HINT.search(screen_text):
+    print("stop")
+elif node is not None:
     action = "finish" if mode == "accept" and wanted in TERMINAL else "tap"
     print(action, *center(node.get("bounds")), wanted.replace(" ", "_"))
 elif fields:

@@ -12,7 +12,7 @@ LABELS = {
 ACCEPT_CONTROLS = ["share", "add", "issue", "accept", "allow"]
 SECRET_HINT = re.compile(r"\b(pin|passcode|password)\b", re.I)
 WAIT_HINT = re.compile(r"please wait|loading|may take up to|resolving", re.I)
-SUCCESS_HINT = re.compile(r"success|added to your wallet|successfully|shared|issued|completed", re.I)
+SUCCESS_HINT = re.compile(r"success|successfully|added to your wallet|added the following|shared the following", re.I)
 ERROR_HINT = re.compile(r"something went wrong|went wrong|failed|invalid|not supported|no matching credential|unable to", re.I)
 TERMINAL = {"close", "done", "go to home"}
 

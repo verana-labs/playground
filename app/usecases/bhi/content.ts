@@ -22,9 +22,9 @@
 //  2. [SCOPE] Orchestrating Identity's exact DVS certification scope is
 //     to be confirmed in writing; copy says "certified under the UK DVS
 //     trust framework" without enumerating roles until then.
-//  3. [AGREEMENT] Nothing referencing the Orchestrating Identity-Verana
-//     relationship may be published before the agreement is signed. The
-//     whole use case is therefore unlisted + noindex for now.
+//  3. [AGREEMENT] Resolved 2026-09-23: the use case is listed publicly
+//     (nav, sitemap, indexable) per Verana's decision. It had been
+//     unlisted + noindex while the OID-Verana agreement was pending.
 //  4. [CAST] The cast is DEPLOYED on the testnet (2026-09-02 bootstrap;
 //     bhi-* workflows, one vs-agent per participant) and chapter 4 demos
 //     1-3 run live against it; demos 4-5 (revocation, directory) are

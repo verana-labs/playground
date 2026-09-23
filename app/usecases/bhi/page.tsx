@@ -4,16 +4,14 @@ import { ChapterFooter, Stepper } from "../../components/ChapterNav";
 import { CHAPTERS_NAV } from "./chapters";
 import { EXPLORE_HREF, FOOTER_LABELS, Section1 } from "./sections";
 
-// UNLISTED page: no nav entry, no home card, no sitemap entry, and
-// noindex. The link is shared directly with Orchestrating Identity and
-// BHI. PENDING [AGREEMENT]: listing publicly is gated on the signed
-// OID-Verana agreement (see content.ts header).
+// Listed publicly since 2026-09-23 (nav entry, sitemap, indexable);
+// this use case was unlisted while the OID-Verana agreement was pending
+// (see the content.ts header).
 
 export const metadata: Metadata = {
   title: "Use case · BHI - 1 · Meet the Recruitment Trust Network",
   description:
     "Chapter 1 of the BHI Verifiable Hiring use case: the Better Hiring Institute, a single job application from search to offer, and why nothing in hiring can be proven today.",
-  robots: { index: false, follow: false },
 };
 
 export default function BhiChapter1() {

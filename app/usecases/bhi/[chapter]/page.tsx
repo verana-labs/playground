@@ -11,8 +11,7 @@ import {
   Section4,
 } from "../sections";
 
-// UNLISTED (noindex) - see ./page.tsx and chapters.ts for the
-// publication gate (PENDING: the OID-Verana agreement).
+// Listed publicly since 2026-09-23 - see ./page.tsx and chapters.ts.
 
 export function generateStaticParams() {
   return CHAPTERS_NAV.filter((c) => c.slug !== null).map((c) => ({
@@ -30,7 +29,6 @@ export async function generateMetadata({
   return {
     title: c ? `Use case · BHI - ${c.n} · ${c.title}` : "Use case · BHI",
     description: c?.intro,
-    robots: { index: false, follow: false },
   };
 }
 

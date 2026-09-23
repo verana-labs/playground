@@ -2,7 +2,13 @@ import type { Metadata } from "next";
 import { Breadcrumb } from "../../components/ui";
 import { ChapterFooter, Stepper } from "../../components/ChapterNav";
 import { CHAPTERS_NAV } from "./chapters";
-import { EXPLORE_HREF, FOOTER_LABELS, OidPartnerBadge, Section1 } from "./sections";
+import {
+  EXPLORE_HREF,
+  FOOTER_LABELS,
+  OID_STEPPER_PARTNER,
+  OidPartnerBadge,
+  Section1,
+} from "./sections";
 
 // Listed publicly since 2026-09-23 (nav entry, sitemap, indexable);
 // this use case was unlisted while the OID-Verana agreement was pending
@@ -45,7 +51,7 @@ export default function BhiChapter1() {
           <OidPartnerBadge />
         </div>
       </header>
-      <Stepper chapters={CHAPTERS_NAV} current={1} />
+      <Stepper chapters={CHAPTERS_NAV} current={1} partner={OID_STEPPER_PARTNER} />
       <Section1 />
       <ChapterFooter
         chapters={CHAPTERS_NAV}

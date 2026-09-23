@@ -2,12 +2,10 @@
 // Hiring story, shared by the stepper and the footer. Chapter 1 lives at
 // /usecases/bhi; the rest at /usecases/bhi/<slug>.
 //
-// This use case is intentionally UNLISTED for now: no nav entry, no home
-// card, no sitemap entry, robots noindex - the link is shared directly
-// with Orchestrating Identity and BHI.
-// PENDING: nothing referencing the Orchestrating Identity-Verana
-// relationship may be published before that agreement is signed (source:
-// oid-bhi.md draft v4). Listing the use case publicly is gated on it.
+// Listed publicly since 2026-09-23: nav entry, sitemap and indexable
+// pages. (A home card is still pending a hero illustration - the other
+// use cases each carry a custom WebP.) The use case was unlisted while
+// the OID-Verana agreement was pending.
 
 import type { Chapter } from "../../components/ChapterNav";
 

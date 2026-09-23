@@ -14,6 +14,7 @@ const USE_CASES = [
   { href: "/usecases/vesta", label: "Vesta Appliances" },
   { href: "/usecases/verandia", label: "Republic of Verandia" },
   { href: "/usecases/cexa", label: "Crypto Exchange Association" },
+  { href: "/usecases/bhi", label: "Better Hiring Institute" },
 ];
 
 function Logo() {

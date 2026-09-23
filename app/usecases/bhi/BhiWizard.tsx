@@ -229,6 +229,9 @@ export default function BhiWizard({ wallets }: { wallets: PersonalWallet[] }) {
                 formats yet - pick another wallet above.
               </p>
             ) : null}
+            <p className="mt-4 max-w-3xl text-xs leading-relaxed text-gray-400">
+              {WIZARD.wallet.listingNote}
+            </p>
           </div>
 
           {format ? (

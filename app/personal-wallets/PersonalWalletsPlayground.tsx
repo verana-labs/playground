@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { walletTabTarget } from "../lib/wallet-tab";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
@@ -608,8 +609,16 @@ export default function PersonalWalletsPlayground({
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <a
                   href={wallet.hosted ?? wallet.download}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                  target={
+                    wallet.browser && wallet.hosted
+                      ? walletTabTarget(wallet.hosted)
+                      : "_blank"
+                  }
+                  rel={
+                    wallet.browser && wallet.hosted
+                      ? undefined
+                      : "noopener noreferrer"
+                  }
                   className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700"
                 >
                   {wallet.browser ? (

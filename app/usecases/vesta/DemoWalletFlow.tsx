@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Download, ExternalLink, QrCode } from "lucide-react";
 import HostedWalletQr from "../../components/HostedWalletQr";
+import { walletTabTarget } from "../../lib/wallet-tab";
 import type { PersonalWallet } from "../../lib/wallets";
 import { ServiceQr } from "../../components/ServiceQr";
 import { Chip } from "../../components/ui";
@@ -154,8 +155,14 @@ export function WalletChooser({ wallets }: { wallets: PersonalWallet[] }) {
             href={
               wallet.browser ? (wallet.hosted ?? wallet.download) : wallet.download
             }
-            target="_blank"
-            rel="noopener noreferrer"
+            target={
+              wallet.browser && wallet.hosted
+                ? walletTabTarget(wallet.hosted)
+                : "_blank"
+            }
+            rel={
+              wallet.browser && wallet.hosted ? undefined : "noopener noreferrer"
+            }
             className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700"
           >
             {wallet.browser ? (

@@ -167,8 +167,13 @@ describe("ServiceQr", () => {
     expect(link.getAttribute("href")).toBe(
       "https://wwwallet.playground.testnet.verana.network/?credential_offer_uri=https%3A%2F%2Fdemo-issuer-accredited.playground.testnet.verana.network%2Foid4vci%2Foffers%2Fabcd1234",
     );
-    expect(link.getAttribute("target")).toBe("_blank");
-    expect(link.getAttribute("rel")).toBe("noopener noreferrer");
+    // A named per-host tab, so repeat clicks reuse the wallet's logged-in
+    // session (sessionStorage is per tab); no noopener/noreferrer - both
+    // would sever the named-target reuse.
+    expect(link.getAttribute("target")).toBe(
+      "wallet:wwwallet.playground.testnet.verana.network",
+    );
+    expect(link.getAttribute("rel")).toBeNull();
   });
 
   it("does not call a completed exchange a delivery when the wallet was meant to refuse", async () => {

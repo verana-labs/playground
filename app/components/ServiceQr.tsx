@@ -1,5 +1,6 @@
 "use client";
 import { withBase } from "../lib/base-path";
+import { walletTabTarget } from "../lib/wallet-tab";
 
 import { BadgeCheck, ExternalLink, RefreshCw, ShieldAlert } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -204,8 +205,7 @@ function OpenInWalletLink({
   return (
     <a
       href={href}
-      target="_blank"
-      rel="noopener noreferrer"
+      target={walletTabTarget(wallet.url)}
       className="inline-flex items-center gap-1.5 rounded-full bg-violet-600 px-3.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-violet-700"
     >
       <ExternalLink className="h-3.5 w-3.5" aria-hidden />

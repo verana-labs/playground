@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { walletTabTarget } from "../lib/wallet-tab";
 import HostedWalletQr from "../components/HostedWalletQr";
 import QRCode from "qrcode";
 import {
@@ -151,8 +152,14 @@ export function WalletPicker({
         <div className="mt-4 flex flex-wrap items-center gap-2">
           <a
             href={wallet.browser ? (wallet.hosted ?? wallet.download) : wallet.download}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={
+              wallet.browser && wallet.hosted
+                ? walletTabTarget(wallet.hosted)
+                : "_blank"
+            }
+            rel={
+              wallet.browser && wallet.hosted ? undefined : "noopener noreferrer"
+            }
             className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
             style={{ backgroundColor: acento }}
           >
@@ -453,8 +460,7 @@ export function QrPanel({
         {hosted ? (
           <a
             href={hosted}
-            target="_blank"
-            rel="noopener noreferrer"
+            target={walletTabTarget(hosted)}
             className="inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-gray-700"
           >
             <ExternalLink className="h-3.5 w-3.5" aria-hidden />

@@ -22,6 +22,7 @@ import { listPersonalWallets, type PersonalWallet } from "./lib/wallets";
 import { CHAPTERS_NAV } from "./usecases/vesta/chapters";
 import { CHAPTERS_NAV as VERANDIA_CHAPTERS } from "./usecases/verandia/chapters";
 import { CHAPTERS_NAV as CEXA_CHAPTERS } from "./usecases/cexa/chapters";
+import { CHAPTERS_NAV as BHI_CHAPTERS } from "./usecases/bhi/chapters";
 
 // The story sections (spec §3.2), deep-linking into /usecases/vesta anchors.
 
@@ -413,6 +414,39 @@ export default function Home() {
                 </p>
                 <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
                   Follow the CEXA story →
+                </span>
+              </span>
+            </Link>
+            <Link
+              href="/usecases/bhi"
+              className="group flex flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-all hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-md"
+            >
+              <span className="relative block aspect-[16/9] overflow-hidden bg-gray-100">
+                {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized WebP illustration from public/ */}
+                <img
+                  src={withBase("/images/bhi/hero-card.webp")}
+                  alt="A candidate's verified Right to Work credential flowing to a Verified Employer"
+                  className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+                />
+              </span>
+              <span className="flex flex-1 flex-col p-5">
+                <span className="flex flex-wrap items-center gap-2">
+                  <h3 className="text-lg font-bold text-gray-900">
+                    Better Hiring Institute
+                  </h3>
+                  <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
+                    {BHI_CHAPTERS.length} chapters
+                  </span>
+                </span>
+                <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
+                  Verana, explained by UK hiring: BHI governs a Recruitment
+                  Trust Network where employers prove they are legitimate
+                  before a candidate shares a thing - name your applicant,
+                  collect verifiable credentials and play the journey with
+                  your own wallet.
+                </p>
+                <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
+                  Follow the BHI story →
                 </span>
               </span>
             </Link>

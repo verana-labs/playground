@@ -2,10 +2,10 @@
 // Hiring story, shared by the stepper and the footer. Chapter 1 lives at
 // /usecases/bhi; the rest at /usecases/bhi/<slug>.
 //
-// Listed publicly since 2026-09-23: nav entry, sitemap and indexable
-// pages. (A home card is still pending a hero illustration - the other
-// use cases each carry a custom WebP.) The use case was unlisted while
-// the OID-Verana agreement was pending.
+// Listed publicly since 2026-09-23: nav entry, sitemap, indexable pages
+// and a home card (hero at public/images/bhi/hero-card.webp, drawn in
+// the BHI brand language - no BHI logo: no usage rights). The use case
+// was unlisted while the OID-Verana agreement was pending.
 
 import type { Chapter } from "../../components/ChapterNav";
 

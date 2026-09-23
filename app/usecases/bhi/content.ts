@@ -52,8 +52,6 @@ export type JourneyNeed = GenericJourneyNeed<Stage>;
 export const BHI_ASSETS = {
   bhi: null as string | null,
   oid: "/images/bhi/oid-logo-white.svg" as string | null,
-  /** Navy variant, for light surfaces (the sticky chapter stepper). */
-  oidNavy: "/images/bhi/oid-logo-navy.svg" as string | null,
 };
 
 // ---------------------------- §1 · Meet the Recruitment Trust Network

@@ -19,13 +19,9 @@ export type Chapter = {
 export function Stepper({
   chapters,
   current,
-  partner,
 }: {
   chapters: Chapter[];
   current: number;
-  /** Optional partner mark pinned at the right end of the sticky bar - the
-   *  label hides on phone widths, the logo stays. */
-  partner?: { label: string; src: string; alt: string };
 }) {
   return (
     <div className="sticky top-16 z-30 border-b border-[#efeef6] bg-white/85 backdrop-blur-md">
@@ -74,15 +70,6 @@ export function Stepper({
             </div>
           );
         })}
-        {partner ? (
-          <div className="ml-auto flex shrink-0 items-center gap-2 pl-4">
-            <span className="hidden text-[10px] font-semibold uppercase tracking-wider text-[#8a8da1] md:block">
-              {partner.label}
-            </span>
-            {/* eslint-disable-next-line @next/next/no-img-element -- small brand SVG from public/ */}
-            <img src={partner.src} alt={partner.alt} className="h-4 w-auto opacity-80" />
-          </div>
-        ) : null}
       </div>
     </div>
   );

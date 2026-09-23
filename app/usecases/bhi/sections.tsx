@@ -563,16 +563,6 @@ export function Section3() {
   );
 }
 
-/** The partner mark for the sticky chapter stepper (navy variant, for
- *  the light bar) - stays visible however far the page scrolls. */
-export const OID_STEPPER_PARTNER = BHI_ASSETS.oidNavy
-  ? {
-      label: "In partnership with",
-      src: withBase(BHI_ASSETS.oidNavy),
-      alt: "Orchestrating Identity",
-    }
-  : undefined;
-
 /** The Orchestrating Identity wordmark on every chapter hero (white
  *  variant, for the gradient). Rendered only while the asset is set. */
 export function OidPartnerBadge() {

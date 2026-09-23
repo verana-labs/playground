@@ -6,7 +6,6 @@ import { CHAPTERS_NAV, chapterBySlug } from "../chapters";
 import {
   EXPLORE_HREF,
   FOOTER_LABELS,
-  OID_STEPPER_PARTNER,
   OidPartnerBadge,
   Section2,
   Section3,
@@ -69,11 +68,7 @@ export default async function BhiChapter({
           <OidPartnerBadge />
         </div>
       </header>
-      <Stepper
-        chapters={CHAPTERS_NAV}
-        current={c.n}
-        partner={OID_STEPPER_PARTNER}
-      />
+      <Stepper chapters={CHAPTERS_NAV} current={c.n} />
       <Body />
       <ChapterFooter
         chapters={CHAPTERS_NAV}

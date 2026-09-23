@@ -45,12 +45,13 @@ import type {
 export type SubStep = GenericSubStep<Stage>;
 export type JourneyNeed = GenericJourneyNeed<Stage>;
 
-/** Brand assets (public/images/bhi/) - none provided yet; every entry is
- *  null so the sections fall back to initials/icon placeholders.
- *  PENDING: BHI and OID logos + any wireframe imagery await sign-off. */
+/** Brand assets (public/images/bhi/). The OID wordmark comes from
+ *  oidentity.com (white variant for the hero gradient), added at the
+ *  partner's request. The BHI logo stays null: NO usage rights - do not
+ *  add it without written permission. */
 export const BHI_ASSETS = {
   bhi: null as string | null,
-  oid: null as string | null,
+  oid: "/images/bhi/oid-logo-white.svg" as string | null,
 };
 
 // ---------------------------- §1 · Meet the Recruitment Trust Network

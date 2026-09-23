@@ -570,7 +570,7 @@ export function OidPartnerBadge() {
   return (
     <div className="mt-6 flex flex-wrap items-center gap-3">
       <span className="text-xs font-semibold uppercase tracking-widest text-white/60">
-        In partnership with
+        Use case by
       </span>
       {/* eslint-disable-next-line @next/next/no-img-element -- small brand SVG from public/ */}
       <img

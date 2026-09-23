@@ -28,6 +28,13 @@
         "qualificationType",
         "gradeAwarded"
       ],
+      "claimDisplay": {
+        "issuingEstablishment": [{"locale": "en", "label": "Issuing establishment"}],
+        "dateAwarded": [{"locale": "en", "label": "Date awarded"}],
+        "qualificationSubject": [{"locale": "en", "label": "Subject"}],
+        "qualificationType": [{"locale": "en", "label": "Qualification type"}],
+        "gradeAwarded": [{"locale": "en", "label": "Grade awarded"}]
+      },
       "disclosureFrame": [
         "issuingEstablishment",
         "dateAwarded",

@@ -29,6 +29,14 @@
         "rtwEstablishedDate",
         "rtwExpiryDate"
       ],
+      "claimDisplay": {
+        "firstName": [{"locale": "en", "label": "First name"}],
+        "surname": [{"locale": "en", "label": "Surname"}],
+        "birthDate": [{"locale": "en", "label": "Date of birth"}],
+        "nationality": [{"locale": "en", "label": "Nationality"}],
+        "rtwEstablishedDate": [{"locale": "en", "label": "Right to work established"}],
+        "rtwExpiryDate": [{"locale": "en", "label": "Right to work expires"}]
+      },
       "disclosureFrame": [
         "firstName",
         "surname",
@@ -51,6 +59,11 @@
         "startDate",
         "endDate"
       ],
+      "claimDisplay": {
+        "employer": [{"locale": "en", "label": "Employer"}],
+        "startDate": [{"locale": "en", "label": "Start date"}],
+        "endDate": [{"locale": "en", "label": "End date"}]
+      },
       "disclosureFrame": [
         "employer",
         "startDate",

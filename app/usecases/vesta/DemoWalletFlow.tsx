@@ -149,6 +149,14 @@ export function WalletChooser({ wallets }: { wallets: PersonalWallet[] }) {
             include the integration.
           </p>
         )}
+        {wallet.browser && wallet.hosted ? (
+          <div className="mt-4">
+            <HostedWalletQr
+              url={wallet.hosted}
+              caption="Scan to open the wallet on your phone and create it there, or use the link on this device."
+            />
+          </div>
+        ) : null}
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <a
             href={
@@ -200,14 +208,6 @@ export function WalletChooser({ wallets }: { wallets: PersonalWallet[] }) {
             </a>
           ) : null}
         </div>
-        {wallet.browser && wallet.hosted ? (
-          <div className="mt-4">
-            <HostedWalletQr
-              url={wallet.hosted}
-              caption="Scan to open the wallet on your phone and create it there, or use the link on this device."
-            />
-          </div>
-        ) : null}
       </div>
     </div>
   );

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Breadcrumb } from "../../components/ui";
 import { ChapterFooter, Stepper } from "../../components/ChapterNav";
 import { CHAPTERS_NAV } from "./chapters";
-import { EXPLORE_HREF, FOOTER_LABELS, Section1 } from "./sections";
+import { EXPLORE_HREF, FOOTER_LABELS, OidPartnerBadge, Section1 } from "./sections";
 
 // Listed publicly since 2026-09-23 (nav entry, sitemap, indexable);
 // this use case was unlisted while the OID-Verana agreement was pending
@@ -42,6 +42,7 @@ export default function BhiChapter1() {
             today, what changes when every party can be verified, and how to
             run every step yourself with a real wallet.
           </p>
+          <OidPartnerBadge />
         </div>
       </header>
       <Stepper chapters={CHAPTERS_NAV} current={1} />

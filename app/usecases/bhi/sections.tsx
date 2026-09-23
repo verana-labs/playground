@@ -23,7 +23,8 @@ import { listPersonalWallets } from "../../lib/wallets";
 import BhiWizard from "./BhiWizard";
 import { SubHeading, SubStepBlock } from "../story-blocks";
 import { BHI_SCENES } from "./scenes";
-import { CLOSING, DEMOS, INSTITUTE, JOURNEY, SCHEMAS, SOLUTION } from "./content";
+import { BHI_ASSETS, CLOSING, DEMOS, INSTITUTE, JOURNEY, SCHEMAS, SOLUTION } from "./content";
+import { withBase } from "../../lib/base-path";
 
 // Rendering of the four chapters of the BHI Verifiable Hiring use case.
 // Real organisations (BHI, Orchestrating Identity) appear as themselves;
@@ -559,6 +560,25 @@ export function Section3() {
         </p>
       </Container>
     </Section>
+  );
+}
+
+/** The Orchestrating Identity wordmark on every chapter hero (white
+ *  variant, for the gradient). Rendered only while the asset is set. */
+export function OidPartnerBadge() {
+  if (!BHI_ASSETS.oid) return null;
+  return (
+    <div className="mt-6 flex flex-wrap items-center gap-3">
+      <span className="text-xs font-semibold uppercase tracking-widest text-white/60">
+        In partnership with
+      </span>
+      {/* eslint-disable-next-line @next/next/no-img-element -- small brand SVG from public/ */}
+      <img
+        src={withBase(BHI_ASSETS.oid)}
+        alt="Orchestrating Identity"
+        className="h-6 w-auto opacity-95"
+      />
+    </div>
   );
 }
 

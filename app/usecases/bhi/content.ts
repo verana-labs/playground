@@ -617,6 +617,8 @@ export const WIZARD = {
     title: "Choose a wallet",
     intro:
       "Pick any of the integrated personal wallets: every one reaches the same verdict by the same route. Each QR in the journey is minted for the wallet you choose.",
+    listingNote:
+      "This page is generated from personal-wallets.yaml - to list your wallet, test the loop with AnonCreds and/or OpenID4VC SD-JWT and open a PR with your entry, icon, and optional captures and videos.",
   },
   collect: {
     // {name} is replaced with the applicant's chosen name; "their" stays

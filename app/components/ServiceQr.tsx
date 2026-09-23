@@ -438,11 +438,16 @@ export function ServiceQr({
     content = <UnavailableCard onRetry={retry} />;
   } else if (bare) {
     content = (
-      <div className="flex justify-center">
+      <div className="flex flex-col items-center gap-3">
         <div className="flex h-40 w-40 shrink-0 items-center justify-center rounded-xl border border-gray-100 bg-white p-2">
           {/* eslint-disable-next-line @next/next/no-img-element -- generated data: URI, not a static asset next/image can optimize */}
           <img src={qrDataUrl} alt={`${label} QR`} className="h-full w-full" />
         </div>
+        {/* A browser wallet has no phone app to scan with: the hosted-wallet
+            link is its only way into the flow, so bare mode keeps it. */}
+        {openInWallet && appUrl ? (
+          <OpenInWalletLink wallet={openInWallet} appUrl={appUrl} />
+        ) : null}
       </div>
     );
   } else {

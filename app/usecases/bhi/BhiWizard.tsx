@@ -76,6 +76,11 @@ const walletFormat = (wallet: PersonalWallet) =>
 const joinParams = (...parts: (string | undefined)[]) =>
   parts.filter(Boolean).join("&") || undefined;
 
+// Browser wallets (wwWallet) have nothing to install: every QR carries an
+// "Open in ..." link that lands the same action in the hosted instance.
+const hostedFor = (wallet: PersonalWallet) =>
+  wallet.hosted ? { name: wallet.name, url: wallet.hosted } : undefined;
+
 function PrimaryButton({
   children,
   onClick,
@@ -420,6 +425,7 @@ function CollectSection({
                         item.named ? nameParams : undefined,
                       )}
                       bare
+                      openInWallet={hostedFor(wallet)}
                       onSettled={(o: ServiceQrOutcome) => {
                         if (o.kind === "delivered") onTick(item.id);
                       }}
@@ -682,6 +688,7 @@ function MeridianFlow({
                   credential={request.credential}
                   demoParams={wallet.demoParams}
                   bare
+                  openInWallet={hostedFor(wallet)}
                   onSettled={(o: ServiceQrOutcome) => {
                     if (o.kind === "presented") {
                       onReceived(request.credential, o.claims);
@@ -783,6 +790,7 @@ function HalcyonFlow({
               credential="bhi-right-to-work"
               demoParams={wallet.demoParams}
               bare
+              openInWallet={hostedFor(wallet)}
             />
           </div>
           <div className="mt-5 rounded-xl border border-gray-100 bg-gray-50 p-4">

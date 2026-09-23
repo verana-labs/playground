@@ -16,6 +16,7 @@ import MediaLightbox, { type LightboxMedia } from "../components/MediaLightbox";
 import { Container, Section, SectionHeading, Chip } from "../components/ui";
 import { LINKS } from "../lib/site";
 import { ServiceQr } from "../components/ServiceQr";
+import HostedWalletQr from "../components/HostedWalletQr";
 import LiveTrustCard from "../components/LiveTrustCard";
 import { ComingSoonPickerTile } from "../components/ComingSoonTile";
 import type { ComingSoonWallet } from "../lib/coming-soon";
@@ -671,6 +672,14 @@ export default function PersonalWalletsPlayground({
                   </a>
                 ) : null}
               </div>
+              {wallet.browser && wallet.hosted ? (
+                <div className="mt-4">
+                  <HostedWalletQr
+                    url={wallet.hosted}
+                    caption="Scan to open the wallet on your phone and create it there, or use the link on this device."
+                  />
+                </div>
+              ) : null}
 
               {wallet.video ? (
                 <div className="mt-6 border-t border-gray-100 pt-5">

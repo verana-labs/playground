@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Download, ExternalLink, QrCode } from "lucide-react";
+import HostedWalletQr from "../../components/HostedWalletQr";
 import type { PersonalWallet } from "../../lib/wallets";
 import { ServiceQr } from "../../components/ServiceQr";
 import { Chip } from "../../components/ui";
@@ -199,6 +200,14 @@ export function WalletChooser({ wallets }: { wallets: PersonalWallet[] }) {
             </a>
           ) : null}
         </div>
+        {wallet.browser && wallet.hosted ? (
+          <div className="mt-4">
+            <HostedWalletQr
+              url={wallet.hosted}
+              caption="Scan to open the wallet on your phone and create it there, or use the link on this device."
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

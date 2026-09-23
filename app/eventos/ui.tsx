@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import HostedWalletQr from "../components/HostedWalletQr";
 import QRCode from "qrcode";
 import {
   Calendar,
@@ -198,6 +199,14 @@ export function WalletPicker({
             </a>
           ) : null}
         </div>
+        {wallet.browser && wallet.hosted ? (
+          <div className="mt-4">
+            <HostedWalletQr
+              url={wallet.hosted}
+              caption="Escanea para abrir la wallet en tu teléfono y crearla allí, o usa el enlace en este dispositivo."
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

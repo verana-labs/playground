@@ -3,9 +3,14 @@
 // the employer, the job board, the candidate and the impostors, revealed
 // and transformed stage by stage. Real organisations (BHI, Orchestrating
 // Identity) appear as themselves; everyone else is fictional and labeled
-// (demo). Every deployed cast member carries its live did:webvh (bhi-cast),
-// so the trust cards resolve against the testnet; Northgate and HMRC stay
-// story-only (no agent, by design).
+// (demo). Every deployed cast member carries its live did:webvh (bhi-cast)
+// and, from the stage its green check appears, the two identity credentials
+// its live agent presents (ECS-Organization and ECS-Service): the check in
+// the diagram and the verdict on the card must agree. An ecosystem is a
+// service too, run by the agent of the organisation that governs it, so its
+// card carries that organisation's DID. Northgate and HMRC stay story-only
+// (no agent, by design); HMRC is a real body shown for context, never an
+// impostor.
 //
 // The 3.3 stage is the one the source calls out as mattering most: two
 // grantor branches side by side, the visual form of the openness
@@ -146,9 +151,15 @@ const NODES: SceneNode[] = [
     noteAlways: true,
     label: "Verana ECS Ecosystem",
     sub: "governed by the Verana Council",
+    // No DID here on purpose: the card footnote speaks of the BHI cast,
+    // and the shared ECS Ecosystem is not part of it.
+    operator: "Verana Council (testnet)",
+    serviceType: "Ecosystem service",
+    verifiedAt: "3.1",
   },
   {
     id: "dvsEco",
+    did: BHI_CAST.oid.did,
     x: 520,
     y: 70,
     icon: "network",
@@ -157,9 +168,13 @@ const NODES: SceneNode[] = [
     noteAlways: true,
     label: "DVS-Aligned Provider Ecosystem (demo)",
     sub: "mirrors the OfDIA register; operated by OID",
+    operator: "Orchestrating Identity",
+    serviceType: "Ecosystem service",
+    verifiedAt: "3.1",
   },
   {
     id: "rtn",
+    did: BHI_CAST.bhi.did,
     x: 880,
     y: 70,
     icon: "network",
@@ -168,6 +183,8 @@ const NODES: SceneNode[] = [
     noteAlways: true,
     label: "Recruitment Trust Network",
     sub: "two schemas, both about organisations",
+    operator: "Modern Work Foundation CIC (Better Hiring Institute)",
+    serviceType: "Ecosystem service",
     verifiedAt: "3.1",
   },
   // ---- the two certified grantors (the openness argument)
@@ -210,6 +227,7 @@ const NODES: SceneNode[] = [
     appears: "3.4",
     label: "Caledonian University (demo)",
     sub: "awarding body: Qualification credentials",
+    serviceType: "Awarding body: Qualification issuance",
     verifiedAt: "3.4",
   },
   {
@@ -222,6 +240,7 @@ const NODES: SceneNode[] = [
     appears: "3.4",
     label: "Northbank Identity (demo)",
     sub: "certified DVS issuer",
+    serviceType: "DVS provider: Right to Work and Employment issuance",
     verifiedAt: "3.4",
   },
   {
@@ -234,16 +253,19 @@ const NODES: SceneNode[] = [
     appears: "3.4",
     label: "Cirrus Certification (demo)",
     sub: "Qualification issuer (cloud certification)",
+    serviceType: "Certification body: Qualification issuance",
     verifiedAt: "3.4",
   },
+  // A real government department, shown for context: it takes no part in
+  // the trust network, so it gets a plain outline and a note-only card.
   {
     id: "hmrc",
     x: 650,
     y: 890,
-    icon: "bank",
+    icon: "landmark",
     tone: "gray",
     appears: "3.4",
-    dashed: true,
+    context: true,
     noteAlways: true,
     label: "HMRC",
     sub: "data source, not an issuer",
@@ -299,6 +321,58 @@ export const BHI_SCENES: SceneGraph = {
   edges: EDGES,
   badges: BADGES,
   credentials: {
+    // The three ecosystems: each is a verifiable service in its own right,
+    // presenting the identity of the organisation that governs it.
+    ecs: [
+      {
+        name: "ECS-Organization",
+        tone: "emerald",
+        issuedBy: "The ECS Ecosystem itself (root of trust)",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.1",
+      },
+      {
+        name: "ECS-Service",
+        tone: "blue",
+        issuedBy: "Self-issued (ECS pattern)",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.1",
+      },
+    ],
+    dvsEco: [
+      {
+        name: "ECS-Organization",
+        tone: "emerald",
+        issuedBy: "An accredited ECS issuer",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.1",
+        note: "Orchestrating Identity's own Organization credential: the ecosystem is operated by Orchestrating Identity.",
+      },
+      {
+        name: "ECS-Service",
+        tone: "blue",
+        issuedBy: "Self-issued (ECS pattern)",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.1",
+      },
+    ],
+    rtn: [
+      {
+        name: "ECS-Organization",
+        tone: "emerald",
+        issuedBy: "Orchestrating Identity (KYB + DVS register check)",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.1",
+        note: "BHI's own Organization credential: the network is governed by the Better Hiring Institute.",
+      },
+      {
+        name: "ECS-Service",
+        tone: "blue",
+        issuedBy: "Self-issued (ECS pattern)",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.1",
+      },
+    ],
     bhi: [
       {
         name: "ECS-Organization",
@@ -324,6 +398,13 @@ export const BHI_SCENES: SceneGraph = {
         appears: "3.1",
       },
       {
+        name: "ECS-Service",
+        tone: "blue",
+        issuedBy: "Self-issued (ECS pattern)",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.1",
+      },
+      {
         name: "DVS-Aligned Provider",
         tone: "emerald",
         issuedBy: "Orchestrating Identity, as operator (eligibility: DVS register status, nothing else)",
@@ -336,6 +417,13 @@ export const BHI_SCENES: SceneGraph = {
         name: "ECS-Organization",
         tone: "emerald",
         issuedBy: "An accredited ECS issuer",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.3",
+      },
+      {
+        name: "ECS-Service",
+        tone: "blue",
+        issuedBy: "Self-issued (ECS pattern)",
         ecosystem: "Verana ECS Ecosystem",
         appears: "3.3",
       },
@@ -392,6 +480,55 @@ export const BHI_SCENES: SceneGraph = {
         issuedBy: "BHI (ECOSYSTEM onboarding mode)",
         ecosystem: "Recruitment Trust Network",
         appears: "3.3",
+      },
+    ],
+    // The candidate's issuers: verifiable services like every other member.
+    caledonian: [
+      {
+        name: "ECS-Organization",
+        tone: "emerald",
+        issuedBy: "A certified DVS provider",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.4",
+      },
+      {
+        name: "ECS-Service",
+        tone: "blue",
+        issuedBy: "Self-issued (ECS pattern)",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.4",
+      },
+    ],
+    northbank: [
+      {
+        name: "ECS-Organization",
+        tone: "emerald",
+        issuedBy: "A certified DVS provider",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.4",
+      },
+      {
+        name: "ECS-Service",
+        tone: "blue",
+        issuedBy: "Self-issued (ECS pattern)",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.4",
+      },
+    ],
+    cirrus: [
+      {
+        name: "ECS-Organization",
+        tone: "emerald",
+        issuedBy: "A certified DVS provider",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.4",
+      },
+      {
+        name: "ECS-Service",
+        tone: "blue",
+        issuedBy: "Self-issued (ECS pattern)",
+        ecosystem: "Verana ECS Ecosystem",
+        appears: "3.4",
       },
     ],
     alex: [

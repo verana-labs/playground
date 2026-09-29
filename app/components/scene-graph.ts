@@ -47,6 +47,10 @@ export type SceneNode = {
   verifiedAt?: string;
   /** A person / wallet holder rather than a service (trust card variant). */
   person?: boolean;
+  /** A real-world party shown for context, outside the trust network (a data
+   *  source, a regulator, a federation). Its trust card carries the note
+   *  only: no identity checks, no verdict, and never the impostor styling. */
+  context?: boolean;
   /** Show this node's note on the trust card even when it presents credentials. */
   noteAlways?: boolean;
   /** Latest override ≤ current stage wins. */

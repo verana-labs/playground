@@ -606,6 +606,14 @@ export default function PersonalWalletsPlayground({
                   {wallet.notes}
                 </p>
               ) : null}
+              {wallet.browser && wallet.hosted ? (
+                <div className="mt-4">
+                  <HostedWalletQr
+                    url={wallet.hosted}
+                    caption="Scan to open the wallet on your phone and create it there, or use the link on this device."
+                  />
+                </div>
+              ) : null}
               <div className="mt-4 flex flex-wrap items-center gap-3">
                 <a
                   href={wallet.hosted ?? wallet.download}
@@ -681,14 +689,6 @@ export default function PersonalWalletsPlayground({
                   </a>
                 ) : null}
               </div>
-              {wallet.browser && wallet.hosted ? (
-                <div className="mt-4">
-                  <HostedWalletQr
-                    url={wallet.hosted}
-                    caption="Scan to open the wallet on your phone and create it there, or use the link on this device."
-                  />
-                </div>
-              ) : null}
 
               {wallet.video ? (
                 <div className="mt-6 border-t border-gray-100 pt-5">

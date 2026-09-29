@@ -24,7 +24,8 @@ export type TrustCardCredential = {
 export type TrustCardData = {
   name: string;
   did?: string;
-  /** true = a service (chain + verdict); false = a person/wallet. */
+  /** true = a service (chain + verdict); false = a person/wallet, or a
+   *  party shown for context (the note only). */
   isService: boolean;
   serviceType?: string;
   /** The ECS-Service credential, when presented. */

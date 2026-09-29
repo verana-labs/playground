@@ -242,7 +242,9 @@ export default function StoryDiagram({
                 style={{ outline: "none" }}
                 role="button"
                 tabIndex={0}
-                aria-label={`${label ?? n.id} - view presented credentials`}
+                aria-label={`${label ?? n.id} - ${
+                  n.context ? "view details" : "view presented credentials"
+                }`}
                 onClick={() =>
                   setSelected((cur) => (cur === n.id ? null : n.id))
                 }
@@ -283,7 +285,7 @@ export default function StoryDiagram({
                   fill="#ffffff"
                   stroke={c.stroke}
                   strokeWidth={1.8}
-                  strokeDasharray={n.dashed ? "4 3" : undefined}
+                  strokeDasharray={n.dashed && !n.context ? "4 3" : undefined}
                 />
                 <g
                   transform={`translate(${n.x - (r < 20 ? 8 : 10)}, ${n.y - (r < 20 ? 8 : 10)})`}
@@ -409,11 +411,15 @@ function NodeDetail({
     (c) => c.name !== "ECS-Service" && c.name !== "ECS-Organization",
   );
   const isPerson = node.person === true;
+  // A context party claims no place in the trust network: judging it by the
+  // identity checks (or painting it as an impostor) would say something the
+  // story does not.
+  const isContext = node.context === true;
   const verified = !!node.verifiedAt && stageIndex(graph, node.verifiedAt) <= idx;
   const data: TrustCardData = {
     name: label ?? id,
     did: verified || svc || org ? node.did : undefined,
-    isService: !isPerson,
+    isService: !isPerson && !isContext,
     serviceType: node.serviceType,
     service: svc ? { name: svc.name, issuedBy: svc.issuedBy, ecosystem: svc.ecosystem } : undefined,
     organization: org
@@ -427,7 +433,7 @@ function NodeDetail({
         }
       : undefined,
     trusted: verified && !!svc && !!org,
-    impostor: node.dashed === true,
+    impostor: node.dashed === true && !isContext,
     others: isPerson ? [] : others,
     holds: isPerson ? creds : undefined,
     accreditations: (graph.accreditations[id] ?? [])

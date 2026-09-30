@@ -3,7 +3,7 @@ name: Deploy Playground
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [main, v4]
     paths:
       - "app/**"
       - "public/**"
@@ -20,14 +20,30 @@ on:
       - ".github/workflows/deploy.yml"
 
 concurrency:
-  group: deploy-playground
+  group: deploy-playground-${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
   cancel-in-progress: true
+
+env:
+  # The branch selects the network: v4 deploys to devnet, other branches to testnet.
+  NETWORK: ${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
 
 jobs:
   deploy-playground:
     name: Build and Deploy Playground
     runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
     steps:
+      # A run on a network other than testnet must use the secrets of its own
+      # GitHub environment. This check stops the run when that environment is
+      # not configured. See docs/networks.md.
+      - name: Check network environment
+        if: env.NETWORK != 'testnet'
+        run: |
+          if [ "${{ vars.NETWORK }}" != "$NETWORK" ]; then
+            echo "::error::Environment '$NETWORK' is not configured. Set its variable NETWORK=$NETWORK and its secrets (see docs/networks.md)."
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 
@@ -62,7 +78,8 @@ jobs:
           push: true
           tags: |
             veranalabs/playground:${{ github.sha }}
-            veranalabs/playground:latest
+            # Only testnet moves the "latest" tag. Other networks use the network name.
+            veranalabs/playground:${{ env.NETWORK == 'testnet' && 'latest' || env.NETWORK }}
           build-args: |
             NEXT_PUBLIC_FIDES_USECASE_URL=${{ vars.NEXT_PUBLIC_FIDES_USECASE_URL }}
           cache-from: type=gha
@@ -76,10 +93,10 @@ jobs:
           NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
           APP_NAME="playground"
           IMAGE="veranalabs/playground:${{ github.sha }}"
-          HOST="playground.testnet.verana.network"
+          HOST="playground.${NETWORK}.verana.network"
           PORT=3000
-          RESOLVER_URL="https://resolver.testnet.verana.network"
-          DEMOS_BASE_DOMAIN="main.demos.testnet.verana.network"
+          RESOLVER_URL="https://resolver.${NETWORK}.verana.network"
+          DEMOS_BASE_DOMAIN="main.demos.${NETWORK}.verana.network"
 
           cat <<EOF | kubectl apply -f -
           apiVersion: apps/v1
@@ -162,5 +179,5 @@ jobs:
         run: |
           echo "## Playground" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          echo "- **URL:** https://playground.testnet.verana.network" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **URL:** https://playground.${NETWORK}.verana.network" >> "$GITHUB_STEP_SUMMARY"
           echo "- **Image:** veranalabs/playground:${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"

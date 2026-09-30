@@ -31,7 +31,7 @@ all. `demo-07` and `demo-08` fix that; tear `demo-06` down once they are up.
 Same pattern as the vesta cast: each numbered workflow is a
 `workflow_dispatch` calling `demo-00_core.yml` with `step` = `deploy` |
 `provision` | `all`. Run them **in order, one at a time** (both casts share
-the veranad account, so all runs serialize on the `vesta-cast` concurrency
+the veranad account, so all runs serialize on the `vesta-cast-<network>` concurrency
 group):
 
 1. **Prerequisite:** the vesta cast's Helvetia (`vesta-01`) must be deployed

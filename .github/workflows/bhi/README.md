@@ -79,7 +79,7 @@ DID document already presents the linked VP. Use `force_refresh` to re-issue
 credentials after changing claims in an org's `config.env`; the `step` input
 splits a run into `deploy` and `provision`.
 
-All cast runs share the `vesta-cast` concurrency group (one signing account
+All cast runs share the `vesta-cast-<network>` concurrency group (one signing account
 across every playground cast): start workflows one at a time.
 
 ## The three schema families (partner review, 2026-08-20)

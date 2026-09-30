@@ -25,13 +25,15 @@ on:
         type: boolean
 
 env:
-  NETWORK: testnet
+  # The branch selects the network: v4 deploys to devnet, other branches to testnet.
+  NETWORK: ${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
   VERANAD_VERSION: v0.9.5
 
 jobs:
   run:
     name: "${{ inputs.org }}"
     runs-on: ubuntu-latest
+    environment: ${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
     # All playground casts (vesta-*, demo-*, bhi-*, eventos-*, ...) sign with the same
     # veranad account; running two jobs at once races on the account's
     # transaction sequence number. The shared group name serializes every
@@ -39,9 +41,20 @@ jobs:
     # group — start workflows one at a time rather than firing several at
     # once.
     concurrency:
-      group: vesta-cast
+      group: vesta-cast-${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
       cancel-in-progress: false
     steps:
+      # A run on a network other than testnet must use the secrets of its own
+      # GitHub environment. This check stops the run when that environment is
+      # not configured. See docs/networks.md.
+      - name: Check network environment
+        if: env.NETWORK != 'testnet'
+        run: |
+          if [ "${{ vars.NETWORK }}" != "$NETWORK" ]; then
+            echo "::error::Environment '$NETWORK' is not configured. Set its variable NETWORK=$NETWORK and its secrets (see docs/networks.md)."
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 

@@ -275,11 +275,6 @@ exec_group_proposal() {
   broadcast veranad tx group vote "$prop_id" "$user_addr" VOTE_OPTION_YES "" --exec 1 > /dev/null
 }
 
-# A UTC timestamp N seconds in the future.
-future_timestamp() {
-  date -u -d "+${1:-15} seconds" +"%Y-%m-%dT%H:%M:%SZ"
-}
-
 # Compute the SHA-384 SRI digest of the content of a URL.
 compute_sri_digest() {
   local hash
@@ -566,13 +561,14 @@ ensure_root_participant() {
     return 0
   fi
   log "Creating the root participant of schema $schema_id..."
+  # No effective_from: the chain (v0.10.3+) then uses the block time, so the
+  # entry is ACTIVE in the block that creates it.
   tx_hash=$(broadcast veranad tx pp create-root-participant \
     "$schema_id" "$did" 0 0 0 \
-    --corporation "$CORPORATION" --effective-from "$(future_timestamp 15)") || return 1
+    --corporation "$CORPORATION") || return 1
   participant_id=$(extract_tx_event "$tx_hash" "create_root_participant" "root_participant_id")
   [ -n "$participant_id" ] || { err "Could not read the root participant id (tx $tx_hash)"; return 1; }
   ok "Root participant created: id=$participant_id"
-  sleep 15
   echo "$participant_id"
 }
 
@@ -619,11 +615,12 @@ ensure_participant() {
     event="start_participant_op"
   else
     log "Creating the $role participant of $did (validator $validator_id)..."
-    # CAUTION: a participant with no effective_from is INACTIVE, and the chain
-    # then refuses to revoke it or to create an entry that overlaps it.
+    # No effective_from: the chain (v0.10.3+) then uses the block time, so the
+    # entry is ACTIVE when the agent sees the event. An agent issues its own ECS
+    # credential only for an ACTIVE ISSUER entry, and only on that event.
     tx_hash=$(broadcast veranad tx pp self-create-participant \
       "$role" "$validator_id" "$did" --corporation "$CORPORATION" \
-      --effective-from "$(future_timestamp 15)" "${vsoa_args[@]}") || return 1
+      "${vsoa_args[@]}") || return 1
     event="create_participant"
   fi
   participant_id=$(extract_tx_event "$tx_hash" "$event" "participant_id")
@@ -674,9 +671,9 @@ has_service_credential() {
 
 # Make sure that a standalone agent presents its self-issued ECS Service credential.
 # The agent issues it when it sees the event of its own ISSUER entry, but only when
-# the entry is ACTIVE. The entry becomes effective some seconds after that event
-# (effective_from must be in the future), so the agent can skip it. The agent
-# checks its ISSUER entries again when it starts, so restart it in that case.
+# the entry is ACTIVE. An entry created with a future effective_from (as the
+# scripts did before) is not ACTIVE at that event, so the agent skips it. The
+# agent checks its ISSUER entries again when it starts, so restart it in that case.
 # Usage: ensure_self_issued_service_credential <release> <host> <issuer_participant_id>
 ensure_self_issued_service_credential() {
   local release=$1

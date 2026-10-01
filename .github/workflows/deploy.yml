@@ -60,6 +60,18 @@ jobs:
         with:
           version: 'v1.29.9'
 
+      # A new network starts with no namespace. The kubeconfig user must have
+      # the permission to create one; otherwise create it once by hand.
+      - name: Ensure namespace
+        env:
+          NAMESPACE: ${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}
+        run: |
+          if kubectl get namespace "$NAMESPACE" > /dev/null 2>&1; then
+            echo "Namespace exists"
+          else
+            kubectl create namespace "$NAMESPACE"
+          fi
+
       # -----------------------------------------------------------------------
       # BUILD: Docker image
       # -----------------------------------------------------------------------

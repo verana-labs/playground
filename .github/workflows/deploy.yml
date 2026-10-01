@@ -26,21 +26,22 @@ concurrency:
 env:
   # The branch selects the network: v4 deploys to devnet, other branches to testnet.
   NETWORK: ${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
+  # The secrets of the v4 branch have this suffix (K8S_NAMESPACE_V4, PLAYGROUND_V4_MNEMONIC).
+  SECRET_SUFFIX: ${{ github.ref_name == 'v4' && '_V4' || '' }}
 
 jobs:
   deploy-playground:
     name: Build and Deploy Playground
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
     steps:
-      # A run on a network other than testnet must use the secrets of its own
-      # GitHub environment. This check stops the run when that environment is
-      # not configured. See docs/networks.md.
-      - name: Check network environment
-        if: env.NETWORK != 'testnet'
+      # The secrets of the v4 branch have the suffix _V4, so a devnet run never
+      # uses the testnet namespace. Stop when the secret of this branch is empty.
+      - name: Check network secrets
+        env:
+          NAMESPACE_SECRET: ${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}
         run: |
-          if [ "${{ vars.NETWORK }}" != "$NETWORK" ]; then
-            echo "::error::Environment '$NETWORK' is not configured. Set its variable NETWORK=$NETWORK and its secrets (see docs/networks.md)."
+          if [ -z "$NAMESPACE_SECRET" ]; then
+            echo "::error::Secret K8S_NAMESPACE${SECRET_SUFFIX} is not set (see docs/networks.md)."
             exit 1
           fi
 
@@ -82,6 +83,7 @@ jobs:
             veranalabs/playground:${{ env.NETWORK == 'testnet' && 'latest' || env.NETWORK }}
           build-args: |
             NEXT_PUBLIC_FIDES_USECASE_URL=${{ vars.NEXT_PUBLIC_FIDES_USECASE_URL }}
+            NEXT_PUBLIC_VERANA_NETWORK=${{ env.NETWORK }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -90,13 +92,11 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Deploy Playground
         run: |
-          NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
+          NAMESPACE="${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}"
           APP_NAME="playground"
           IMAGE="veranalabs/playground:${{ github.sha }}"
           HOST="playground.${NETWORK}.verana.network"
           PORT=3000
-          RESOLVER_URL="https://resolver.${NETWORK}.verana.network"
-          DEMOS_BASE_DOMAIN="main.demos.${NETWORK}.verana.network"
 
           cat <<EOF | kubectl apply -f -
           apiVersion: apps/v1
@@ -124,11 +124,6 @@ jobs:
                     imagePullPolicy: Always
                     ports:
                       - containerPort: ${PORT}
-                    env:
-                      - name: RESOLVER_URL
-                        value: "${RESOLVER_URL}"
-                      - name: DEMOS_BASE_DOMAIN
-                        value: "${DEMOS_BASE_DOMAIN}"
           ---
           apiVersion: v1
           kind: Service

@@ -14,8 +14,8 @@ on:
         description: "Instance to deploy: a directory of .github/workflows/wwwallet/brands/ (wwwallet = default, intexus = the INTEXUS wallet of /eventos)"
         default: "wwwallet"
       frontend_ref:
-        description: "verana-labs/wallet-frontend ref to build"
-        default: "master"
+        description: "verana-labs/wallet-frontend ref to build (empty = v4 on the v4 branch, master otherwise)"
+        default: ""
       backend_ref:
         description: "wwWallet/wallet-backend-server ref to build"
         default: "a92809bfa82ba2c23615b12f9307619b1e376cb0"
@@ -32,6 +32,8 @@ concurrency:
 env:
   # The branch selects the network: v4 deploys to devnet, other branches to testnet.
   NETWORK: ${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
+  # The secrets of the v4 branch have this suffix (K8S_NAMESPACE_V4, PLAYGROUND_V4_MNEMONIC).
+  SECRET_SUFFIX: ${{ github.ref_name == 'v4' && '_V4' || '' }}
 
 jobs:
   backend:
@@ -70,20 +72,19 @@ jobs:
     name: Build and deploy ${{ matrix.brand }}
     needs: backend
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
     strategy:
       fail-fast: false
       matrix:
         brand: ${{ fromJSON(github.event_name == 'workflow_dispatch' && format('["{0}"]', inputs.brand) || '["wwwallet", "intexus"]') }}
     steps:
-      # A run on a network other than testnet must use the secrets of its own
-      # GitHub environment. This check stops the run when that environment is
-      # not configured. See docs/networks.md.
-      - name: Check network environment
-        if: env.NETWORK != 'testnet'
+      # The secrets of the v4 branch have the suffix _V4, so a devnet run never
+      # uses the testnet namespace. Stop when the secret of this branch is empty.
+      - name: Check network secrets
+        env:
+          NAMESPACE_SECRET: ${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}
         run: |
-          if [ "${{ vars.NETWORK }}" != "$NETWORK" ]; then
-            echo "::error::Environment '$NETWORK' is not configured. Set its variable NETWORK=$NETWORK and its secrets (see docs/networks.md)."
+          if [ -z "$NAMESPACE_SECRET" ]; then
+            echo "::error::Secret K8S_NAMESPACE${SECRET_SUFFIX} is not set (see docs/networks.md)."
             exit 1
           fi
 
@@ -94,7 +95,8 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: verana-labs/wallet-frontend
-          ref: ${{ inputs.frontend_ref || 'master' }}
+          # The v4 branch of the fork runs the Verifiable Trust V4 checks (devnet).
+          ref: ${{ inputs.frontend_ref || (github.ref_name == 'v4' && 'v4' || 'master') }}
           path: wallet-frontend
 
       - name: Load the brand
@@ -168,7 +170,7 @@ jobs:
 
       - name: Ensure wwwallet secrets
         run: |
-          NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
+          NAMESPACE="${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}"
           if ! kubectl -n "$NAMESPACE" get secret "${RELEASE}-secrets" >/dev/null 2>&1; then
             kubectl -n "$NAMESPACE" create secret generic "${RELEASE}-secrets" \
               --from-literal=APP_SECRET="$(openssl rand -hex 32)" \
@@ -177,12 +179,12 @@ jobs:
 
       - name: Deploy wwWallet
         run: |
-          export NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
+          export NAMESPACE="${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}"
           export DEPLOY_TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           # RELEASE, HOST, API_HOST, WALLET_NAME, WALLET_TAGLINE come from brand.env;
           # FRONTEND_IMAGE and BACKEND_IMAGE from the brand step.
 
-          envsubst '${NAMESPACE} ${RELEASE} ${FRONTEND_IMAGE} ${BACKEND_IMAGE} ${HOST} ${API_HOST} ${WALLET_NAME} ${WALLET_TAGLINE} ${DEPLOY_TS}' \
+          envsubst '${NAMESPACE} ${RELEASE} ${FRONTEND_IMAGE} ${BACKEND_IMAGE} ${HOST} ${API_HOST} ${WALLET_NAME} ${WALLET_TAGLINE} ${DEPLOY_TS} ${NETWORK}' \
             < .github/workflows/wwwallet/manifests.yaml | kubectl apply -f -
 
           kubectl rollout status "statefulset/${RELEASE}-backend" -n "$NAMESPACE" --timeout=300s

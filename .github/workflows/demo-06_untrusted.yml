@@ -15,11 +15,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   demo-untrusted:
@@ -27,5 +22,4 @@ jobs:
     with:
       org: demo-untrusted
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

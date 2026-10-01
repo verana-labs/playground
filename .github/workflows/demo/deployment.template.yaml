@@ -1,15 +1,16 @@
 # Playground demo cast vs-agent deployment — Helm chart values template
 #
-# One template for every demo cast member. The demo-00_core workflow
-# substitutes __RELEASE__, __HOST__ and __NETWORK__ from the org's config.env
-# before installing. Hosts follow <org>.playground.<network>.verana.network.
+# One template for every demo cast member (vs-agent v2, Verana V4). The
+# demo-00_core workflow substitutes __RELEASE__, __HOST__, __NETWORK__,
+# __CORPORATION_ID__ and __TRUSTED_NETWORKS__ before installing, and adds the
+# per-org environment (agent mode, ECS claims, account mnemonic) from the
+# org's config.env. Hosts follow <org>.playground.<network>.verana.network.
 #
-# openid4vc ships in the default vs-agent image; orgs with OID4VC_ROLE get
-# the plugin activated via oid4vc.plugins (demo-00_core) so the
-# DemoCredential is served over both rails: AnonCreds/DIDComm (Track N
-# wallets) and OpenID4VCI/OpenID4VP (Track B wallets) — spec §4 v3 launch note.
+# Orgs with OID4VC_ROLE get an openid4vc.config value (demo-00_core), which
+# turns on the OpenID4VC plugin, so the DemoCredential is served over both
+# rails: AnonCreds/DIDComm and OpenID4VCI/OpenID4VP.
 chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
-chartVersion: v1.12.0-oidc4vc-uiprofile.49
+chartVersion: v2.0.0-pr766.2
 
 global:
   domain: playground.__NETWORK__.verana.network
@@ -17,16 +18,30 @@ global:
 name: __RELEASE__
 replicas: 1
 
-# vs-agent app image (defaults to chartVersion when tag is empty)
 image:
   repository: veranalabs/vs-agent
-  tag: v1.12.0-oidc4vc-uiprofile.49
+  tag: v2.0.0-pr766.2
 
 adminPort: 3000
 enablePublicApiSwagger: true
 didcommPort: 3001
-eventsBaseUrl: "https://__HOST__"
 publicDidMethod: "webvh"
+
+# The agent classifies each Admin API request by the peer address of its TCP
+# connection and does not read forwarding headers. A kubectl port-forward
+# comes from 127.0.0.1. The playground app reaches the Admin API through the
+# cluster Service, so the pod CIDR must also be trusted.
+# CAUTION: do not publish an ingress to the admin port. The ingress controller
+# runs in the pod CIDR, so the ingress would serve the Admin API to the
+# internet without authentication.
+adminApiAuthMode: "internal"
+adminApiTrustedNetworks: "127.0.0.0/8,::1/128,__TRUSTED_NETWORKS__"
+
+# Verana network
+veranaRpcEndpointUrl: "https://rpc.__NETWORK__.verana.network"
+veranaIndexerBaseUrl: "https://idx.__NETWORK__.verana.network"
+veranaChainId: "vna-__NETWORK__-1"
+veranaCorporationId: "__CORPORATION_ID__"
 
 resources:
   requests:
@@ -48,18 +63,18 @@ ingress:
     host: ""
 
 extraEnv:
+  # The agent accepts a level name only: trace, debug, info, warn, error or off.
   - name: AGENT_LOG_LEVEL
-    value: "3"
+    value: "info"
   - name: USE_CORS
     value: "true"
-  # Declared Verana network for the public UI (accreditations, deep links,
-  # header badge). UI-only: does not enable the backend indexer integration.
-  - name: UI_VERANA_CHAIN_ID
-    value: "vna-__NETWORK__-1"
-  - name: UI_VERANA_INDEXER_BASE_URL
-    value: "https://idx.__NETWORK__.verana.network"
-  - name: UI_NETWORK_BADGE
-    value: "Testnet"
+  # The own Verana account of the agent (the vs_operator of its Participant
+  # entries). demo-00_core creates the secret.
+  - name: VERANA_ACCOUNT_MNEMONIC
+    valueFrom:
+      secretKeyRef:
+        name: __RELEASE__-verana-account
+        key: mnemonic
 
 storage:
   size: 1Gi

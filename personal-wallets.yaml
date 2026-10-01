@@ -53,8 +53,8 @@ wallets:
     formats: [openid4vc-sdjwt]
     demoParams: signer=x5c
     browser: true
-    hosted: https://intexus-wallet.eventos.playground.testnet.verana.network
-    download: https://intexus-wallet.eventos.playground.testnet.verana.network
+    hosted: https://intexus-wallet.eventos.playground.__NETWORK__.verana.network
+    download: https://intexus-wallet.eventos.playground.__NETWORK__.verana.network
     repo: https://github.com/wwWallet/wallet-frontend
     fork: https://github.com/verana-labs/wallet-frontend
     license: BSD-2-Clause
@@ -308,13 +308,13 @@ wallets:
     formats: [openid4vc-sdjwt]
     demoParams: signer=x5c
     browser: true
-    hosted: https://wwwallet.playground.testnet.verana.network
+    hosted: https://wwwallet.playground.__NETWORK__.verana.network
     download: https://github.com/verana-labs/wallet-frontend
     website: https://wwwallet.org
     repo: https://github.com/wwWallet/wallet-frontend
     fork: https://github.com/verana-labs/wallet-frontend
     license: BSD-2-Clause
-    notes: "A browser wallet rather than an app, on OpenID4VCI and OpenID4VP. The Verana trust card sits on both consent moments and gates the accept and the share. A hosted instance runs at wwwallet.playground.testnet.verana.network: sign in with a passkey, then open any scenario below directly in the wallet. The captures come from a local build against the live demo cast."
+    notes: "A browser wallet rather than an app, on OpenID4VCI and OpenID4VP. The Verana trust card sits on both consent moments and gates the accept and the share. A hosted instance runs at wwwallet.playground.__NETWORK__.verana.network: sign in with a passkey, then open any scenario below directly in the wallet. The captures come from a local build against the live demo cast."
     captures:
       issue-accredited:
         src: ./wwwallet/screenshots/1.webp

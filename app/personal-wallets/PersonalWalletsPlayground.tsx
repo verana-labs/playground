@@ -16,6 +16,7 @@ import {
 import MediaLightbox, { type LightboxMedia } from "../components/MediaLightbox";
 import { Container, Section, SectionHeading, Chip } from "../components/ui";
 import { LINKS } from "../lib/site";
+import { NETWORK } from "../lib/network";
 import { ServiceQr } from "../components/ServiceQr";
 import HostedWalletQr from "../components/HostedWalletQr";
 import LiveTrustCard from "../components/LiveTrustCard";
@@ -470,7 +471,7 @@ export default function PersonalWalletsPlayground({
               Playground Ecosystem (demo)
             </strong>{" "}
             and its single <em>DemoCredential</em> schema - real registry
-            entries, resolved live on the Verana testnet. The same services for
+            entries, resolved live on the Verana {NETWORK}. The same services for
             every wallet; only the QR format changes.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-gray-500">
@@ -585,7 +586,7 @@ export default function PersonalWalletsPlayground({
                   </strong>{" "}
                   - there is no APK to install.{" "}
                   {wallet.hosted
-                    ? `Open our hosted build below; it is the Verana-integrated ${wallet.name}, configured for the testnet.`
+                    ? `Open our hosted build below; it is the Verana-integrated ${wallet.name}, configured for the ${NETWORK}.`
                     : `Our Verana build is not hosted yet - run it from the fork below. `}
                   The public {wallet.name} instance does not include the
                   integration.
@@ -597,7 +598,7 @@ export default function PersonalWalletsPlayground({
                     modified APK
                   </strong>{" "}
                   by clicking the link below - it is the Verana-integrated build
-                  of {wallet.name}, configured for the testnet. Store builds may
+                  of {wallet.name}, configured for the {NETWORK}. Store builds may
                   not include the integration.
                 </p>
               )}

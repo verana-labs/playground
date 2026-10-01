@@ -33,7 +33,6 @@ jobs:
   run:
     name: "${{ inputs.org }}"
     runs-on: ubuntu-latest
-    environment: ${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
     # All playground casts (vesta-*, demo-* and verandia-*) sign with the same
     # veranad account; running two jobs at once races on the account's
     # transaction sequence number. The shared group name serializes every
@@ -44,16 +43,13 @@ jobs:
       group: vesta-cast-${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
       cancel-in-progress: false
     steps:
-      # A run on a network other than testnet must use the secrets of its own
-      # GitHub environment. This check stops the run when that environment is
-      # not configured. See docs/networks.md.
-      - name: Check network environment
+      # This cast still uses the Verana V3 model, which only testnet runs. On the
+      # v4 branch it would deploy V3 agents into the devnet namespace.
+      - name: Check network protocol
         if: env.NETWORK != 'testnet'
         run: |
-          if [ "${{ vars.NETWORK }}" != "$NETWORK" ]; then
-            echo "::error::Environment '$NETWORK' is not configured. Set its variable NETWORK=$NETWORK and its secrets (see docs/networks.md)."
-            exit 1
-          fi
+          echo "::error::This cast uses Verana V3, which devnet does not run. Run it from the main branch."
+          exit 1
 
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0

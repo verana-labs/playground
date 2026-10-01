@@ -9,6 +9,7 @@ import { withBase } from "./base-path";
 import path from "node:path";
 import yaml from "js-yaml";
 import { z } from "zod";
+import { NETWORK } from "./network";
 
 export const CREDENTIAL_FORMATS = ["anoncreds", "openid4vc-sdjwt"] as const;
 export type CredentialFormat = (typeof CREDENTIAL_FORMATS)[number];
@@ -115,7 +116,10 @@ function loadPersonalWallets(): PersonalWallet[] {
     cache = [];
     return cache;
   }
-  const raw = yaml.load(fs.readFileSync(file, "utf8"));
+  // Hosts of the instances that this repo deploys per network use the
+  // __NETWORK__ placeholder (the same one as wwwallet/brands/*/brand.env).
+  const text = fs.readFileSync(file, "utf8").replaceAll("__NETWORK__", NETWORK);
+  const raw = yaml.load(text);
   const parsed = WalletsFileSchema.safeParse(raw);
   if (!parsed.success) {
     const issues = parsed.error.issues

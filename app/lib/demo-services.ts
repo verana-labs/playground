@@ -5,9 +5,10 @@ import { CEXA_CAST } from "./cexa-cast";
 import { VERANDIA_CAST } from "./verandia-cast";
 import { BHI_CAST } from "./bhi-cast";
 import { EVENTOS_CAST } from "./eventos-cast";
+import { networkHost } from "./network";
 
-const BASE = process.env.DEMOS_BASE_DOMAIN ?? "main.demos.testnet.verana.network";
-const CAST = process.env.CAST_BASE_DOMAIN ?? "playground.testnet.verana.network";
+const BASE = process.env.DEMOS_BASE_DOMAIN ?? networkHost("main.demos");
+const CAST = process.env.CAST_BASE_DOMAIN ?? networkHost("playground");
 
 export type DemoService = { id: string; label: string; host: string;
   appUrl?: string; did?: string; role: "anchor" | "issuer" | "verifier" | "untrusted" };

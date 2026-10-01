@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDemoService } from "@/app/lib/demo-services";
-import { adminBase, adminJson, CAST_DOMAIN, VTJSC_URL } from "@/app/lib/demo-admin";
+import { adminBase, adminJson, CAST_DOMAIN, demoVtjscUrl, VTJSC_URL } from "@/app/lib/demo-admin";
+import { PROTOCOL } from "@/app/lib/network";
 import {
   BADGE_CREDENTIAL_TYPE_NAME,
   badgeDemoClaims,
@@ -261,6 +262,22 @@ async function credDefId(
   admin: string,
   kind: CredentialKind,
 ): Promise<string | null> {
+  if (PROTOCOL === "v4") {
+    // vs-agent v2 names a credential definition after the schema title, so
+    // match on the VTJSC only.
+    const list = await adminJson(`${admin}/v2/anoncreds/credential-definitions`);
+    const items = (list as { items?: unknown } | null)?.items;
+    const match = Array.isArray(items)
+      ? items.find(
+          (t) =>
+            t && typeof t === "object" &&
+            (t as { relatedJsonSchemaCredentialId?: unknown })
+              .relatedJsonSchemaCredentialId === kind.jscUrl,
+        )
+      : undefined;
+    const id = (match as { id?: unknown } | undefined)?.id;
+    return typeof id === "string" ? id : null;
+  }
   const types = await adminJson(`${admin}/v1/credential-types`);
   if (!Array.isArray(types)) return null;
   // credDefName null = the type was provisioned keyed on its VTJSC
@@ -343,10 +360,10 @@ export async function GET(
   // DID it names in its URI SAN.
   const requestSigner = search.get("signer") === "x5c" ? "x5c" : undefined;
   const applicant = applicantFromParams(search);
-  const kind = CREDENTIALS[credentialId];
+  const registered = CREDENTIALS[credentialId];
   const isBadge = credentialId === "ecs-badge";
   const service = getDemoService(serviceId);
-  if (!service || !kind)
+  if (!service || !registered)
     return NextResponse.json({ error: "unknown service" }, { status: 404 });
 
   // The unprovisioned-but-minting pair (spec §4): untrusted on Q1, yet they
@@ -372,10 +389,14 @@ export async function GET(
   // demo the untrusted impostor DOES mint offers: the wallet flags them red,
   // and the portal refuses the badge at login.
   const isCast = service.host.endsWith(CAST_DOMAIN);
+  // On V4 (vs-agent v2) there is no connection invitation endpoint, so the
+  // untrusted minting pair mints on both rails (vs-agent
+  // AGENT_UNSAFE_SKIP_OWN_AUTHORIZATION, demo only).
+  const untrustedMints = Boolean(mintRole) && (wantsOid4vc || PROTOCOL === "v4");
   if (
     !isCast ||
     service.role === "anchor" ||
-    (service.role === "untrusted" && !isBadge && !(wantsOid4vc && mintRole))
+    (service.role === "untrusted" && !isBadge && !untrustedMints)
   ) {
     return NextResponse.json({
       kind: "invitation",
@@ -384,6 +405,91 @@ export async function GET(
   }
 
   const admin = adminBase(serviceId);
+  let kind = registered;
+
+  // V4 (vs-agent v2): the agent takes the credential type, the claims schema
+  // and the vct from the VPR, so each call names the VTJSC. The agent refuses
+  // to mint without an active ISSUER or VERIFIER Participant entry.
+  if (PROTOCOL === "v4") {
+    try {
+      if (credentialId === "demo-credential")
+        kind = { ...registered, jscUrl: await demoVtjscUrl() };
+      if (wantsOid4vc) {
+        if (mintRole === "issuer") {
+          const offer = await adminJson(`${admin}/v2/openid4vc/credential-offer`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              jsonSchemaCredentialId: kind.jscUrl,
+              claims: kind.oid4vcClaims(serviceId, applicant, search),
+              ttlSeconds: 2_592_000,
+            }),
+          });
+          const url = str(offer, "url");
+          if (!url) throw new Error("no url in response");
+          return NextResponse.json({
+            kind: "oid4vc-credential-offer",
+            url,
+            issuanceSessionId: str(offer, "credentialExchangeId"),
+          });
+        }
+        const request = await adminJson(`${admin}/v2/openid4vc/presentation-request`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            jsonSchemaCredentialId: kind.jscUrl,
+            ...(queryLanguage ? { queryLanguage } : {}),
+            ...(requestSigner ? { requestSigner } : {}),
+          }),
+        });
+        const url = str(request, "url");
+        if (!url) throw new Error("no url in response");
+        return NextResponse.json({
+          kind: "oid4vc-presentation-request",
+          url,
+          verificationSessionId: str(request, "proofExchangeId"),
+        });
+      }
+      if (mintRole === "issuer") {
+        const credentialDefinitionId = await credDefId(admin, kind);
+        if (!credentialDefinitionId)
+          return NextResponse.json(
+            { error: `no ${kind.label} credential definition on this issuer` },
+            { status: 503 },
+          );
+        const offer = await adminJson(`${admin}/v2/didcomm/credential-offer`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            credentialDefinitionId,
+            claims: kind.claims(serviceId, applicant, search),
+            // Without autoAccept the exchange stops at request-received.
+            autoAccept: true,
+          }),
+        });
+        return NextResponse.json({
+          kind: "credential-offer",
+          url: oobUrl(offer),
+          credentialExchangeId: str(offer, "credentialExchangeId"),
+        });
+      }
+      const request = await adminJson(`${admin}/v2/didcomm/presentation-request`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          requestedCredentials: [{ jsonSchemaCredentialId: kind.jscUrl }],
+          autoAccept: true,
+        }),
+      });
+      return NextResponse.json({
+        kind: "presentation-request",
+        url: oobUrl(request),
+        proofExchangeId: str(request, "proofExchangeId"),
+      });
+    } catch {
+      return NextResponse.json({ kind: "unsupported", format });
+    }
+  }
 
   // OpenID4VC SD-JWT rail: mint an OID4VCI credential offer / OID4VP
   // authorization request via the agents' OID4VC plugin endpoints. On agents

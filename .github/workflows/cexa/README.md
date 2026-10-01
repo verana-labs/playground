@@ -24,7 +24,7 @@ plus Travel Rule counterparty proof. One vs-agent per member on the
 5. Wire the live DIDs into `app/lib/cexa-cast.ts` (from each host's
    `/.well-known/did.jsonl`, `state.id`) - the use case demos gate on them.
 
-Workflows share the `vesta-cast` concurrency group with every other cast:
+Workflows share the `vesta-cast-<network>` concurrency group with every other cast:
 all casts sign with the same veranad account, so start one workflow at a
 time.
 

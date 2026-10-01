@@ -12,6 +12,7 @@ import {
   WalletProfileSchema,
 } from "./wallet-profiles";
 import { WalletsFileSchema } from "./wallets";
+import { NETWORK } from "./network";
 
 const device = { activity: ".Main", unlock: "passcode", secret: "123456", coldStart: false };
 
@@ -197,8 +198,12 @@ describe("listWalletProfiles", () => {
 });
 
 describe("profiles match the listing", () => {
+  // Resolve the __NETWORK__ placeholder as loadPersonalWallets does.
   const listing = WalletsFileSchema.parse(
-    yaml.load(fs.readFileSync(path.join(process.cwd(), "personal-wallets.yaml"), "utf8")),
+    yaml.load(
+      fs.readFileSync(path.join(process.cwd(), "personal-wallets.yaml"), "utf8")
+        .replaceAll("__NETWORK__", NETWORK),
+    ),
   ).wallets;
   const visible = listing.filter((w) => !w.hidden);
   const profiles = listWalletProfiles();

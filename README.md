@@ -44,6 +44,11 @@ npm run dev        # http://localhost:3000
 npm run build      # production build (standalone output)
 ```
 
+## Networks
+
+The `main` branch deploys to testnet (Verana V3). The `v4` branch deploys to
+devnet (Verana V4). See [docs/networks.md](./docs/networks.md).
+
 ## Related
 
 - Demo services (v3 examples; dedicated Vesta cast pending): [`verana-labs/verana-demos`](https://github.com/verana-labs/verana-demos)

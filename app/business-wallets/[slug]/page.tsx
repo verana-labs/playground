@@ -156,7 +156,7 @@ export default async function CloudWalletPlayground({
                     </a>
                     {" · "}
                     <a
-                      href={`${ENDPOINTS.resolver}/docs`}
+                      href={ENDPOINTS.resolverDocs}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-violet-600 hover:underline"
@@ -273,7 +273,7 @@ export default async function CloudWalletPlayground({
                     </li>
                     <li>
                       <a
-                        href={`${ENDPOINTS.resolver}/docs`}
+                        href={ENDPOINTS.resolverDocs}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-medium text-violet-600 hover:underline"

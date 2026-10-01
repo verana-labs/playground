@@ -1,41 +1,58 @@
 #!/usr/bin/env bash
-# Provision the Playground Demo anchor: ECS-Organization issued by Helvetia
-# (from the vesta cast, same cluster/namespace), self-issued ECS-Service, and
-# the Playground Ecosystem (demo) trust registry with the DemoCredential
-# schema, root permission and VTJSC. Shares common.sh with the vesta cast.
+# Provision the Playground Demo anchor on Verana V4:
+#   1. The ECS Participant entries of the anchor: an ISSUER entry on the ECS
+#      Service schema (OPEN) and a HOLDER entry on the ECS Organization schema.
+#   2. The onboarding on ecs-org-issuer, which issues the ECS Organization
+#      credential. The agent then issues its own ECS Service credential.
+#   3. The Playground Ecosystem (demo), the DemoCredential schema and its root
+#      Participant entry.
+# The workflow has already deployed the agent with its own account (AGENT_ADDR)
+# and the cast Corporation (CORPORATION_ID, CORPORATION).
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
-source "${CAST_DIR}/scripts/lib.sh"
+source "${CAST_DIR}/common.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
 start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_HELVETIA" 3101
 API="http://localhost:3100"
-HELVETIA_API="http://localhost:3101"
 
 AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
+[ -n "$AGENT_DID" ] || { err "Could not read the agent DID"; exit 1; }
 ok "Playground Demo anchor DID: $AGENT_DID"
 
-# ECS-Organization — issued by Helvetia
-obtain_ecs_org_credential "$API" "$HELVETIA_API" "$AGENT_DID"
+# 1. ECS Participant entries
+ECS_ORG_SCHEMA_ID=$(find_ecs_schema_id "OrganizationCredential")
+ECS_SERVICE_SCHEMA_ID=$(find_ecs_schema_id "ServiceCredential")
+ok "ECS schemas: organization=$ECS_ORG_SCHEMA_ID service=$ECS_SERVICE_SCHEMA_ID"
 
-# ECS-Service — self-issued
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
+ECS_ORG_ISSUER_DID=$(fetch_did_from_log "$ECS_ORG_ISSUER_PUBLIC_URL") \
+  || { err "Could not read the DID of $ECS_ORG_ISSUER_PUBLIC_URL"; exit 1; }
+ECS_ORG_ISSUER_PARTICIPANT_ID=$(find_active_participant "$ECS_ORG_SCHEMA_ID" "$PP_IDX_ROLE_ISSUER" "$ECS_ORG_ISSUER_DID") \
+  || { err "$ECS_ORG_ISSUER_DID has no active ISSUER entry on the ECS Organization schema"; exit 1; }
+ECS_SERVICE_ROOT_ID=$(find_root_participant "$ECS_SERVICE_SCHEMA_ID") \
+  || { err "The ECS Service schema has no active root participant"; exit 1; }
 
-# Playground Ecosystem (demo): trust registry + DemoCredential schema
-# (issuer mode ecosystem-governed, verifier mode open) + root perm + VTJSC
-SCHEMA_JSON=$(jq -c '.' "${CAST_DIR}/schemas/${SCHEMA_FILE}")
-TR_ID=$(ensure_trust_registry "$AGENT_DID" "https://${INGRESS_HOST}" "$EGF_DOC_URL")
-CS_ID=$(ensure_schema_with_root "$TR_ID" "$SCHEMA_JSON" "$AGENT_DID")
-VTJSC_URL=$(ensure_jsc "$API" "$CUSTOM_SCHEMA_BASE_ID" "$CS_ID")
+# The anchor issues its own ECS Service credential, and the ECS Service
+# credentials of the delegated demo services.
+SERVICE_ISSUER_ID=$(ensure_participant self "$ECS_SERVICE_SCHEMA_ID" "$PP_ROLE_ISSUER" "$ECS_SERVICE_ROOT_ID" \
+  "$AGENT_DID" "$VSOA_ISSUER")
+# HOLDER is the only role whose vs_operator can send TriggerResolver.
+ensure_participant start "$ECS_ORG_SCHEMA_ID" "$PP_ROLE_HOLDER" "$ECS_ORG_ISSUER_PARTICIPANT_ID" \
+  "$AGENT_DID" "$VSOA_HOLDER" > /dev/null
 
-# AnonCreds for the DemoCredential (dual rail): register the schema + cred
-# def on the anchor, linked to the ecosystem VTJSC. The anonCredsSchema
-# resource must be hosted HERE (the VTJSC issuer's host) — that is where
-# verifiers resolve the schema from jsonSchemaCredentialId at
-# presentation-request time.
-ensure_credential_type "$API" "$VTJSC_URL"
+# 2. The onboarding on ecs-org-issuer (in the chain namespace)
+start_port_forward "$ECS_ORG_ISSUER_RELEASE" 3101 "$ECS_NAMESPACE"
+complete_onboarding "http://localhost:3101" "$AGENT_DID"
 
-ok "Playground Demo anchor provisioned: TR=$TR_ID, CS=$CS_ID"
+# The self-issued ECS Service credential (see ensure_self_issued_service_credential).
+# A restart ends the port-forward to the anchor, so stop it first.
+stop_port_forwards
+ensure_self_issued_service_credential "$RELEASE_NAME" "$INGRESS_HOST" "$SERVICE_ISSUER_ID"
+
+# 3. Playground Ecosystem (demo) + DemoCredential schema + root participant
+SCHEMA_JSON=$(sed "s/__NETWORK__/${NETWORK}/g" "${CAST_DIR}/schemas/${SCHEMA_FILE}" | jq -c '.')
+ECOSYSTEM_ID=$(ensure_ecosystem "$AGENT_DID")
+CS_ID=$(ensure_credential_schema "$ECOSYSTEM_ID" "$SCHEMA_JSON")
+ROOT_ID=$(ensure_root_participant "$CS_ID" "$AGENT_DID")
+
+ok "Playground Demo anchor provisioned: Ecosystem=$ECOSYSTEM_ID, CS=$CS_ID, root participant=$ROOT_ID"

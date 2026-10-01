@@ -61,9 +61,10 @@ jobs:
         with:
           context: wallet-backend-server
           push: true
+          # Only testnet moves the "latest" tag. Other networks use the network name.
+          # (A comment inside the block below would become a tag.)
           tags: |
             veranalabs/wwwallet-backend:${{ github.sha }}
-            # Only testnet moves the "latest" tag. Other networks use the network name.
             veranalabs/wwwallet-backend:${{ env.NETWORK == 'testnet' && 'latest' || env.NETWORK }}
           cache-from: type=gha,scope=wwwallet-backend
           cache-to: type=gha,mode=max,scope=wwwallet-backend

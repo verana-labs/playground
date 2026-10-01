@@ -663,6 +663,59 @@ set_participant_validated() {
 }
 
 # ---------------------------------------------------------------------------
+# Self-issued ECS Service credential
+# ---------------------------------------------------------------------------
+
+# True when the DID document of a host presents its self-issued ECS Service credential.
+has_service_credential() {
+  curl -sf "https://$1/.well-known/did.json" 2>/dev/null \
+    | jq -e '[.service[]? | select(.id | endswith("#vpr-schemas-service-vtc-vp"))] | length > 0' > /dev/null
+}
+
+# Make sure that a standalone agent presents its self-issued ECS Service credential.
+# The agent issues it when it sees the event of its own ISSUER entry, but only when
+# the entry is ACTIVE. The entry becomes effective some seconds after that event
+# (effective_from must be in the future), so the agent can skip it. The agent
+# checks its ISSUER entries again when it starts, so restart it in that case.
+# Usage: ensure_self_issued_service_credential <release> <host> <issuer_participant_id>
+ensure_self_issued_service_credential() {
+  local release=$1
+  local host=$2
+  local participant_id=$3
+  local effective_from wait_s i
+
+  if has_service_credential "$host"; then
+    ok "$host presents its ECS Service credential"
+    return 0
+  fi
+
+  effective_from=$(veranad query pp get-participant "$participant_id" --node "$NODE_RPC" --output json 2>/dev/null \
+    | jq -r '.participant.effective_from // empty')
+  if [ -n "$effective_from" ]; then
+    wait_s=$(( $(date -u -d "$effective_from" +%s) - $(date -u +%s) + 5 ))
+    if [ "$wait_s" -gt 0 ]; then
+      log "Waiting ${wait_s}s until ISSUER participant $participant_id is effective..."
+      sleep "$wait_s"
+    fi
+  fi
+
+  for i in $(seq 1 6); do
+    has_service_credential "$host" && { ok "$host presents its ECS Service credential"; return 0; }
+    sleep 5
+  done
+
+  log "Restarting $release, so that it issues its ECS Service credential..."
+  kubectl rollout restart statefulset "$release" -n "$NAMESPACE" > /dev/null
+  kubectl rollout status statefulset "$release" -n "$NAMESPACE" --timeout=600s
+  for i in $(seq 1 24); do
+    has_service_credential "$host" && { ok "$host presents its ECS Service credential"; return 0; }
+    sleep 5
+  done
+  err "$host does not present its ECS Service credential after the restart"
+  return 1
+}
+
+# ---------------------------------------------------------------------------
 # vt-flow onboarding (/v2/vt/flows on the validator agent)
 # ---------------------------------------------------------------------------
 

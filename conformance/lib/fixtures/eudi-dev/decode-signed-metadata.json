@@ -1,0 +1,91 @@
+{
+  "format": "jwt",
+  "header": {
+    "alg": "ES256",
+    "typ": "openidvci-issuer-metadata+jwt",
+    "x5c": [
+      "MIICpzCCAk2gAwIBAgIQVagPa31iFVVd1TZpf6eJ6TAKBggqhkjOPQQDAjBJMUcwRQYDVQQDEz5kZW1vLWlzc3Vlci1hY2NyZWRpdGVkLnBsYXlncm91bmQuZGV2bmV0LnZlcmFuYS5uZXR3b3JrIGlzc3VlcjAeFw0yNjEwMDExNTE2MjBaFw0yNzEwMDExNTE3MjBaMEkxRzBFBgNVBAMTPmRlbW8taXNzdWVyLWFjY3JlZGl0ZWQucGxheWdyb3VuZC5kZXZuZXQudmVyYW5hLm5ldHdvcmsgaXNzdWVyMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEX9W54d+w65lqXl81dEGnZ6PYJH5px56aaaqZpDhbHk07DVYwaiBMYlFCf4m9XAvftRMqXC/MNcmVlGkgBP0DnaOCARUwggERMB0GA1UdDgQWBBSBqKIJgu8rvdHkkH9/Qlr1DogcvTALBgNVHQ8EBAMCB4AwHwYDVR0jBBgwFoAUgaiiCYLvK73R5JB/f0Ja9Q6IHL0wgbYGA1UdEQSBrjCBq4ZwZGlkOndlYnZoOlFtYXVwNlhIbjRVTVRFVXU5UFdNRXdjUkFZbVo3NFNwUHBVR1lwblhqOWRUUGY6ZGVtby1pc3N1ZXItYWNjcmVkaXRlZC5wbGF5Z3JvdW5kLmRldm5ldC52ZXJhbmEubmV0d29ya4I3ZGVtby1pc3N1ZXItYWNjcmVkaXRlZC5wbGF5Z3JvdW5kLmRldm5ldC52ZXJhbmEubmV0d29yazAJBgNVHRMEAjAAMAoGCCqGSM49BAMCA0gAMEUCIQC24OCgWmySvIPo7n7+26b2KrlzPAmXGm6gt+M7F6dazgIgeuEyKl0eisXtlDichrjW6dbo+HY2nP2Mc9FFjTwIPg4="
+    ]
+  },
+  "payload": {
+    "credential_configurations_supported": {
+      "https://playground-demo.playground.devnet.verana.network/vt/schemas-8-jsc.json": {
+        "credential_metadata": {
+          "claims": [
+            {
+              "path": [
+                "demoId"
+              ]
+            },
+            {
+              "path": [
+                "name"
+              ]
+            }
+          ],
+          "display": [
+            {
+              "locale": "en",
+              "name": "DemoCredential"
+            }
+          ]
+        },
+        "credential_signing_alg_values_supported": [
+          "ES256"
+        ],
+        "cryptographic_binding_methods_supported": [
+          "jwk"
+        ],
+        "format": "dc+sd-jwt",
+        "proof_types_supported": {
+          "jwt": {
+            "proof_signing_alg_values_supported": [
+              "ES256"
+            ]
+          }
+        },
+        "scope": "https://playground-demo.playground.devnet.verana.network/vt/schemas-8-jsc.json",
+        "vct": "https://playground-demo.playground.devnet.verana.network/vt/vct/8"
+      }
+    },
+    "credential_endpoint": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer/credential",
+    "credential_issuer": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer",
+    "deferred_credential_endpoint": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer/deferred-credential",
+    "display": [
+      {
+        "locale": "en",
+        "logo": {
+          "uri": "https://raw.githubusercontent.com/verana-labs/playground/main/public/images/cast/demo-issuer.svg"
+        },
+        "name": "Accredited Issuer (demo)"
+      }
+    ],
+    "iat": 1790873952,
+    "nonce_endpoint": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer/nonce",
+    "sub": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer"
+  },
+  "validation": {
+    "checks": [
+      {
+        "name": "expiry",
+        "status": "skipped",
+        "detail": "No exp claim present"
+      },
+      {
+        "name": "integrity",
+        "status": "skipped",
+        "detail": "Not applicable for plain JWT"
+      },
+      {
+        "name": "signature",
+        "status": "pass",
+        "detail": "Valid (ES256, via x5c certificate, chain not validated)"
+      },
+      {
+        "name": "status",
+        "status": "skipped",
+        "detail": "Not applicable for plain JWT"
+      }
+    ]
+  }
+}

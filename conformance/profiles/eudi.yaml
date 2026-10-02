@@ -26,6 +26,20 @@ builds:
       unlock: pinfield
       secret: "123456"
       coldStart: false
+      delivery: scan
+      onboard:
+        - type: secret
+        - type: secret
+        - tap: go to home
+      scan:
+        issue:
+          - tap: documents
+          - tap: add
+          - tap: scan qr
+        present:
+          - tap: home
+          - tap: authenticate
+          - tap: scan qr
   - kind: publisher
     label: "Demo APK from the EU reference wallet releases"
     obtain: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui/releases

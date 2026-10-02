@@ -26,6 +26,25 @@ builds:
       unlock: password
       secret: playground1
       coldStart: true
+      delivery: scan
+      onboard:
+        - tap: start
+        - tap: next
+        - tap: next
+        - tap: next
+        - tap: allow
+        - tap: create password
+        - type: secret
+        - tap: next
+        - type: secret
+        - tap: next
+        - tap: no thanks
+        - wait: 30
+      scan:
+        issue:
+          - tap: scan
+        present:
+          - tap: scan
   - kind: store
     label: "swiyu on Google Play"
     obtain: https://play.google.com/store/apps/details?id=ch.admin.foitt.swiyu

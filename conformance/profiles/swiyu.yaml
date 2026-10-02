@@ -12,20 +12,41 @@ openid4vc:
 builds:
   - kind: fork
     listed: true
+    networks: [devnet-v4]
+    signerSha256: "D0:8D:AC:18:16:05:5B:DF:3C:B5:FD:1C:E7:76:88:30:9B:AB:58:8A:3D:F5:0F:24:A0:CD:08:39:B7:39:75:C7"
     label: "Verana trust fork, universal debug APK"
-    obtain: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-08-17/swiyu-verana-universal-debug.apk
+    obtain: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-10-02/swiyu-verana-universal-debug.apk
     identity:
       package: ch.admin.foitt.swiyu.dev
-      version: verana-2026-08-17
+      version: verana-2026-10-02
       repo: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana
-      ref: verana-2026-08-17
+      ref: verana-2026-10-02
     platforms: [android]
-    promises: "Q1, Q2 and Q3 rendered. The only wallet confirmed to hard-block Add on a Q2 denial. No TESTNET chip"
+    promises: "Q1, Q2 and Q3 resolved through the v4 indexer, with the DEVNET chip. Add and Allow are hard-blocked on a Q2 or Q3 denial"
     device:
       activity: ch.admin.foitt.wallet.app.MainActivity
       unlock: password
       secret: playground1
       coldStart: true
+      delivery: scan
+      onboard:
+        - tap: start
+        - tap: next
+        - tap: next
+        - tap: next
+        - tap: allow
+        - tap: create password
+        - type: secret
+        - tap: next
+        - type: secret
+        - tap: next
+        - tap: no thanks
+        - wait: 30
+      scan:
+        issue:
+          - tap: scan
+        present:
+          - tap: scan
   - kind: store
     label: "swiyu on Google Play"
     obtain: https://play.google.com/store/apps/details?id=ch.admin.foitt.swiyu
@@ -52,6 +73,41 @@ builds:
       unlock: password
       secret: playground1
       coldStart: true
+  - kind: fork
+    networks: [testnet-v3]
+    label: "Verana v3 trust fork, universal debug APK"
+    obtain: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-08-17/swiyu-verana-universal-debug.apk
+    identity:
+      package: ch.admin.foitt.swiyu.dev
+      version: verana-2026-08-17
+      repo: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana
+      ref: verana-2026-08-17
+    platforms: [android]
+    promises: "Q1, Q2 and Q3 rendered through the v3 resolver. The only wallet confirmed to hard-block Add on a Q2 denial. No TESTNET chip"
+    device:
+      activity: ch.admin.foitt.wallet.app.MainActivity
+      unlock: password
+      secret: playground1
+      coldStart: true
+      delivery: scan
+      onboard:
+        - tap: start
+        - tap: next
+        - tap: next
+        - tap: next
+        - tap: allow
+        - tap: create password
+        - type: secret
+        - tap: next
+        - type: secret
+        - tap: next
+        - tap: no thanks
+        - wait: 30
+      scan:
+        issue:
+          - tap: scan
+        present:
+          - tap: scan
 quirks:
   actsOnLinkOnlyAtColdStart: true
   locksOnBackground: true

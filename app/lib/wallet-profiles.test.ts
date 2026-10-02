@@ -233,3 +233,86 @@ describe("profiles match the listing", () => {
     }
   });
 });
+
+describe("device steps", () => {
+  it("accepts a profile with onboarding and scanner steps", () => {
+    const profile = WalletProfileSchema.parse({
+      id: "demo-wallet",
+      rails: ["openid4vc-sdjwt"],
+      openid4vc: {
+        library: "example lib",
+        proxy: "@openid4vc/openid4vci",
+        vciDrafts: ["v1"],
+        offerSchemes: ["openid-credential-offer"],
+        requestSchemes: ["openid4vp"],
+        asDiscovery: ["oauth-authorization-server"],
+        presentation: { query: "dcql", clientId: "x509_hash", responseMode: "direct_post.jwt" },
+        demoParams: "signer=x5c",
+      },
+      builds: [
+        {
+          kind: "fork",
+          listed: true,
+          label: "fork apk",
+          obtain: "https://example.org/wallet.apk",
+          signerSha256: "AA:BB:CC",
+          identity: { package: "org.example.wallet", repo: "https://example.org/repo", ref: "verana-2026-09-01" },
+          platforms: ["android"],
+          promises: "everything",
+          device: {
+            activity: "org.example.wallet.MainActivity",
+            unlock: "pinfield",
+            secret: "123456",
+            coldStart: false,
+            delivery: "scan",
+            onboard: [{ tap: "get started" }, { type: "secret" }, { wait: 2 }],
+            scan: { issue: [{ tap: "documents" }, { tap: "scan qr" }] },
+          },
+        },
+      ],
+      quirks: { actsOnLinkOnlyAtColdStart: false, locksOnBackground: false, viewTree: "readable" },
+    });
+    const build = profile.builds[0];
+    expect(build?.device?.delivery).toBe("scan");
+    expect(build?.device?.onboard?.[1]).toEqual({ type: "secret" });
+    expect(build?.device?.scan?.issue?.[1]).toEqual({ tap: "scan qr" });
+    expect(build?.signerSha256).toBe("AA:BB:CC");
+  });
+
+  it("rejects a step that is neither a tap, a type nor a wait", () => {
+    expect(() =>
+      WalletProfileSchema.parse({
+        id: "demo-wallet",
+        rails: ["openid4vc-sdjwt"],
+        openid4vc: {
+          library: "example lib",
+          proxy: "@openid4vc/openid4vci",
+          vciDrafts: ["v1"],
+          offerSchemes: ["openid-credential-offer"],
+          requestSchemes: ["openid4vp"],
+          asDiscovery: ["oauth-authorization-server"],
+          presentation: { query: "dcql", clientId: "did", responseMode: "direct_post.jwt" },
+          demoParams: "",
+        },
+        builds: [
+          {
+            kind: "fork",
+            listed: true,
+            label: "fork apk",
+            obtain: "https://example.org/wallet.apk",
+            identity: { package: "org.example.wallet", repo: "https://example.org/repo", ref: "verana-2026-09-01" },
+            platforms: ["android"],
+            promises: "everything",
+            device: {
+              activity: "org.example.wallet.MainActivity",
+              unlock: "none",
+              coldStart: false,
+              onboard: [{ swipe: "left" }],
+            },
+          },
+        ],
+        quirks: { actsOnLinkOnlyAtColdStart: false, locksOnBackground: false, viewTree: "readable" },
+      }),
+    ).toThrow();
+  });
+});

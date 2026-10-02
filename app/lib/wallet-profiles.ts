@@ -76,12 +76,21 @@ const IncompatibilitySchema = z.object({
   verified: isoDate,
 });
 
+const DeviceStepSchema = z.union([
+  z.object({ tap: z.string().min(1) }).strict(),
+  z.object({ type: z.literal("secret") }).strict(),
+  z.object({ wait: z.number().int().positive() }).strict(),
+]);
+
 const DeviceSchema = z.object({
   activity: z.string().min(1),
   unlock: z.enum(UNLOCK_RECIPES),
   secret: z.string().optional(),
   coldStart: z.boolean(),
   neverForceStop: z.boolean().optional(),
+  delivery: z.enum(["scan", "link"]).optional(),
+  onboard: z.array(DeviceStepSchema).optional(),
+  scan: z.object({ issue: z.array(DeviceStepSchema).optional(), present: z.array(DeviceStepSchema).optional() }).strict().optional(),
 });
 
 const BuildSchema = z.object({
@@ -89,6 +98,7 @@ const BuildSchema = z.object({
   listed: z.boolean().optional(),
   label: z.string().min(1),
   obtain: z.url(),
+  signerSha256: z.string().min(1).optional(),
   identity: IdentitySchema,
   platforms: z.array(z.enum(PLATFORMS)).min(1),
   presumptive: z.array(z.enum(PLATFORMS)).optional(),

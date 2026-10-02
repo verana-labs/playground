@@ -110,7 +110,8 @@ export function renderMarkdown(report: GateReport): string {
   const section = (title: string, rows: string[]): void => {
     if (rows.length > 0) lines.push(`### ${title} (${rows.length})`, "", ...rows, "");
   };
-  section("New failures", report.failures.map((f) => `- \`${f.kind}\` ${f.key}${f.cause ? `: ${f.cause}` : ""}`));
+  const oneLine = (text: string): string => text.replace(/\s+/g, " ").trim();
+  section("New failures", report.failures.map((f) => `- \`${f.kind}\` ${f.key}${f.cause ? `: ${oneLine(f.cause)}` : ""}`));
   section("Expired known issues", report.expired.map((i) => `- ${i.cause} (expired ${i.expires})`));
   section("Known issues no longer seen, remove them from known-issues.yaml", report.resolved.map((i) => `- ${i.cause}`));
   section("Known broken", report.known.map((k) => `- ${k.key}: ${k.cause}`));

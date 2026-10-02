@@ -139,6 +139,11 @@ describe("renderMarkdown", () => {
     expect(text).toContain("self-signed");
     expect(text.indexOf("New failures")).toBeLessThan(text.indexOf("Known broken"));
   });
+
+  it("keeps a multi-line cause on its list item", () => {
+    const text = renderMarkdown({ failures: [{ kind: "unknown", key: "k", cause: 'unsupported\n{\n  "error": "invalid_request"\n}' }], known: [], resolved: [], expired: [] });
+    expect(text).toContain('- `unknown` k: unsupported { "error": "invalid_request" }\n');
+  });
 });
 
 describe("known-issues.yaml", () => {

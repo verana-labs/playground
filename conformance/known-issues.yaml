@@ -144,3 +144,36 @@ issues:
     cause: inji-openid4vp only supports did, redirect_uri and pre-registered client ids, so it cannot parse the x509_hash requests of the devnet demo verifiers
     reference: https://github.com/verana-labs/inji-wallet/pull/3
     expires: 2026-10-16
+
+  - match:
+      tier: t2
+      check: reference-holder-haip
+      network: devnet-v4
+      cast: demo
+      service: [demo-issuer-accredited, demo-issuer-unaccredited]
+      scenario: [issue-accredited, issue-unaccredited]
+    cause: "HAIP 1.0 §4.4.1: the token endpoint answers invalid_client to eudi-dev's wallet attestation (Credo: trustedCertificates is required when the JWS protected header contains an 'x5c' property) since the devnet demo issuers set no issuer.walletAttestationCertificates; their credentials are also signed with vs-agent's self-signed development certificate, which HAIP 1.0 §6.1.1 forbids"
+    reference: https://github.com/verana-labs/vs-agent/blob/main/packages/plugin-openid4vc/src/trust/CertificateTrust.ts
+    expires: 2026-10-16
+
+  - match:
+      tier: t2
+      check: reference-holder-haip
+      network: devnet-v4
+      cast: demo
+      service: [demo-verifier-accredited, demo-verifier-unaccredited]
+      scenario: [present-accredited, present-unaccredited]
+    cause: "HAIP 1.0 §5: the devnet demo verifiers sign their request objects with vs-agent's self-signed development x5c certificate (no configured certificate chain), which eudi-dev in HAIP strict mode refuses"
+    reference: https://github.com/verana-labs/vs-agent/blob/main/packages/plugin-openid4vc/src/services/CertificateService.ts
+    expires: 2026-10-16
+
+  - match:
+      tier: t2
+      check: reference-holder-error-response
+      network: devnet-v4
+      cast: demo
+      service: [demo-verifier-accredited, demo-verifier-unaccredited]
+      scenario: [present-accredited, present-unaccredited]
+    cause: "the vs-agent verifier (Credo openid4vc response endpoint) answers an access_denied Authorization Error Response, plain or direct_post.jwt, with HTTP 500 server_error while moving the session to Error; OID4VP 1.0 §8.2 requires HTTP 200 once it is processed"
+    reference: https://openid.net/specs/openid-4-verifiable-presentations-1_0-final.html#section-8.2
+    expires: 2026-10-16

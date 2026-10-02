@@ -1,7 +1,7 @@
 id: eudi
 rails: [openid4vc-sdjwt]
 openid4vc:
-  library: "eudi-lib-jvm-openid4vci-kt 0.13.1, eudi-lib-jvm-openid4vp-kt 0.15.1 and eudi-lib-jvm-sdjwt-kt 0.20.0 through eudi-lib-android-wallet-core (Kotlin)"
+  library: "eudi-lib-jvm-openid4vci-kt 0.14.0, eudi-lib-jvm-openid4vp-kt 0.15.1 and eudi-lib-jvm-sdjwt-kt 0.20.0 through eudi-lib-android-wallet-core 0.30.2-verana.2 (Kotlin)"
   proxy: "@openid4vc/openid4vci, @openid4vc/openid4vp, @sd-jwt/sd-jwt-vc"
   vciDrafts: [v1]
   offerSchemes: [openid-credential-offer, haip-vci]
@@ -12,15 +12,15 @@ openid4vc:
 builds:
   - kind: fork
     listed: true
-    label: "Verana fork APK, wallet-core 0.29.0, signed metadata off, trust policy INFORM"
-    obtain: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/releases/download/verana-2026-08-06.1/eudi-wallet-verana-2026-08-06.1.apk
+    label: "Verana fork APK, dev flavour, wallet-core 0.30.2-verana.2 on openid4vci-kt 0.14.0, trust policy INFORM"
+    obtain: https://github.com/AirKyzzZ/eudi-app-android-wallet/releases/download/verana-2026-10-02/eudi-wallet-verana-2026-10-02.apk
     identity:
-      package: eu.europa.ec.euidi
-      version: verana-2026-08-06.1
-      repo: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui
-      ref: verana-2026-08-06.1
+      package: eu.europa.ec.euidi.dev
+      version: verana-2026-10-02
+      repo: https://github.com/AirKyzzZ/eudi-app-android-wallet
+      ref: verana-2026-10-02
     platforms: [android]
-    promises: "Q1 trust card with the service and operator blocks and a TESTNET chip. No Q2 or Q3 sentence, so an unauthorised verifier looks like an authorised one"
+    promises: "Q1, Q2 and Q3 resolved through the v4 indexer, with the DEVNET chip. Accept and Share are disabled on a Q2 or Q3 denial"
     device:
       activity: eu.europa.ec.assemblylogic.ui.MainActivity
       unlock: pinfield

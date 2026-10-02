@@ -2,6 +2,8 @@ import { execFile, spawn } from "node:child_process";
 import { randomInt } from "node:crypto";
 import fs from "node:fs";
 import net from "node:net";
+import os from "node:os";
+import path from "node:path";
 import { z } from "zod";
 
 export type EudiOptions = { walletDir: string; haip?: boolean; port?: number; timeoutMs?: number };
@@ -21,7 +23,11 @@ export type EudiServerPresentation = ({ status: "submitted" } & EudiPresentation
 
 export type EudiValidation = { valid: boolean; failure: string | null; haipFindings: string[] | null };
 
-export type EudiServer = { url: string; walletDir: string; haip: boolean };
+export type ServerOptions = { walletDir: string; haip: boolean; mode?: "strict" | "debug"; vciVersion?: "1.0" | "1.1"; keyAttestationLevel?: string };
+
+export type EudiServer = { url: string; walletDir: string; haip: boolean; mode: "strict" | "debug" };
+
+export type Incompatibility = { cause: string; reference: string; marker: RegExp };
 
 export type EudiOutcome<T> =
   | { status: "completed"; result: T; args: string[] }
@@ -70,6 +76,8 @@ const ServerConfigSchema = z.looseObject({
   require_haip: z.boolean(),
   validation_mode: z.string(),
   auto_accept: z.boolean(),
+  vci_version: z.string().optional(),
+  key_attestation_level: z.string().optional(),
 });
 
 const CheckSchema = z.looseObject({ name: z.string(), status: z.string(), detail: z.string().optional() });
@@ -87,7 +95,18 @@ const DecodedOfferSchema = z.looseObject({
 });
 
 const LogEntrySchema = z.looseObject({
-  details: z.looseObject({ event: z.string().optional(), status_code: z.number().int().optional(), response_body: z.string().optional() }).optional(),
+  details: z
+    .looseObject({ event: z.string().optional(), status_code: z.number().int().optional(), response_body: z.string().optional(), metadata: z.unknown().optional() })
+    .optional(),
+});
+
+const DecodedRequestSchema = z.looseObject({
+  client_id: z.string().optional(),
+  request_object: z.looseObject({ payload: z.record(z.string(), z.unknown()) }).optional(),
+});
+
+const ProofTypesSchema = z.looseObject({
+  credential_configurations_supported: z.record(z.string(), z.looseObject({ proof_types_supported: z.record(z.string(), z.unknown()).optional() })),
 });
 
 export const SIGNED_METADATA_TYP = "openidvci-issuer-metadata+jwt";
@@ -100,8 +119,10 @@ export function acceptArgs(uri: string, opts: Pick<EudiOptions, "walletDir" | "h
   return opts.haip ? [...withPort, "--haip"] : withPort;
 }
 
-export function serveArgs(opts: { walletDir: string; port: number; haip: boolean }): string[] {
-  const args = ["wallet", "serve", "--auto-accept", "--no-open", "--no-register", "--no-color", "--storage", "file", "--wallet-dir", opts.walletDir, "--port", String(opts.port), "--mode", "strict"];
+export function serveArgs(opts: ServerOptions & { port: number }): string[] {
+  const args = ["wallet", "serve", "--auto-accept", "--no-open", "--no-register", "--no-color", "--storage", "file", "--wallet-dir", opts.walletDir, "--port", String(opts.port), "--mode", opts.mode ?? "strict"];
+  if (opts.vciVersion) args.push("--vci-version", opts.vciVersion);
+  if (opts.keyAttestationLevel) args.push("--key-attestation-level", opts.keyAttestationLevel);
   return opts.haip ? [...args, "--haip"] : args;
 }
 
@@ -115,6 +136,8 @@ export function decodeArgs(input: string, format?: string): string[] {
 export const validateArgs = (file: string): string[] => ["validate", file, "--haip", "--no-color"];
 
 export const showArgs = (id: string, walletDir: string): string[] => ["wallet", "show", id, "--wallet-dir", walletDir, "--storage", "file", "--remote", "local", "--no-color"];
+
+export const logsArgs = (walletDir: string): string[] => ["wallet", "logs", "--json", "--wallet-dir", walletDir, "--storage", "file", "--remote", "local", "--no-color"];
 
 export function trailingJson(stdout: string): unknown {
   const lines = stdout.split(/\r?\n/);
@@ -141,11 +164,49 @@ function run(bin: string, args: string[], env: NodeJS.ProcessEnv, timeoutMs: num
   });
 }
 
-// Two accepts at once forward to each other's temporary wallet server on port 8085.
+const HOST_LOCK = path.join(os.tmpdir(), "eudi-dev-conformance.lock");
+const STALE_LOCK_MS = 15 * 60_000;
+
+function staleLock(lock: string): boolean {
+  let pid: number;
+  try {
+    if (Date.now() - fs.statSync(lock).mtimeMs > STALE_LOCK_MS) return true;
+    pid = Number(fs.readFileSync(lock, "utf8"));
+  } catch {
+    return false;
+  }
+  try {
+    process.kill(pid, 0);
+    return false;
+  } catch (e) {
+    return e instanceof Error && "code" in e && e.code === "ESRCH";
+  }
+}
+
+export async function withHostLock<T>(lock: string, task: () => Promise<T>): Promise<T> {
+  for (;;) {
+    try {
+      fs.writeFileSync(lock, String(process.pid), { flag: "wx" });
+      break;
+    } catch (e) {
+      if (!(e instanceof Error && "code" in e && e.code === "EEXIST")) throw e;
+      if (staleLock(lock)) fs.rmSync(lock, { force: true });
+      else await new Promise((resolve) => setTimeout(resolve, 150));
+    }
+  }
+  try {
+    return await task();
+  } finally {
+    fs.rmSync(lock, { force: true });
+  }
+}
+
+// One eudi-dev task per host: concurrent accepts share port 8085, and a task runs at most a server plus the CLI driving it.
 let queue: Promise<unknown> = Promise.resolve();
 
 function sequential<T>(task: () => Promise<T>): Promise<T> {
-  const next = queue.then(task, task);
+  const guarded = (): Promise<T> => withHostLock(HOST_LOCK, task);
+  const next = queue.then(guarded, guarded);
   queue = next.catch(() => undefined);
   return next;
 }
@@ -241,21 +302,37 @@ export const receiveWithEudi = (offerUrl: string, opts: EudiOptions): Promise<Eu
 export const presentWithEudi = (requestUrl: string, opts: EudiOptions): Promise<EudiOutcome<EudiPresentation>> => queuedAccept(requestUrl, opts, parsePresentation);
 
 export const decodeWithEudi = (input: string, opts: { format?: string; timeoutMs?: number } = {}): Promise<EudiOutcome<Record<string, unknown>>> =>
-  invoke(decodeArgs(input, opts.format), null, opts.timeoutMs ?? DEFAULT_TIMEOUT_MS, fromJson(parseObject));
+  sequential(() => invoke(decodeArgs(input, opts.format), null, opts.timeoutMs ?? DEFAULT_TIMEOUT_MS, fromJson(parseObject)));
 
-export async function validateWithEudi(file: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<EudiOutcome<EudiValidation>> {
+export function validateWithEudi(file: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<EudiOutcome<EudiValidation>> {
   const args = validateArgs(file);
-  const outcome = await run(eudiBin(), args, process.env, timeoutMs);
-  if (outcome.kind === "unknown") return { status: "unknown", cause: outcome.cause, args };
-  const failure = outcome.code === 0 ? null : (lastLine(outcome.stderr) ?? `eudi-dev exited with code ${outcome.code}`);
-  return { status: "completed", result: { valid: outcome.code === 0, failure, haipFindings: parseHaipFindings(outcome.stdout) }, args };
+  return sequential(async (): Promise<EudiOutcome<EudiValidation>> => {
+    const outcome = await run(eudiBin(), args, process.env, timeoutMs);
+    if (outcome.kind === "unknown") return { status: "unknown", cause: outcome.cause, args };
+    const failure = outcome.code === 0 ? null : (lastLine(outcome.stderr) ?? `eudi-dev exited with code ${outcome.code}`);
+    return { status: "completed", result: { valid: outcome.code === 0, failure, haipFindings: parseHaipFindings(outcome.stdout) }, args };
+  });
 }
 
 export const storedCredential = (id: string, walletDir: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<EudiOutcome<string>> =>
-  invoke(showArgs(id, walletDir), walletDir, timeoutMs, (stdout) => {
-    const raw = stdout.trim();
-    return raw.includes("~") ? { ok: true, result: raw } : { ok: false, failed: false, cause: `eudi-dev wallet show printed no SD-JWT: ${lastLine(stdout) ?? "empty output"}` };
-  });
+  sequential(() =>
+    invoke(showArgs(id, walletDir), walletDir, timeoutMs, (stdout) => {
+      const raw = stdout.trim();
+      return raw.includes("~") ? { ok: true, result: raw } : { ok: false, failed: false, cause: `eudi-dev wallet show printed no SD-JWT: ${lastLine(stdout) ?? "empty output"}` };
+    }),
+  );
+
+export const walletLog = (walletDir: string, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<EudiOutcome<unknown[]>> =>
+  sequential(() =>
+    invoke(logsArgs(walletDir), walletDir, timeoutMs, (stdout) => {
+      try {
+        const log: unknown = JSON.parse(stdout);
+        return Array.isArray(log) ? { ok: true, result: log } : { ok: false, failed: false, cause: "eudi-dev wallet logs printed no JSON array" };
+      } catch {
+        return { ok: false, failed: false, cause: `eudi-dev wallet logs printed no JSON: ${lastLine(stdout) ?? "empty output"}` };
+      }
+    }),
+  );
 
 export const receiveViaServer = (offerUrl: string, server: EudiServer, timeoutMs = DEFAULT_TIMEOUT_MS): Promise<EudiOutcome<EudiIssuance>> =>
   invoke(remoteAcceptArgs(offerUrl, server), server.walletDir, timeoutMs, fromJson(parseIssuance));
@@ -301,7 +378,7 @@ async function serverConfig(url: string): Promise<unknown> {
 
 const SERVE_ATTEMPTS = 3;
 
-export function withEudiServer<T>(opts: { walletDir: string; haip: boolean }, body: (server: EudiServer) => Promise<T>): Promise<ServerRun<T>> {
+export function withEudiServer<T>(opts: ServerOptions, body: (server: EudiServer) => Promise<T>): Promise<ServerRun<T>> {
   return sequential(async (): Promise<ServerRun<T>> => {
     let run: ServerRun<T> = { status: "unknown", cause: "eudi-dev wallet serve never started" };
     for (let attempt = 0; attempt < SERVE_ATTEMPTS; attempt++) {
@@ -312,9 +389,10 @@ export function withEudiServer<T>(opts: { walletDir: string; haip: boolean }, bo
   });
 }
 
-async function serveOnce<T>(opts: { walletDir: string; haip: boolean }, port: number, body: (server: EudiServer) => Promise<T>): Promise<ServerRun<T>> {
-  const server: EudiServer = { url: `http://127.0.0.1:${port}`, walletDir: opts.walletDir, haip: opts.haip };
-  const child = spawn(eudiBin(), serveArgs({ walletDir: opts.walletDir, port, haip: opts.haip }), { env: homeEnv(opts.walletDir), stdio: ["ignore", "ignore", "pipe"] });
+async function serveOnce<T>(opts: ServerOptions, port: number, body: (server: EudiServer) => Promise<T>): Promise<ServerRun<T>> {
+  const mode = opts.mode ?? "strict";
+  const server: EudiServer = { url: `http://127.0.0.1:${port}`, walletDir: opts.walletDir, haip: opts.haip, mode };
+  const child = spawn(eudiBin(), serveArgs({ ...opts, port }), { env: homeEnv(opts.walletDir), stdio: ["ignore", "ignore", "pipe"] });
   const proc: { stderr: string; spawnError: string | null; exited: boolean } = { stderr: "", spawnError: null, exited: false };
   child.stderr.on("data", (chunk: Buffer) => {
     proc.stderr = `${proc.stderr}${chunk.toString("utf8")}`.slice(-4_000);
@@ -352,7 +430,14 @@ async function serveOnce<T>(opts: { walletDir: string; haip: boolean }, port: nu
     if (parsed.success) config = parsed.data;
     else await new Promise((resolve) => setTimeout(resolve, 200));
   }
-  if (realpath(config.wallet_dir) !== realpath(opts.walletDir) || config.require_haip !== opts.haip || config.validation_mode !== "strict" || !config.auto_accept) {
+  const mismatch =
+    realpath(config.wallet_dir) !== realpath(opts.walletDir) ||
+    config.require_haip !== opts.haip ||
+    config.validation_mode !== mode ||
+    !config.auto_accept ||
+    (opts.vciVersion !== undefined && config.vci_version !== opts.vciVersion) ||
+    (opts.keyAttestationLevel !== undefined && config.key_attestation_level !== opts.keyAttestationLevel);
+  if (mismatch) {
     await stop();
     return { status: "unknown", cause: `port ${port} answered with another wallet configuration: ${JSON.stringify(config)}` };
   }
@@ -376,6 +461,54 @@ export function verifierAnswers(log: unknown): VerifierAnswer[] {
     const d = entry.details;
     return d?.event === "verifier_response" && d.status_code !== undefined ? [{ statusCode: d.status_code, body: d.response_body ?? "" }] : [];
   });
+}
+
+export function requestIncompatibility(decoded: unknown): Incompatibility | null {
+  const parsed = DecodedRequestSchema.safeParse(decoded);
+  if (!parsed.success) return null;
+  const payload = parsed.data.request_object?.payload;
+  if (payload && "presentation_definition" in payload && !("dcql_query" in payload))
+    return {
+      cause: "eudi-dev implements OpenID4VP 1.0, which replaced presentation_definition with DCQL; ?query=pe mints a draft 21 request for wallets that predate it",
+      reference: "https://openid.net/specs/openid-4-verifiable-presentations-1_0-final.html#section-6",
+      marker: /dcql_query|DCQL/,
+    };
+  if (parsed.data.client_id?.startsWith("decentralized_identifier:"))
+    return {
+      cause: "eudi-dev resolves no DIDs, so it cannot verify a request signed under a decentralized_identifier client_id",
+      reference: "https://github.com/dominikschlosser/eudi-dev/blob/main/docs/adr/0013-only-the-eudi-stack-is-supported.md",
+      marker: /decentralized_identifier/,
+    };
+  return null;
+}
+
+export function offeredProofTypes(log: unknown, configurationIds: string[]): Record<string, unknown> | null {
+  const parsed = z.array(LogEntrySchema).safeParse(log);
+  if (!parsed.success) return null;
+  const metadata = parsed.data
+    .flatMap((e) => (e.details?.event === "issuer_metadata_response" ? [ProofTypesSchema.safeParse(e.details.metadata)] : []))
+    .flatMap((r) => (r.success ? [r.data] : []))
+    .at(-1);
+  if (!metadata) return null;
+  const configurations = metadata.credential_configurations_supported;
+  return Object.assign({}, ...configurationIds.map((id) => configurations[id]?.proof_types_supported ?? {}));
+}
+
+export function asksKeyAttestation(proofTypes: Record<string, unknown>): boolean {
+  if ("attestation" in proofTypes) return true;
+  const jwt = proofTypes.jwt;
+  return typeof jwt === "object" && jwt !== null && "key_attestations_required" in jwt;
+}
+
+export function offerConfigurationIds(decoded: unknown): string[] {
+  const parsed = DecodedOfferSchema.safeParse(decoded);
+  return parsed.success ? parsed.data.credential_configuration_ids : [];
+}
+
+export function offerTxCode(decoded: unknown): boolean {
+  const parsed = DecodedOfferSchema.safeParse(decoded);
+  const grant = parsed.success ? parsed.data.grants["urn:ietf:params:oauth:grant-type:pre-authorized_code"] : undefined;
+  return typeof grant === "object" && grant !== null && "tx_code" in grant;
 }
 
 export function inlineOffer(decoded: unknown): string | null {
@@ -456,7 +589,9 @@ export function credentialFindings(decoded: unknown): { findings: string[]; chec
   return { findings, checks: validation.checks, payload };
 }
 
-export async function eudiVersion(): Promise<string | null> {
-  const outcome = await run(eudiBin(), ["version"], process.env, 10_000);
-  return outcome.kind === "exited" && outcome.code === 0 ? (lastLine(outcome.stdout) ?? null) : null;
+export function eudiVersion(): Promise<string | null> {
+  return sequential(async () => {
+    const outcome = await run(eudiBin(), ["version"], process.env, 10_000);
+    return outcome.kind === "exited" && outcome.code === 0 ? (lastLine(outcome.stdout) ?? null) : null;
+  });
 }

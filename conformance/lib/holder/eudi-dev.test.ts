@@ -4,7 +4,10 @@ import path from "node:path";
 import { afterAll, afterEach, describe, expect, it, vi } from "vitest";
 import DECODED_CREDENTIAL from "../fixtures/eudi-dev/decode-credential.json";
 import DECODED_OFFER from "../fixtures/eudi-dev/decode-offer.json";
+import DECODED_REQUEST_DCQL from "../fixtures/eudi-dev/decode-request-dcql.json";
+import DECODED_REQUEST_PE from "../fixtures/eudi-dev/decode-request-pe.json";
 import DECODED_METADATA from "../fixtures/eudi-dev/decode-signed-metadata.json";
+import ISSUANCE_LOG from "../fixtures/eudi-dev/wallet-log-issuance.json";
 import {
   acceptArgs,
   agentRefusal,
@@ -24,6 +27,14 @@ import {
   serverLog,
   signedMetadataFindings,
   storedCredential,
+  asksKeyAttestation,
+  logsArgs,
+  offerConfigurationIds,
+  offeredProofTypes,
+  offerTxCode,
+  requestIncompatibility,
+  walletLog,
+  withHostLock,
   trailingJson,
   validateWithEudi,
   verifierAnswers,
@@ -251,12 +262,14 @@ if (behaviour.crash) {
   process.stderr.write(behaviour.crash);
   process.exit(1);
 }
-const flag = (name) => argv[argv.indexOf(name) + 1];
+const flag = (name) => (argv.includes(name) ? argv[argv.indexOf(name) + 1] : undefined);
 const config = {
   wallet_dir: flag("--wallet-dir"),
   require_haip: behaviour.reportHaip ?? argv.includes("--haip"),
   validation_mode: flag("--mode"),
   auto_accept: argv.includes("--auto-accept"),
+  vci_version: flag("--vci-version") ?? "1.0",
+  key_attestation_level: flag("--key-attestation-level") ?? "",
 };
 const server = http.createServer((req, res) => {
   res.setHeader("content-type", "application/json");
@@ -285,7 +298,7 @@ const presented = (httpStatus: number): EudiOutcome<EudiIssuance | EudiPresentat
   args: [],
   result: { accepted: httpStatus < 400, httpStatus, body: "{}", redirectUri: null },
 });
-const server: EudiServer = { url: "http://127.0.0.1:18085", walletDir: "/w", haip: true };
+const server: EudiServer = { url: "http://127.0.0.1:18085", walletDir: "/w", haip: true, mode: "strict" };
 
 describe("argument builders", () => {
   it("passes an explicit presentation port before --haip", () => {
@@ -501,5 +514,90 @@ describe("agentRefusal", () => {
       cause: "eudi-dev stopped before the agent answered: no matching credentials found for the DCQL query",
     });
     expect(agentRefusal({ status: "unknown", cause: "eudi-dev did not finish within 300 ms", args: [] }).kind).toBe("unknown");
+  });
+});
+
+describe("server variants", () => {
+  it("passes the OpenID4VCI feature level, the key attestation level and the validation mode", () => {
+    expect(serveArgs({ walletDir: "/w", port: 50123, haip: false, mode: "debug", vciVersion: "1.1", keyAttestationLevel: "iso_18045_high" }).slice(-6)).toEqual([
+      "--mode", "debug", "--vci-version", "1.1", "--key-attestation-level", "iso_18045_high",
+    ]);
+  });
+
+  it("starts a server with the requested variant and refuses one that reports another", async () => {
+    const stub = writeServerStub();
+    const dir = fs.mkdtempSync(path.join(stubDir, "serve-"));
+    const ran = await withEudiServer({ walletDir: dir, haip: false, mode: "debug", vciVersion: "1.1", keyAttestationLevel: "none" }, async (s) => s.mode);
+    expect(ran).toEqual({ status: "ran", result: "debug" });
+    expect((JSON.parse(fs.readFileSync(stub.record, "utf8")) as { argv: string[] }).argv).toEqual(
+      expect.arrayContaining(["--mode", "debug", "--vci-version", "1.1", "--key-attestation-level", "none"]),
+    );
+    writeServerStub({ reportHaip: true });
+    const other = fs.mkdtempSync(path.join(stubDir, "serve-"));
+    expect((await withEudiServer({ walletDir: other, haip: false }, async () => "ran")).status).toBe("unknown");
+  });
+});
+
+describe("withHostLock", () => {
+  it("waits for a live holder and takes over a lock its holder left behind", async () => {
+    const lock = path.join(stubDir, "host.lock");
+    fs.writeFileSync(lock, String(process.pid));
+    const order: string[] = [];
+    const waiting = withHostLock(lock, async () => {
+      order.push("second");
+    });
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    order.push("first");
+    fs.rmSync(lock);
+    await waiting;
+    expect(order).toEqual(["first", "second"]);
+    expect(fs.existsSync(lock)).toBe(false);
+
+    fs.writeFileSync(lock, "999999");
+    expect(await withHostLock(lock, async () => "taken")).toBe("taken");
+  });
+});
+
+describe("wallet log", () => {
+  it("reads the persisted log of a file wallet", async () => {
+    const stub = writeStub({ stdout: `${JSON.stringify(ISSUANCE_LOG, null, 2)}\n` });
+    expect(await walletLog(walletDir)).toMatchObject({ status: "completed", result: ISSUANCE_LOG });
+    expect(recorded(stub).argv).toEqual(logsArgs(walletDir));
+    writeStub({ stdout: "no log\n" });
+    expect((await walletLog(walletDir)).status).toBe("unknown");
+  });
+
+  it("finds the proof types eudi-dev was offered for the offered configuration", () => {
+    const ids = offerConfigurationIds(DECODED_OFFER);
+    expect(ids).toEqual(["https://playground-demo.playground.devnet.verana.network/vt/schemas-8-jsc.json"]);
+    const proofTypes = offeredProofTypes(ISSUANCE_LOG, ids);
+    expect(proofTypes).toEqual({ jwt: { proof_signing_alg_values_supported: ["ES256"] } });
+    expect(proofTypes && asksKeyAttestation(proofTypes)).toBe(false);
+    expect(asksKeyAttestation({ jwt: { key_attestations_required: {} } })).toBe(true);
+    expect(asksKeyAttestation({ attestation: {} })).toBe(true);
+    expect(offeredProofTypes([], ids)).toBeNull();
+  });
+
+  it("tells whether an offer carries a transaction code", () => {
+    expect(offerTxCode(DECODED_OFFER)).toBe(false);
+    const grant = { "urn:ietf:params:oauth:grant-type:pre-authorized_code": { "pre-authorized_code": "x", tx_code: { length: 4 } } };
+    expect(offerTxCode({ ...DECODED_OFFER, grants: grant })).toBe(true);
+  });
+});
+
+describe("requestIncompatibility", () => {
+  it("names a draft 21 presentation_definition request as outside OpenID4VP 1.0", () => {
+    const pe = requestIncompatibility(DECODED_REQUEST_PE);
+    expect(pe?.cause).toContain("presentation_definition");
+    expect(pe?.marker.test("authorization request validation failed: OID4VP 1.0 §5.1: a vp_token request must carry either dcql_query or scope")).toBe(true);
+  });
+
+  it("names a DID-signed request as one eudi-dev cannot verify", () => {
+    const did = requestIncompatibility({ ...DECODED_REQUEST_DCQL, client_id: "decentralized_identifier:did:webvh:abc" });
+    expect(did?.marker.test("Request Object signature was not verified: decentralized_identifier: resolves its key through the DID")).toBe(true);
+  });
+
+  it("finds nothing in an x509_hash DCQL request", () => {
+    expect(requestIncompatibility(DECODED_REQUEST_DCQL)).toBeNull();
   });
 });

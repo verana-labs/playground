@@ -45,12 +45,12 @@ describe("personal wallets configuration", () => {
   it("lists only the maintained wallets", () => {
     const ids = listPersonalWallets().map((w) => w.id).sort();
     expect(ids).toEqual(
-      ["eudi", "hologram", "inji", "lissi", "paradym", "swiyu", "wwwallet"].sort(),
+      ["eudi", "hologram", "inji", "lissi", "paradym", "procivis", "swiyu", "wwwallet"].sort(),
     );
   });
 
   it("lists the store-only wallets through their store builds, without the trust screen", () => {
-    for (const id of ["lissi", "paradym"]) {
+    for (const id of ["lissi", "paradym", "procivis"]) {
       const w = getPersonalWallet(id);
       expect(w?.links.map((l) => [l.kind, l.trust_screen]), id).toEqual([
         ["playstore", false],
@@ -77,7 +77,7 @@ describe("personal wallets configuration", () => {
     );
     const hidden = raw.wallets.filter((w) => w.hidden).map((w) => w.id).sort();
     expect(hidden).toEqual(
-      ["authbound", "bcwallet", "nl-wallet", "procivis", "sphereon", "talao"].sort(),
+      ["authbound", "bcwallet", "nl-wallet", "sphereon", "talao"].sort(),
     );
   });
 });

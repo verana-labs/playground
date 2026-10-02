@@ -1,0 +1,39 @@
+id: procivis
+rails: [openid4vc-sdjwt]
+openid4vc:
+  library: "procivis/one-core (Rust) through @procivis/react-native-one-core in the React Native one-wallet"
+  proxy: "@openid4vc/openid4vci, @openid4vc/openid4vp, @sd-jwt/sd-jwt-vc"
+  vciDrafts: [v1]
+  offerSchemes: [openid-credential-offer, haip-vci, swiyu]
+  requestSchemes: [openid4vp, openid4vp-draft20, haip-vp, swiyu-verify]
+  asDiscovery: [oauth-authorization-server]
+  presentation: { query: dcql, clientId: did, responseMode: direct_post.jwt }
+  demoParams: ""
+builds:
+  - kind: store
+    listed: true
+    label: "Procivis One Wallet on Google Play and the App Store"
+    obtain:
+      - https://play.google.com/store/apps/details?id=ch.procivis.one.wallet.trial
+      - https://apps.apple.com/app/procivis-one-wallet/id6480111491
+    identity:
+      package: ch.procivis.one.wallet.trial
+      version: "1.87.1"
+    platforms: [android, ios]
+    presumptive: [ios]
+    promises: "No Verana trust screen: it labels the demo services with its own \"Untrusted relying party\" and nothing is checked against the registry. Issues the DemoCredential and presents it on the default DCQL request, verifier session verified: true (device-tested 2026-10-02 on devnet, Play version 1.87.1)"
+  - kind: fork
+    label: "Verana fork APK with the v3 trust card, not listed until it is ported to v4"
+    obtain: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/download/verana-2026-08-17/app-debug.apk
+    identity:
+      package: ch.procivis.one.wallet.dev
+      version: verana-2026-08-17
+      repo: https://github.com/AirKyzzZ/procivis-one-wallet-verana
+      ref: verana-2026-08-17
+    platforms: [android]
+    promises: "Its v3 Verana card shows \"could not verify\" on devnet (2026-10-02)"
+quirks:
+  actsOnLinkOnlyAtColdStart: false
+  locksOnBackground: false
+  viewTree: readable
+  notes: "Link schemes as registered upstream in android/app/src/main/AndroidManifest.xml. Only the offer and request links of the default mint were exercised on the store build; the view tree and the locking behaviour have not been characterised"

@@ -203,6 +203,15 @@ wallets:
     repo: https://github.com/animo/paradym-wallet
     license: Apache-2.0
     notes: "Animo's Credo-TS wallet as published in the stores. Store version 1.20.2 takes the DemoCredential from the accredited issuer and presents it to the accredited verifier on the default DCQL request, device-tested on the devnet on 2026-10-02. It labels the services \"Unknown Organization\" and runs no Verana check."
+  - id: lissi
+    name: Lissi ID-Wallet
+    vendor: Lissi GmbH
+    icon: ./lissi/logo.webp
+    formats: [openid4vc-sdjwt]
+    playstore: { url: "https://play.google.com/store/apps/details?id=io.lissi.mobile.android", trust_screen: false }
+    appstore: { url: "https://apps.apple.com/app/lissi-id-wallet/id6475958390", trust_screen: false }
+    website: https://www.lissi.id
+    notes: "Lissi's ID wallet as published in the stores. Store version 3.2.0 takes the DemoCredential from the accredited issuer and presents it to the accredited verifier on the default DCQL request, device-tested on the devnet on 2026-10-02. Its only warning is its own \"Contact is not verified\"; it runs no Verana check."
 
   - id: procivis
     name: Procivis One Wallet

@@ -45,12 +45,12 @@ describe("personal wallets configuration", () => {
   it("lists only the maintained wallets", () => {
     const ids = listPersonalWallets().map((w) => w.id).sort();
     expect(ids).toEqual(
-      ["eudi", "hologram", "inji", "paradym", "swiyu", "wwwallet"].sort(),
+      ["eudi", "hologram", "inji", "lissi", "paradym", "swiyu", "wwwallet"].sort(),
     );
   });
 
   it("lists the store-only wallets through their store builds, without the trust screen", () => {
-    for (const id of ["paradym"]) {
+    for (const id of ["lissi", "paradym"]) {
       const w = getPersonalWallet(id);
       expect(w?.links.map((l) => [l.kind, l.trust_screen]), id).toEqual([
         ["playstore", false],

@@ -1,0 +1,119 @@
+issues:
+  - match:
+      tier: t1
+      check: ["as-discovery:oauth-authorization-server", did-resolves, metadata-both-shapes, metadata-parses, no-cleartext, serving-version, "strings:ecs-claims", "strings:issuer-metadata", tls-certificate, webvh-log-signed]
+      cast: ccm
+    cause: the ccm cast has never been deployed (no StatefulSet, no wildcard DNS record or certificate)
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: serving-version
+      cast: demo
+      service: [demo-issuer-accredited, demo-issuer-unaccredited, demo-issuer-untrusted, demo-untrusted, demo-verifier-accredited, demo-verifier-unaccredited, demo-verifier-untrusted, playground-demo]
+    cause: demo serves uiprofile .42/.43/.45 while its template pins .49; the demo workflows were not re-dispatched
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: serving-version
+      cast: bhi
+      service: [caledonian, cirrus, halcyon, institute, jobsearch, meridian-tech, orchestrating-identity, tvs]
+    cause: bhi serves uiprofile .35 while its template pins .41
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: serving-version
+      cast: bolivia
+      service: [banco-union, impuestos, prestamista, segip, seprec]
+    cause: bolivia serves uiprofile .31/.39 while its template pins .41
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: serving-version
+      cast: cexa
+      service: [borealis, darkpool, novara]
+    cause: cexa serves uiprofile .31 while the per-org config.env pins .39
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: serving-version
+      cast: verandia
+      service: [business-registry, civil-registry, meridian-bank, quickcash, tax-buro]
+    cause: verandia serves uiprofile .31/.39 while its template pins .41
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: serving-version
+      cast: vesta
+      service: [helvetia-trust, iso-certification, normacert, umbra, vesta, vesta-iberia, vesta-nordics, vesta-portal, vesta-repair-network, zenith]
+    cause: vesta serves uiprofile .31 while its template pins .41 (.39 for vesta-portal and vesta-repair-network)
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: metadata-both-shapes
+      cast: [bhi, bolivia, cexa, verandia, vesta]
+      service: [caledonian, cirrus, northbank, segip, seprec, aurum, novara, business-registry, civil-registry, umbra, vesta, zenith]
+    cause: images up to .41 publish no display or claims on the credential configuration itself
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: webvh-log-signed
+      cast: [demo, vesta]
+      service: [demo-untrusted, playground-demo, helvetia-trust, iso-certification, normacert, umbra, vesta, vesta-iberia, vesta-nordics, vesta-portal, vesta-repair-network, zenith]
+    cause: did:webvh logs created before the 2026-08-03 fix; only reset_identity repairs them
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: short-link-browser
+      cast: [demo, eventos]
+      service: [demo-issuer-accredited, demo-issuer-unaccredited, taquilla]
+    cause: the short link answers 502 to a browser Accept header
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: "strings:invitation-label"
+      cast: eventos
+      service: [evento-costa-rica, evento-guatemala, evento-panama]
+    cause: "*-00_core.yml sets didcommLabel with yq env(), which parses a name containing ': ' as a map; it needs strenv()"
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: "strings:invitation-label"
+      cast: demo
+      service: [demo-issuer-untrusted, demo-verifier-untrusted]
+    cause: the untrusted demo services answer with a plain invitation page that has no label to read
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: ["link:issue", "link:present"]
+      cast: demo
+      service: demo-untrusted
+      wallet: hologram
+    cause: DIDComm connection scenarios have no tier 2 coverage yet
+    expires: 2026-10-01
+
+  - match:
+      tier: t1
+      check: "strings:ecs-claims"
+      cast: bhi
+      service: jobsearch
+    cause: the resolver holds no ECS credentials for bhi/jobsearch
+    expires: 2026-10-01
+
+  - match:
+      tier: t2
+      check: resolver-production-flag
+      network: testnet-v3
+    cause: the resolver reports production true for demo DIDs while networks.yaml marks testnet as not production; to raise with the team
+    expires: 2026-09-30

@@ -114,6 +114,13 @@ describe("evaluate", () => {
       { kind: "missing", key: cellKey(gone), cause: "present in the baseline run, absent now" },
     ]);
   });
+
+  it("leaves a tier that did not run this time to the required-tier check", () => {
+    const deviceCell = cell({ tier: "t3", check: "gating", wallet: "inji", outcome: "works" });
+    const input = { ...base, cells: [cell({ outcome: "works" })], issues: [], baseline: [cell({ outcome: "works" }), deviceCell], failOnMissing: true };
+    expect(evaluate(input).failures).toEqual([]);
+    expect(evaluate({ ...input, requiredTiers: ["t3"] }).failures).toEqual([{ kind: "missing", key: "t3|*", cause: "no t3 results were produced" }]);
+  });
 });
 
 describe("renderMarkdown", () => {

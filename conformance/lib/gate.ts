@@ -95,7 +95,8 @@ export function evaluate(input: GateInput): GateReport {
 
   if (input.baseline && input.failOnMissing) {
     const current = new Set(input.cells.map(cellKey));
-    for (const key of new Set(input.baseline.map(cellKey))) {
+    const ranTiers = new Set(input.cells.map((c) => c.tier));
+    for (const key of new Set(input.baseline.filter((c) => ranTiers.has(c.tier)).map(cellKey))) {
       if (!current.has(key)) failures.push({ kind: "missing", key, cause: "present in the baseline run, absent now" });
     }
   }

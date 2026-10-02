@@ -1,0 +1,32 @@
+{
+  "id": "fixture-wallet",
+  "rails": ["openid4vc-sdjwt"],
+  "openid4vc": { "demoParams": "signer=x5c" },
+  "builds": [
+    {
+      "kind": "fork",
+      "listed": true,
+      "networks": ["net-a"],
+      "label": "fork for net-a",
+      "obtain": "https://example.org/a.apk",
+      "identity": { "package": "org.example.wallet", "version": "a" },
+      "incompatibilities": [{ "cause": "refuses untrusted issuers before the offer", "scenarios": ["issue-untrusted"] }],
+      "device": { "delivery": "scan", "onboard": [{ "tap": "start" }], "scan": { "issue": [{ "tap": "scan" }], "present": [{ "tap": "scan" }] } }
+    },
+    {
+      "kind": "fork",
+      "networks": ["net-b"],
+      "label": "fork for net-b",
+      "obtain": "https://example.org/b.apk",
+      "identity": { "package": "org.example.wallet", "version": "b" },
+      "demoParams": "",
+      "device": { "delivery": "scan", "onboard": [{ "tap": "start" }], "scan": { "issue": [{ "tap": "scan" }] } }
+    },
+    {
+      "kind": "store",
+      "label": "store",
+      "obtain": "https://play.google.com/store/apps/details?id=org.example.wallet",
+      "identity": { "package": "org.example.wallet" }
+    }
+  ]
+}

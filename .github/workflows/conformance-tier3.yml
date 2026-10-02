@@ -1,0 +1,108 @@
+name: conformance tier 3
+on:
+  workflow_call:
+    inputs:
+      network:
+        description: "network id from conformance/networks.yaml (empty = every network)"
+        type: string
+        default: ""
+      wallets:
+        description: "comma-separated profile ids (empty = every openid4vc wallet with an android build)"
+        type: string
+        default: ""
+  workflow_dispatch:
+    inputs:
+      network:
+        description: "network id from conformance/networks.yaml (empty = every network)"
+        default: ""
+      wallets:
+        description: "comma-separated profile ids (empty = every openid4vc wallet with an android build)"
+        default: ""
+permissions:
+  contents: read
+jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      networks: ${{ steps.list.outputs.networks }}
+      wallets: ${{ steps.list.outputs.wallets }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - run: bash conformance/tier3/fixtures.sh
+      - id: list
+        env:
+          NETWORK: ${{ inputs.network }}
+          WALLETS: ${{ inputs.wallets }}
+        run: |
+          if [ -n "$NETWORK" ]; then
+            networks=$(jq -cn --arg id "$NETWORK" '[$id]')
+          else
+            networks=$(yq -o=json -I=0 '[.networks[].id]' conformance/networks.yaml)
+          fi
+          if [ -n "$WALLETS" ]; then
+            wallets=$(jq -cn --arg ids "$WALLETS" '$ids | split(",") | map(gsub("\\s"; "")) | map(select(length > 0))')
+          else
+            wallets=$(for f in conformance/profiles/*.yaml; do
+              if [ "$(yq '(.rails | contains(["openid4vc-sdjwt"])) and ([.builds[] | select((.platforms | contains(["android"])) and .device != null)] | length > 0)' "$f")" = true ]; then
+                basename "$f" .yaml
+              fi
+            done | jq -Rcs 'split("\n") | map(select(length > 0))')
+          fi
+          echo "networks=$networks" >> "$GITHUB_OUTPUT"
+          echo "wallets=$wallets" >> "$GITHUB_OUTPUT"
+          echo "networks $networks, wallets $wallets"
+
+  tier3:
+    needs: matrix
+    if: needs.matrix.outputs.wallets != '[]' && needs.matrix.outputs.networks != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        network: ${{ fromJSON(needs.matrix.outputs.networks) }}
+        wallet: ${{ fromJSON(needs.matrix.outputs.wallets) }}
+    env:
+      WALLET: ${{ matrix.wallet }}
+      CONFORMANCE_NETWORK: ${{ matrix.network }}
+      CONFORMANCE_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}-t3-${{ matrix.network }}-${{ matrix.wallet }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - id: plan
+        run: |
+          TIER3_DRY_RUN=1 bash conformance/tier3/run.sh
+          echo "emulator=$(jq -r '(.runs | length) > 0' conformance/tier3/out/plan.json)" >> "$GITHUB_OUTPUT"
+      - if: steps.plan.outputs.emulator != 'true'
+        run: bash conformance/tier3/run.sh
+      - if: steps.plan.outputs.emulator == 'true'
+        name: Enable KVM
+        run: |
+          test -e /dev/kvm
+          sudo chmod 666 /dev/kvm
+      - if: steps.plan.outputs.emulator == 'true'
+        run: pip install --quiet --break-system-packages qrcode pypng
+      - if: steps.plan.outputs.emulator == 'true'
+        uses: reactivecircus/android-emulator-runner@a421e43855164a8197daf9d8d40fe71c6996bb0d # v2.38.0
+        with:
+          api-level: 34
+          target: google_apis
+          arch: x86_64
+          profile: pixel_6
+          ram-size: 4096M
+          disk-size: 6000M
+          emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back virtualscene
+          pre-emulator-launch-script: printf 'poster wall\nsize 2 2\nposition -0.807 0.320 5.316\nrotation 0 -150 0\ndefault poster.png\n\nposter table\nsize 1 1\nposition 0 0 -1.5\nrotation 0 0 0\n' > "$ANDROID_HOME/emulator/resources/Toren1BD.posters"
+          disable-animations: true
+          script: bash conformance/tier3/run.sh
+      - if: always() && hashFiles('conformance/results/latest.json') != ''
+        run: node conformance/bin/summary.mjs conformance/results/latest.json >> "$GITHUB_STEP_SUMMARY"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: conformance-t3-${{ matrix.network }}-${{ matrix.wallet }}
+          path: |
+            conformance/results/
+            conformance/tier3/out/
+          retention-days: 30

@@ -420,10 +420,10 @@ wallets:
     icon: ./swiyu/logo.webp
     formats: [openid4vc-sdjwt]
     demoParams: signer=x5c
-    download: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-08-17/swiyu-verana-universal-debug.apk
+    download: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-10-02/swiyu-verana-universal-debug.apk
     website: https://www.eid.admin.ch
     repo: https://github.com/swiyu-admin-ch/eidch-android-wallet
-    fork: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/tree/feat/verana-trust-integration
+    fork: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/tree/v4
     license: MIT
     notes: The Swiss federal wallet. Q1 and Q2/Q3 are resolved before the accept action on both the offer and the presentation surface, and the wallet keeps its own ecosystem warning alongside the Verana card, so the two trust systems are visible side by side. Presentation runs on the x5c rail, where the request object is authenticated by its certificate thumbprint.
     captures:

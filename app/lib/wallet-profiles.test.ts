@@ -9,6 +9,8 @@ import {
   getWalletProfile,
   listWalletProfiles,
   listedBuild,
+  networkBuild,
+  targetsNetwork,
   WalletProfileSchema,
 } from "./wallet-profiles";
 import { WalletsFileSchema } from "./wallets";
@@ -170,6 +172,39 @@ describe("profile helpers", () => {
   });
 });
 
+describe("builds per network", () => {
+  const [fork, store] = valid.builds;
+  const v3Fork = { ...fork, networks: ["testnet-v3"] };
+  const v4Fork = { ...fork, listed: false, networks: ["devnet-v4"], obtain: "https://example.org/app-v4.apk" };
+
+  it("lets builds of one kind split the networks between them", () => {
+    expect(WalletProfileSchema.safeParse({ ...valid, builds: [v3Fork, v4Fork, store] }).success).toBe(true);
+  });
+
+  it("refuses two builds of one kind on the same network", () => {
+    expect(WalletProfileSchema.safeParse({ ...valid, builds: [fork, v4Fork, store] }).success).toBe(false);
+    const overlap = { ...v4Fork, networks: ["devnet-v4", "testnet-v3"] };
+    expect(WalletProfileSchema.safeParse({ ...valid, builds: [v3Fork, overlap, store] }).success).toBe(false);
+  });
+
+  it("treats a build without networks as targeting every network", () => {
+    const profile = WalletProfileSchema.parse(valid);
+    expect(targetsNetwork(profile.builds[0], "devnet-v4")).toBe(true);
+    expect(networkBuild(profile, "devnet-v4")?.obtain).toBe("https://example.org/app.apk");
+  });
+
+  it("stands in the same kind of build where the listed one does not go", () => {
+    const profile = WalletProfileSchema.parse({ ...valid, builds: [v3Fork, v4Fork, store] });
+    expect(networkBuild(profile, "testnet-v3")?.obtain).toBe("https://example.org/app.apk");
+    expect(networkBuild(profile, "devnet-v4")?.obtain).toBe("https://example.org/app-v4.apk");
+  });
+
+  it("has no build for a network that no build of the listed kind targets", () => {
+    const profile = WalletProfileSchema.parse({ ...valid, builds: [v3Fork, store] });
+    expect(networkBuild(profile, "devnet-v4")).toBeUndefined();
+  });
+});
+
 describe("listWalletProfiles", () => {
   let dir: string;
   beforeEach(() => {
@@ -225,11 +260,102 @@ describe("profiles match the listing", () => {
     }
   });
 
+  it("builds only name networks from conformance/networks.yaml", () => {
+    const file = yaml.load(fs.readFileSync(path.join(process.cwd(), "conformance", "networks.yaml"), "utf8")) as { networks: { id: string }[] };
+    const known = file.networks.map((n) => n.id);
+    for (const profile of profiles)
+      for (const build of profile.builds)
+        for (const network of build.networks ?? []) expect(known, `${profile.id}/${build.kind}`).toContain(network);
+  });
+
   it("the listing mints with the listed build's parameters", () => {
     for (const w of visible) {
       const profile = byId.get(w.id)!;
       const expected = effectiveDemoParams(profile, listedBuild(profile)).split("&").filter(Boolean).sort();
       expect((w.demoParams ?? "").split("&").filter(Boolean).sort(), w.id).toEqual(expected);
     }
+  });
+});
+
+describe("device steps", () => {
+  it("accepts a profile with onboarding and scanner steps", () => {
+    const profile = WalletProfileSchema.parse({
+      id: "demo-wallet",
+      rails: ["openid4vc-sdjwt"],
+      openid4vc: {
+        library: "example lib",
+        proxy: "@openid4vc/openid4vci",
+        vciDrafts: ["v1"],
+        offerSchemes: ["openid-credential-offer"],
+        requestSchemes: ["openid4vp"],
+        asDiscovery: ["oauth-authorization-server"],
+        presentation: { query: "dcql", clientId: "x509_hash", responseMode: "direct_post.jwt" },
+        demoParams: "signer=x5c",
+      },
+      builds: [
+        {
+          kind: "fork",
+          listed: true,
+          label: "fork apk",
+          obtain: "https://example.org/wallet.apk",
+          signerSha256: "AA:BB:CC",
+          identity: { package: "org.example.wallet", repo: "https://example.org/repo", ref: "verana-2026-09-01" },
+          platforms: ["android"],
+          promises: "everything",
+          device: {
+            activity: "org.example.wallet.MainActivity",
+            unlock: "pinfield",
+            secret: "123456",
+            coldStart: false,
+            delivery: "scan",
+            onboard: [{ tap: "get started" }, { type: "secret" }, { wait: 2 }],
+            scan: { issue: [{ tap: "documents" }, { tap: "scan qr" }] },
+          },
+        },
+      ],
+      quirks: { actsOnLinkOnlyAtColdStart: false, locksOnBackground: false, viewTree: "readable" },
+    });
+    const build = profile.builds[0];
+    expect(build?.device?.delivery).toBe("scan");
+    expect(build?.device?.onboard?.[1]).toEqual({ type: "secret" });
+    expect(build?.device?.scan?.issue?.[1]).toEqual({ tap: "scan qr" });
+    expect(build?.signerSha256).toBe("AA:BB:CC");
+  });
+
+  it("rejects a step that is neither a tap, a type nor a wait", () => {
+    expect(() =>
+      WalletProfileSchema.parse({
+        id: "demo-wallet",
+        rails: ["openid4vc-sdjwt"],
+        openid4vc: {
+          library: "example lib",
+          proxy: "@openid4vc/openid4vci",
+          vciDrafts: ["v1"],
+          offerSchemes: ["openid-credential-offer"],
+          requestSchemes: ["openid4vp"],
+          asDiscovery: ["oauth-authorization-server"],
+          presentation: { query: "dcql", clientId: "did", responseMode: "direct_post.jwt" },
+          demoParams: "",
+        },
+        builds: [
+          {
+            kind: "fork",
+            listed: true,
+            label: "fork apk",
+            obtain: "https://example.org/wallet.apk",
+            identity: { package: "org.example.wallet", repo: "https://example.org/repo", ref: "verana-2026-09-01" },
+            platforms: ["android"],
+            promises: "everything",
+            device: {
+              activity: "org.example.wallet.MainActivity",
+              unlock: "none",
+              coldStart: false,
+              onboard: [{ swipe: "left" }],
+            },
+          },
+        ],
+        quirks: { actsOnLinkOnlyAtColdStart: false, locksOnBackground: false, viewTree: "readable" },
+      }),
+    ).toThrow();
   });
 });

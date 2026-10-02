@@ -76,19 +76,30 @@ const IncompatibilitySchema = z.object({
   verified: isoDate,
 });
 
+const DeviceStepSchema = z.union([
+  z.object({ tap: z.string().min(1) }).strict(),
+  z.object({ type: z.literal("secret") }).strict(),
+  z.object({ wait: z.number().int().positive() }).strict(),
+]);
+
 const DeviceSchema = z.object({
   activity: z.string().min(1),
   unlock: z.enum(UNLOCK_RECIPES),
   secret: z.string().optional(),
   coldStart: z.boolean(),
   neverForceStop: z.boolean().optional(),
+  delivery: z.enum(["scan", "link"]).optional(),
+  onboard: z.array(DeviceStepSchema).optional(),
+  scan: z.object({ issue: z.array(DeviceStepSchema).optional(), present: z.array(DeviceStepSchema).optional() }).strict().optional(),
 });
 
 const BuildSchema = z.object({
   kind: z.enum(BUILD_KINDS),
   listed: z.boolean().optional(),
+  networks: z.array(z.string().regex(/^[a-z0-9-]+$/)).min(1).optional(),
   label: z.string().min(1),
   obtain: z.url(),
+  signerSha256: z.string().min(1).optional(),
   identity: IdentitySchema,
   platforms: z.array(z.enum(PLATFORMS)).min(1),
   presumptive: z.array(z.enum(PLATFORMS)).optional(),
@@ -106,6 +117,11 @@ const QuirksSchema = z.object({
   viewTree: z.enum(VIEW_TREES),
   notes: z.string().optional(),
 });
+
+type Build = z.infer<typeof BuildSchema>;
+
+const sharesNetwork = (a: Build, b: Build): boolean =>
+  !a.networks || !b.networks || a.networks.some((n) => b.networks?.includes(n));
 
 const BRANCH_LIKE = /\/|^(main|master|develop|dev|trunk)$/;
 
@@ -146,6 +162,8 @@ export const WalletProfileSchema = z
     if (listed.length !== 1) issue(`exactly one build must be listed, found ${listed.length}`, ["builds"]);
     profile.builds.forEach((build, i) => {
       const at = (...p: (string | number)[]) => ["builds", i, ...p];
+      if (profile.builds.slice(0, i).some((other) => other.kind === build.kind && sharesNetwork(other, build)))
+        issue(`two ${build.kind} builds target the same network; give each its own networks`, at("networks"));
       for (const platform of build.presumptive ?? [])
         if (!build.platforms.includes(platform)) issue(`presumptive platform ${platform} is not declared`, at("presumptive"));
       if (build.kind === "browser" && !build.identity.url) issue("a browser build needs identity.url", at("identity"));
@@ -194,6 +212,15 @@ export function listedBuild(profile: WalletProfile): WalletBuild {
   const build = profile.builds.find((b) => b.listed);
   if (!build) throw new Error(`${profile.id}: no listed build`);
   return build;
+}
+
+export const targetsNetwork = (build: WalletBuild, network: string): boolean =>
+  !build.networks || build.networks.includes(network);
+
+export function networkBuild(profile: WalletProfile, network: string): WalletBuild | undefined {
+  const listed = listedBuild(profile);
+  if (targetsNetwork(listed, network)) return listed;
+  return profile.builds.find((b) => b.kind === listed.kind && b.networks?.includes(network));
 }
 
 export function effectivePresentation(profile: WalletProfile, build: WalletBuild): WalletPresentation | undefined {

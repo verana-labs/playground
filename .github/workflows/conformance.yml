@@ -1,17 +1,19 @@
 name: conformance
+run-name: ${{ (github.event_name == 'schedule' || inputs.nightly) && 'conformance nightly' || '' }}
 on:
   schedule:
     - cron: "17 3 * * *"
   workflow_dispatch:
     inputs:
-      network:
-        description: "network id from conformance/networks.yaml (empty = every testable network)"
-        default: ""
       casts:
         description: "casts that receive live mints"
         default: "demo,eventos"
+      nightly:
+        description: "run as the nightly of this branch: compare with its previous nightly and fail on cells that disappeared"
+        type: boolean
+        default: false
   push:
-    branches: [main]
+    branches: [main, v4]
     paths:
       - "conformance/**"
       - "personal-wallets.yaml"
@@ -32,7 +34,24 @@ concurrency:
   group: conformance-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+env:
+  CONFORMANCE_NETWORK: ${{ (github.base_ref || github.ref_name) == 'v4' && 'devnet-v4' || 'testnet-v3' }}
+  SECRET_SUFFIX: ${{ (github.base_ref || github.ref_name) == 'v4' && '_V4' || '' }}
+  NIGHTLY: ${{ github.event_name == 'schedule' || inputs.nightly == true }}
+
 jobs:
+  dispatch-devnet-nightly:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      actions: write
+    steps:
+      - name: Start the nightly of the v4 branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run conformance.yml --repo "$GITHUB_REPOSITORY" --ref v4 -f nightly=true
+
   tier:
     if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
@@ -42,6 +61,14 @@ jobs:
       matrix:
         tier: [t1, t2]
     steps:
+      - name: Check network secrets
+        env:
+          NAMESPACE_SECRET: ${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}
+        run: |
+          if [ -z "$NAMESPACE_SECRET" ]; then
+            echo "::error::Secret K8S_NAMESPACE${SECRET_SUFFIX} is not set (see docs/networks.md)."
+            exit 1
+          fi
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -65,19 +92,19 @@ jobs:
         continue-on-error: true
         env:
           CONFORMANCE_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.tier }}
-          CONFORMANCE_NETWORK: ${{ inputs.network }}
           CONFORMANCE_CASTS: ${{ inputs.casts || 'demo,eventos' }}
           CONFORMANCE_MINTS: "1"
-          CONFORMANCE_K8S_NAMESPACE: ${{ secrets.K8S_NAMESPACE }}
+          CONFORMANCE_K8S_NAMESPACE: ${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}
       - if: always()
         run: npm run summary >> "$GITHUB_STEP_SUMMARY"
         working-directory: conformance
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
-          name: conformance-${{ matrix.tier }}-${{ github.run_id }}-${{ github.run_attempt }}
+          name: conformance-${{ matrix.tier }}-${{ env.CONFORMANCE_NETWORK }}
           path: conformance/results/
           retention-days: 90
+          overwrite: true
 
   gate:
     needs: tier
@@ -95,13 +122,14 @@ jobs:
         working-directory: conformance
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          pattern: conformance-t*-${{ github.run_id }}-${{ github.run_attempt }}
+          pattern: conformance-t*
           path: current
-      - name: Download the previous nightly as baseline
+      - name: Download the previous nightly of this branch as baseline
+        if: env.NIGHTLY == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          previous=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow conformance.yml --branch main --event schedule --status completed --limit 5 --json databaseId --jq '.[].databaseId' | grep -vx "$GITHUB_RUN_ID" | head -1 || true)
+          previous=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow conformance.yml --branch "$GITHUB_REF_NAME" --status completed --limit 30 --json databaseId,displayTitle --jq '.[] | select(.displayTitle == "conformance nightly") | .databaseId' | head -1 || true)
           if [ -n "$previous" ]; then
             gh run download "$previous" --repo "$GITHUB_REPOSITORY" --pattern 'conformance-t*' --dir baseline || echo "run $previous has no tier artifacts"
           fi
@@ -111,6 +139,6 @@ jobs:
           args=(--issues known-issues.yaml --require-tier t1 --require-tier t2)
           while IFS= read -r f; do args+=(--results "$f"); done < <(find ../current -name latest.json)
           while IFS= read -r f; do args+=(--baseline "$f"); done < <(find ../baseline -name latest.json 2> /dev/null)
-          if [ "${{ github.event_name }}" = "schedule" ]; then args+=(--fail-on-missing); fi
+          if [ "$NIGHTLY" = true ]; then args+=(--fail-on-missing); fi
           node --experimental-strip-types lib/gate.ts "${args[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
           exit "${PIPESTATUS[0]}"

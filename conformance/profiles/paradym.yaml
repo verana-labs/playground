@@ -1,0 +1,39 @@
+id: paradym
+rails: [openid4vc-sdjwt]
+openid4vc:
+  library: "@credo-ts/openid4vc on Animo's @openid4vc/openid4vci and @openid4vc/openid4vp (React Native, Expo)"
+  proxy: "@openid4vc/openid4vci, @openid4vc/openid4vp, @sd-jwt/sd-jwt-vc"
+  vciDrafts: [v1]
+  offerSchemes: [openid-credential-offer, openid-initiate-issuance, haip, haip-vci]
+  requestSchemes: [openid4vp, openid, eudi-openid4vp, haip, haip-vp]
+  asDiscovery: [oauth-authorization-server]
+  presentation: { query: dcql, clientId: did, responseMode: direct_post.jwt }
+  demoParams: ""
+builds:
+  - kind: store
+    listed: true
+    label: "Paradym Wallet on Google Play and the App Store"
+    obtain:
+      - https://play.google.com/store/apps/details?id=id.paradym.wallet
+      - https://apps.apple.com/app/paradym-wallet/id6449846111
+    identity:
+      package: id.paradym.wallet
+      version: "1.20.2"
+    platforms: [android, ios]
+    presumptive: [ios]
+    promises: "No Verana trust screen: the services show as its own \"Unknown Organization\" and nothing is checked against the registry. Issues the DemoCredential and presents it on the default DCQL request, verifier session verified: true (device-tested 2026-10-02 on devnet, Play version 1.20.2)"
+  - kind: fork
+    label: "Verana fork APK, not listed until its Verana layer is ported to v4"
+    obtain: https://github.com/AirKyzzZ/paradym-wallet-verana/releases/download/verana-2026-08-01/paradym-wallet-verana-release-2026-08-01.apk
+    identity:
+      package: id.paradym.wallet.dev
+      version: verana-2026-08-01
+      repo: https://github.com/AirKyzzZ/paradym-wallet-verana
+      ref: verana-2026-08-01
+    platforms: [android]
+    promises: "No trust card on devnet: the Verana layer fetches the signed metadata but the services still show as \"Unknown Organization\". Issues and presents on the default DCQL request (device-tested 2026-10-02)"
+quirks:
+  actsOnLinkOnlyAtColdStart: false
+  locksOnBackground: true
+  viewTree: readable
+  notes: "Asks for its own PIN on every deep link, on a keypad it draws itself that takes taps only, no injected text. Link schemes as registered upstream in apps/wallet/base.app.config.js"

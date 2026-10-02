@@ -195,43 +195,14 @@ wallets:
   - id: paradym
     name: Paradym Wallet
     vendor: Animo Solutions
-    hidden: true
     icon: ./paradym/logo.webp
     formats: [openid4vc-sdjwt]
-    download: https://github.com/AirKyzzZ/paradym-wallet-verana/releases/download/verana-2026-08-01/paradym-wallet-verana-release-2026-08-01.apk
+    playstore: { url: "https://play.google.com/store/apps/details?id=id.paradym.wallet", trust_screen: false }
+    appstore: { url: "https://apps.apple.com/app/paradym-wallet/id6449846111", trust_screen: false }
     website: https://animo.id
     repo: https://github.com/animo/paradym-wallet
-    fork: https://github.com/verana-labs/paradym-wallet
     license: Apache-2.0
-    notes: Verana trust integration in Paradym's SDK trust-mechanism registry (Credo-TS wallet).
-    captures:
-      issue-accredited:
-        src: ./paradym/screenshots/1.webp
-        clip: ./paradym/clips/1-issuer-accredited.mp4
-        caption: "Accredited issuer: identity verified, authorized for this credential, accept enabled"
-      issue-unaccredited:
-        src: ./paradym/screenshots/2.webp
-        clip: ./paradym/clips/2-issuer-unaccredited.mp4
-        caption: Identified but not accredited to issue this credential, so accept is blocked
-      issue-untrusted:
-        src: ./paradym/screenshots/3.webp
-        clip: ./paradym/clips/3-issuer-untrusted.mp4
-        caption: "Untrusted issuer: self-issued claims withheld, accept blocked"
-      present-accredited:
-        src: ./paradym/screenshots/4.webp
-        clip: ./paradym/clips/4-verifier-accredited.mp4
-        caption: "Accredited verifier: authorized to request this credential, sharing allowed"
-      present-unaccredited:
-        src: ./paradym/screenshots/5.webp
-        clip: ./paradym/clips/5-verifier-unaccredited.mp4
-        caption: Identified but not authorized to ask for this credential, so sharing is refused
-      present-untrusted:
-        src: ./paradym/screenshots/6.webp
-        clip: ./paradym/clips/6-verifier-untrusted.mp4
-        caption: "Untrusted verifier: self-issued claims withheld, sharing refused"
-    video:
-      src: ./paradym/demo.mp4
-      note: Real device, camera scan of the QR codes on this page, live against the demo cast. The six scenarios recorded separately and joined end to end, silent, otherwise unedited.
+    notes: "Animo's Credo-TS wallet as published in the stores. Store version 1.20.2 takes the DemoCredential from the accredited issuer and presents it to the accredited verifier on the default DCQL request, device-tested on the devnet on 2026-10-02. It labels the services \"Unknown Organization\" and runs no Verana check."
 
   - id: procivis
     name: Procivis One Wallet

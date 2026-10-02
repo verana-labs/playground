@@ -61,8 +61,8 @@ export function cellKey(cell: GateCell): string {
   return [cell.tier, cell.check, cell.network, cell.cast ?? "", cell.service ?? "", cell.wallet ?? "", cell.build ?? "", cell.scenario ?? ""].join("|");
 }
 
-export function matches(issue: KnownIssue, cell: GateCell): boolean {
-  return MATCH_FIELDS.every((field) => {
+function matchesOn(issue: KnownIssue, cell: GateCell, fields: readonly (typeof MATCH_FIELDS)[number][]): boolean {
+  return fields.every((field) => {
     const wanted = issue.match[field];
     if (wanted === undefined) return true;
     const actual = cell[field];
@@ -70,6 +70,8 @@ export function matches(issue: KnownIssue, cell: GateCell): boolean {
     return Array.isArray(wanted) ? wanted.includes(actual) : wanted === actual;
   });
 }
+
+export const matches = (issue: KnownIssue, cell: GateCell): boolean => matchesOn(issue, cell, MATCH_FIELDS);
 
 export function evaluate(input: GateInput): GateReport {
   const active = input.issues.filter((i) => i.expires >= input.today);
@@ -101,7 +103,8 @@ export function evaluate(input: GateInput): GateReport {
     }
   }
 
-  return { failures, known, resolved: active.filter((i) => !used.has(i)), expired };
+  const ran = (issue: KnownIssue): boolean => input.cells.some((c) => matchesOn(issue, c, ["tier", "network"]));
+  return { failures, known, resolved: active.filter((i) => !used.has(i) && ran(i)), expired };
 }
 
 export function renderMarkdown(report: GateReport): string {

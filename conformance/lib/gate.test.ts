@@ -101,6 +101,13 @@ describe("evaluate", () => {
     expect(report.resolved).toHaveLength(1);
   });
 
+  it("does not call an issue resolved when its tier or network did not run", () => {
+    const onTestnet = issue({ match: { tier: "t1", check: "serving-version", network: "testnet-v3" } });
+    const onDevice = issue({ match: { tier: "t3", check: "gating" } });
+    const report = evaluate({ ...base, cells: [cell({ network: "devnet-v4", outcome: "works" })], issues: [onTestnet, onDevice] });
+    expect(report.resolved).toEqual([]);
+  });
+
   it("fails when a required tier produced no cells", () => {
     const report = evaluate({ ...base, requiredTiers: ["t1", "t2"], cells: [cell({ outcome: "works" })], issues: [] });
     expect(report.failures).toEqual([{ kind: "missing", key: "t2|*", cause: "no t2 results were produced" }]);

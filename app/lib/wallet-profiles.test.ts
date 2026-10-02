@@ -8,10 +8,12 @@ import {
   effectivePresentation,
   getWalletProfile,
   listWalletProfiles,
-  listedBuild,
+  listedBuilds,
+  obtainUrls,
   WalletProfileSchema,
 } from "./wallet-profiles";
 import { WalletsFileSchema } from "./wallets";
+import { walletLinks } from "./wallet-links";
 import { NETWORK } from "./network";
 
 const device = { activity: ".Main", unlock: "passcode", secret: "123456", coldStart: false };
@@ -70,11 +72,19 @@ describe("WalletProfileSchema", () => {
     expect(WalletProfileSchema.safeParse({ ...valid, rails: ["anoncreds"] }).success).toBe(false);
   });
 
-  it("requires exactly one listed build", () => {
+  it("requires at least one listed build, and allows several", () => {
     const none = { ...valid, builds: valid.builds.map((b) => ({ ...b, listed: false })) };
     expect(WalletProfileSchema.safeParse(none).success).toBe(false);
     const two = { ...valid, builds: valid.builds.map((b) => ({ ...b, listed: true })) };
-    expect(WalletProfileSchema.safeParse(two).success).toBe(false);
+    expect(WalletProfileSchema.safeParse(two).success).toBe(true);
+  });
+
+  it("lets a build be obtained from one store per platform", () => {
+    const stores = ["https://play.google.com/store/apps/details?id=org.example", "https://apps.apple.com/app/example/id1"];
+    const both = { ...valid, builds: [valid.builds[0], { ...valid.builds[1], obtain: stores }] };
+    expect(obtainUrls(WalletProfileSchema.parse(both).builds[1])).toEqual(stores);
+    const empty = { ...valid, builds: [valid.builds[0], { ...valid.builds[1], obtain: [] }] };
+    expect(WalletProfileSchema.safeParse(empty).success).toBe(false);
   });
 
   it("rejects a presumptive platform that is not declared", () => {
@@ -97,11 +107,9 @@ describe("WalletProfileSchema", () => {
     expect(WalletProfileSchema.safeParse(didWithSigner).success).toBe(false);
   });
 
-  it("requires an android build to carry a package and a device block, and a browser build a url", () => {
+  it("requires an android build to carry a package, and a browser build a url", () => {
     const noPackage = { ...valid, builds: [{ ...valid.builds[0], identity: { version: "1", repo: "https://example.org/repo", ref: "v1" } }] };
     expect(WalletProfileSchema.safeParse(noPackage).success).toBe(false);
-    const storeWithoutDevice = { ...valid, builds: [valid.builds[0], { ...valid.builds[1], device: undefined }] };
-    expect(WalletProfileSchema.safeParse(storeWithoutDevice).success).toBe(false);
     const browser = {
       ...valid,
       builds: [{ ...valid.builds[0], kind: "browser", platforms: ["web"], identity: { package: "x", version: "1" }, device: undefined }],
@@ -133,6 +141,11 @@ describe("WalletProfileSchema", () => {
     expect(WalletProfileSchema.safeParse(bad).success).toBe(false);
   });
 
+  it("lets an android build leave out the device block", () => {
+    const storeWithoutDevice = { ...valid, builds: [valid.builds[0], { ...valid.builds[1], device: undefined }] };
+    expect(WalletProfileSchema.safeParse(storeWithoutDevice).success).toBe(true);
+  });
+
   it("rejects a browser build that carries a device block", () => {
     const browser = { ...valid, builds: [{ ...valid.builds[0], kind: "browser", platforms: ["web"], identity: { url: "https://example.org", repo: "https://example.org/repo", ref: "v1" } }] };
     expect(WalletProfileSchema.safeParse(browser).success).toBe(false);
@@ -147,8 +160,9 @@ describe("WalletProfileSchema", () => {
 describe("profile helpers", () => {
   const profile = WalletProfileSchema.parse(valid);
 
-  it("finds the listed build", () => {
-    expect(listedBuild(profile).kind).toBe("fork");
+  it("finds the listed builds", () => {
+    expect(listedBuilds(profile).map((b) => b.kind)).toEqual(["fork"]);
+    expect(obtainUrls(listedBuilds(profile)[0])).toEqual(["https://example.org/app.apk"]);
   });
 
   it("lets a build override the request rail and the mint parameters", () => {
@@ -218,18 +232,32 @@ describe("profiles match the listing", () => {
       expect([...(byId.get(w.id)?.rails ?? [])].sort(), w.id).toEqual([...w.formats].sort());
   });
 
-  it("the listed build is the one the listing links to", () => {
+  it("the listed builds are the ones the listing links to, and the other way round", () => {
     for (const w of visible) {
-      const build = listedBuild(byId.get(w.id)!);
-      expect(build.obtain, w.id).toBe(w.browser ? w.hosted : w.download);
+      const listed = listedBuilds(byId.get(w.id)!).flatMap(obtainUrls).sort();
+      const links = walletLinks(w).map((l) => l.url).sort();
+      expect(links, w.id).toEqual(listed);
+    }
+  });
+
+  it("a linked build runs on the platform of its link", () => {
+    const platform = { hosted: "web", web: "web", download: "android", playstore: "android", appstore: "ios" } as const;
+    for (const w of visible) {
+      const builds = listedBuilds(byId.get(w.id)!);
+      for (const link of walletLinks(w)) {
+        const build = builds.find((b) => obtainUrls(b).includes(link.url));
+        expect(build?.platforms, `${w.id} ${link.kind}`).toContain(platform[link.kind]);
+      }
     }
   });
 
   it("the listing mints with the listed build's parameters", () => {
     for (const w of visible) {
       const profile = byId.get(w.id)!;
-      const expected = effectiveDemoParams(profile, listedBuild(profile)).split("&").filter(Boolean).sort();
-      expect((w.demoParams ?? "").split("&").filter(Boolean).sort(), w.id).toEqual(expected);
+      for (const build of listedBuilds(profile)) {
+        const expected = effectiveDemoParams(profile, build).split("&").filter(Boolean).sort();
+        expect((w.demoParams ?? "").split("&").filter(Boolean).sort(), `${w.id} ${build.label}`).toEqual(expected);
+      }
     }
   });
 });

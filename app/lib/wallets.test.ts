@@ -23,7 +23,8 @@ describe("personal wallets configuration", () => {
     expect(wallets.every((w) => w.verana_builtin !== true)).toBe(true);
     for (const w of wallets) {
       expect(w.formats.length).toBeGreaterThan(0);
-      expect(w.download).toMatch(/^https:/);
+      expect(w.links.length, w.id).toBeGreaterThan(0);
+      for (const l of w.links) expect(l.url, w.id).toMatch(/^https:/);
       for (const key of Object.keys(w.captures)) {
         expect([
           "issue-accredited", "issue-unaccredited", "issue-untrusted",
@@ -46,6 +47,15 @@ describe("personal wallets configuration", () => {
     expect(ids).toEqual(
       ["eudi", "hologram", "inji", "swiyu", "wwwallet"].sort(),
     );
+  });
+
+  it("folds hologram's download into its store build, which keeps the trust screen", () => {
+    expect(
+      getPersonalWallet("hologram")?.links.map((l) => [l.kind, l.trust_screen]),
+    ).toEqual([
+      ["playstore", true],
+      ["appstore", true],
+    ]);
   });
 
   it("keeps the paused wallets in the file, hidden", () => {

@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Container, Section, SectionHeading } from "./components/ui";
 import { AddYourWalletTileCompact } from "./components/WalletTile";
+import { BuildsHint } from "./components/WalletBuilds";
 import WalletLogo from "./components/WalletLogo";
 import { businessWallets, type Integration } from "./lib/integrations";
 import { listPersonalWallets, type PersonalWallet } from "./lib/wallets";
@@ -108,6 +109,7 @@ function PersonalWalletHomeTile({ w }: { w: PersonalWallet }) {
           ) : null}
         </span>
         <span className="block truncate text-sm text-gray-500">{w.vendor}</span>
+        <BuildsHint links={w.links} className="text-xs" />
       </span>
     </Link>
   );

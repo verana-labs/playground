@@ -87,4 +87,24 @@ describe("listCastServices", () => {
     expect(services.find((s) => s.id === "taquilla")?.issuerId).not.toBeNull();
     expect(services.filter((s) => s.oid4vcRole === "verifier").length).toBeGreaterThanOrEqual(12);
   });
+
+  it("keeps only the casts a network has deployed", () => {
+    fs.mkdirSync(path.join(dir, "other", "orgs", "e"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "other", "deployment.template.yaml"), "image:\n  tag: v2.0\n");
+    fs.writeFileSync(path.join(dir, "other", "orgs", "e", "config.env"), 'RELEASE_NAME="e"\nINGRESS_HOST="e.playground.__NETWORK__.verana.network"\n');
+    expect(listCastServices(testnet, dir).map((s) => s.id)).toEqual(["a", "b", "c", "d", "e"]);
+    expect(listCastServices({ ...testnet, casts: ["other"] }, dir).map((s) => s.id)).toEqual(["e"]);
+  });
+
+  it("rejects a network scoped to a cast the repository does not have", () => {
+    expect(() => listCastServices({ ...testnet, id: "scoped", casts: ["demo", "nope"] }, dir)).toThrow(/scoped: no cast nope with orgs/);
+  });
+
+  it("yields only demo services on devnet v4, even when every cast is in scope", () => {
+    const devnet = listNetworks().find((n) => n.id === "devnet-v4")!;
+    const services = listCastServices(devnet).filter(inScope);
+    expect(new Set(services.map((s) => s.cast))).toEqual(new Set(["demo"]));
+    expect(services.map((s) => s.id)).toEqual(expect.arrayContaining(["demo-issuer-accredited", "demo-verifier-accredited", "playground-demo"]));
+    expect(services.every((s) => s.host.endsWith(".playground.devnet.verana.network"))).toBe(true);
+  });
 });

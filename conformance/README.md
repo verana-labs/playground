@@ -6,7 +6,9 @@ Proves, on every change, which listed wallets work against the deployed playgrou
 - `profiles/` one YAML per listed wallet: rails, builds, promises, quirks. Every tier reads it; nothing
   wallet-specific is hard-coded anywhere else. Validated by `app/lib/wallet-profiles.ts` in the main CI.
 - `networks.yaml` the networks a run can target. `CONFORMANCE_NETWORK=testnet-v3` selects one; by
-  default every testable network runs and the others are reported as not yet testable.
+  default every testable network runs and the others are reported as not yet testable. A network resolves
+  trust through its resolver (v3) or its indexer (v4); `casts` limits it to the casts it has deployed
+  (devnet v4: `demo` only), whatever `CONFORMANCE_CASTS` says.
 - `tier1/` (planned, next PR) contract checks: what a wallet fetches, asserted without running a wallet.
 - `tier2/` headless OpenID4VCI/OpenID4VP flows with the wallets' own libraries, asserting the resolver inputs of
   the verdict. Nightly only, behind `CONFORMANCE_MINTS=1`. See "Tier 2" below.
@@ -27,7 +29,7 @@ share one concurrency group and must be dispatched one at a time.
 renders the latest run as markdown (CI puts it in the job summary). Every cell names its check, the clause it
 proves, the network, the service and, for wallet-specific checks, the wallet, build and scenario, with one
 outcome: `works`, `broken`, `incompatible-by-design` (with cause and reference), `unknown` (the check could
-not read what it needed and says why) or `not-testable` (a network without resolver or casts). Cells are
+not read what it needed and says why) or `not-testable` (a network without a playground or a trust backend). Cells are
 sorted by code point, so `diff` between two `results.json` shows exactly what changed.
 
 Environment: `CONFORMANCE_NETWORK` selects one network; `CONFORMANCE_CASTS` limits the casts that receive
@@ -50,3 +52,11 @@ holder never decides accept or refuse, it always completes the flow so the resol
 of what a real wallet's own policy would have done. Whether a wallet's UI reads the same inputs correctly and
 gates Add/Share on them is Tier 3, the only tier that runs against a device. The DIDComm/AnonCreds rail
 (Hologram) is not covered yet.
+
+The headless holder shares the Credo/Animo library family with vs-agent, so a bug in both would pass unseen.
+`tier2/reference-holder.test.ts` runs the demo issue and present scenarios a second time through
+[eudi-dev](https://github.com/dominikschlosser/eudi-dev), an independent Go wallet certified by the OpenID Foundation
+for OpenID4VCI 1.0 and HAIP, and writes `reference-holder` cells. It calls `eudi wallet accept --auto-accept --json
+--mode strict` from `EUDI_DEV_BIN` (default `eudi` on `PATH`), one run at a time. A cell is `works` when eudi-dev
+receives a credential whose signature it verifies, or when the verifier accepts its presentation and records
+`verified`. A missing binary or a timeout is `unknown`, never `works`.

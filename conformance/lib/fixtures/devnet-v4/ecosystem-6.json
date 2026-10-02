@@ -1,0 +1,49 @@
+{
+  "ecosystem": {
+    "id": 6,
+    "did": "did:webvh:QmdLKxG6ZdBRJbUevm1mQdPr3arKSE3bg5RfA8cg8uUszF:playground-demo.playground.devnet.verana.network",
+    "corporation_id": 7,
+    "created": "2026-10-01T14:40:18.575Z",
+    "modified": "2026-10-01T14:40:18.575Z",
+    "archived": null,
+    "language": "en",
+    "active_version": 1,
+    "versions": [
+      {
+        "id": 13,
+        "ecosystem_id": 6,
+        "created": "2026-10-01T14:40:18.575Z",
+        "version": 1,
+        "active_since": "2026-10-01T14:40:18.575Z",
+        "documents": [
+          {
+            "id": 13,
+            "gfv_id": 13,
+            "created": "2026-10-01T14:40:18.575Z",
+            "language": "en",
+            "url": "https://verana-labs.github.io/governance-docs/EGF/example.pdf",
+            "digest_sri": "sha384-B+nl2K+YKMw/wrNi+fE50ARjkFgXMYPB5aH77E5I2u6jM0PxIGHg5Ni+NXy9+b0S"
+          }
+        ]
+      }
+    ],
+    "participants": 1,
+    "participants_ecosystem": 1,
+    "participants_issuer_grantor": 0,
+    "participants_issuer": 1,
+    "participants_verifier_grantor": 0,
+    "participants_verifier": 1,
+    "participants_holder": 0,
+    "active_schemas": 1,
+    "archived_schemas": 0,
+    "weight": 0,
+    "issued": 0,
+    "verified": 0,
+    "ecosystem_slash_events": 0,
+    "ecosystem_slashed_amount": 0,
+    "ecosystem_slashed_amount_repaid": 0,
+    "network_slash_events": 0,
+    "network_slashed_amount": 0,
+    "network_slashed_amount_repaid": 0
+  }
+}

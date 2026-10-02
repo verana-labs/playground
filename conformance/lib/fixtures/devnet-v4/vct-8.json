@@ -1,0 +1,20 @@
+{
+  "vct": "https://playground-demo.playground.devnet.verana.network/vt/vct/8",
+  "name": "DemoCredential",
+  "description": "The single credential of the Playground Ecosystem (demo), issued instantly to playground visitors to demonstrate the verify-first loop. For demonstration only.",
+  "claims": [
+    {
+      "path": [
+        "demoId"
+      ],
+      "sd": "always"
+    },
+    {
+      "path": [
+        "name"
+      ],
+      "sd": "always"
+    }
+  ],
+  "relatedJsonSchemaCredentialId": "https://playground-demo.playground.devnet.verana.network/vt/schemas-8-jsc.json"
+}

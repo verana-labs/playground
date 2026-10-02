@@ -12,6 +12,10 @@ on:
         description: "run as the nightly of this branch: compare with its previous nightly and fail on cells that disappeared"
         type: boolean
         default: false
+      tier3:
+        description: "also run tier 3 (conformance-tier3.yml) and require its results"
+        type: boolean
+        default: false
   push:
     branches: [main, v4]
     paths:
@@ -123,8 +127,15 @@ jobs:
           retention-days: 90
           overwrite: true
 
+  tier3:
+    if: inputs.tier3
+    uses: ./.github/workflows/conformance-tier3.yml
+    with:
+      network: ${{ (github.base_ref || github.ref_name) == 'v4' && 'devnet-v4' || 'testnet-v3' }}
+    secrets: inherit
+
   gate:
-    needs: tier
+    needs: [tier, tier3]
     if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -152,8 +163,11 @@ jobs:
           fi
       - name: Gate
         working-directory: conformance
+        env:
+          REQUIRE_T3: ${{ inputs.tier3 == true }}
         run: |
           args=(--issues known-issues.yaml --require-tier t1 --require-tier t2)
+          if [ "$REQUIRE_T3" = true ]; then args+=(--require-tier t3); fi
           while IFS= read -r f; do args+=(--results "$f"); done < <(find ../current -name latest.json)
           while IFS= read -r f; do args+=(--baseline "$f"); done < <(find ../baseline -name latest.json 2> /dev/null)
           if [ "$NIGHTLY" = true ]; then args+=(--fail-on-missing); fi

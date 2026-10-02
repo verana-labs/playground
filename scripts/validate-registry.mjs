@@ -15,7 +15,8 @@ try {
     if (!w?.id || !w?.name || !w?.vendor) throw new Error(`entry missing id/name/vendor (${w?.id ?? "?"})`);
     if (!Array.isArray(w.formats) || w.formats.length === 0 || !w.formats.every((f) => FORMATS.includes(f)))
       throw new Error(`${w.id}: formats must be a non-empty subset of ${FORMATS.join("|")}`);
-    if (!w.download) throw new Error(`${w.id}: download link required`);
+    if (!w.download && !w.playstore && !w.appstore && !w.web)
+      throw new Error(`${w.id}: at least one of download, playstore, appstore or web required`);
     const SCENARIOS = ["issue-accredited", "issue-unaccredited", "issue-untrusted",
       "present-accredited", "present-unaccredited", "present-untrusted"];
     if (w.captures != null) {

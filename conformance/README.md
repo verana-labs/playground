@@ -87,6 +87,22 @@ for OpenID4VCI 1.0 and HAIP, and writes `reference-holder` cells. It calls `eudi
 receives a credential whose signature it verifies, or when the verifier accepts its presentation and records
 `verified`. A missing binary or a timeout is `unknown`, never `works`.
 
+`tier2/reference-holder-deep.test.ts` goes deeper with the same holder, one check id per concern:
+
+- `reference-holder-decode`: `eudi decode` of the issuer's signed metadata (its signature, plus the `typ`, `alg`,
+  `sub` and `credential_issuer` rules the strict wallet applies) and of each verifier request, which a strict eudi-dev
+  wallet server with an empty wallet then validates without presenting anything.
+- `reference-holder-validate`: `eudi decode` and `eudi validate` of the received credential (type, expiry, disclosure
+  digests, signature, status list when present) and its `vct#integrity` against the Type Metadata it names.
+- `reference-holder-haip`: the issue and present scenarios through `eudi wallet serve --haip --mode strict`. The one-shot
+  `wallet accept --haip` of eudi-dev 2.4.4 applies no HAIP check, so the server is the only HAIP path.
+- `reference-holder-replay-offer`, `reference-holder-replay-presentation`, `reference-holder-garbage-request`: a redeemed
+  offer (by URI and by its pre-authorized code), an answered request (by `request_uri` and inline) and an unknown
+  `request_uri` must be refused by the agent; a success or a 5xx is `broken`, eudi-dev stopping on its own is `unknown`.
+- `reference-holder-error-response`: the verifier answers 200 to the `access_denied` error the empty wallet sends.
+
+Presentations there pass an explicit free `--port`, so they never meet the reference holder run on 8085.
+
 ## Tier 3
 
 `WALLET=<profile id> CONFORMANCE_NETWORK=<network id> bash tier3/run.sh` installs the wallet's build for that network,

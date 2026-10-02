@@ -1,6 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { cellKey, evaluate, matches, parseKnownIssues, renderMarkdown, type GateCell, type KnownIssue } from "./gate";
+import { listNetworks } from "./network";
 
 const cell = (overrides: Partial<GateCell>): GateCell => ({
   tier: "t1",
@@ -154,9 +155,19 @@ describe("renderMarkdown", () => {
 });
 
 describe("known-issues.yaml", () => {
+  const issues = parseKnownIssues(readFileSync(new URL("../known-issues.yaml", import.meta.url), "utf8"));
+
   it("parses, and every entry names a cause and an expiry", () => {
-    const issues = parseKnownIssues(readFileSync(new URL("../known-issues.yaml", import.meta.url), "utf8"));
     expect(issues.length).toBeGreaterThan(0);
     for (const i of issues) expect(i.expires >= "2026-09-17").toBe(true);
+  });
+
+  it("scopes every entry to networks that networks.yaml lists", () => {
+    const ids = listNetworks().map((n) => n.id);
+    for (const i of issues) {
+      const networks = i.match.network === undefined ? [] : [i.match.network].flat();
+      expect(networks.length, i.cause).toBeGreaterThan(0);
+      for (const n of networks) expect(ids).toContain(n);
+    }
   });
 });

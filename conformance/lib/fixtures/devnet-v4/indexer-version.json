@@ -1,0 +1,13 @@
+{
+  "app_version": "v2.0.1-dev.2",
+  "environment": {
+    "network": {
+      "chain_id": "vna-devnet-1",
+      "rpc_endpoint": "https://rpc.devnet.verana.network",
+      "lcd_endpoint": "https://api.devnet.verana.network",
+      "cosmos_sdk_version": "v0.53.4",
+      "node_version": "v0.10.5",
+      "app_name": "verana-indexer"
+    }
+  }
+}

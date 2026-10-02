@@ -1,4 +1,5 @@
 import { execFile, spawn } from "node:child_process";
+import { randomInt } from "node:crypto";
 import fs from "node:fs";
 import net from "node:net";
 import { z } from "zod";
@@ -266,26 +267,17 @@ function bindable(port: number): Promise<boolean> {
   return new Promise((resolve) => {
     const probe = net.createServer();
     probe.once("error", () => resolve(false));
-    probe.listen(port, "127.0.0.1", () => probe.close(() => resolve(true)));
+    probe.listen(port, () => probe.close(() => resolve(true)));
   });
 }
 
-function ephemeralPort(): Promise<number> {
-  return new Promise((resolve, reject) => {
-    const probe = net.createServer();
-    probe.once("error", reject);
-    probe.listen(0, "127.0.0.1", () => {
-      const address = probe.address();
-      const port = typeof address === "object" && address ? address.port : 0;
-      probe.close(() => resolve(port));
-    });
-  });
-}
+// Outgoing connections take their local port from the ephemeral range (49152+ on macOS), so a pair picked there can be gone by the time eudi-dev binds it.
+const PAIR_RANGE = { from: 20_000, to: 40_000 };
 
 export async function freePortPair(): Promise<number> {
-  for (let i = 0; i < 20; i++) {
-    const port = await ephemeralPort();
-    if (port > 0 && port < 65535 && (await bindable(port + 1))) return port;
+  for (let i = 0; i < 50; i++) {
+    const port = randomInt(PAIR_RANGE.from, PAIR_RANGE.to);
+    if ((await bindable(port)) && (await bindable(port + 1))) return port;
   }
   throw new Error("no free pair of adjacent local ports");
 }
@@ -307,58 +299,68 @@ async function serverConfig(url: string): Promise<unknown> {
   }
 }
 
-export async function withEudiServer<T>(opts: { walletDir: string; haip: boolean }, body: (server: EudiServer) => Promise<T>): Promise<ServerRun<T>> {
+const SERVE_ATTEMPTS = 3;
+
+export function withEudiServer<T>(opts: { walletDir: string; haip: boolean }, body: (server: EudiServer) => Promise<T>): Promise<ServerRun<T>> {
   return sequential(async (): Promise<ServerRun<T>> => {
-    const port = await freePortPair();
-    const server: EudiServer = { url: `http://127.0.0.1:${port}`, walletDir: opts.walletDir, haip: opts.haip };
-    const child = spawn(eudiBin(), serveArgs({ walletDir: opts.walletDir, port, haip: opts.haip }), { env: homeEnv(opts.walletDir), stdio: ["ignore", "ignore", "pipe"] });
-    const proc: { stderr: string; spawnError: string | null; exited: boolean } = { stderr: "", spawnError: null, exited: false };
-    child.stderr.on("data", (chunk: Buffer) => {
-      proc.stderr = `${proc.stderr}${chunk.toString("utf8")}`.slice(-4_000);
-    });
-    child.on("error", (e: Error) => {
-      const missing = "code" in e && e.code === "ENOENT";
-      proc.spawnError = missing ? `eudi-dev binary not found: ${eudiBin()}` : `eudi-dev wallet serve could not run: ${e.message}`;
-    });
-    const exit = new Promise<void>((resolve) => {
-      child.on("close", () => {
-        proc.exited = true;
-        resolve();
-      });
-    });
-    const settle = (): Promise<unknown> => Promise.race([exit, new Promise((resolve) => setTimeout(resolve, SERVER_STOP_MS))]);
-
-    const stop = async (): Promise<void> => {
-      if (proc.exited) return;
-      await fetch(`${server.url}/api/shutdown`, { method: "POST", signal: AbortSignal.timeout(2_000) }).catch(() => undefined);
-      await settle();
-      if (!proc.exited) child.kill("SIGKILL");
-      await settle();
-    };
-
-    const deadline = Date.now() + SERVER_READY_MS;
-    let config: z.infer<typeof ServerConfigSchema> | null = null;
-    while (!config) {
-      if (proc.spawnError) return { status: "unknown", cause: proc.spawnError };
-      if (proc.exited) return { status: "unknown", cause: `eudi-dev wallet serve exited before answering: ${lastLine(proc.stderr) ?? "no output"}` };
-      if (Date.now() > deadline) {
-        await stop();
-        return { status: "unknown", cause: `eudi-dev wallet serve did not answer within ${SERVER_READY_MS} ms` };
-      }
-      const parsed = ServerConfigSchema.safeParse(await serverConfig(server.url));
-      if (parsed.success) config = parsed.data;
-      else await new Promise((resolve) => setTimeout(resolve, 200));
+    let run: ServerRun<T> = { status: "unknown", cause: "eudi-dev wallet serve never started" };
+    for (let attempt = 0; attempt < SERVE_ATTEMPTS; attempt++) {
+      run = await serveOnce(opts, await freePortPair(), body);
+      if (run.status === "ran" || !run.cause.includes("address already in use")) return run;
     }
-    if (realpath(config.wallet_dir) !== realpath(opts.walletDir) || config.require_haip !== opts.haip || config.validation_mode !== "strict" || !config.auto_accept) {
-      await stop();
-      return { status: "unknown", cause: `port ${port} answered with another wallet configuration: ${JSON.stringify(config)}` };
-    }
-    try {
-      return { status: "ran", result: await body(server) };
-    } finally {
-      await stop();
-    }
+    return run;
   });
+}
+
+async function serveOnce<T>(opts: { walletDir: string; haip: boolean }, port: number, body: (server: EudiServer) => Promise<T>): Promise<ServerRun<T>> {
+  const server: EudiServer = { url: `http://127.0.0.1:${port}`, walletDir: opts.walletDir, haip: opts.haip };
+  const child = spawn(eudiBin(), serveArgs({ walletDir: opts.walletDir, port, haip: opts.haip }), { env: homeEnv(opts.walletDir), stdio: ["ignore", "ignore", "pipe"] });
+  const proc: { stderr: string; spawnError: string | null; exited: boolean } = { stderr: "", spawnError: null, exited: false };
+  child.stderr.on("data", (chunk: Buffer) => {
+    proc.stderr = `${proc.stderr}${chunk.toString("utf8")}`.slice(-4_000);
+  });
+  child.on("error", (e: Error) => {
+    const missing = "code" in e && e.code === "ENOENT";
+    proc.spawnError = missing ? `eudi-dev binary not found: ${eudiBin()}` : `eudi-dev wallet serve could not run: ${e.message}`;
+  });
+  const exit = new Promise<void>((resolve) => {
+    child.on("close", () => {
+      proc.exited = true;
+      resolve();
+    });
+  });
+  const settle = (): Promise<unknown> => Promise.race([exit, new Promise((resolve) => setTimeout(resolve, SERVER_STOP_MS))]);
+
+  const stop = async (): Promise<void> => {
+    if (proc.exited) return;
+    await fetch(`${server.url}/api/shutdown`, { method: "POST", signal: AbortSignal.timeout(2_000) }).catch(() => undefined);
+    await settle();
+    if (!proc.exited) child.kill("SIGKILL");
+    await settle();
+  };
+
+  const deadline = Date.now() + SERVER_READY_MS;
+  let config: z.infer<typeof ServerConfigSchema> | null = null;
+  while (!config) {
+    if (proc.spawnError) return { status: "unknown", cause: proc.spawnError };
+    if (proc.exited) return { status: "unknown", cause: `eudi-dev wallet serve exited before answering: ${lastLine(proc.stderr) ?? "no output"}` };
+    if (Date.now() > deadline) {
+      await stop();
+      return { status: "unknown", cause: `eudi-dev wallet serve did not answer within ${SERVER_READY_MS} ms` };
+    }
+    const parsed = ServerConfigSchema.safeParse(await serverConfig(server.url));
+    if (parsed.success) config = parsed.data;
+    else await new Promise((resolve) => setTimeout(resolve, 200));
+  }
+  if (realpath(config.wallet_dir) !== realpath(opts.walletDir) || config.require_haip !== opts.haip || config.validation_mode !== "strict" || !config.auto_accept) {
+    await stop();
+    return { status: "unknown", cause: `port ${port} answered with another wallet configuration: ${JSON.stringify(config)}` };
+  }
+  try {
+    return { status: "ran", result: await body(server) };
+  } finally {
+    await stop();
+  }
 }
 
 export async function serverLog(server: EudiServer): Promise<unknown> {

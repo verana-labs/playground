@@ -50,3 +50,11 @@ holder never decides accept or refuse, it always completes the flow so the resol
 of what a real wallet's own policy would have done. Whether a wallet's UI reads the same inputs correctly and
 gates Add/Share on them is Tier 3, the only tier that runs against a device. The DIDComm/AnonCreds rail
 (Hologram) is not covered yet.
+
+The headless holder shares the Credo/Animo library family with vs-agent, so a bug in both would pass unseen.
+`tier2/reference-holder.test.ts` runs the demo issue and present scenarios a second time through
+[eudi-dev](https://github.com/dominikschlosser/eudi-dev), an independent Go wallet certified by the OpenID Foundation
+for OpenID4VCI 1.0 and HAIP, and writes `reference-holder` cells. It calls `eudi wallet accept --auto-accept --json
+--mode strict` from `EUDI_DEV_BIN` (default `eudi` on `PATH`), one run at a time. A cell is `works` when eudi-dev
+receives a credential whose signature it verifies, or when the verifier accepts its presentation and records
+`verified`. A missing binary or a timeout is `unknown`, never `works`.

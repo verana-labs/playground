@@ -5,7 +5,7 @@ import UNTRUSTED_ISSUER_RESOLUTION from "./fixtures/devnet-v4/resolve-demo-issue
 import type { Network } from "./network";
 import { listScenarios, serviceFor } from "./scenarios";
 import { IndexerTrustClient, ResolverTrustClient } from "./trust-client";
-import { assertTrust, expectedTrust, type TrustExpectation } from "./trust-expectation";
+import { assertTrust, expectedTrust, expectsUntrusted, type TrustExpectation } from "./trust-expectation";
 
 function service(id: string, demoPerm: CastService["demoPerm"], oid4vcRole: CastService["oid4vcRole"]): CastService {
   return { cast: "demo", org: id, id, host: `${id}.playground.testnet.verana.network`, pinnedTag: "v0", oid4vcRole, demoPerm, issuerId: null, configPath: id };
@@ -85,6 +85,23 @@ describe("expectedTrust", () => {
       if (!fixture) throw new Error(`no fixture service for ${serviceId}`);
       expect(expectedTrust(scenario, fixture)).toEqual(EXPECTED[scenario.id]);
     });
+});
+
+describe("expectsUntrusted", () => {
+  const scenarios = listScenarios();
+  const untrusted = (s: CastService): boolean => expectsUntrusted(s, scenarios);
+
+  it("holds for the services an untrusted scenario names on either rail", () => {
+    expect(untrusted(service("demo-untrusted", null, null))).toBe(true);
+    expect(untrusted(SERVICES["demo-issuer-untrusted"]!)).toBe(true);
+    expect(untrusted(SERVICES["demo-verifier-untrusted"]!)).toBe(true);
+  });
+
+  it("does not hold for trusted services or services no scenario names", () => {
+    expect(untrusted(SERVICES["demo-issuer-unaccredited"]!)).toBe(false);
+    expect(untrusted(SERVICES["evento-guatemala"]!)).toBe(false);
+    expect(untrusted(service("playground-demo", null, null))).toBe(false);
+  });
 });
 
 const NETWORK: Network = {

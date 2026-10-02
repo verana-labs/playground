@@ -87,21 +87,40 @@ for OpenID4VCI 1.0 and HAIP, and writes `reference-holder` cells. It calls `eudi
 receives a credential whose signature it verifies, or when the verifier accepts its presentation and records
 `verified`. A missing binary or a timeout is `unknown`, never `works`.
 
-`tier2/reference-holder-deep.test.ts` goes deeper with the same holder, one check id per concern:
+`tier2/reference-holder-deep.test.ts` runs the same holder over the whole playground, in strict mode. Nothing in it
+names a service or a credential: the credentials are the keys of the `CREDENTIALS` registry of
+`app/api/demo/[serviceId]/route.ts`, the services are the OpenID4VC services of the casts in scope, and before any check
+it asks `/api/demo` which services mint which credential (`reference-holder-mint`, one cell per credential, `unknown`
+when no issuer or no verifier mints it on the network). A new use case is picked up as soon as the route mints it. Mint
+parameters come from `scenarios.yaml`. Cells name the credential and the variant in `scenario`, as
+`<credential>@<variant>`, one check id per concern:
 
-- `reference-holder-decode`: `eudi decode` of the issuer's signed metadata (its signature, plus the `typ`, `alg`,
-  `sub` and `credential_issuer` rules the strict wallet applies) and of each verifier request, which a strict eudi-dev
-  wallet server with an empty wallet then validates without presenting anything.
+- `reference-holder-issue`: the offer through a one-shot strict accept, then through a strict wallet server at
+  `--vci-version 1.1`, `--key-attestation-level none` and `iso_18045_high`. A key attestation variant is `not-testable`
+  when the metadata eudi-dev received offers no attestation proof type and no `key_attestations_required`.
 - `reference-holder-validate`: `eudi decode` and `eudi validate` of the received credential (type, expiry, disclosure
   digests, signature, status list when present) and its `vct#integrity` against the Type Metadata it names.
-- `reference-holder-haip`: the issue and present scenarios through `eudi wallet serve --haip --mode strict`. The one-shot
-  `wallet accept --haip` of eudi-dev 2.4.4 applies no HAIP check, so the server is the only HAIP path.
+- `reference-holder-decode`: on an issuer, `eudi decode` of its signed metadata (signature, plus the `typ`, `alg`, `sub`
+  and `credential_issuer` rules of the strict wallet) and the offered configurations it must list; on a verifier, each
+  request format (`dcql`, `dcql+x5c`, `pe`, `pe+x5c`) decoded and validated by a strict wallet server with an empty
+  wallet, so nothing is presented.
+- `reference-holder-present`: each request format answered with a credential from the first issuer that minted one.
+  eudi-dev implements OpenID4VP 1.0 only, so a `presentation_definition` request (`?query=pe`) or a DID-signed request is
+  `incompatible-by-design`, with its reference.
+- `reference-holder-haip`: issuance and the `x509_hash` DCQL request through `eudi wallet serve --haip --mode strict`.
+  The one-shot `wallet accept --haip` of eudi-dev 2.4.4 applies no HAIP check, so the server is the only HAIP path.
 - `reference-holder-replay-offer`, `reference-holder-replay-presentation`, `reference-holder-garbage-request`: a redeemed
   offer (by URI and by its pre-authorized code), an answered request (by `request_uri` and inline) and an unknown
   `request_uri` must be refused by the agent; a success or a 5xx is `broken`, eudi-dev stopping on its own is `unknown`.
-- `reference-holder-error-response`: the verifier answers 200 to the `access_denied` error the empty wallet sends.
+- `reference-holder-error-response`: the verifier answers 200 to the `access_denied` error the empty wallet sends. When
+  strict eudi-dev refuses a request before answering it (a draft 21 request, say), the error comes from a debug-mode
+  wallet instead and the cell says so.
+- `reference-holder-expired-request`, only with `CONFORMANCE_SLOW=1`: one request per verifier, presented after its `exp`
+  (about five minutes of waiting), must be refused.
 
-Presentations there pass an explicit free `--port`, so they never meet the reference holder run on 8085.
+No offer carries a `tx_code` today; the issue cell records whether one did. Mints are spaced one second apart. One
+eudi-dev task runs at a time on the host (a lock file in the temp directory), so at most two eudi-dev processes run, a
+wallet server and the CLI driving it, and presentations pass an explicit free `--port` instead of 8085.
 
 ## Tier 3
 

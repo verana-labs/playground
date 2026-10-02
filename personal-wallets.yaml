@@ -20,9 +20,18 @@
 #                   anoncreds | openid4vc-sdjwt (one or both)
 #   verana_builtin  true when the standard published build supports Verana
 #                   out of the box (no modified APK needed)
-#   download        direct APK (modified build) or the store/web link when
-#                   verana_builtin
-#   playstore/appstore/web   complementary install links
+#   download        the Verana build: direct APK (modified build), or the
+#                   store/web link when verana_builtin. Leave it out when the
+#                   wallet has no Verana build
+#   playstore/appstore/web   the store builds and the web wallet
+#                   Each of these four links is one build. A plain URL is a
+#                   build with the Verana trust screen; write
+#                   {url, trust_screen: false} for one that completes the
+#                   demos without it (it does not check the registry, so it
+#                   does not refuse the unaccredited or untrusted services).
+#                   Builds with the trust screen come first, the others after
+#                   them, labelled. Every link must be the obtain of a listed
+#                   build in conformance/profiles/<id>.yaml, and vice versa
 #   website         vendor website; the vendor name links to it (new tab)
 #   repo, license, contact, notes
 #   recommended     true puts the wallet first in every picker
@@ -66,8 +75,8 @@ wallets:
     vendor: MOSIP
     icon: ./inji/logo.webp
     formats: [openid4vc-sdjwt]
-    demoParams: query=pe
-    download: https://github.com/AirKyzzZ/inji-wallet/releases/download/verana-2026-08-08.2/Inji_arm64-v8a.apk
+    demoParams: signer=x5c
+    download: https://github.com/AirKyzzZ/inji-wallet/releases/download/verana-2026-10-02/Inji_arm64-v8a.apk
     website: https://inji.io
     repo: https://github.com/mosip/inji-wallet
     fork: https://github.com/verana-labs/inji-wallet
@@ -186,84 +195,35 @@ wallets:
   - id: paradym
     name: Paradym Wallet
     vendor: Animo Solutions
-    hidden: true
     icon: ./paradym/logo.webp
     formats: [openid4vc-sdjwt]
-    download: https://github.com/AirKyzzZ/paradym-wallet-verana/releases/download/verana-2026-08-01/paradym-wallet-verana-release-2026-08-01.apk
+    playstore: { url: "https://play.google.com/store/apps/details?id=id.paradym.wallet", trust_screen: false }
+    appstore: { url: "https://apps.apple.com/app/paradym-wallet/id6449846111", trust_screen: false }
     website: https://animo.id
     repo: https://github.com/animo/paradym-wallet
-    fork: https://github.com/verana-labs/paradym-wallet
     license: Apache-2.0
-    notes: Verana trust integration in Paradym's SDK trust-mechanism registry (Credo-TS wallet).
-    captures:
-      issue-accredited:
-        src: ./paradym/screenshots/1.webp
-        clip: ./paradym/clips/1-issuer-accredited.mp4
-        caption: "Accredited issuer: identity verified, authorized for this credential, accept enabled"
-      issue-unaccredited:
-        src: ./paradym/screenshots/2.webp
-        clip: ./paradym/clips/2-issuer-unaccredited.mp4
-        caption: Identified but not accredited to issue this credential, so accept is blocked
-      issue-untrusted:
-        src: ./paradym/screenshots/3.webp
-        clip: ./paradym/clips/3-issuer-untrusted.mp4
-        caption: "Untrusted issuer: self-issued claims withheld, accept blocked"
-      present-accredited:
-        src: ./paradym/screenshots/4.webp
-        clip: ./paradym/clips/4-verifier-accredited.mp4
-        caption: "Accredited verifier: authorized to request this credential, sharing allowed"
-      present-unaccredited:
-        src: ./paradym/screenshots/5.webp
-        clip: ./paradym/clips/5-verifier-unaccredited.mp4
-        caption: Identified but not authorized to ask for this credential, so sharing is refused
-      present-untrusted:
-        src: ./paradym/screenshots/6.webp
-        clip: ./paradym/clips/6-verifier-untrusted.mp4
-        caption: "Untrusted verifier: self-issued claims withheld, sharing refused"
-    video:
-      src: ./paradym/demo.mp4
-      note: Real device, camera scan of the QR codes on this page, live against the demo cast. The six scenarios recorded separately and joined end to end, silent, otherwise unedited.
+    notes: "Animo's Credo-TS wallet as published in the stores. Store version 1.20.2 takes the DemoCredential from the accredited issuer and presents it to the accredited verifier on the default DCQL request, device-tested on the devnet on 2026-10-02. It labels the services \"Unknown Organization\" and runs no Verana check."
+  - id: lissi
+    name: Lissi ID-Wallet
+    vendor: Lissi GmbH
+    icon: ./lissi/logo.webp
+    formats: [openid4vc-sdjwt]
+    playstore: { url: "https://play.google.com/store/apps/details?id=io.lissi.mobile.android", trust_screen: false }
+    appstore: { url: "https://apps.apple.com/app/lissi-id-wallet/id6475958390", trust_screen: false }
+    website: https://www.lissi.id
+    notes: "Lissi's ID wallet as published in the stores. Store version 3.2.0 takes the DemoCredential from the accredited issuer and presents it to the accredited verifier on the default DCQL request, device-tested on the devnet on 2026-10-02. Its only warning is its own \"Contact is not verified\"; it runs no Verana check."
 
   - id: procivis
     name: Procivis One Wallet
     vendor: Procivis
-    hidden: true
     icon: ./procivis/logo.webp
     formats: [openid4vc-sdjwt]
-    download: https://github.com/AirKyzzZ/procivis-one-wallet-verana/releases/download/verana-2026-08-17/app-debug.apk
+    playstore: { url: "https://play.google.com/store/apps/details?id=ch.procivis.one.wallet.trial", trust_screen: false }
+    appstore: { url: "https://apps.apple.com/app/procivis-one-wallet/id6480111491", trust_screen: false }
     website: https://www.procivis.ch
     repo: https://github.com/procivis/one-wallet
-    fork: https://github.com/AirKyzzZ/one-wallet/tree/codex/procivis-verana
     license: Apache-2.0
-    notes: Q1 and Q2/Q3 are resolved inside the Rust core, so the verdict is computed below the UI and the same trust card renders on both the offer and the presentation surface, with a full evidence dossier behind it. The two surfaces differ in force. Presentation is enforcing - nothing is sent to a verifier the registry refuses. Issuance is advisory - the card shows the refusal and disables accept, but the wallet fetches and stores the credential on arrival, before any verdict exists, and declining does not remove it. That is upstream behaviour we are working with Procivis on, not a Verana limitation.
-    captures:
-      issue-accredited:
-        src: ./procivis/screenshots/1.webp
-        clip: ./procivis/clips/1-issuer-accredited.mp4
-        caption: "Accredited issuer: both identity credentials verified, authorized for this credential, and the credential lands in the wallet"
-      issue-unaccredited:
-        src: ./procivis/screenshots/2.webp
-        clip: ./procivis/clips/2-issuer-unaccredited.mp4
-        caption: Identity verified but not accredited to issue this credential, so the offer is marked refused and accept is disabled
-      issue-untrusted:
-        src: ./procivis/screenshots/3.webp
-        clip: ./procivis/clips/3-issuer-untrusted.mp4
-        caption: "Untrusted issuer: the registry does not vouch for it, its self-issued claims are withheld and accept is disabled"
-      present-accredited:
-        src: ./procivis/screenshots/4.webp
-        clip: ./procivis/clips/4-verifier-accredited.mp4
-        caption: "Accredited verifier: authorized to request this credential, and the presentation is sent"
-      present-unaccredited:
-        src: ./procivis/screenshots/5.webp
-        clip: ./procivis/clips/5-verifier-unaccredited.mp4
-        caption: Identity verified but not accredited to request this credential, so nothing is presented
-      present-untrusted:
-        src: ./procivis/screenshots/6.webp
-        clip: ./procivis/clips/6-verifier-untrusted.mp4
-        caption: "Untrusted verifier: the registry does not vouch for it, claims withheld and nothing is presented"
-    video:
-      src: ./procivis/demo.mp4
-      note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end at 3x speed, silent, otherwise unedited.
+    notes: "Procivis's wallet on its open-source Rust core, as published in the stores. Store version 1.87.1 takes the DemoCredential from the accredited issuer and presents it to the accredited verifier on the default DCQL request, device-tested on the devnet on 2026-10-02. It labels the demo services \"Untrusted relying party\" and runs no Verana check."
   - id: bcwallet
     name: BC Wallet
     vendor: Government of British Columbia

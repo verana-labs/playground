@@ -8,8 +8,10 @@ didcomm:
 builds:
   - kind: store
     listed: true
-    label: "Hologram Messaging on Google Play"
-    obtain: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
+    label: "Hologram Messaging on Google Play and the App Store"
+    obtain:
+      - https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
+      - https://apps.apple.com/cl/app/hologram-messaging/id6474701855
     identity:
       package: io.twentysixty.mobileagent.m
       version: "2.0.0"

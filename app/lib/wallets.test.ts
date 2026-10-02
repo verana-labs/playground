@@ -23,7 +23,8 @@ describe("personal wallets configuration", () => {
     expect(wallets.every((w) => w.verana_builtin !== true)).toBe(true);
     for (const w of wallets) {
       expect(w.formats.length).toBeGreaterThan(0);
-      expect(w.download).toMatch(/^https:/);
+      expect(w.links.length, w.id).toBeGreaterThan(0);
+      for (const l of w.links) expect(l.url, w.id).toMatch(/^https:/);
       for (const key of Object.keys(w.captures)) {
         expect([
           "issue-accredited", "issue-unaccredited", "issue-untrusted",
@@ -44,8 +45,28 @@ describe("personal wallets configuration", () => {
   it("lists only the maintained wallets", () => {
     const ids = listPersonalWallets().map((w) => w.id).sort();
     expect(ids).toEqual(
-      ["eudi", "hologram", "inji", "swiyu", "wwwallet"].sort(),
+      ["eudi", "hologram", "inji", "lissi", "paradym", "procivis", "swiyu", "wwwallet"].sort(),
     );
+  });
+
+  it("lists the store-only wallets through their store builds, without the trust screen", () => {
+    for (const id of ["lissi", "paradym", "procivis"]) {
+      const w = getPersonalWallet(id);
+      expect(w?.links.map((l) => [l.kind, l.trust_screen]), id).toEqual([
+        ["playstore", false],
+        ["appstore", false],
+      ]);
+      expect(w?.fork, id).toBeUndefined();
+    }
+  });
+
+  it("folds hologram's download into its store build, which keeps the trust screen", () => {
+    expect(
+      getPersonalWallet("hologram")?.links.map((l) => [l.kind, l.trust_screen]),
+    ).toEqual([
+      ["playstore", true],
+      ["appstore", true],
+    ]);
   });
 
   it("keeps the paused wallets in the file, hidden", () => {
@@ -56,7 +77,7 @@ describe("personal wallets configuration", () => {
     );
     const hidden = raw.wallets.filter((w) => w.hidden).map((w) => w.id).sort();
     expect(hidden).toEqual(
-      ["authbound", "bcwallet", "nl-wallet", "paradym", "procivis", "sphereon", "talao"].sort(),
+      ["authbound", "bcwallet", "nl-wallet", "sphereon", "talao"].sort(),
     );
   });
 });

@@ -1,0 +1,29 @@
+id: lissi
+rails: [openid4vc-sdjwt]
+openid4vc:
+  library: "Lissi GmbH's own OpenID4VC and SD-JWT VC stack, closed source"
+  proxy: "@openid4vc/openid4vci, @openid4vc/openid4vp, @sd-jwt/sd-jwt-vc"
+  vciDrafts: [v1]
+  offerSchemes: [openid-credential-offer]
+  requestSchemes: [openid4vp]
+  asDiscovery: [oauth-authorization-server]
+  presentation: { query: dcql, clientId: did, responseMode: direct_post.jwt }
+  demoParams: ""
+builds:
+  - kind: store
+    listed: true
+    label: "Lissi ID-Wallet on Google Play and the App Store"
+    obtain:
+      - https://play.google.com/store/apps/details?id=io.lissi.mobile.android
+      - https://apps.apple.com/app/lissi-id-wallet/id6475958390
+    identity:
+      package: io.lissi.mobile.android
+      version: "3.2.0"
+    platforms: [android, ios]
+    presumptive: [ios]
+    promises: "No Verana trust screen: its only warning is its own \"Contact is not verified\" and nothing is checked against the registry. Issues the DemoCredential and presents it on the default DCQL request, verifier session verified: true (device-tested 2026-10-02 on devnet, Play version 3.2.0)"
+quirks:
+  actsOnLinkOnlyAtColdStart: false
+  locksOnBackground: false
+  viewTree: readable
+  notes: "Unlocks with the phone's device credential. Only the offer and request links of the default mint were exercised; the view tree and the locking behaviour have not been characterised"

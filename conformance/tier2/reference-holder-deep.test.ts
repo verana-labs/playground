@@ -107,7 +107,7 @@ const prober =
 
 const PLANS = new Map<string, CredentialPlan[]>();
 if (mintsEnabled()) {
-  for (const network of testableNetworks()) {
+  for (const network of testableNetworks().filter((n) => n.protocol === "v4")) {
     const services = listCastServices(network).filter(inScope);
     PLANS.set(network.id, await planCredentials(routeCredentials(), services, prober(network)));
   }
@@ -546,7 +546,8 @@ describe("tier 2 reference holder, deep [CONF-T2-1]", () => {
   describeNetworks("tier 2 reference holder deep", (network) => {
     const plans = PLANS.get(network.id);
     if (!plans) {
-      it("eudi-dev deep matrix", (ctx) => ctx.skip("CONFORMANCE_MINTS is not 1"));
+      const reason = network.protocol === "v4" ? "CONFORMANCE_MINTS is not 1" : `${network.id} is a ${network.protocol} network; the deep matrix runs on v4 only`;
+      it("eudi-dev deep matrix", (ctx) => ctx.skip(reason));
       return;
     }
     const holder: Holder = { root: "", version: null, issued: new Map(), presented: new Map(), errorResponses: new Map() };

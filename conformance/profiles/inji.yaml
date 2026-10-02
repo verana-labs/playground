@@ -12,6 +12,7 @@ openid4vc:
 builds:
   - kind: fork
     listed: true
+    networks: [testnet-v3]
     label: "Verana fork APK"
     obtain: https://github.com/AirKyzzZ/inji-wallet/releases/download/verana-2026-08-08.2/Inji_arm64-v8a.apk
     identity:

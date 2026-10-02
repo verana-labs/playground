@@ -9,6 +9,8 @@ import {
   getWalletProfile,
   listWalletProfiles,
   listedBuild,
+  networkBuild,
+  targetsNetwork,
   WalletProfileSchema,
 } from "./wallet-profiles";
 import { WalletsFileSchema } from "./wallets";
@@ -170,6 +172,39 @@ describe("profile helpers", () => {
   });
 });
 
+describe("builds per network", () => {
+  const [fork, store] = valid.builds;
+  const v3Fork = { ...fork, networks: ["testnet-v3"] };
+  const v4Fork = { ...fork, listed: false, networks: ["devnet-v4"], obtain: "https://example.org/app-v4.apk" };
+
+  it("lets builds of one kind split the networks between them", () => {
+    expect(WalletProfileSchema.safeParse({ ...valid, builds: [v3Fork, v4Fork, store] }).success).toBe(true);
+  });
+
+  it("refuses two builds of one kind on the same network", () => {
+    expect(WalletProfileSchema.safeParse({ ...valid, builds: [fork, v4Fork, store] }).success).toBe(false);
+    const overlap = { ...v4Fork, networks: ["devnet-v4", "testnet-v3"] };
+    expect(WalletProfileSchema.safeParse({ ...valid, builds: [v3Fork, overlap, store] }).success).toBe(false);
+  });
+
+  it("treats a build without networks as targeting every network", () => {
+    const profile = WalletProfileSchema.parse(valid);
+    expect(targetsNetwork(profile.builds[0], "devnet-v4")).toBe(true);
+    expect(networkBuild(profile, "devnet-v4")?.obtain).toBe("https://example.org/app.apk");
+  });
+
+  it("stands in the same kind of build where the listed one does not go", () => {
+    const profile = WalletProfileSchema.parse({ ...valid, builds: [v3Fork, v4Fork, store] });
+    expect(networkBuild(profile, "testnet-v3")?.obtain).toBe("https://example.org/app.apk");
+    expect(networkBuild(profile, "devnet-v4")?.obtain).toBe("https://example.org/app-v4.apk");
+  });
+
+  it("has no build for a network that no build of the listed kind targets", () => {
+    const profile = WalletProfileSchema.parse({ ...valid, builds: [v3Fork, store] });
+    expect(networkBuild(profile, "devnet-v4")).toBeUndefined();
+  });
+});
+
 describe("listWalletProfiles", () => {
   let dir: string;
   beforeEach(() => {
@@ -223,6 +258,14 @@ describe("profiles match the listing", () => {
       const build = listedBuild(byId.get(w.id)!);
       expect(build.obtain, w.id).toBe(w.browser ? w.hosted : w.download);
     }
+  });
+
+  it("builds only name networks from conformance/networks.yaml", () => {
+    const file = yaml.load(fs.readFileSync(path.join(process.cwd(), "conformance", "networks.yaml"), "utf8")) as { networks: { id: string }[] };
+    const known = file.networks.map((n) => n.id);
+    for (const profile of profiles)
+      for (const build of profile.builds)
+        for (const network of build.networks ?? []) expect(known, `${profile.id}/${build.kind}`).toContain(network);
   });
 
   it("the listing mints with the listed build's parameters", () => {

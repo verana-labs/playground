@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { effectiveDemoParams, listWalletProfiles, type WalletBuild, type WalletProfile } from "../../app/lib/wallet-profiles";
+import { effectiveDemoParams, listWalletProfiles, targetsNetwork, type WalletBuild, type WalletProfile } from "../../app/lib/wallet-profiles";
 import { inScope, listCastServices, type CastService } from "../lib/cast-services";
 import { createHolderKey, type HolderKey } from "../lib/holder/keys";
 import { receiveCredential } from "../lib/holder/oid4vci";
@@ -25,10 +25,10 @@ const orderedScenarios = [...listScenarios()].sort((a, b) => (a.kind === b.kind 
 type Target = { profile: WalletProfile; build: WalletBuild; scenario: Scenario; service: CastService };
 type StoredCredential = { credential: string; vct: string | null; key: HolderKey };
 
-function targets(services: CastService[]): Target[] {
+function targets(network: Network, services: CastService[]): Target[] {
   const out: Target[] = [];
   for (const profile of profiles.filter((p) => p.rails.includes(RAIL)))
-    for (const build of profile.builds)
+    for (const build of profile.builds.filter((b) => targetsNetwork(b, network.id)))
       for (const scenario of orderedScenarios) {
         const service = services.find((s) => s.id === serviceFor(scenario, RAIL));
         if (!service || !inScope(service)) continue;
@@ -122,7 +122,7 @@ describe.skipIf(!mintsEnabled())("tier 2 headless openid4vc flows [CONF-T2-1]", 
     const services = listCastServices(network);
     const credentials = new Map<string, StoredCredential | null>();
 
-    for (const t of targets(services)) {
+    for (const t of targets(network, services)) {
       const base = {
         tier: "t2" as const,
         check: "flow",

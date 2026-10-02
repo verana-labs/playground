@@ -12,6 +12,7 @@ openid4vc:
 builds:
   - kind: fork
     listed: true
+    networks: [testnet-v3]
     label: "Verana fork APK, wallet-core 0.29.0, signed metadata off, trust policy INFORM"
     obtain: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/releases/download/verana-2026-08-06.1/eudi-wallet-verana-2026-08-06.1.apk
     identity:

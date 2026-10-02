@@ -150,8 +150,8 @@ issues:
       check: reference-holder-haip
       network: devnet-v4
       cast: demo
-      service: [demo-issuer-accredited, demo-issuer-unaccredited]
-      scenario: [issue-accredited, issue-unaccredited]
+      service: [demo-issuer-accredited, demo-issuer-unaccredited, demo-issuer-untrusted]
+      scenario: demo-credential
     cause: "HAIP 1.0 §4.4.1: the token endpoint answers invalid_client to eudi-dev's wallet attestation (Credo: trustedCertificates is required when the JWS protected header contains an 'x5c' property) since the devnet demo issuers set no issuer.walletAttestationCertificates; their credentials are also signed with vs-agent's self-signed development certificate, which HAIP 1.0 §6.1.1 forbids"
     reference: https://github.com/verana-labs/vs-agent/blob/main/packages/plugin-openid4vc/src/trust/CertificateTrust.ts
     expires: 2026-10-16
@@ -161,8 +161,8 @@ issues:
       check: reference-holder-haip
       network: devnet-v4
       cast: demo
-      service: [demo-verifier-accredited, demo-verifier-unaccredited]
-      scenario: [present-accredited, present-unaccredited]
+      service: [demo-verifier-accredited, demo-verifier-unaccredited, demo-verifier-untrusted]
+      scenario: demo-credential@dcql+x5c
     cause: "HAIP 1.0 §5: the devnet demo verifiers sign their request objects with vs-agent's self-signed development x5c certificate (no configured certificate chain), which eudi-dev in HAIP strict mode refuses"
     reference: https://github.com/verana-labs/vs-agent/blob/main/packages/plugin-openid4vc/src/services/CertificateService.ts
     expires: 2026-10-16
@@ -172,8 +172,28 @@ issues:
       check: reference-holder-error-response
       network: devnet-v4
       cast: demo
-      service: [demo-verifier-accredited, demo-verifier-unaccredited]
-      scenario: [present-accredited, present-unaccredited]
+      service: [demo-verifier-accredited, demo-verifier-unaccredited, demo-verifier-untrusted]
+      scenario: [demo-credential@dcql, demo-credential@dcql+x5c]
     cause: "the vs-agent verifier (Credo openid4vc response endpoint) answers an access_denied Authorization Error Response, plain or direct_post.jwt, with HTTP 500 server_error while moving the session to Error; OID4VP 1.0 §8.2 requires HTTP 200 once it is processed"
     reference: https://openid.net/specs/openid-4-verifiable-presentations-1_0-final.html#section-8.2
+    expires: 2026-10-16
+
+  - match:
+      tier: t2
+      check: reference-holder-error-response
+      network: devnet-v4
+      cast: demo
+      service: [demo-verifier-accredited, demo-verifier-unaccredited, demo-verifier-untrusted]
+      scenario: [demo-credential@pe, demo-credential@pe+x5c]
+    cause: "VerifierService.buildRequestSigner signs the ?query=pe (draft 21) request with clientIdPrefix x509_hash, so it carries client_id_scheme=x509_hash, which draft 21 never defined and oid4vc-ts's legacy scheme list (pre-registered, redirect_uri, entity_id, did, verifier_attestation, x509_san_dns, x509_san_uri) lacks: the response endpoint answers every reply, error responses and vp_tokens alike, with 400 Unsupported client_id_scheme value 'x509_hash'"
+    reference: https://github.com/verana-labs/vs-agent/blob/main/packages/plugin-openid4vc/src/services/VerifierService.ts
+    expires: 2026-10-16
+
+  - match:
+      tier: t2
+      check: reference-holder-mint
+      network: devnet-v4
+      scenario: [ecs-badge, cexa-kyc, verandia-citizen-id, verandia-legal-rep, bolivia-cedula, bolivia-legal-rep, bhi-qualification, bhi-employment, bhi-right-to-work, ccm-legal-rep, eventos-asistente, eventos-patrocinador]
+    cause: "only the demo cast is deployed on devnet (networks.yaml casts: [demo]), so /api/demo answers {kind: unsupported} for every other credential of the route registry on every devnet service"
+    reference: https://github.com/verana-labs/playground/blob/main/conformance/networks.yaml
     expires: 2026-10-16

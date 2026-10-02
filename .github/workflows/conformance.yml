@@ -84,6 +84,23 @@ jobs:
           ${{ secrets.KUBECONFIG_VERANA_DEV }}
           KUBEEOF
           chmod 600 ~/.kube/config
+      - name: Install the eudi-dev reference holder
+        if: matrix.tier == 't2'
+        env:
+          EUDI_DEV_VERSION: v2.4.4
+          EUDI_DEV_SHA256: 0c81c1ab45df422ad78e43c532c32b80ca383d9a509f0182d7cee2cc5eebd46a
+        run: |
+          asset="eudi-${EUDI_DEV_VERSION}-linux-amd64"
+          dir="$RUNNER_TEMP/eudi-dev"
+          mkdir -p "$dir"
+          cd "$dir"
+          base="https://github.com/dominikschlosser/eudi-dev/releases/download/${EUDI_DEV_VERSION}"
+          curl -fsSL --retry 3 -o checksums.txt "$base/checksums.txt"
+          curl -fsSL --retry 3 -o "$asset" "$base/$asset"
+          grep -qx "${EUDI_DEV_SHA256}  ${asset}" checksums.txt
+          grep " ${asset}\$" checksums.txt | sha256sum -c -
+          chmod +x "$asset"
+          echo "EUDI_DEV_BIN=$dir/$asset" >> "$GITHUB_ENV"
       - run: npm ci
       - run: npm ci
         working-directory: conformance

@@ -118,8 +118,7 @@ describe("ResolverTrustClient", () => {
   it("does not ask the resolver when the vct names no schema credential", async () => {
     const fetchMock = serve({ [VCT]: { body: { vct: VCT, name: "DemoCredential" } } });
     const answer = await new ResolverTrustClient("https://r").verifierAuthorization("d", VCT);
-    expect(answer.authorized).toBeNull();
-    expect(answer.cause).toBe(`vct document at ${VCT} has no relatedJsonSchemaCredentialId`);
+    expect(answer).toMatchObject({ authorized: null, cause: `vct document at ${VCT} has no relatedJsonSchemaCredentialId` });
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 });
@@ -215,22 +214,19 @@ describe("IndexerTrustClient Q2/Q3", () => {
   it("does not answer when the VTJSC proof does not verify", async () => {
     devnet({ [TYPE_METADATA.relatedJsonSchemaCredentialId]: { body: { ...VTJSC, validUntil: "2099-01-01T00:00:00.000Z" } } });
     const answer = await indexer().issuerAuthorization(ISSUER_DID, VCT);
-    expect(answer.authorized).toBeNull();
-    expect(answer.cause).toMatch(/eddsa-jcs-2022 proof does not verify/);
+    expect(answer).toMatchObject({ authorized: null, cause: expect.stringMatching(/eddsa-jcs-2022 proof does not verify/) });
   });
 
   it("does not answer when the VTJSC issuer is not the ecosystem that owns the schema", async () => {
     devnet({ [`${INDEXER}/v4/ecosystem/get/6`]: { body: { ecosystem: { id: 6, did: "did:webvh:QmOther:other.example" } } } });
     const answer = await indexer().issuerAuthorization(ISSUER_DID, VCT);
-    expect(answer.authorized).toBeNull();
-    expect(answer.cause).toMatch(/is not did:webvh:QmOther:other.example, the ecosystem that owns schema 8/);
+    expect(answer).toMatchObject({ authorized: null, cause: expect.stringMatching(/is not did:webvh:QmOther:other.example, the ecosystem that owns schema 8/) });
   });
 
   it("does not answer for a schema on another chain", async () => {
     devnet();
     const answer = await indexer("vna-testnet-1").issuerAuthorization(ISSUER_DID, VCT);
-    expect(answer.authorized).toBeNull();
-    expect(answer.cause).toMatch(/references a schema on vna-devnet-1, not vna-testnet-1/);
+    expect(answer).toMatchObject({ authorized: null, cause: expect.stringMatching(/references a schema on vna-devnet-1, not vna-testnet-1/) });
   });
 
   it("does not answer when the vct names no schema credential", async () => {

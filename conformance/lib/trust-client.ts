@@ -24,11 +24,9 @@ export type TrustAuthorization = {
   did: string;
   vct: string;
   vtjscId: string | null;
-  authorized: boolean | null;
   evaluatedAt: string;
-  cause?: string;
   evidence?: Record<string, unknown>;
-};
+} & ({ authorized: boolean } | { authorized: null; cause: string });
 
 export interface TrustClient {
   readonly protocol: TrustProtocol;

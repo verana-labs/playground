@@ -108,7 +108,7 @@ parameters come from `scenarios.yaml`. Cells name the credential and the variant
   eudi-dev implements OpenID4VP 1.0 only, so a `presentation_definition` request (`?query=pe`) or a DID-signed request is
   `incompatible-by-design`, with its reference.
 - `reference-holder-haip`: issuance and the `x509_hash` DCQL request through `eudi wallet serve --haip --mode strict`.
-  The one-shot `wallet accept --haip` of eudi-dev 2.4.4 applies no HAIP check, so the server is the only HAIP path.
+  The one-shot `wallet accept --haip` of eudi-dev 2.6.0 applies no HAIP check, so the server is the only HAIP path.
 - `reference-holder-replay-offer`, `reference-holder-replay-presentation`, `reference-holder-garbage-request`: a redeemed
   offer (by URI and by its pre-authorized code), an answered request (by `request_uri` and inline) and an unknown
   `request_uri` must be refused by the agent; a success or a 5xx is `broken`, eudi-dev stopping on its own is `unknown`.

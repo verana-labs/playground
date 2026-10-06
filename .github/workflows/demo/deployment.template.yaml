@@ -72,6 +72,11 @@ extraEnv:
   # Verana business wallet.
   - name: UI_SHOW_PLACEHOLDER_MESSAGE
     value: "true"
+  # The gas price of the agent transactions. The Corporation pays them through
+  # a fee grant. The devnet minimum is 0.0025uvna. vs-agent uses 1uvna when
+  # this variable is not set, and versions without the variable ignore it.
+  - name: VERANA_GAS_PRICE
+    value: "0.01uvna"
   # The own Verana account of the agent (the vs_operator of its Participant
   # entries). demo-00_core creates the secret.
   - name: VERANA_ACCOUNT_MNEMONIC

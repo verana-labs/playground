@@ -626,7 +626,7 @@ find_root_participant() {
 find_participant_with_vs_operator() {
   veranad query pp list-participants --schema-id "$1" --role "$2" --node "$NODE_RPC" --output json 2>/dev/null \
     | jq -r --arg did "$3" '(.participants // [])[]
-        | select(.did == $did and .revoked == null and .slashed == null)
+        | select(.did == $did and .revoked == null and .slashed == null and .op_state != "TERMINATED")
         | [(.id|tostring), (.vs_operator // "")] | @tsv' \
     | head -1
 }
@@ -936,6 +936,26 @@ ensure_credential_definition() {
 readonly PF_PORT_ECS_ISSUER=3190
 readonly PF_PORT_VALIDATOR=3191
 
+# Wait until the indexer resolves a DID as trusted. When an onboarding request
+# arrives, the validator agent checks that the applicant is a Verifiable
+# Service (VS-CONN-VS). A request that comes before the new ECS credentials of
+# the applicant are known ends in the ERROR state.
+# Usage: wait_until_trusted <did>
+wait_until_trusted() {
+  local i
+  for i in $(seq 1 36); do
+    if curl -sf -m 20 -X POST "${INDEXER_URL}/v4/verifiable-trust/resolve" \
+         -H 'Content-Type: application/json' -d "$(jq -cn --arg d "$1" '{did: $d}')" \
+         | jq -e '.trusted == true' > /dev/null 2>&1; then
+      ok "The indexer resolves $1 as trusted"
+      return 0
+    fi
+    sleep 5
+  done
+  err "The indexer does not resolve $1 as trusted after 3 minutes"
+  return 1
+}
+
 # ECS credentials of a standalone agent:
 #   1. an ISSUER entry on the ECS Service schema (OPEN). The agent issues its
 #      own ECS Service credential, and the ECS Service credentials of its
@@ -973,6 +993,7 @@ provision_ecs_standalone() {
   ensure_self_issued_service_credential "$RELEASE_NAME" "$INGRESS_HOST" "$service_issuer" || return 1
   stop_port_forward "$agent_port"
   start_port_forward "$RELEASE_NAME" "$agent_port"
+  wait_until_trusted "$AGENT_DID"
 }
 
 # ECS Service credential of a delegated agent: a HOLDER entry on the ECS
@@ -997,6 +1018,7 @@ provision_ecs_delegated() {
   start_port_forward "$parent_release" "$PF_PORT_VALIDATOR" || return 1
   complete_onboarding "http://localhost:${PF_PORT_VALIDATOR}" "$AGENT_DID" "" "$holder_id" || return 1
   stop_port_forward "$PF_PORT_VALIDATOR"
+  wait_until_trusted "$AGENT_DID"
 }
 
 # Make the agent a participant of a schema, validated by the root (ECOSYSTEM)
@@ -1021,6 +1043,36 @@ join_under_root() {
   echo "$participant_id"
 }
 
+# Start the onboarding process of the agent with a validator agent, and make
+# sure that the validator has a live flow for it. When the validator ended the
+# flow of a PENDING entry with ERROR (for example, the applicant was not yet
+# trusted), the applicant cannot send the request again. The operator then
+# cancels the entry (the chain sets it to TERMINATED) and starts a new entry.
+# Prints the id of the entry.
+# Usage: start_onboarding_with <schema_id> <role> <vsoa_msg_types> <validator_participant_id> <validator_admin_api>
+start_onboarding_with() {
+  local schema_id=$1
+  local role=$2
+  local msg_types=$3
+  local validator_id=$4
+  local admin_api=$5
+  local participant_id op_state states
+
+  participant_id=$(ensure_participant start "$schema_id" "$role" "$validator_id" "$AGENT_DID" "$msg_types") || return 1
+  op_state=$(veranad query pp get-participant "$participant_id" --node "$NODE_RPC" --output json 2>/dev/null \
+    | jq -r '.participant.op_state // empty')
+  if [ "$op_state" = "PENDING" ]; then
+    states=$(curl -sf "${admin_api}/v2/vt/flows?role=validator&applicantParticipantId=${participant_id}" 2>/dev/null \
+      | jq -r '[(.items // [])[].flowState] | unique | join(",")')
+    if [ "$states" = "ERROR" ]; then
+      warn "The validator ended the flow of entry $participant_id with ERROR. Cancelling the entry to start again."
+      broadcast veranad tx pp cancel-participant-op-request "$participant_id" --corporation "$CORPORATION" > /dev/null || return 1
+      participant_id=$(ensure_participant start "$schema_id" "$role" "$validator_id" "$AGENT_DID" "$msg_types") || return 1
+    fi
+  fi
+  echo "$participant_id"
+}
+
 # Make the agent a participant of a schema, validated by the entry of another
 # agent: an ISSUER entry validates a HOLDER (an org-to-org credential), a
 # grantor entry validates an ISSUER or a VERIFIER. The validator agent
@@ -1037,8 +1089,9 @@ join_under_agent() {
   local claims_json="${6:-}"
 
   local participant_id
-  participant_id=$(ensure_participant start "$schema_id" "$role" "$validator_id" "$AGENT_DID" "$msg_types") || return 1
   start_port_forward "$validator_release" "$PF_PORT_VALIDATOR" || return 1
+  participant_id=$(start_onboarding_with "$schema_id" "$role" "$msg_types" "$validator_id" \
+    "http://localhost:${PF_PORT_VALIDATOR}") || return 1
   complete_onboarding "http://localhost:${PF_PORT_VALIDATOR}" "$AGENT_DID" "$claims_json" "$participant_id" || return 1
   stop_port_forward "$PF_PORT_VALIDATOR"
   if [ "$FLOW_SUBMISSION" = "OPERATOR" ]; then

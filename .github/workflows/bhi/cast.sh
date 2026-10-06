@@ -250,8 +250,9 @@ bhi_join_under_agent() {
   local claims_json="${6:-}"
   local participant_id
 
-  participant_id=$(ensure_participant start "$schema_id" "$role" "$validator_id" "$AGENT_DID" "$msg_types") || return 1
   start_port_forward "$validator_release" "$PF_PORT_VALIDATOR" || return 1
+  participant_id=$(start_onboarding_with "$schema_id" "$role" "$msg_types" "$validator_id" \
+    "http://localhost:${PF_PORT_VALIDATOR}") || return 1
   bhi_complete_onboarding "http://localhost:${PF_PORT_VALIDATOR}" "$AGENT_DID" "$participant_id" "$claims_json" || return 1
   stop_port_forward "$PF_PORT_VALIDATOR"
   if [ "$FLOW_SUBMISSION" = "OPERATOR" ]; then

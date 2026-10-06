@@ -37,9 +37,11 @@ env:
   # The secrets of the v4 branch have this suffix (K8S_NAMESPACE_V4, PLAYGROUND_V4_MNEMONIC).
   SECRET_SUFFIX: ${{ github.ref_name == 'v4' && '_V4' || '' }}
   VERANAD_VERSION: v0.10.5
-  # Funds for each new Corporation. A cast has one Corporation per organization,
-  # and the faucet gives 50 VNA per hour, so the default stays small.
-  CORPORATION_FUNDS: 5000000uvna
+  # The float of each Corporation. The Corporation pays the fees of its agents
+  # through fee grants. vs-agent uses a gas price of 1uvna, so an agent
+  # transaction costs about 0.2 VNA. Each run fills the Corporation again to
+  # this amount when its balance is less than half of it.
+  CORPORATION_FUNDS: 1000000uvna
 
 jobs:
   run:

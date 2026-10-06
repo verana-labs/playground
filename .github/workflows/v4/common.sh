@@ -68,7 +68,13 @@ set_network_vars() {
     devnet)
       CHAIN_ID="${CHAIN_ID:-vna-devnet-1}"
       NODE_RPC="${NODE_RPC:-https://rpc.devnet.verana.network}"
-      FEES="${FEES:-600000uvna}"
+      # The chain minimum is 0.0025uvna. A transaction uses less than 400000
+      # gas, so it costs less than TX_FEE_MAX.
+      GAS_PRICES="${GAS_PRICES:-0.01uvna}"
+      TX_FEE_MAX="${TX_FEE_MAX:-10000}"
+      # The Corporation pays the fees of the agent through a fee grant, so the
+      # agent account needs funds only to exist on the chain.
+      AGENT_FUNDS="${AGENT_FUNDS:-1000uvna}"
       # The faucet needs a wallet signature (ADR-036), for example from the Verana Frontend.
       FAUCET_URL="https://faucet.devnet.verana.network"
       INDEXER_URL="${INDEXER_URL:-https://idx.devnet.verana.network}"
@@ -86,7 +92,7 @@ set_network_vars() {
       ;;
   esac
 
-  export CHAIN_ID NODE_RPC FEES FAUCET_URL INDEXER_URL ECS_ECOSYSTEM_DID
+  export CHAIN_ID NODE_RPC GAS_PRICES TX_FEE_MAX AGENT_FUNDS FAUCET_URL INDEXER_URL ECS_ECOSYSTEM_DID
   export ECS_ORG_ISSUER_PUBLIC_URL ECS_NAMESPACE ECS_ORG_ISSUER_RELEASE
 }
 
@@ -224,7 +230,7 @@ broadcast() {
   local raw tx_hash
   raw=$("$@" \
     --from "$USER_ACC" --chain-id "$CHAIN_ID" --keyring-backend test \
-    --fees "$FEES" --gas auto --gas-adjustment 1.5 --node "$NODE_RPC" \
+    --gas-prices "$GAS_PRICES" --gas auto --gas-adjustment 1.5 --node "$NODE_RPC" \
     --output json -y 2>&1) || true
   tx_hash=$(echo "$raw" | extract_tx_json | jq -r '.txhash // empty' 2>/dev/null)
   if [ -z "$tx_hash" ]; then
@@ -321,7 +327,7 @@ compute_sri_digest() {
 # Make sure that an agent has its own Verana account, and import it into the
 # keyring as "<release>-agent". The mnemonic stays in the Kubernetes secret
 # "<release>-verana-account" (key "mnemonic"); the chart gives it to the agent
-# as VERANA_ACCOUNT_MNEMONIC. A new account gets 1 VNA from USER_ACC, so that
+# as VERANA_ACCOUNT_MNEMONIC. A new account gets AGENT_FUNDS from USER_ACC, so that
 # it exists on the chain. The agent pays its fees through the fee grant of
 # its VSOperatorAuthorization.
 # Sets AGENT_ADDR.
@@ -352,10 +358,10 @@ ensure_agent_account() {
   ok "Agent account of ${release}: $AGENT_ADDR"
 
   if [ "$(account_balance "$AGENT_ADDR")" = "0" ]; then
-    log "Funding ${AGENT_ADDR} with 1 VNA, so that the account exists on the chain..."
+    log "Funding ${AGENT_ADDR} with ${AGENT_FUNDS}, so that the account exists on the chain..."
     # The transfer and its fee.
-    check_balance "$USER_ACC" $((1000000 + ${FEES%uvna}))
-    broadcast veranad tx bank send "$USER_ACC" "$AGENT_ADDR" 1000000uvna > /dev/null
+    check_balance "$USER_ACC" $((${AGENT_FUNDS%uvna} + TX_FEE_MAX))
+    broadcast veranad tx bank send "$USER_ACC" "$AGENT_ADDR" "$AGENT_FUNDS" > /dev/null
   fi
 }
 
@@ -404,12 +410,33 @@ ensure_operator_authorization() {
   ok "Operator authorization granted"
 }
 
+# Keep a float of funds in the Corporation. When its balance is less than
+# CORPORATION_MIN_FUNDS (default: half of CORPORATION_FUNDS), USER_ACC sends
+# the difference up to CORPORATION_FUNDS. The Corporation spends the float on
+# the fees of its agents.
+# Usage: top_up_corporation <policy_address>
+top_up_corporation() {
+  local funds="${CORPORATION_FUNDS:-20000000uvna}"
+  local target="${funds%uvna}"
+  local min="${CORPORATION_MIN_FUNDS:-$((target / 2))uvna}"
+  local balance
+  balance=$(account_balance "$1")
+  if [ "$balance" -ge "${min%uvna}" ]; then
+    ok "Corporation balance: ${balance} uvna"
+    return 0
+  fi
+  local missing=$((target - balance))
+  check_balance "$USER_ACC" $((missing + TX_FEE_MAX)) || return 1
+  broadcast veranad tx bank send "$USER_ACC" "$1" "${missing}uvna" > /dev/null || return 1
+  ok "Corporation funded with ${missing} uvna (balance was ${balance} uvna)"
+}
+
 # Find the Corporation of this agent (corporation_did), or create it when the
 # argument is "create". The Corporation is a group with USER_ACC as its only
-# member. It gets CORPORATION_FUNDS (default 20 VNA), and USER_ACC gets the
-# OperatorAuthorization of the cast. The Corporation pays the fees of its
-# agents through fee grants. The casts set no validation, issuance or
-# verification fees, so they need no deposits.
+# member. It keeps a float of CORPORATION_FUNDS (see top_up_corporation), and
+# USER_ACC gets the OperatorAuthorization of the cast. The Corporation pays
+# the fees of its agents through fee grants. The casts set no validation,
+# issuance or verification fees, so they need no deposits.
 # Sets CORPORATION_ID and CORPORATION (the policy address).
 # Usage: ensure_corporation [create]
 ensure_corporation() {
@@ -424,10 +451,10 @@ ensure_corporation() {
     ok "Corporation $did: id=$CORPORATION_ID policy_address=$CORPORATION"
   elif [ "$create" = "create" ]; then
     log "Creating the Corporation $did..."
-    # The Corporation funds, the 1 VNA of the agent account, and the fees of
+    # The Corporation funds, the funds of the agent account, and the fees of
     # the next transactions: create, send, proposal, vote and the agent transfer.
     local corporation_funds="${CORPORATION_FUNDS:-20000000uvna}"
-    check_balance "$USER_ACC" $((${corporation_funds%uvna} + 1000000 + 5 * ${FEES%uvna}))
+    check_balance "$USER_ACC" $((${corporation_funds%uvna} + ${AGENT_FUNDS%uvna} + 5 * TX_FEE_MAX))
     local digest tx_hash
     digest=$(compute_sri_digest "$EGF_DOC_URL")
     tx_hash=$(broadcast veranad tx co create-corporation \
@@ -443,13 +470,12 @@ ensure_corporation() {
       return 1
     fi
     ok "Corporation created: id=$CORPORATION_ID policy_address=$CORPORATION"
-    broadcast veranad tx bank send "$USER_ACC" "$CORPORATION" "${CORPORATION_FUNDS:-20000000uvna}" > /dev/null
-    ok "Corporation funded with ${CORPORATION_FUNDS:-20000000uvna}"
   else
     err "No Corporation has the DID $did. Run the first workflow of the organization with step=all."
     return 1
   fi
 
+  top_up_corporation "$CORPORATION" || return 1
   ensure_operator_authorization "$CORPORATION_ID" "$CORPORATION" "$user_addr" "$OA_MSGS_CAST"
   export CORPORATION_ID CORPORATION
 }

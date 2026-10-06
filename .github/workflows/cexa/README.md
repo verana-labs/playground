@@ -65,7 +65,7 @@ The two schemas (`schemas/`) of the Ecosystem "Crypto Exchange Association
    `*.cexa.playground.devnet.verana.network`, with the same target as the
    other playground hosts. The ingress of each agent gets its TLS
    certificate for `<release>.cexa.playground.devnet.verana.network`.
-3. Fund the operator account. Plan about 10 VNA for each organization (see
+3. Fund the operator account. Plan about 1 VNA for each organization (see
    [`docs/networks.md`](../../../docs/networks.md)).
 
 ## Run order

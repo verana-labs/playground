@@ -100,10 +100,11 @@ Organization credential of each standalone organization.
 | `K8S_NAMESPACE_V4` | the namespace of the devnet agents |
 | `PLAYGROUND_V4_MNEMONIC` | the operator account of the cast Corporations |
 
-The operator account pays for each new Corporation (`CORPORATION_FUNDS` in
-`v4-cast-00_core.yml`), for 1 VNA to each new agent account, and for the
-transaction fees. The cast has eight Corporations and ten agents. Get funds
-from the devnet faucet before the first bootstrap.
+The operator account keeps a float of 1 VNA in each Corporation
+(`CORPORATION_FUNDS` in `v4-cast-00_core.yml`). Each run fills the float again
+when it is less than half. The agents spend it on their fees. The cast has
+eight Corporations, so the first bootstrap needs about 8 VNA. Get funds from
+the devnet faucet before the first bootstrap.
 
 **DNS and TLS.** Wildcard records must point at the cluster ingress:
 `*.playground.devnet.verana.network` **and**

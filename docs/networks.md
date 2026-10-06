@@ -40,7 +40,7 @@ CAUTION: do not use `secrets.X_V4 || secrets.X` instead. When `X_V4` is empty, t
 | Testnet (`main`) | Devnet (`v4`) | Value |
 | --- | --- | --- |
 | `K8S_NAMESPACE` | `K8S_NAMESPACE_V4` | The Kubernetes namespace. The two values must be different. |
-| `PLAYGROUND_MNEMONIC` | `PLAYGROUND_V4_MNEMONIC` | The operator account of the cast. On devnet it is the operator of the demo cast Corporation and must have funds (about 35 VNA for the first run). |
+| `PLAYGROUND_MNEMONIC` | `PLAYGROUND_V4_MNEMONIC` | The operator account of the cast. On devnet it is the operator of the demo cast Corporation and must have funds (about 21 VNA for the first run). |
 | `KUBECONFIG_VERANA_DEV` | `KUBECONFIG_VERANA_DEV` | The same cluster for both networks. |
 | variable `CLUSTER_POD_CIDR` | variable `CLUSTER_POD_CIDR` | Optional. The pod CIDR of the cluster (default `10.2.0.0/16`). The V4 agents trust Admin API calls from this network. |
 
@@ -82,6 +82,6 @@ Devnet has no trust resolver service. On V4 the indexer resolves trust.
 
 The devnet faucet is `https://faucet.devnet.verana.network` ([verana-faucet](https://github.com/verana-labs/verana-faucet)). It sends funds only to the account that signs its challenge (ADR-036), so request them from a wallet that holds the operator key, for example through the Verana Frontend at `https://app.devnet.verana.network`. Each account can get 50 VNA per hour and 300 VNA per day.
 
-The first `demo-01` run spends about 35 VNA: 20 VNA for the Corporation (`CORPORATION_FUNDS`), 1 VNA for each agent account, and the fees of the operator account.
+The first `demo-01` run spends about 21 VNA: 20 VNA for the Corporation (`CORPORATION_FUNDS`), 0.001 VNA for each agent account (`AGENT_FUNDS`), and the very small fees of the operator account.
 
-The Use Case casts create one Corporation for each organization. `v4-cast-00_core.yml` gives each new Corporation 5 VNA (`CORPORATION_FUNDS`), and each agent account gets 1 VNA. Plan about 10 VNA for each organization, plus the fees of the operator account. Request funds before each cast.
+The Use Case casts create one Corporation for each organization. `v4-cast-00_core.yml` keeps a float of 1 VNA in each Corporation (`CORPORATION_FUNDS`). Each run fills the float again when it is less than half (`CORPORATION_MIN_FUNDS`). The Corporation pays the fees of its agents through fee grants, and vs-agent uses a gas price of 1uvna, so an agent transaction costs about 0.2 VNA. Each agent account gets 0.001 VNA (`AGENT_FUNDS`), so that it exists on the chain. The operator account pays its own fees at the gas price `GAS_PRICES` (0.01uvna), so they are very small. Plan about 1 VNA for each organization.

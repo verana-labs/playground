@@ -6,8 +6,9 @@ import {
   type Lang,
   type WalletLink,
 } from "../lib/wallet-links";
-import type { PersonalWallet } from "../lib/wallets";
+import type { PersonalWallet, WalletStatus } from "../lib/wallets";
 import { StoreBadges } from "./StoreBadges";
+import { Chip } from "./ui";
 
 const PRIMARY =
   "inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700";
@@ -43,6 +44,27 @@ export function NoTrustScreenNote({ name }: { name: string }) {
       : its store builds complete the demos as published, but they don&apos;t
       check the registry, so they won&apos;t refuse the unaccredited or
       untrusted services.
+    </p>
+  );
+}
+
+export function WalletStatusChip({ status }: { status: WalletStatus }) {
+  if (status === "recommended") return null;
+  return (
+    <span className="shrink-0 whitespace-nowrap">
+      <Chip tone={status === "testing" ? "pending" : "default"}>
+        {status === "testing" ? "In testing" : "Compatible"}
+      </Chip>
+    </span>
+  );
+}
+
+export function TestingNotice({ name }: { name: string }) {
+  return (
+    <p className="mb-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm leading-relaxed text-amber-800">
+      <strong className="font-semibold">{name} is in testing.</strong> Its
+      compatibility with the playground isn&apos;t confirmed yet. The demos
+      stay open so you can try it, but some may not complete.
     </p>
   );
 }

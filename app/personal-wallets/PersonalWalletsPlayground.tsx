@@ -3,7 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { FileBadge, FileSearch, Maximize2, ShieldQuestion } from "lucide-react";
+import {
+  ChevronDown,
+  FileBadge,
+  FileSearch,
+  Maximize2,
+  ShieldQuestion,
+} from "lucide-react";
 import MediaLightbox, { type LightboxMedia } from "../components/MediaLightbox";
 import { Container, Section, SectionHeading, Chip } from "../components/ui";
 import { LINKS } from "../lib/site";
@@ -15,7 +21,9 @@ import { ComingSoonPickerTile } from "../components/ComingSoonTile";
 import {
   BuildsHint,
   NoTrustScreenNote,
+  TestingNotice,
   WalletBuildActions,
+  WalletStatusChip,
 } from "../components/WalletBuilds";
 import type { ComingSoonWallet } from "../lib/coming-soon";
 import type {
@@ -404,6 +412,12 @@ export default function PersonalWalletsPlayground({
     () => wallets.find((w) => w.id === selectedId) ?? wallets[0],
     [wallets, selectedId],
   );
+  const recommendedCount = wallets.filter(
+    (w) => w.status === "recommended",
+  ).length;
+  const collapsible =
+    recommendedCount > 0 && recommendedCount < wallets.length;
+  const [expanded, setExpanded] = useState(wallet?.status !== "recommended");
   const [formatChoice, setFormatChoice] = useState<CredentialFormat | null>(
     null,
   );
@@ -420,6 +434,11 @@ export default function PersonalWalletsPlayground({
   };
 
   if (!wallet) return null;
+
+  const showAll = expanded || !collapsible;
+  const shown = showAll
+    ? wallets
+    : wallets.filter((w) => w.status === "recommended" || w.id === wallet.id);
 
   return (
     <Section>
@@ -495,10 +514,17 @@ export default function PersonalWalletsPlayground({
 
         {/* 2 · Get the wallet - pick, then install */}
         <div>
-          <SectionHeading eyebrow="Choose your wallet" title="Get the wallet" />
+          <SectionHeading
+            eyebrow="Choose your wallet"
+            title="Get the wallet"
+            subtitle="Start with a recommended wallet: each one carries the Verana trust screen and passes all six demos below."
+          />
           <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {wallets.map((w) => (
+            <div
+              id="wallet-picker"
+              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
+            >
+              {shown.map((w) => (
                 <button
                   key={w.id}
                   type="button"
@@ -512,15 +538,11 @@ export default function PersonalWalletsPlayground({
                 >
                   <WalletIcon w={w} />
                   <span className="min-w-0">
-                    <span className="flex items-center gap-2">
+                    <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
                       <span className="truncate font-semibold text-gray-900">
                         {w.name}
                       </span>
-                      {w.status === "recommended" ? (
-                        <span className="shrink-0 rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
-                          Recommended
-                        </span>
-                      ) : null}
+                      <WalletStatusChip status={w.status} />
                     </span>
                     <span className="block truncate text-xs text-gray-500">
                       {w.vendor}
@@ -529,10 +551,27 @@ export default function PersonalWalletsPlayground({
                   </span>
                 </button>
               ))}
-              {comingSoon.map((w) => (
-                <ComingSoonPickerTile key={w.id} w={w} />
-              ))}
+              {showAll
+                ? comingSoon.map((w) => (
+                    <ComingSoonPickerTile key={w.id} w={w} />
+                  ))
+                : null}
             </div>
+            {collapsible ? (
+              <button
+                type="button"
+                onClick={() => setExpanded((e) => !e)}
+                aria-expanded={expanded}
+                aria-controls="wallet-picker"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-violet-300 hover:text-violet-700"
+              >
+                {expanded ? "Show fewer" : `Show all ${wallets.length} wallets`}
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${expanded ? "rotate-180" : ""}`}
+                  aria-hidden
+                />
+              </button>
+            ) : null}
 
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <div className="mb-4 flex flex-wrap items-center gap-4">
@@ -574,6 +613,9 @@ export default function PersonalWalletsPlayground({
                   ))}
                 </span>
               </div>
+              {wallet.status === "testing" ? (
+                <TestingNotice name={wallet.name} />
+              ) : null}
               {wallet.verana_builtin ? (
                 <p className="text-sm leading-relaxed text-gray-600">
                   {wallet.name} supports Verana{" "}

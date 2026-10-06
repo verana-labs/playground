@@ -241,6 +241,19 @@ wallets:
     repo: https://github.com/procivis/one-wallet
     license: Apache-2.0
     notes: "Procivis's wallet on its open-source Rust core, as published in the stores. Store version 1.87.1 takes the DemoCredential from the accredited issuer and presents it to the accredited verifier on the default DCQL request, device-tested on the devnet on 2026-10-02. It labels the demo services \"Untrusted relying party\" and runs no Verana check."
+  - id: sprucekit
+    name: SpruceKit Showcase
+    vendor: SpruceID
+    status: compatible
+    icon: ./sprucekit/logo.webp
+    formats: [openid4vc-sdjwt]
+    demoParams: signer=x5c
+    playstore: { url: "https://play.google.com/store/apps/details?id=com.spruceid.mobilesdkexample", trust_screen: false }
+    appstore: { url: "https://apps.apple.com/app/sprucekit-showcase/id6599845610", trust_screen: false }
+    website: https://spruceid.com
+    repo: https://github.com/spruceid/sprucekit-mobile
+    license: Apache-2.0 OR MIT
+    notes: "SpruceID's showcase wallet on its open-source SpruceKit Mobile SDK, as published in the stores. Store version 1.19.0 completes all six demos, issuance and a DCQL presentation to an x509_hash verifier with an encrypted response, device-tested on Android on the devnet on 2026-10-06. It shows nothing about who the services are and runs no Verana check."
   - id: bcwallet
     name: BC Wallet
     vendor: Government of British Columbia

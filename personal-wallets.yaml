@@ -295,7 +295,7 @@ wallets:
   - id: bcwallet
     name: BC Wallet
     vendor: Government of British Columbia
-    hidden: true
+    status: testing
     icon: ./bcwallet/logo.webp
     formats: [anoncreds]
     download: https://github.com/AirKyzzZ/bc-wallet-mobile/releases/download/verana-2026-08-07.1/BCWallet-Verana-verana-2026-08-07.1.apk

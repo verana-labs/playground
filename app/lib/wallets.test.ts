@@ -45,7 +45,7 @@ describe("personal wallets configuration", () => {
   it("lists only the maintained wallets", () => {
     const ids = listPersonalWallets().map((w) => w.id).sort();
     expect(ids).toEqual(
-      ["credenco", "eudi", "hologram", "inji", "lissi", "namirial", "paradym", "procivis", "sprucekit", "swiyu", "talao-wallet", "wwwallet"].sort(),
+      ["bcwallet", "credenco", "eudi", "hologram", "inji", "lissi", "namirial", "paradym", "procivis", "sprucekit", "swiyu", "talao-wallet", "wwwallet"].sort(),
     );
   });
 
@@ -62,6 +62,7 @@ describe("personal wallets configuration", () => {
       ["credenco", "compatible"],
       ["namirial", "compatible"],
       ["talao-wallet", "compatible"],
+      ["bcwallet", "testing"],
       ["hologram", "testing"],
     ]);
   });
@@ -94,7 +95,7 @@ describe("personal wallets configuration", () => {
     );
     const hidden = raw.wallets.filter((w) => w.hidden).map((w) => w.id).sort();
     expect(hidden).toEqual(
-      ["authbound", "bcwallet", "nl-wallet", "sphereon", "talao"].sort(),
+      ["authbound", "nl-wallet", "sphereon", "talao"].sort(),
     );
   });
 });

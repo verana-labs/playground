@@ -516,7 +516,7 @@ export default function PersonalWalletsPlayground({
                       <span className="truncate font-semibold text-gray-900">
                         {w.name}
                       </span>
-                      {w.recommended ? (
+                      {w.status === "recommended" ? (
                         <span className="shrink-0 rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
                           Recommended
                         </span>

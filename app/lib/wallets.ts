@@ -15,6 +15,9 @@ import { walletLinks, type WalletLink } from "./wallet-links";
 export const CREDENTIAL_FORMATS = ["anoncreds", "openid4vc-sdjwt"] as const;
 export type CredentialFormat = (typeof CREDENTIAL_FORMATS)[number];
 
+export const WALLET_STATUSES = ["recommended", "compatible", "testing"] as const;
+export type WalletStatus = (typeof WALLET_STATUSES)[number];
+
 // The six demo scenarios of the single personal-wallets page - capture keys.
 export const SCENARIO_KEYS = [
   "issue-accredited",
@@ -44,6 +47,7 @@ const WalletSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   name: z.string().min(1),
   vendor: z.string().min(1),
+  status: z.enum(WALLET_STATUSES).default("testing"),
   icon: z.string().optional(),
   formats: z.array(z.enum(CREDENTIAL_FORMATS)).min(1),
   verana_builtin: z.boolean().optional(),
@@ -56,7 +60,6 @@ const WalletSchema = z.object({
   repo: z.string().url().optional(),
   // Our fork carrying the Verana integration, shown next to the download.
   fork: z.string().url().optional(),
-  recommended: z.boolean().optional(),
   hidden: z.boolean().optional(),
   // Restricts the wallet to one use case: a scoped wallet is left out of the default
   // list (the main playground, /personal-wallets, every use-case chooser) and only
@@ -92,7 +95,12 @@ export const WalletsFileSchema = z.object({
     .array(
       WalletSchema.refine((w) => walletLinks(w).length > 0, {
         message: "a wallet needs at least one install link",
-      }),
+      }).refine(
+        (w) =>
+          w.status !== "recommended" ||
+          walletLinks(w).some((l) => l.trust_screen),
+        { message: "a recommended wallet needs a build with the trust screen" },
+      ),
     )
     .min(1),
 });
@@ -179,20 +187,19 @@ function loadPersonalWallets(): PersonalWallet[] {
 
 export type ListPersonalWalletsOptions = {
   // Also include the wallets scoped to this use case (they are never in the
-  // default list); they keep their place in the recommended-first order.
+  // default list); they keep their place in the status order.
   scope?: string;
 };
 
 export function listPersonalWallets({
   scope,
 }: ListPersonalWalletsOptions = {}): PersonalWallet[] {
-  const wallets = loadPersonalWallets().filter(
-    (w) => !w.scope || w.scope === scope,
-  );
-  return [
-    ...wallets.filter((w) => w.recommended),
-    ...wallets.filter((w) => !w.recommended),
-  ];
+  return loadPersonalWallets()
+    .filter((w) => !w.scope || w.scope === scope)
+    .sort(
+      (a, b) =>
+        WALLET_STATUSES.indexOf(a.status) - WALLET_STATUSES.indexOf(b.status),
+    );
 }
 
 // By id, whatever its scope.

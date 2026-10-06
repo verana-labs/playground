@@ -11,10 +11,15 @@ try {
   if (!Array.isArray(raw?.wallets) || raw.wallets.length === 0)
     throw new Error("missing wallets list");
   const FORMATS = ["anoncreds", "openid4vc-sdjwt"];
+  const STATUSES = ["recommended", "compatible", "testing"];
   for (const w of raw.wallets) {
     if (!w?.id || !w?.name || !w?.vendor) throw new Error(`entry missing id/name/vendor (${w?.id ?? "?"})`);
     if (!Array.isArray(w.formats) || w.formats.length === 0 || !w.formats.every((f) => FORMATS.includes(f)))
       throw new Error(`${w.id}: formats must be a non-empty subset of ${FORMATS.join("|")}`);
+    if ("recommended" in w)
+      throw new Error(`${w.id}: recommended was replaced by status: recommended`);
+    if (w.status != null && !STATUSES.includes(w.status))
+      throw new Error(`${w.id}: status must be one of ${STATUSES.join("|")}`);
     if (!w.download && !w.playstore && !w.appstore && !w.web)
       throw new Error(`${w.id}: at least one of download, playstore, appstore or web required`);
     const SCENARIOS = ["issue-accredited", "issue-unaccredited", "issue-untrusted",

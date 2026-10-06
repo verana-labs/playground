@@ -49,6 +49,19 @@ describe("personal wallets configuration", () => {
     );
   });
 
+  it("lists the recommended wallets first, then the compatible ones, then those in testing", () => {
+    expect(listPersonalWallets().map((w) => [w.id, w.status])).toEqual([
+      ["inji", "recommended"],
+      ["eudi", "recommended"],
+      ["wwwallet", "recommended"],
+      ["swiyu", "recommended"],
+      ["paradym", "compatible"],
+      ["lissi", "compatible"],
+      ["procivis", "compatible"],
+      ["hologram", "testing"],
+    ]);
+  });
+
   it("lists the store-only wallets through their store builds, without the trust screen", () => {
     for (const id of ["lissi", "paradym", "procivis"]) {
       const w = getPersonalWallet(id);
@@ -82,6 +95,35 @@ describe("personal wallets configuration", () => {
   });
 });
 
+describe("wallet status", () => {
+  const entry = {
+    id: "example",
+    name: "Example",
+    vendor: "Example",
+    formats: ["openid4vc-sdjwt"],
+    download: "https://example.org/example.apk",
+  };
+  const parse = (w: object) => WalletsFileSchema.safeParse({ wallets: [w] });
+
+  it("defaults to testing", () => {
+    expect(parse(entry).data?.wallets[0]?.status).toBe("testing");
+  });
+
+  it("rejects an unknown status", () => {
+    expect(parse({ ...entry, status: "beta" }).success).toBe(false);
+  });
+
+  it("recommends only a wallet with a trust-screen build", () => {
+    const plain = {
+      ...entry,
+      download: undefined,
+      playstore: { url: "https://play.google.com/store/apps/details?id=example", trust_screen: false },
+    };
+    expect(parse({ ...plain, status: "recommended" }).success).toBe(false);
+    expect(parse({ ...plain, status: "compatible" }).success).toBe(true);
+  });
+});
+
 describe("scoped wallets", () => {
   it("stay out of the default list", () => {
     expect(listPersonalWallets().some((w) => w.scope)).toBe(false);
@@ -92,7 +134,7 @@ describe("scoped wallets", () => {
     const eventos = listPersonalWallets({ scope: "eventos" });
     expect(eventos[0]?.id).toBe("intexus-wallet");
     expect(eventos[0]?.scope).toBe("eventos");
-    expect(eventos[0]?.recommended).toBe(true);
+    expect(eventos[0]?.status).toBe("recommended");
     expect(eventos.slice(1).map((w) => w.id)).toEqual(general);
   });
 

@@ -212,6 +212,7 @@ wallets:
     status: compatible
     icon: ./paradym/logo.webp
     formats: [openid4vc-sdjwt]
+    demoParams: signer=x5c
     playstore: { url: "https://play.google.com/store/apps/details?id=id.paradym.wallet", trust_screen: false }
     appstore: { url: "https://apps.apple.com/app/paradym-wallet/id6449846111", trust_screen: false }
     website: https://animo.id
@@ -224,6 +225,7 @@ wallets:
     status: compatible
     icon: ./lissi/logo.webp
     formats: [openid4vc-sdjwt]
+    demoParams: signer=x5c
     playstore: { url: "https://play.google.com/store/apps/details?id=io.lissi.mobile.android", trust_screen: false }
     appstore: { url: "https://apps.apple.com/app/lissi-id-wallet/id6475958390", trust_screen: false }
     website: https://www.lissi.id
@@ -235,6 +237,7 @@ wallets:
     status: compatible
     icon: ./procivis/logo.webp
     formats: [openid4vc-sdjwt]
+    demoParams: signer=x5c
     playstore: { url: "https://play.google.com/store/apps/details?id=ch.procivis.one.wallet.trial", trust_screen: false }
     appstore: { url: "https://apps.apple.com/app/procivis-one-wallet/id6480111491", trust_screen: false }
     website: https://www.procivis.ch

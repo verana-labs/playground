@@ -7,8 +7,8 @@ openid4vc:
   offerSchemes: [openid-credential-offer, haip-vci, swiyu]
   requestSchemes: [openid4vp, openid4vp-draft20, haip-vp, swiyu-verify]
   asDiscovery: [oauth-authorization-server]
-  presentation: { query: dcql, clientId: did, responseMode: direct_post.jwt }
-  demoParams: ""
+  presentation: { query: dcql, clientId: x509_hash, responseMode: direct_post.jwt }
+  demoParams: signer=x5c
 builds:
   - kind: store
     listed: true

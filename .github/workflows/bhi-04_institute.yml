@@ -1,8 +1,11 @@
 name: "BHI 04 · Better Hiring Institute (anchor + Recruitment Trust Network)"
 
-# Deploys the BHI anchor, bootstraps its ECS creds and creates the
-# Recruitment Trust Network with its two schemas (Recognised RecTech
-# Provider, Verified Employer).
+# Creates the Corporation of the Better Hiring Institute, deploys its agent,
+# onboards it with the devnet ECS Ecosystem, and creates the Recruitment Trust
+# Network with its two schemas (Recognised RecTech Provider, Verified
+# Employer in GRANTOR mode), their root entries and the Recognised RecTech
+# Provider ISSUER entry of the Institute.
+# Verana V4 (devnet): select the v4 branch.
 # Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
 
 on:
@@ -17,11 +20,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   institute:
@@ -29,5 +27,4 @@ jobs:
     with:
       org: institute
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

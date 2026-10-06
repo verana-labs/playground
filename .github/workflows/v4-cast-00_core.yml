@@ -1,0 +1,331 @@
+name: "V4 cast · Core (reusable)"
+
+# Reusable deploy + provision pipeline for one member of a V4 cast (vesta,
+# verandia, cexa, bhi). Called through the <cast>-00_core.yml wrappers; not
+# meant to be run directly. Verana V4 (devnet): veranad v0.10.5 and vs-agent v2.
+# The helpers are in .github/workflows/v4/common.sh; each cast adds its hosts
+# and its Corporation DIDs in .github/workflows/<cast>/cast.sh.
+#
+# Each organization has its own Corporation (CORPORATION_KEY in config.env).
+# A delegated sub-service uses the CORPORATION_KEY of its parent.
+
+on:
+  workflow_call:
+    inputs:
+      cast:
+        description: "Cast — a directory under .github/workflows/ (vesta, verandia, cexa, bhi)"
+        required: true
+        type: string
+      org:
+        description: "Cast member — must match a directory under .github/workflows/<cast>/orgs/"
+        required: true
+        type: string
+      step:
+        description: "deploy | provision | all"
+        required: false
+        default: all
+        type: string
+      reset_identity:
+        description: "DESTRUCTIVE - delete this org's statefulset and its volume so the agent boots with a brand new DID. Everything bound to the old DID has to be re-provisioned, so run with step=all."
+        required: false
+        default: false
+        type: boolean
+
+env:
+  # The branch selects the network: v4 deploys to devnet, other branches to testnet.
+  NETWORK: ${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
+  # The secrets of the v4 branch have this suffix (K8S_NAMESPACE_V4, PLAYGROUND_V4_MNEMONIC).
+  SECRET_SUFFIX: ${{ github.ref_name == 'v4' && '_V4' || '' }}
+  VERANAD_VERSION: v0.10.5
+  # Funds for each new Corporation. A cast has one Corporation per organization,
+  # and the faucet gives 50 VNA per hour, so the default stays small.
+  CORPORATION_FUNDS: 5000000uvna
+
+jobs:
+  run:
+    name: "${{ inputs.cast }} / ${{ inputs.org }}"
+    runs-on: ubuntu-latest
+    # Every cast run signs with the same operator account. Two jobs at the same
+    # time race on the sequence number of the account, so this group runs them
+    # one at a time. GitHub keeps only ONE queued run per group — start
+    # workflows one at a time rather than firing several at once.
+    concurrency:
+      group: vesta-cast-${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
+      cancel-in-progress: false
+    steps:
+      # The secrets of the v4 branch have the suffix _V4, so a devnet run never
+      # uses the testnet namespace. Stop when the secret of this branch is empty.
+      - name: Check network secrets
+        env:
+          NAMESPACE_SECRET: ${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}
+        run: |
+          if [ -z "$NAMESPACE_SECRET" ]; then
+            echo "::error::Secret K8S_NAMESPACE${SECRET_SUFFIX} is not set (see docs/networks.md)."
+            exit 1
+          fi
+
+      # The V4 casts use the Verana V4 model, which only devnet runs.
+      - name: Check network protocol
+        if: env.NETWORK != 'devnet'
+        run: |
+          echo "::error::The ${{ inputs.cast }} cast on this branch needs Verana V4, which only devnet runs. Run it from the v4 branch."
+          exit 1
+
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Load org configuration
+        run: |
+          CFG=".github/workflows/${{ inputs.cast }}/orgs/${{ inputs.org }}/config.env"
+          if [ ! -f "$CFG" ]; then
+            echo "::error::Unknown org '${{ inputs.org }}' — no $CFG"
+            exit 1
+          fi
+          set -a
+          source "$CFG"
+          set +a
+          # Resolve the network placeholder in every value (hosts, URLs).
+          while IFS= read -r line; do
+            key="${line%%=*}"
+            value="${!key}"
+            echo "${key}=${value//__NETWORK__/${NETWORK}}" >> "$GITHUB_ENV"
+          done < <(grep -E '^[A-Z0-9_]+=' "$CFG")
+          if [ -z "${CORPORATION_KEY:-}" ]; then
+            echo "::error::$CFG sets no CORPORATION_KEY (the organization of the agent)"
+            exit 1
+          fi
+          echo "CAST=${{ inputs.cast }}" >> "$GITHUB_ENV"
+          echo "CHART_NAMESPACE=${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}" >> "$GITHUB_ENV"
+          echo "CAST_DIR=${GITHUB_WORKSPACE}/.github/workflows/${{ inputs.cast }}" >> "$GITHUB_ENV"
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          cat > ~/.kube/config <<'KUBEEOF'
+          ${{ secrets.KUBECONFIG_VERANA_DEV }}
+          KUBEEOF
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5.1.0
+        with:
+          version: 'v1.29.9'
+
+      # A new network starts with no namespace. The kubeconfig user must have
+      # the permission to create one; otherwise create it once by hand.
+      - name: Ensure namespace
+        env:
+          NAMESPACE: ${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}
+        run: |
+          if kubectl get namespace "$NAMESPACE" > /dev/null 2>&1; then
+            echo "Namespace exists"
+          else
+            kubectl create namespace "$NAMESPACE"
+          fi
+
+      - name: Install veranad
+        run: |
+          curl -sfL "https://github.com/verana-labs/verana-node/releases/download/${VERANAD_VERSION}/veranad-linux-amd64" \
+            -o /usr/local/bin/veranad
+          chmod +x /usr/local/bin/veranad
+          veranad version
+
+      # The operator account holds the OperatorAuthorization of each Corporation
+      # of the cast and signs every transaction. It must not be the account of
+      # an agent: the chain does not let one account hold both authorization types.
+      - name: Import operator account from mnemonic
+        env:
+          MNEMONIC: ${{ secrets[format('PLAYGROUND{0}_MNEMONIC', env.SECRET_SUFFIX)] }}
+        run: |
+          if [ -z "$MNEMONIC" ]; then
+            echo "::error::Secret PLAYGROUND${SECRET_SUFFIX}_MNEMONIC is not set (the cast operator account)"
+            exit 1
+          fi
+          echo "$MNEMONIC" | veranad keys add "$USER_ACC" --recover --keyring-backend test
+          echo "Operator account: $(veranad keys show "$USER_ACC" -a --keyring-backend test)"
+
+      # -----------------------------------------------------------------------
+      # RESET: wipe the agent's storage so it mints a fresh DID on next boot
+      # -----------------------------------------------------------------------
+      - name: Reset agent identity
+        if: inputs.reset_identity && (inputs.step == 'deploy' || inputs.step == 'all')
+        run: |
+          echo "::warning::Wiping $RELEASE_NAME storage - it will boot with a new DID"
+          kubectl delete statefulset "$RELEASE_NAME" -n "$CHART_NAMESPACE" --ignore-not-found --wait=true
+          kubectl delete pvc -n "$CHART_NAMESPACE" --ignore-not-found --wait=true \
+            "${RELEASE_NAME}-vsa-pv" "${RELEASE_NAME}-pg-pv-main" "${RELEASE_NAME}-redis-main"
+          echo "Remaining PVCs:"
+          kubectl get pvc -n "$CHART_NAMESPACE" -o name | grep -F "$RELEASE_NAME" || echo "  none"
+
+      # -----------------------------------------------------------------------
+      # ACCOUNTS: the Corporation of the organization and the agent account
+      # -----------------------------------------------------------------------
+      # The deploy step creates the Corporation of the organization when it does
+      # not exist yet. The provision step only finds it.
+      - name: Prepare Corporation and agent account
+        run: |
+          export NAMESPACE="$CHART_NAMESPACE"
+          source "${CAST_DIR}/cast.sh"
+          set_network_vars "$NETWORK"
+          if [ "${{ inputs.step }}" != "provision" ]; then
+            ensure_corporation create
+          else
+            ensure_corporation
+          fi
+          ensure_agent_account "$RELEASE_NAME"
+          {
+            echo "CORPORATION_ID=${CORPORATION_ID}"
+            echo "CORPORATION=${CORPORATION}"
+            echo "AGENT_ADDR=${AGENT_ADDR}"
+          } >> "$GITHUB_ENV"
+
+      # -----------------------------------------------------------------------
+      # DEPLOY: install/upgrade the vs-agent via Helm
+      # -----------------------------------------------------------------------
+      - name: Resolve deployment template
+        if: inputs.step == 'deploy' || inputs.step == 'all'
+        env:
+          # The pod CIDR of the cluster. The playground app calls the Admin API
+          # of the agents from this network.
+          TRUSTED_NETWORKS: ${{ vars.CLUSTER_POD_CIDR || '10.2.0.0/16' }}
+        run: |
+          sed -e "s/__NETWORK__/${NETWORK}/g" \
+              -e "s/__RELEASE__/${RELEASE_NAME}/g" \
+              -e "s/__HOST__/${INGRESS_HOST}/g" \
+              -e "s/__DOMAIN__/${INGRESS_HOST#*.}/g" \
+              -e "s/__CORPORATION_ID__/${CORPORATION_ID}/g" \
+              -e "s#__TRUSTED_NETWORKS__#${TRUSTED_NETWORKS}#g" \
+            .github/workflows/v4/deployment.template.yaml > /tmp/deployment-resolved.yaml
+          echo "CHART_SOURCE=$(yq '.chartSource' /tmp/deployment-resolved.yaml)" >> "$GITHUB_ENV"
+          echo "CHART_VERSION=$(yq '.chartVersion' /tmp/deployment-resolved.yaml)" >> "$GITHUB_ENV"
+
+      - name: Generate Helm values
+        if: inputs.step == 'deploy' || inputs.step == 'all'
+        run: |
+          source "${CAST_DIR}/cast.sh"
+          set_network_vars "$NETWORK"
+          yq 'del(.chartSource, .chartVersion)' /tmp/deployment-resolved.yaml > /tmp/helm-values.yaml
+
+          # Agent mode. A standalone agent gets its ECS Organization credential
+          # from the ECS ecosystem. A delegated agent gets its ECS Service
+          # credential from its parent (PARENT_HOST) and shares its ECS Organization.
+          export AGENT_MODE="${AGENT_MODE:-standalone}"
+          yq -i '.agentMode = strenv(AGENT_MODE)' /tmp/helm-values.yaml
+          if [ "$AGENT_MODE" = "delegated" ]; then
+            PARENT_DID=$(fetch_did_from_log "https://${PARENT_HOST:?PARENT_HOST is not set}") || {
+              echo "::error::Could not read the DID of ${PARENT_HOST}. Deploy the parent first."
+              exit 1
+            }
+            export PARENT_DID
+            yq -i '.delegatedParentVsDid = strenv(PARENT_DID)' /tmp/helm-values.yaml
+          else
+            yq -i '.trustedEcsEcosystemDids = strenv(ECS_ECOSYSTEM_DID)' /tmp/helm-values.yaml
+          fi
+
+          # ECS claims [VSA-VTI-CFG-ENV-ECS]. The agent sends them on its
+          # onboarding requests. The ORG group applies to standalone agents only.
+          add_env() {
+            [ -n "$2" ] || return 0
+            N="$1" V="$2" yq -i '.extraEnv += [{"name": strenv(N), "value": strenv(V)}]' /tmp/helm-values.yaml
+          }
+          add_env ECS_CLAIMS_SERVICE_NAME "${SERVICE_NAME:-}"
+          add_env ECS_CLAIMS_SERVICE_TYPE "${SERVICE_TYPE:-}"
+          add_env ECS_CLAIMS_SERVICE_DESCRIPTION "${SERVICE_DESCRIPTION:-}"
+          add_env ECS_CLAIMS_SERVICE_LOGO_URI "${SERVICE_LOGO_URL:-}"
+          add_env ECS_CLAIMS_SERVICE_MINIMUM_AGE_REQUIRED "${SERVICE_MIN_AGE:-}"
+          add_env ECS_CLAIMS_SERVICE_TERMS_AND_CONDITIONS_URI "${SERVICE_TERMS:-}"
+          add_env ECS_CLAIMS_SERVICE_PRIVACY_POLICY_URI "${SERVICE_PRIVACY:-}"
+          if [ "$AGENT_MODE" = "standalone" ]; then
+            add_env ECS_CLAIMS_ORG_NAME "${ORG_NAME:-}"
+            add_env ECS_CLAIMS_ORG_LOGO_URI "${ORG_LOGO_URL:-}"
+            add_env ECS_CLAIMS_ORG_ORGANIZATION_KIND "${ORG_ORGANIZATION_KIND:-}"
+            add_env ECS_CLAIMS_ORG_COUNTRY_CODE "${ORG_COUNTRY_CODE:-}"
+            add_env ECS_CLAIMS_ORG_REGISTRY_ID "${ORG_REGISTRY_ID:-}"
+            add_env ECS_CLAIMS_ORG_REGISTRY_URI "${ORG_REGISTRY_URI:-}"
+            add_env ECS_CLAIMS_ORG_ADDRESS "${ORG_ADDRESS:-}"
+          fi
+
+          # DEMO ONLY (not in the spec): the negative demo services make offers and
+          # requests although they hold no ISSUER or VERIFIER Participant, so that
+          # wallets can show that they refuse them.
+          if [ "${UNSAFE_SKIP_OWN_AUTHORIZATION:-false}" = "true" ]; then
+            yq -i '.unsafeSkipOwnAuthorization = true' /tmp/helm-values.yaml
+          fi
+
+          # OpenID4VC: an empty configuration turns on the plugin with
+          # development signing. The agent takes the credential types, the
+          # display name and the trust decision from the VPR.
+          if [ -n "${OID4VC_ROLE:-}" ]; then
+            yq -i '.openid4vc.config = "{}"' /tmp/helm-values.yaml
+          fi
+
+          echo "--- Helm values ---"
+          cat /tmp/helm-values.yaml
+
+      - name: Deploy vs-agent via Helm
+        if: inputs.step == 'deploy' || inputs.step == 'all'
+        run: |
+          # Patch the StatefulSet first, without waiting. A single-replica StatefulSet will
+          # not replace a pod that never goes Ready, so a crash-looping agent would otherwise
+          # pin itself to the spec that broke it and no upgrade could ever land.
+          helm upgrade --install "$RELEASE_NAME" "$CHART_SOURCE" \
+            --version "$CHART_VERSION" \
+            --namespace "$CHART_NAMESPACE" --create-namespace \
+            --values /tmp/helm-values.yaml \
+            --timeout 300s
+          POD="${RELEASE_NAME}-0"
+          STATE=$(kubectl get pod "$POD" -n "$CHART_NAMESPACE" \
+            -o jsonpath='{.status.containerStatuses[*].state.waiting.reason}' 2>/dev/null)
+          echo "$POD waiting reason: ${STATE:-none}"
+          case "$STATE" in
+            *CrashLoopBackOff*|*ImagePullBackOff*|*ErrImagePull*)
+              echo "::warning::$POD is stuck in $STATE - deleting so the new spec can apply"
+              kubectl delete pod "$POD" -n "$CHART_NAMESPACE" --wait=false
+              ;;
+          esac
+          # The agent is Ready only after its bootstrap and the indexer catch-up.
+          kubectl rollout status statefulset "$RELEASE_NAME" -n "$CHART_NAMESPACE" --timeout=600s
+
+      - name: Why the rollout did not finish
+        if: failure()
+        run: |
+          set +e
+          POD="${RELEASE_NAME}-0"
+          echo "::group::pods"
+          kubectl get pods -n "$CHART_NAMESPACE" -o wide | grep -E "NAME|$RELEASE_NAME"
+          echo "::endgroup::"
+          echo "::group::describe"
+          kubectl describe pod "$POD" -n "$CHART_NAMESPACE"
+          echo "::endgroup::"
+          echo "::group::logs"
+          kubectl logs "$POD" -n "$CHART_NAMESPACE" --all-containers --tail=150
+          echo "--- previous ---"
+          kubectl logs "$POD" -n "$CHART_NAMESPACE" --all-containers --tail=150 --previous
+          echo "::endgroup::"
+          echo "::group::events"
+          kubectl get events -n "$CHART_NAMESPACE" --sort-by=.lastTimestamp | tail -40
+          echo "::endgroup::"
+
+      # -----------------------------------------------------------------------
+      # PROVISION: Participant entries, onboarding processes, Ecosystem
+      # -----------------------------------------------------------------------
+      - name: Provision
+        if: (inputs.step == 'provision' || inputs.step == 'all') && env.PROVISION_SCRIPT != ''
+        run: |
+          export NAMESPACE="$CHART_NAMESPACE"
+          bash "${CAST_DIR}/scripts/${PROVISION_SCRIPT}"
+
+      # -----------------------------------------------------------------------
+      # SUMMARY
+      # -----------------------------------------------------------------------
+      - name: Summary
+        if: always()
+        run: |
+          echo "## ${{ inputs.org }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "${INGRESS_HOST:-}" ]; then
+            echo "- **VS Agent:** https://${INGRESS_HOST}/.well-known/did.json" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          echo "- **Step:** ${{ inputs.step }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Network:** ${NETWORK:-unknown}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Corporation:** ${CORPORATION_ID:-unknown}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Agent account:** ${AGENT_ADDR:-unknown}" >> "$GITHUB_STEP_SUMMARY"

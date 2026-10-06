@@ -1,7 +1,11 @@
 name: "Vesta 06 · Vesta Repair Network"
 
-# Deploys the Repair Network registry (delegated service) and creates the Authorized Repairer schema.
-# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+# Deploys the Vesta Repair Network, a delegated sub-service of Vesta: ECS
+# Service credential from the Vesta anchor, the Ecosystem, the Authorized
+# Repairer schema and its root Participant entry.
+# CAUTION: needs vesta-03 first.
+# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# see .github/workflows/vesta/README.md for the run order.
 
 on:
   workflow_dispatch:
@@ -15,11 +19,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   vesta-repair-network:
@@ -27,5 +26,4 @@ jobs:
     with:
       org: vesta-repair-network
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

@@ -1,8 +1,10 @@
 name: "BHI 07 · Cirrus Certification (second Qualification issuer)"
 
-# Deploys Cirrus Certification (demo): ECS creds and an ISSUER permission
-# on the Qualification schema owned by Caledonian - one credential per
+# Creates the Corporation of Cirrus Certification (demo), deploys its agent,
+# onboards it with the devnet ECS Ecosystem, and gets an ISSUER entry on the
+# Qualification schema of Caledonian (bhi-06): one credential for each
 # qualification, from any number of institutions.
+# Verana V4 (devnet): select the v4 branch.
 # Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
 
 on:
@@ -17,11 +19,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   cirrus:
@@ -29,5 +26,4 @@ jobs:
     with:
       org: cirrus
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

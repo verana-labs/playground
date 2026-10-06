@@ -1,7 +1,10 @@
 name: "Vesta 05 · NormaCert (demo)"
 
-# Deploys NormaCert, accredits it on the ISO schema and issues the certificate to the Vesta anchor.
-# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+# Deploys NormaCert: ECS credentials and an ISSUER entry on the ISO 9001-style
+# (demo) schema. NormaCert issues the certificate to Vesta when vesta-03 runs.
+# CAUTION: the provision step needs vesta-04 first.
+# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# see .github/workflows/vesta/README.md for the run order.
 
 on:
   workflow_dispatch:
@@ -15,11 +18,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   normacert:
@@ -27,5 +25,4 @@ jobs:
     with:
       org: normacert
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

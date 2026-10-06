@@ -1,124 +1,163 @@
 # Vesta cast CI/CD
 
-Deploys and provisions every verifiable service of the **Vesta Appliances use
-case** (spec: `verana-spec/playground/verana-explained/spec.md`, section 5) on
-the Verana testnet, following the verana-demos pattern: each participant is a
-separate vs-agent (Business Wallet), and every org-to-org exchange is
-provisioned by CI/CD driving the agents' Admin APIs — in v3 there is no
-DIDComm between verifiable services. DIDComm is only used between Personal
-Wallets and services (badge issuance, login presentations), which happens at
-runtime, not here.
+The workflows deploy and provision each verifiable service of the **Vesta
+Appliances use case** (spec: `verana-spec/playground/verana-explained/spec.md`,
+section 5). Each participant is a separate vs-agent (Business Wallet).
 
-GitHub only picks up workflow files at the top level of `.github/workflows/`,
-so the numbered `vesta-*.yml` entry points live there while everything else
-(this directory) holds the shared library, per-org configs, schemas and
-provisioning scripts:
+This branch runs the cast on **Verana V4 (devnet)** with veranad v0.10.5 and
+vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md). The
+`vesta-00_core.yml` wrapper calls the generic V4 core
+(`v4-cast-00_core.yml`) with `cast=vesta`. A run from another branch stops
+with an error, because only devnet runs Verana V4.
+
+GitHub reads workflow files only at the top level of `.github/workflows/`.
+The numbered `vesta-*.yml` entry points are there. This directory holds the
+rest:
 
 ```
 .github/workflows/
-  vesta-00_core.yml            reusable deploy+provision pipeline
-  vesta-01..10_*.yml           one entry point per cast member (run order)
+  vesta-00_core.yml            wrapper of the generic V4 core
+  vesta-01..10_*.yml           one entry point per cast member
+  v4-cast-00_core.yml          generic V4 deploy + provision pipeline
+  v4/common.sh                 generic V4 helpers
+  v4/deployment.template.yaml  Helm values template (vs-agent v2 chart)
   vesta/
-    common.sh                  shared helpers (adapted from verana-demos)
-    deployment.template.yaml   Helm values template (vs-agent chart)
-    orgs/<org>/config.env      per-org identity, claims and provisioning config
-    schemas/*.json             ISO 9001-style (demo) + Authorized Repairer schemas
-    scripts/*.sh               provisioning scripts (Admin APIs + veranad)
+    cast.sh                    hosts, schema titles and steps of this cast
+    orgs/<org>/config.env      identity, claims and provision settings of an org
+    schemas/*.json             ISO 9001-style (demo) and Authorized Repairer schemas
+    scripts/provision-*.sh     provision scripts (veranad, indexer, Admin APIs)
+    common.sh                  V3 library of the bolivia, ccm and eventos casts
 ```
 
-## The cast and their domains
+CAUTION: `common.sh` is the V3 library of other casts. This cast does not use
+it. Do not change it for the vesta cast.
 
-Orgs live at `<org>.playground.testnet.verana.network`, sub-services at
-`<subservice>.<org>.playground.testnet.verana.network`.
+## The cast and their hosts
 
-| # | Workflow | Org / service | Host | What it gets |
-|---|---|---|---|---|
-| 01 | Helvetia Trust | KYB issuer (demo) | `helvetia-trust.playground…` | ECS-Org (bootstrap from ECS TR) + ECS-Service |
-| 02 | ECS accreditations | — (on-chain only) | — | Helvetia: ISSUER on ECS-Organization; ECS-Badge root perm |
-| 03 | Vesta anchor | Vesta Appliances (demo) | `vesta.playground…` | ECS-Org (Helvetia) + ECS-Service + ECS-Badge issuer |
-| 04 | ISO Certification | certification registry (demo) | `iso-certification.playground…` | ECS creds + trust registry + ISO 9001-style (demo) schema |
-| 05 | NormaCert | certification body (demo) | `normacert.playground…` | ECS creds + ISSUER on ISO schema + issues certificate to Vesta |
-| 06 | Repair Network | Vesta sub-service | `repair-network.vesta.playground…` | delegated ECS-Service + trust registry + Authorized Repairer schema |
-| 07 | Vesta Portal | Vesta sub-service | `portal.vesta.playground…` | delegated ECS-Service + VERIFIER on ECS-Badge |
-| 08 | Subsidiaries | Vesta Iberia + Nordics (demo) | `vesta-iberia.playground…`, `vesta-nordics.playground…` | ECS creds + ISSUER on Authorized Repairer |
-| 09 | Zenith Repairs | partner repairer (demo) | `zenith.playground…` | ECS creds + Authorized Repairer (from Iberia) + ECS-Badge issuer |
-| 10 | Umbra Repairs | the impostor (demo) | `umbra.playground…` | ECS creds + badge issuer — deliberately NO Authorized Repairer |
+The organizations are at `<org>.playground.devnet.verana.network`. The
+sub-services of Vesta are at `<service>.vesta.playground.devnet.verana.network`.
 
-Delegated sub-services (06, 07) get their ECS-Service credential issued by the
-Vesta anchor and inherit its ECS-Organization per the Verifiable Trust spec —
-they never link an organization credential of their own.
+| # | Workflow | Release | Corporation | Agent mode | What it gets |
+|---|---|---|---|---|---|
+| 01 | Helvetia Trust | `helvetia-trust` | `helvetia` | standalone | ECS credentials only |
+| 03 | Vesta anchor | `vesta` | `vesta` | standalone | ECS credentials, ECS Badge issuer, ISO 9001-style (demo) credential from NormaCert, OpenID4VC issuer |
+| 04 | ISO Certification | `iso-certification` | `iso` | standalone | ECS credentials, ISO Ecosystem, `ISO9001DemoCredential` schema, root Participant |
+| 05 | NormaCert | `normacert` | `normacert` | standalone | ECS credentials, ISSUER on the ISO schema |
+| 06 | Repair Network | `vesta-repair-network` | `vesta` | delegated | ECS Service from Vesta, Repair Network Ecosystem, `AuthorizedRepairerCredential` schema, root Participant |
+| 07 | Vesta Portal | `vesta-portal` | `vesta` | delegated | ECS Service from Vesta, ECS Badge verifier, OpenID4VC verifier |
+| 08 | Subsidiaries | `vesta-iberia`, `vesta-nordics` | `iberia`, `nordics` | standalone | ECS credentials, ISSUER on the Authorized Repairer schema |
+| 09 | Zenith Repairs | `zenith` | `zenith` | standalone | ECS credentials, Authorized Repairer from Vesta Iberia, ECS Badge issuer, OpenID4VC issuer |
+| 10 | Umbra Repairs | `umbra` | `umbra` | standalone | ECS credentials, ECS Badge issuer, OpenID4VC issuer, never an Authorized Repairer |
+
+On V4 there is no `vesta-02` workflow. Helvetia is not an ECS Organization
+issuer: `ecs-org-issuer` (the ECS Ecosystem of devnet) issues the ECS
+Organization credential of each standalone organization.
+
+## The V4 model
+
+- **Corporations.** Each organization has its own Corporation
+  (`CORPORATION_KEY` in `config.env`), with the DID
+  `did:example:playground-vesta-<key>-<chain id>`. The first deploy of an
+  organization creates it. A delegated sub-service uses the Corporation of its
+  parent, so the `vesta` Corporation owns the Repair Network Ecosystem. The
+  operator account (`PLAYGROUND_V4_MNEMONIC`) operates each Corporation and
+  signs each transaction.
+- **Agent accounts.** Each agent has its own Verana account, the
+  `vs_operator` of its Participant entries. The core workflow keeps its
+  mnemonic in the Kubernetes secret `<release>-verana-account`.
+- **ECS credentials.** The agents get them through vt-flow onboarding
+  processes (DIDComm):
+  - A standalone agent gets its ECS Organization credential from
+    `ecs-org-issuer` and issues its own ECS Service credential
+    (`provision_ecs_standalone`).
+  - A delegated agent gets its ECS Service credential from the Vesta anchor
+    (`provision_ecs_delegated`), and shares the ECS Organization credential of
+    Vesta.
+- **Org-to-org credentials.** The holder organization gets a HOLDER entry,
+  and the issuer agent validates the onboarding request, sets the claims and
+  issues the credential:
+  - NormaCert issues the ISO 9001-style (demo) credential to Vesta. The
+    claims are the `ISO_*` values in `orgs/vesta/config.env`.
+  - Vesta Iberia issues the Authorized Repairer credential to Zenith. The
+    claims are the `AR_*` values in `orgs/zenith/config.env`.
+- **Accreditations.** NormaCert and the subsidiaries join their schema as
+  ISSUER under the root entry. The operator validates the entry with the
+  Corporation that owns the Ecosystem (`iso` or `vesta`).
+- **ECS Badge.** The badge schema (`BadgeCredential`) belongs to the ECS
+  Ecosystem. Vesta, Zenith and Umbra get an OPEN ISSUER entry and an AnonCreds
+  credential definition on the badge VTJSC. The portal gets an OPEN VERIFIER
+  entry. CAUTION: the devnet ECS Ecosystem does not have this schema yet. The
+  badge steps then log a warning and do nothing. When the schema exists, run
+  03, 07, 09 and 10 again with `step=provision`.
 
 ## Prerequisites
 
-**Repository secrets**
+**Repository secrets** (see [`docs/networks.md`](../../../docs/networks.md)):
 
-| Secret | Used by | Notes |
-|---|---|---|
-| `KUBECONFIG_VERANA_DEV` | 00 | already used by `deploy.yml` (same cluster as verana-demos) |
-| `K8S_NAMESPACE` | 00 | already used by `deploy.yml`; all cast agents deploy there |
-| `PLAYGROUND_MNEMONIC` | 00 | dedicated funded testnet account for the playground cast; controls all cast registries/permissions |
-| `ECS_ECOSYSTEM_MNEMONIC` | 02 only | must recover the ECS trust registry controller (`verana19yvkutae4g3gkkakrpnt0wf70hwa2vq4qs5e43`) |
+| Secret | Notes |
+|---|---|
+| `KUBECONFIG_VERANA_DEV` | the cluster of the cast |
+| `K8S_NAMESPACE_V4` | the namespace of the devnet agents |
+| `PLAYGROUND_V4_MNEMONIC` | the operator account of the cast Corporations |
 
-`PLAYGROUND_MNEMONIC` is deliberately its own account (not the verana-demos
-one). Generate it with `veranad keys add playground --keyring-backend test`
-(save the mnemonic as the secret) and fund it with uvna at
-https://faucet-vs.testnet.verana.network/invitation — runs fail on
-`check_balance` with that faucet link when the balance is empty.
+The operator account pays for each new Corporation (`CORPORATION_FUNDS` in
+`v4-cast-00_core.yml`), for 1 VNA to each new agent account, and for the
+transaction fees. The cast has eight Corporations and ten agents. Get funds
+from the devnet faucet before the first bootstrap.
 
-**DNS + TLS.** Wildcard records must point at the cluster ingress:
-`*.playground.testnet.verana.network` **and**
-`*.vesta.playground.testnet.verana.network` (a single wildcard only matches
-one label, and the portal / repair-network hosts are one level deeper).
-Certificates come from cert-manager (`letsencrypt-prod`) per host.
+**DNS and TLS.** Wildcard records must point at the cluster ingress:
+`*.playground.devnet.verana.network` **and**
+`*.vesta.playground.devnet.verana.network`. A wildcard matches one label
+only, and the portal and repair-network hosts are one level deeper.
+cert-manager (`letsencrypt-prod`) issues a certificate for each host.
 
 ## Run order
 
-First bootstrap: run **01 → 02 → 03 → 04 → 05 → 06 → 08 → 09 → 10 → 07** with
-step `all`. The numbering encodes the provisioning dependencies (02 needs
-Helvetia's DID document; 03/04/05/08/09 need Helvetia issuing; 05 links the
-certificate on the anchor from 03; 08 needs the schema from 06; 09 needs
-Iberia from 08). The portal (07) runs last: its OID4VC deploy pins the badge
-issuers' signing fingerprints, so vesta (03) and zenith (09) must already run
-the openid4vc image (see below); nothing else depends on 07.
+Select the `v4` branch. Run each workflow with `step=all`, one at a time
+(all runs use the same operator account and one concurrency group):
 
-Every workflow is idempotent: permissions, registries, schemas and VTJSCs are
-looked up before they are created, and credentials are skipped when the DID
-document already presents the linked VP. Use the `force_refresh` input to
-re-issue credentials after changing claims (name, logo, address) in an org's
-`config.env`. The `step` input splits a run into `deploy` (Helm only) and
-`provision` (Admin APIs + chain only).
+1. `vesta-01` Helvetia Trust (no dependency).
+2. `vesta-04` ISO Certification: the ISO Ecosystem and its schema.
+3. `vesta-05` NormaCert: needs the ISO schema.
+4. `vesta-03` Vesta anchor: needs the ISSUER entry of NormaCert for the ISO
+   credential.
+5. `vesta-06` Repair Network: needs the Vesta anchor (its parent).
+6. `vesta-08` Subsidiaries: need the Authorized Repairer schema.
+7. `vesta-09` Zenith: needs the ISSUER entry of Vesta Iberia.
+8. `vesta-10` Umbra (needs only the ECS Ecosystem).
+9. `vesta-07` Vesta Portal: needs the Vesta anchor (its parent).
 
-## OpenID4VC rail (SD-JWT badges for non-DIDComm wallets)
+The numbers of the workflows are not the run order: Vesta (03) needs NormaCert
+(05). If you run `vesta-03` first, its provision step stops at the ISO
+credential. Run it again with `step=provision` after `vesta-05`.
 
-The four services a personal wallet touches carry `OID4VC_ROLE` in their
-`config.env` - vesta, zenith and umbra as `issuer`, the portal as `verifier`.
-For those, the deploy switches to the `vs-agent-openid4vc` image/chart pinned
-in `vesta-00_core.yml` and injects `oid4vc/issuer.json.tpl` or
-`verifier.json.tpl` (ECS-Badge configuration; canonical `vct` and the badge
-VTJSC live on the vesta anchor). The render script is shared with the demo
-cast (`demo/scripts/render-oid4vc-config.sh`); the portal's
-`OID4VC_ISSUER_RELEASES="vesta zenith"` names the issuers whose
-development-signing fingerprints it pins at render time - both must already
-run the openid4vc image or the deploy fails. Umbra mints real SD-JWT badge
-offers too, claiming the same `vct` and VTJSC: the impostor's claims only
-fail at trust resolution, exactly like its AnonCreds offers.
+Each workflow is idempotent. The scripts find the Corporations, Ecosystems,
+schemas and Participant entries before they create them. The `step` input
+splits a run into `deploy` (Corporation, agent account and Helm) and
+`provision` (chain and onboarding processes).
 
-Enabling the rail on an already-bootstrapped cast: re-run **03 → 09 → 10 →
-07** with step `deploy`.
+## OpenID4VC rail
 
-## What CI/CD deliberately does not do
+The services that a personal wallet uses have `OID4VC_ROLE` in their
+`config.env`: vesta, zenith and umbra as `issuer`, the portal as `verifier`.
+The core workflow then gives the agent an empty `openid4vc.config`, which
+turns on the OpenID4VC plugin with development signing. The agent takes the
+credential types, the `vct` and the trust decision from the VPR, so the cast
+has no OpenID4VC templates. Umbra makes real SD-JWT badge offers too: its
+badges fail at the portal on the membership rule only.
 
-- **Personal wallet flows** (employee/technician badge offers, portal login,
-  the door scan) are runtime DIDComm flows served by the deployed agents and
-  the playground demos — not provisioning.
-- **Umbra never gets the Authorized Repairer credential.** It IS a
-  verifiable organization (ECS-Org from Helvetia, self ECS-Service, badge
-  issuer) — the red path in the demos depends on exactly one missing link:
-  no Authorized Repairer, so its badges fail at the portal and earn no seal.
+## What CI/CD does not do
+
+- **Personal wallet flows** (badge offers, portal login, the door scan) are
+  runtime flows of the deployed agents and the playground app. They are not
+  part of the provisioning.
+- **Umbra never gets the Authorized Repairer credential.** Umbra is a
+  verifiable organization (ECS Organization, ECS Service, badge issuer). The
+  red path of the demos needs exactly one missing link: no Authorized
+  Repairer credential, so its badges fail at the portal and get no seal.
 
 ## After a bootstrap
 
-The chapter-3 diagrams and TrustCards in the playground still show
-`QmPLACEHOLDER` DIDs. Once the cast is live, replace them with the real
-`did:webvh` values from each `https://<host>/.well-known/did.json` (spec
-section 6, open item 2).
+On devnet, the app finds the DID of each cast member from its host
+(`https://<host>/.well-known/did.json`), so no DID value must change in the
+app. The testnet DIDs in `app/lib/vesta-cast.ts` apply to the V3 build only.

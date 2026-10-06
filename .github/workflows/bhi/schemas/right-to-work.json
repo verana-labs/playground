@@ -1,5 +1,5 @@
 {
-  "$id": "https://northbank.bhi.playground.testnet.verana.network/schemas/right-to-work.json",
+  "$id": "https://northbank.bhi.playground.__NETWORK__.verana.network/schemas/right-to-work.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "RightToWorkCredential",
   "description": "UK right-to-work status established by a certified DVS provider (demo). Exactly one credential per person. For demonstration only.",

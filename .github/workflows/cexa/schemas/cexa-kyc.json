@@ -1,5 +1,5 @@
 {
-  "$id": "https://association.cexa.playground.testnet.verana.network/schemas/cexa-kyc.json",
+  "$id": "https://association.cexa.playground.__NETWORK__.verana.network/schemas/cexa-kyc.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "CEXAKycCredential",
   "description": "CEXA-Kyc - the reusable retail identity check of the Crypto Exchange Association (demo), governed on both sides (EGF section 6). The sealed evidence bundle rides in the holder's wallet, digest-bound through evidenceDigest. For demonstration only.",

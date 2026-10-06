@@ -1,0 +1,81 @@
+# Playground cast vs-agent deployment — Helm chart values template (V4)
+#
+# One template for every member of the V4 casts (vesta, verandia, cexa, bhi).
+# The v4-cast-00_core workflow substitutes __RELEASE__, __HOST__, __DOMAIN__,
+# __NETWORK__, __CORPORATION_ID__ and __TRUSTED_NETWORKS__ before installing,
+# and adds the per-org environment (agent mode, ECS claims, account mnemonic,
+# OpenID4VC, demo flag) from the org's config.env.
+chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
+chartVersion: v2.0.0-pr799.2
+
+global:
+  domain: __DOMAIN__
+
+name: __RELEASE__
+replicas: 1
+
+image:
+  repository: veranalabs/vs-agent
+  tag: v2.0.0-pr799.2
+
+adminPort: 3000
+enablePublicApiSwagger: true
+didcommPort: 3001
+publicDidMethod: "webvh"
+
+# The agent classifies each Admin API request by the peer address of its TCP
+# connection and does not read forwarding headers. A kubectl port-forward
+# comes from 127.0.0.1. The playground app reaches the Admin API through the
+# cluster Service, so the pod CIDR must also be trusted.
+# CAUTION: do not publish an ingress to the admin port. The ingress controller
+# runs in the pod CIDR, so the ingress would serve the Admin API to the
+# internet without authentication.
+adminApiAuthMode: "internal"
+adminApiTrustedNetworks: "127.0.0.0/8,::1/128,__TRUSTED_NETWORKS__"
+
+# Verana network
+veranaRpcEndpointUrl: "https://rpc.__NETWORK__.verana.network"
+veranaIndexerBaseUrl: "https://idx.__NETWORK__.verana.network"
+veranaChainId: "vna-__NETWORK__-1"
+veranaCorporationId: "__CORPORATION_ID__"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+ingress:
+  host: "__HOST__"
+  tlsSecret: "__HOST__-cert"
+  public:
+    enableCors: true
+  private:
+    enableCors: true
+    whitelistSourceRange: ""
+    tlsSecret: ""
+    host: ""
+
+extraEnv:
+  # The agent accepts a level name only: trace, debug, info, warn, error or off.
+  - name: AGENT_LOG_LEVEL
+    value: "info"
+  - name: USE_CORS
+    value: "true"
+  # Show the banner that presents the agent page as the placeholder of a
+  # Verana business wallet.
+  - name: UI_SHOW_PLACEHOLDER_MESSAGE
+    value: "true"
+  # The own Verana account of the agent (the vs_operator of its Participant
+  # entries). demo-00_core creates the secret.
+  - name: VERANA_ACCOUNT_MNEMONIC
+    valueFrom:
+      secretKeyRef:
+        name: __RELEASE__-verana-account
+        key: mnemonic
+
+storage:
+  size: 1Gi
+  storageClassName: csi-cinder-high-speed

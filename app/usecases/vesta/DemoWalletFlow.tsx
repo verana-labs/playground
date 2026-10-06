@@ -9,6 +9,7 @@ import { walletTabTarget } from "../../lib/wallet-tab";
 import type { PersonalWallet } from "../../lib/wallets";
 import { ServiceQr } from "../../components/ServiceQr";
 import { Chip } from "../../components/ui";
+import { NETWORK } from "../../lib/network";
 
 // The chapter-4 wallet flow, split in two sections that share the ?wallet=
 // query param: WalletChooser (pick one of the integrated personal wallets
@@ -146,7 +147,7 @@ export function WalletChooser({ wallets }: { wallets: PersonalWallet[] }) {
               modified APK
             </strong>{" "}
             by clicking the link below - it is the Verana-integrated build of{" "}
-            {wallet.name}, configured for the testnet. Store builds may not
+            {wallet.name}, configured for the {NETWORK}. Store builds may not
             include the integration.
           </p>
         )}

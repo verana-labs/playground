@@ -1,8 +1,10 @@
 name: "BHI 10 · Halcyon Talent (the impostor)"
 
-# Deploys Halcyon Talent (demo): a genuinely verifiable organisation with
-# deliberately NO Verified Employer credential and NO verifier permissions -
-# the wallet-side refusal depends on exactly those missing links.
+# Creates the Corporation of Halcyon Talent (demo), deploys its agent and
+# onboards it with the devnet ECS Ecosystem. It gets NO Verified Employer
+# credential and NO VERIFIER entry, by design: the refusal in the wallet
+# depends on exactly those missing links.
+# Verana V4 (devnet): select the v4 branch.
 # Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
 
 on:
@@ -17,11 +19,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   halcyon:
@@ -29,5 +26,4 @@ jobs:
     with:
       org: halcyon
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

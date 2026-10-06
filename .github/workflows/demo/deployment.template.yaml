@@ -10,7 +10,7 @@
 # turns on the OpenID4VC plugin, so the DemoCredential is served over both
 # rails: AnonCreds/DIDComm and OpenID4VCI/OpenID4VP.
 chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
-chartVersion: v2.0.0-pr766.6
+chartVersion: v2.0.0-pr799.2
 
 global:
   domain: playground.__NETWORK__.verana.network
@@ -20,7 +20,7 @@ replicas: 1
 
 image:
   repository: veranalabs/vs-agent
-  tag: v2.0.0-pr766.6
+  tag: v2.0.0-pr799.2
 
 adminPort: 3000
 enablePublicApiSwagger: true
@@ -67,6 +67,10 @@ extraEnv:
   - name: AGENT_LOG_LEVEL
     value: "info"
   - name: USE_CORS
+    value: "true"
+  # Show the banner that presents the agent page as the placeholder of a
+  # Verana business wallet.
+  - name: UI_SHOW_PLACEHOLDER_MESSAGE
     value: "true"
   # The own Verana account of the agent (the vs_operator of its Participant
   # entries). demo-00_core creates the secret.

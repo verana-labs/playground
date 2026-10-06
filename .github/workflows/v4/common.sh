@@ -253,18 +253,19 @@ broadcast() {
   echo "$tx_hash"
 }
 
-# Make sure that the account of a key has funds.
-# Usage: check_balance <key_name>
+# Make sure that the account of a key has funds. With <min_uvna>, the balance
+# must be at least that amount.
+# Usage: check_balance <key_name> [min_uvna]
 check_balance() {
-  local addr balance
+  local addr balance min="${2:-1}"
   addr=$(veranad keys show "$1" -a --keyring-backend test 2>/dev/null)
   if [ -z "$addr" ]; then
     err "Account '$1' is not in the keyring"
     return 1
   fi
   balance=$(account_balance "$addr")
-  if [ "${balance:-0}" = "0" ]; then
-    err "Account '$1' ($addr) has no uvna. Get funds from the faucet: ${FAUCET_URL}"
+  if [ "${balance:-0}" -lt "$min" ]; then
+    err "Account '$1' ($addr) has ${balance:-0} uvna and needs at least ${min} uvna. Get funds from the faucet: ${FAUCET_URL}"
     return 1
   fi
   ok "Account '$1' balance: ${balance} uvna"
@@ -352,7 +353,8 @@ ensure_agent_account() {
 
   if [ "$(account_balance "$AGENT_ADDR")" = "0" ]; then
     log "Funding ${AGENT_ADDR} with 1 VNA, so that the account exists on the chain..."
-    check_balance "$USER_ACC"
+    # The transfer and its fee.
+    check_balance "$USER_ACC" $((1000000 + ${FEES%uvna}))
     broadcast veranad tx bank send "$USER_ACC" "$AGENT_ADDR" 1000000uvna > /dev/null
   fi
 }
@@ -422,7 +424,10 @@ ensure_corporation() {
     ok "Corporation $did: id=$CORPORATION_ID policy_address=$CORPORATION"
   elif [ "$create" = "create" ]; then
     log "Creating the Corporation $did..."
-    check_balance "$USER_ACC"
+    # The Corporation funds, the 1 VNA of the agent account, and the fees of
+    # the next transactions: create, send, proposal, vote and the agent transfer.
+    local corporation_funds="${CORPORATION_FUNDS:-20000000uvna}"
+    check_balance "$USER_ACC" $((${corporation_funds%uvna} + 1000000 + 5 * ${FEES%uvna}))
     local digest tx_hash
     digest=$(compute_sri_digest "$EGF_DOC_URL")
     tx_hash=$(broadcast veranad tx co create-corporation \

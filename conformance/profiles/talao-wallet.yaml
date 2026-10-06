@@ -1,0 +1,29 @@
+id: talao-wallet
+rails: [openid4vc-sdjwt]
+openid4vc:
+  library: "TalaoDAO/AltMe on its TALAO branch (Flutter), with Talao's own Dart OpenID4VCI and OpenID4VP client"
+  proxy: "@openid4vc/openid4vci, @openid4vc/openid4vp, @sd-jwt/sd-jwt-vc"
+  vciDrafts: [v1]
+  offerSchemes: [openid-credential-offer, openid-initiate-issuance]
+  requestSchemes: [openid4vp, openid, eudi-openid4vp, haip, haip-vp]
+  asDiscovery: [oauth-authorization-server]
+  presentation: { query: dcql, clientId: x509_hash, responseMode: direct_post.jwt }
+  demoParams: signer=x5c
+builds:
+  - kind: store
+    listed: true
+    label: "Talao Wallet on Google Play and the App Store"
+    obtain:
+      - https://play.google.com/store/apps/details?id=co.talao.wallet
+      - https://apps.apple.com/app/talao-wallet/id1582183266
+    identity:
+      package: co.talao.wallet
+      version: "3.7.0"
+    platforms: [android, ios]
+    presumptive: [ios]
+    promises: "No Verana trust screen: its own \"Issuer not verified\" and \"Organisation not verified\" warnings are the same for every service and nothing is checked against the registry, so the unaccredited and untrusted services are not refused. All six demos complete: issues the DemoCredential and presents it on DCQL to an x509_hash verifier with an encrypted direct_post.jwt response (device-tested 2026-10-06 on devnet, Android, Play version 3.7.0)"
+quirks:
+  actsOnLinkOnlyAtColdStart: true
+  locksOnBackground: false
+  viewTree: readable
+  notes: "Takes an offer only after a cold start and its PIN unlock; a warm delivery failed silently. Names the verifier by its raw x509_hash client_id. Link schemes as registered by the Play build's manifest, leaving out its vendor-prefixed ones. Only the offer and request links of the default mint were exercised; the view tree and the locking behaviour have not been characterised"

@@ -45,7 +45,7 @@ describe("personal wallets configuration", () => {
   it("lists only the maintained wallets", () => {
     const ids = listPersonalWallets().map((w) => w.id).sort();
     expect(ids).toEqual(
-      ["credenco", "eudi", "hologram", "inji", "lissi", "namirial", "paradym", "procivis", "sprucekit", "swiyu", "wwwallet"].sort(),
+      ["credenco", "eudi", "hologram", "inji", "lissi", "namirial", "paradym", "procivis", "sprucekit", "swiyu", "talao-wallet", "wwwallet"].sort(),
     );
   });
 
@@ -61,12 +61,13 @@ describe("personal wallets configuration", () => {
       ["sprucekit", "compatible"],
       ["credenco", "compatible"],
       ["namirial", "compatible"],
+      ["talao-wallet", "compatible"],
       ["hologram", "testing"],
     ]);
   });
 
   it("lists the store-only wallets through their store builds, without the trust screen", () => {
-    for (const id of ["lissi", "paradym", "procivis", "sprucekit", "credenco", "namirial"]) {
+    for (const id of ["lissi", "paradym", "procivis", "sprucekit", "credenco", "namirial", "talao-wallet"]) {
       const w = getPersonalWallet(id);
       expect(w?.links.map((l) => [l.kind, l.trust_screen]), id).toEqual([
         ["playstore", false],

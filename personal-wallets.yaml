@@ -276,6 +276,19 @@ wallets:
     appstore: { url: "https://apps.apple.com/app/namirial-wallet/id6739498969", trust_screen: false }
     website: https://www.namirial.com
     notes: "Namirial's wallet as published in the stores. Store version 1.13.9 completes all six demos, issuance and a DCQL presentation to an x509_hash verifier with an encrypted response, device-tested on Android on the devnet on 2026-10-06. It labels every service with its own \"Issuer not verified\" or \"Relying Party not verified\" and runs no Verana check."
+  - id: talao-wallet
+    name: Talao Wallet
+    vendor: Talao
+    status: compatible
+    icon: ./talao-wallet/logo.webp
+    formats: [openid4vc-sdjwt]
+    demoParams: signer=x5c
+    playstore: { url: "https://play.google.com/store/apps/details?id=co.talao.wallet", trust_screen: false }
+    appstore: { url: "https://apps.apple.com/app/talao-wallet/id1582183266", trust_screen: false }
+    website: https://talao.io
+    repo: https://github.com/TalaoDAO/AltMe/tree/TALAO
+    license: Apache-2.0
+    notes: "Talao's wallet on its open-source AltMe code, as published in the stores. Store version 3.7.0 completes all six demos, issuance and a DCQL presentation to an x509_hash verifier with an encrypted response, device-tested on Android on the devnet on 2026-10-06. It names the verifier by its certificate hash, warns \"not verified\" for every service and runs no Verana check."
   - id: bcwallet
     name: BC Wallet
     vendor: Government of British Columbia

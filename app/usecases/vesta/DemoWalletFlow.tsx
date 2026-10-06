@@ -8,7 +8,9 @@ import HostedWalletQr from "../../components/HostedWalletQr";
 import {
   BuildsHint,
   NoTrustScreenNote,
+  TestingNotice,
   WalletBuildActions,
+  WalletStatusChip,
 } from "../../components/WalletBuilds";
 import type { PersonalWallet } from "../../lib/wallets";
 import { ServiceQr } from "../../components/ServiceQr";
@@ -95,8 +97,11 @@ export function WalletChooser({ wallets }: { wallets: PersonalWallet[] }) {
           >
             <WalletIcon w={w} />
             <span className="min-w-0">
-              <span className="block truncate font-semibold text-gray-900">
-                {w.name}
+              <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <span className="truncate font-semibold text-gray-900">
+                  {w.name}
+                </span>
+                <WalletStatusChip status={w.status} />
               </span>
               <span className="block truncate text-xs text-gray-500">
                 {w.vendor}
@@ -128,6 +133,9 @@ export function WalletChooser({ wallets }: { wallets: PersonalWallet[] }) {
             )}
           </span>
         </div>
+        {wallet.status === "testing" ? (
+          <TestingNotice name={wallet.name} />
+        ) : null}
         {wallet.browser ? (
           <p className="text-sm leading-relaxed text-gray-600">
             {wallet.name} is a{" "}

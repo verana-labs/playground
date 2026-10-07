@@ -259,6 +259,12 @@ bhi_join_under_agent() {
     err "The agent ${validator_release} holds no authorization to validate. Check its VSOperatorAuthorization."
     return 1
   fi
+  # The agent publishes the new credential, and the indexer evaluates the DID
+  # again. Make sure that the agent is still trusted after that.
+  if [ "$role" = "$PP_ROLE_HOLDER" ]; then
+    sleep 45
+    wait_until_trusted "$AGENT_DID" "$participant_id" || return 1
+  fi
 }
 
 # ---------------------------------------------------------------------------

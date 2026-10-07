@@ -229,7 +229,7 @@ extract_tx_json() {
 broadcast() {
   local raw tx_hash
   raw=$("$@" \
-    --from "$USER_ACC" --chain-id "$CHAIN_ID" --keyring-backend test \
+    --from "${BROADCAST_FROM:-$USER_ACC}" --chain-id "$CHAIN_ID" --keyring-backend test \
     --gas-prices "$GAS_PRICES" --gas auto --gas-adjustment 1.5 --node "$NODE_RPC" \
     --output json -y 2>&1) || true
   tx_hash=$(echo "$raw" | extract_tx_json | jq -r '.txhash // empty' 2>/dev/null)
@@ -936,23 +936,35 @@ ensure_credential_definition() {
 readonly PF_PORT_ECS_ISSUER=3190
 readonly PF_PORT_VALIDATOR=3191
 
-# Wait until the indexer resolves a DID as trusted. When an onboarding request
-# arrives, the validator agent checks that the applicant is a Verifiable
-# Service (VS-CONN-VS). A request that comes before the new ECS credentials of
-# the applicant are known ends in the ERROR state.
-# Usage: wait_until_trusted <did>
+# Wait until the indexer resolves the DID of the agent as trusted. When an
+# onboarding request arrives, the validator agent checks that the applicant is
+# a Verifiable Service (VS-CONN-VS). A request that comes before the indexer
+# knows the new ECS credentials of the applicant ends in the ERROR state.
+# The indexer evaluates a DID again only on a chain event, and it keeps a DID
+# document for 5 minutes. An evaluation that ran while the agent still changed
+# its credentials stays wrong. While the DID is not trusted, the step sends
+# TriggerResolver each minute. Only the vs_operator of a HOLDER entry can send
+# it, so the agent account (key "<release>-agent") signs, and the Corporation
+# pays the fee through its fee grant.
+# Usage: wait_until_trusted <did> <holder_participant_id>
 wait_until_trusted() {
   local i
-  for i in $(seq 1 36); do
+  for i in $(seq 1 96); do
     if curl -sf -m 20 -X POST "${INDEXER_URL}/v4/verifiable-trust/resolve" \
          -H 'Content-Type: application/json' -d "$(jq -cn --arg d "$1" '{did: $d}')" \
          | jq -e '.trusted == true' > /dev/null 2>&1; then
       ok "The indexer resolves $1 as trusted"
       return 0
     fi
+    # After 15 seconds, and then each minute.
+    if [ $((i % 12)) -eq 3 ]; then
+      log "The indexer does not resolve $1 as trusted. Sending TriggerResolver on participant $2..."
+      BROADCAST_FROM="${RELEASE_NAME}-agent" broadcast veranad tx pp trigger-resolver "$2" \
+        --corporation "$CORPORATION" --fee-granter "$CORPORATION" > /dev/null || true
+    fi
     sleep 5
   done
-  err "The indexer does not resolve $1 as trusted after 3 minutes"
+  err "The indexer does not resolve $1 as trusted after 8 minutes"
   return 1
 }
 
@@ -993,7 +1005,7 @@ provision_ecs_standalone() {
   ensure_self_issued_service_credential "$RELEASE_NAME" "$INGRESS_HOST" "$service_issuer" || return 1
   stop_port_forward "$agent_port"
   start_port_forward "$RELEASE_NAME" "$agent_port"
-  wait_until_trusted "$AGENT_DID"
+  wait_until_trusted "$AGENT_DID" "$holder_id"
 }
 
 # ECS Service credential of a delegated agent: a HOLDER entry on the ECS
@@ -1018,7 +1030,7 @@ provision_ecs_delegated() {
   start_port_forward "$parent_release" "$PF_PORT_VALIDATOR" || return 1
   complete_onboarding "http://localhost:${PF_PORT_VALIDATOR}" "$AGENT_DID" "" "$holder_id" || return 1
   stop_port_forward "$PF_PORT_VALIDATOR"
-  wait_until_trusted "$AGENT_DID"
+  wait_until_trusted "$AGENT_DID" "$holder_id"
 }
 
 # Make the agent a participant of a schema, validated by the root (ECOSYSTEM)
@@ -1097,6 +1109,12 @@ join_under_agent() {
   if [ "$FLOW_SUBMISSION" = "OPERATOR" ]; then
     err "The agent ${validator_release} holds no authorization to validate. Check its VSOperatorAuthorization."
     return 1
+  fi
+  # The agent publishes the new credential, and the indexer evaluates the DID
+  # again. Make sure that the agent is still trusted after that.
+  if [ "$role" = "$PP_ROLE_HOLDER" ]; then
+    sleep 45
+    wait_until_trusted "$AGENT_DID" "$participant_id" || return 1
   fi
 }
 

@@ -184,7 +184,7 @@ bhi_complete_onboarding() {
 
     flows=$(curl -sf "${admin_api}/v2/vt/flows?${query}" 2>/dev/null) || flows='{}'
     pending=$(echo "$flows" | jq -c '[(.items // [])[]
-        | select(.flowState == "AWAITING_OR" or .flowState == "VALIDATING"
+        | select(.flowState == "VALIDATING"
                  or .flowState == "OOB_PENDING" or .flowState == "VALIDATED_PENDING_CLAIMS"
                  or .flowState == "VALIDATION_TX_FAILED")]
       | sort_by(.lastEventAt // .createdAt)')

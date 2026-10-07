@@ -837,9 +837,11 @@ complete_onboarding() {
       FLOW_SUBMISSION="DONE"
       return 0
     fi
+    # AWAITING_OR is not in the list: the validator accepts the request at once
+    # (VALIDATING), and the claims and the validation need that state.
     session_id=$(echo "$flows" | jq -r '
       [(.items // [])[]
-       | select(.flowState == "AWAITING_OR" or .flowState == "VALIDATING"
+       | select(.flowState == "VALIDATING"
                 or .flowState == "OOB_PENDING" or .flowState == "VALIDATED_PENDING_CLAIMS"
                 or .flowState == "VALIDATION_TX_FAILED")]
       | sort_by(.lastEventAt // .createdAt) | last | .participantSessionId // empty')

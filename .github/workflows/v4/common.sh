@@ -431,6 +431,22 @@ top_up_corporation() {
   ok "Corporation funded with ${missing} uvna (balance was ${balance} uvna)"
 }
 
+# Keep the float of the Corporation that owns a validator entry. The validator
+# agent sends the validation transaction, and its Corporation pays the fee
+# through the fee grant. vs-agent uses a gas price of 1uvna, so a validator
+# that validates many entries uses its float quickly.
+# Usage: top_up_validator_corporation <validator_participant_id>
+top_up_validator_corporation() {
+  local corporation_id policy
+  corporation_id=$(veranad query pp get-participant "$1" --node "$NODE_RPC" --output json 2>/dev/null \
+    | jq -r '.participant.corporation_id // empty')
+  [ -n "$corporation_id" ] || { err "Could not read the Corporation of participant $1"; return 1; }
+  policy=$(veranad query co get-corporation "$corporation_id" --node "$NODE_RPC" --output json 2>/dev/null \
+    | jq -r '.corporation.policy_address // empty')
+  [ -n "$policy" ] || { err "Could not read the policy address of Corporation $corporation_id"; return 1; }
+  top_up_corporation "$policy"
+}
+
 # Find the Corporation of this agent (corporation_did), or create it when the
 # argument is "create". The Corporation is a group with USER_ACC as its only
 # member. It keeps a float of CORPORATION_FUNDS (see top_up_corporation), and
@@ -1026,6 +1042,7 @@ provision_ecs_delegated() {
   parent_issuer=$(find_active_participant "$service_schema" "$PP_IDX_ROLE_ISSUER" "$parent_did") \
     || { err "${parent_host} has no active ISSUER entry on the ECS Service schema. Provision the parent first."; return 1; }
   local holder_id
+  top_up_validator_corporation "$parent_issuer" || return 1
   holder_id=$(ensure_participant start "$service_schema" "$PP_ROLE_HOLDER" "$parent_issuer" \
     "$AGENT_DID" "$VSOA_HOLDER") || return 1
 
@@ -1074,6 +1091,7 @@ start_onboarding_with() {
   local admin_api=$5
   local prior_id participant_id op_state flows states
 
+  top_up_validator_corporation "$validator_id" || return 1
   prior_id=$(find_participant_with_vs_operator "$schema_id" "$role" "$AGENT_DID" | cut -f1)
   participant_id=$(ensure_participant start "$schema_id" "$role" "$validator_id" "$AGENT_DID" "$msg_types") || return 1
   # A new entry: the validator gets the request now.

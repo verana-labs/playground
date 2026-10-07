@@ -6,7 +6,7 @@
 # and adds the per-org environment (agent mode, ECS claims, account mnemonic,
 # OpenID4VC, demo flag) from the org's config.env.
 chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
-chartVersion: v2.0.0-pr799.2
+chartVersion: v2.0.0-dev.87
 
 global:
   domain: __DOMAIN__
@@ -16,7 +16,7 @@ replicas: 1
 
 image:
   repository: veranalabs/vs-agent
-  tag: v2.0.0-pr799.2
+  tag: v2.0.0-dev.87
 
 adminPort: 3000
 enablePublicApiSwagger: true
@@ -70,7 +70,7 @@ extraEnv:
     value: "true"
   # The gas price of the agent transactions. The Corporation pays them through
   # a fee grant. The devnet minimum is 0.0025uvna. vs-agent uses 1uvna when
-  # this variable is not set, and versions without the variable ignore it.
+  # this variable is not set.
   - name: VERANA_GAS_PRICE
     value: "0.01uvna"
   # The own Verana account of the agent (the vs_operator of its Participant

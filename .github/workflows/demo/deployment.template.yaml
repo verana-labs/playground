@@ -10,7 +10,7 @@
 # turns on the OpenID4VC plugin, so the DemoCredential is served over both
 # rails: AnonCreds/DIDComm and OpenID4VCI/OpenID4VP.
 chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
-chartVersion: v2.0.0-dev.87
+chartVersion: v2.0.0-dev.88
 
 global:
   domain: playground.__NETWORK__.verana.network
@@ -20,7 +20,7 @@ replicas: 1
 
 image:
   repository: veranalabs/vs-agent
-  tag: v2.0.0-dev.87
+  tag: v2.0.0-dev.88
 
 adminPort: 3000
 enablePublicApiSwagger: true

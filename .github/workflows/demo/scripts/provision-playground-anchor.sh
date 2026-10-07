@@ -37,17 +37,18 @@ ECS_SERVICE_ROOT_ID=$(find_root_participant "$ECS_SERVICE_SCHEMA_ID") \
 SERVICE_ISSUER_ID=$(ensure_participant self "$ECS_SERVICE_SCHEMA_ID" "$PP_ROLE_ISSUER" "$ECS_SERVICE_ROOT_ID" \
   "$AGENT_DID" "$VSOA_ISSUER")
 # HOLDER is the only role whose vs_operator can send TriggerResolver.
-ensure_participant start "$ECS_ORG_SCHEMA_ID" "$PP_ROLE_HOLDER" "$ECS_ORG_ISSUER_PARTICIPANT_ID" \
-  "$AGENT_DID" "$VSOA_HOLDER" > /dev/null
+ORG_HOLDER_ID=$(ensure_participant start "$ECS_ORG_SCHEMA_ID" "$PP_ROLE_HOLDER" "$ECS_ORG_ISSUER_PARTICIPANT_ID" \
+  "$AGENT_DID" "$VSOA_HOLDER")
 
 # 2. The onboarding on ecs-org-issuer (in the chain namespace)
 start_port_forward "$ECS_ORG_ISSUER_RELEASE" 3101 "$ECS_NAMESPACE"
-complete_onboarding "http://localhost:3101" "$AGENT_DID"
+complete_onboarding "http://localhost:3101" "$AGENT_DID" "" "$ORG_HOLDER_ID"
 
 # The self-issued ECS Service credential (see ensure_self_issued_service_credential).
 # A restart ends the port-forward to the anchor, so stop it first.
 stop_port_forwards
 ensure_self_issued_service_credential "$RELEASE_NAME" "$INGRESS_HOST" "$SERVICE_ISSUER_ID"
+wait_until_trusted "$AGENT_DID" "$ORG_HOLDER_ID"
 
 # 3. Playground Ecosystem (demo) + DemoCredential schema + root participant
 SCHEMA_JSON=$(sed "s/__NETWORK__/${NETWORK}/g" "${CAST_DIR}/schemas/${SCHEMA_FILE}" | jq -c '.')

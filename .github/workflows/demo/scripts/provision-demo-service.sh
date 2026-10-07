@@ -33,9 +33,10 @@ ANCHOR_DID=$(fetch_did_from_log "https://${ANCHOR_HOST}") \
 ECS_SERVICE_SCHEMA_ID=$(find_ecs_schema_id "ServiceCredential")
 ANCHOR_SERVICE_ISSUER_ID=$(find_active_participant "$ECS_SERVICE_SCHEMA_ID" "$PP_IDX_ROLE_ISSUER" "$ANCHOR_DID") \
   || { err "The anchor has no active ISSUER entry on the ECS Service schema. Run demo-01 first."; exit 1; }
-ensure_participant start "$ECS_SERVICE_SCHEMA_ID" "$PP_ROLE_HOLDER" "$ANCHOR_SERVICE_ISSUER_ID" \
-  "$AGENT_DID" "$VSOA_HOLDER" > /dev/null
-complete_onboarding "$ANCHOR_API" "$AGENT_DID"
+SERVICE_HOLDER_ID=$(ensure_participant start "$ECS_SERVICE_SCHEMA_ID" "$PP_ROLE_HOLDER" "$ANCHOR_SERVICE_ISSUER_ID" \
+  "$AGENT_DID" "$VSOA_HOLDER")
+complete_onboarding "$ANCHOR_API" "$AGENT_DID" "" "$SERVICE_HOLDER_ID"
+wait_until_trusted "$AGENT_DID" "$SERVICE_HOLDER_ID"
 
 # 2. DemoCredential Participant entry per role
 if [ "${DEMO_PERM:-none}" != "none" ]; then

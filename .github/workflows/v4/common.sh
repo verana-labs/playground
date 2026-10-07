@@ -1058,10 +1058,12 @@ join_under_root() {
 }
 
 # Start the onboarding process of the agent with a validator agent, and make
-# sure that the validator has a live flow for it. When the validator ended the
-# flow of a PENDING entry with ERROR (for example, the applicant was not yet
-# trusted), the applicant cannot send the request again. The operator then
-# cancels the entry (the chain sets it to TERMINATED) and starts a new entry.
+# sure that the validator has a live flow for it. An entry that an earlier run
+# left PENDING can have no live flow: the validator ended the flow with ERROR
+# (for example, the applicant was not yet trusted), or the request never came
+# (for example, the applicant did not trust the validator). The applicant
+# cannot send the request again, so the operator cancels the entry (the chain
+# sets it to TERMINATED) and starts a new entry.
 # Prints the id of the entry.
 # Usage: start_onboarding_with <schema_id> <role> <vsoa_msg_types> <validator_participant_id> <validator_admin_api>
 start_onboarding_with() {
@@ -1070,16 +1072,24 @@ start_onboarding_with() {
   local msg_types=$3
   local validator_id=$4
   local admin_api=$5
-  local participant_id op_state states
+  local prior_id participant_id op_state flows states
 
+  prior_id=$(find_participant_with_vs_operator "$schema_id" "$role" "$AGENT_DID" | cut -f1)
   participant_id=$(ensure_participant start "$schema_id" "$role" "$validator_id" "$AGENT_DID" "$msg_types") || return 1
+  # A new entry: the validator gets the request now.
+  if [ -z "$prior_id" ] || [ "$participant_id" != "$prior_id" ]; then
+    echo "$participant_id"
+    return 0
+  fi
   op_state=$(veranad query pp get-participant "$participant_id" --node "$NODE_RPC" --output json 2>/dev/null \
     | jq -r '.participant.op_state // empty')
   if [ "$op_state" = "PENDING" ]; then
-    states=$(curl -sf "${admin_api}/v2/vt/flows?role=validator&applicantParticipantId=${participant_id}" 2>/dev/null \
-      | jq -r '[(.items // [])[].flowState] | unique | join(",")')
-    if [ "$states" = "ERROR" ]; then
-      warn "The validator ended the flow of entry $participant_id with ERROR. Cancelling the entry to start again."
+    # Do not cancel when the Admin API of the validator does not answer.
+    flows=$(curl -sf "${admin_api}/v2/vt/flows?role=validator&applicantParticipantId=${participant_id}") \
+      || { err "Could not read the flows of the validator on $admin_api"; return 1; }
+    states=$(echo "$flows" | jq -r '[(.items // [])[].flowState] | unique | join(",")')
+    if [ -z "$states" ] || [ "$states" = "ERROR" ]; then
+      warn "The validator has no live flow for the PENDING entry $participant_id (states: ${states:-none}). Cancelling the entry to start again."
       broadcast veranad tx pp cancel-participant-op-request "$participant_id" --corporation "$CORPORATION" > /dev/null || return 1
       participant_id=$(ensure_participant start "$schema_id" "$role" "$validator_id" "$AGENT_DID" "$msg_types") || return 1
     fi

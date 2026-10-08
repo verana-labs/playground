@@ -1,8 +1,9 @@
 import fs from "node:fs";
+import path from "node:path";
 import yaml from "js-yaml";
 import { z } from "zod";
 import { obtainUrls, type WalletProfile } from "../../app/lib/wallet-profiles";
-import { knownTags, mutableLinkProblem, type LinkRole } from "../../app/lib/wallet-refs";
+import { knownTags, mutableLinkProblem, networkHosts, type LinkRole } from "../../app/lib/wallet-refs";
 
 export type Finding = { wallet: string; where: string; value: string; problem: string };
 
@@ -53,6 +54,14 @@ export const readListingText = (): string => fs.readFileSync(new URL("personal-w
 
 export const parseListing = (text: string): ListingWallet[] => ListingSchema.parse(yaml.load(text, { schema: yaml.JSON_SCHEMA })).wallets;
 
+export function readRawProfiles(dir: string): { file: string; raw: unknown }[] {
+  return fs
+    .readdirSync(dir)
+    .filter((f) => f.endsWith(".yaml"))
+    .sort()
+    .map((file) => ({ file, raw: yaml.load(fs.readFileSync(path.join(dir, file), "utf8"), { schema: yaml.JSON_SCHEMA }) }));
+}
+
 export const readExceptions = (): ListingException[] =>
   ExceptionsFileSchema.parse(yaml.load(fs.readFileSync(new URL("../listing-exceptions.yaml", import.meta.url), "utf8"), { schema: yaml.JSON_SCHEMA })).exceptions;
 
@@ -88,6 +97,19 @@ export function unpinnedBuildFindings(profiles: WalletProfile[]): Finding[] {
       const missing = build.identity.repo ? "identity.ref" : "identity.repo and identity.ref";
       return [{ wallet: p.id, where, value: build.identity.repo ?? obtainUrls(build)[0] ?? "", problem: `names no ${missing} to rebuild it from` }];
     }),
+  );
+}
+
+function strings(value: unknown, at: string): { at: string; text: string }[] {
+  if (typeof value === "string") return [{ at, text: value }];
+  if (Array.isArray(value)) return value.flatMap((v, i) => strings(v, `${at}[${i}]`));
+  if (value && typeof value === "object") return Object.entries(value).flatMap(([k, v]) => strings(v, at ? `${at}.${k}` : k));
+  return [];
+}
+
+export function networkHostFindings(wallet: string, raw: unknown, prefix = ""): Finding[] {
+  return strings(raw, prefix).flatMap(({ at, text }) =>
+    networkHosts(text).map((host) => ({ wallet, where: at, value: host, problem: "hard-codes one network's host; write __NETWORK__ so the build follows NEXT_PUBLIC_VERANA_NETWORK" })),
   );
 }
 

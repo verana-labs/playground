@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
 import { z } from "zod";
+import { NETWORK } from "./network";
 import { isCommit, parseGitHubLink, parseStoreLink, releaseTag } from "./wallet-refs";
 
 export const RAILS = ["anoncreds", "openid4vc-sdjwt"] as const;
@@ -193,13 +194,14 @@ export type WalletPresentation = z.infer<typeof PresentationSchema>;
 
 export const defaultProfilesDir = (): string => path.join(process.cwd(), "conformance", "profiles");
 
-export function listWalletProfiles(dir: string = defaultProfilesDir()): WalletProfile[] {
+export function listWalletProfiles(dir: string = defaultProfilesDir(), network: string = NETWORK): WalletProfile[] {
   return fs
     .readdirSync(dir)
     .filter((f) => f.endsWith(".yaml"))
     .sort()
     .map((file) => {
-      const raw = yaml.load(fs.readFileSync(path.join(dir, file), "utf8"), { schema: yaml.JSON_SCHEMA });
+      const text = fs.readFileSync(path.join(dir, file), "utf8").replaceAll("__NETWORK__", network);
+      const raw = yaml.load(text, { schema: yaml.JSON_SCHEMA });
       const parsed = WalletProfileSchema.safeParse(raw);
       if (!parsed.success) throw new Error(`${file}: ${parsed.error.message}`);
       if (`${parsed.data.id}.yaml` !== file) throw new Error(`${file}: file name must be ${parsed.data.id}.yaml`);

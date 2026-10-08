@@ -234,6 +234,16 @@ describe("listWalletProfiles", () => {
     expect(() => listWalletProfiles(dir)).toThrow(/wrong\.yaml/);
   });
 
+  it("resolves the network placeholder of the hosts this repo deploys", () => {
+    const hosted = {
+      ...valid,
+      id: "a",
+      builds: [{ kind: "browser", listed: true, label: "hosted", obtain: "https://a.__NETWORK__.verana.network", identity: { url: "https://a.__NETWORK__.verana.network" }, platforms: ["web"], promises: "x" }],
+    };
+    fs.writeFileSync(path.join(dir, "a.yaml"), JSON.stringify(hosted));
+    expect(listWalletProfiles(dir, "devnet")[0]?.builds[0]?.obtain).toBe("https://a.devnet.verana.network");
+  });
+
   it("finds one profile by id", () => {
     fs.writeFileSync(path.join(dir, "a.yaml"), JSON.stringify({ ...valid, id: "a" }));
     expect(getWalletProfile("a", dir)?.id).toBe("a");

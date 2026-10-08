@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { knownTags, mutableLinkProblem, parseGitHubLink, parseStoreLink } from "./wallet-refs";
+import { knownTags, mutableLinkProblem, networkHosts, parseGitHubLink, parseStoreLink } from "./wallet-refs";
 
 const SHA = "e6992fccc6540ae297e20082ccc80e0c8cda0e5d";
 
@@ -51,5 +51,15 @@ describe("parseStoreLink", () => {
     expect(parseStoreLink("https://apps.apple.com/app/hologram-messaging/id6474701855")).toEqual({ store: "appstore", id: "6474701855" });
     expect(parseStoreLink("https://apps.apple.com/cl/app/hologram-messaging/id6474701855")).toEqual({ store: "appstore", id: null });
     expect(parseStoreLink("https://example.org")).toBeNull();
+  });
+});
+
+describe("networkHosts", () => {
+  it("finds the hosts pinned to one network", () => {
+    expect(networkHosts("https://wwwallet.playground.testnet.verana.network/x and idx.devnet.verana.network")).toEqual([
+      "wwwallet.playground.testnet.verana.network",
+      "idx.devnet.verana.network",
+    ]);
+    expect(networkHosts("https://wwwallet.playground.__NETWORK__.verana.network")).toEqual([]);
   });
 });

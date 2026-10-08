@@ -13,9 +13,9 @@ builds:
   - kind: browser
     listed: true
     label: "Hosted Verana fork, built from verana-labs/wallet-frontend master by .github/workflows/wwwallet.yml"
-    obtain: https://wwwallet.playground.testnet.verana.network
+    obtain: https://wwwallet.playground.__NETWORK__.verana.network
     identity:
-      url: https://wwwallet.playground.testnet.verana.network
+      url: https://wwwallet.playground.__NETWORK__.verana.network
       repo: https://github.com/verana-labs/wallet-frontend
     platforms: [web]
     promises: "Proof-of-Trust on both consent screens; accept and share are gated on Q2 and Q3"

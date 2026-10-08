@@ -89,3 +89,7 @@ export function parseStoreLink(url: string): StoreLink | null {
   if (host === "apps.apple.com") return { store: "appstore", id: APP_STORE.exec(url)?.[1] ?? null };
   return null;
 }
+
+const NETWORK_HOST = /[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:testnet|devnet)\.verana\.network/gi;
+
+export const networkHosts = (text: string): string[] => text.match(NETWORK_HOST) ?? [];

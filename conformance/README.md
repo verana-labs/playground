@@ -5,6 +5,10 @@ Proves, on every change, which listed wallets work against the deployed playgrou
 
 - `profiles/` one YAML per listed wallet: rails, builds, promises, quirks. Every tier reads it; nothing
   wallet-specific is hard-coded anywhere else. Validated by `app/lib/wallet-profiles.ts` in the main CI.
+- `listing-exceptions.yaml` links and builds of the listing that cannot be pinned to a release tag or a commit
+  yet, each with a reason and an expiry date. `lib/listing-gate.test.ts` refuses any other mutable link (a branch,
+  a repository root or a releases index as a build, a short sha), a store link that is not canonical or names
+  another app, and a host hard-coded to one network instead of `__NETWORK__`.
 - `networks.yaml` the networks a run can target. `CONFORMANCE_NETWORK=testnet-v3` selects one; by
   default every testable network runs and the others are reported as not yet testable.
 - `tier1/` (planned, next PR) contract checks: what a wallet fetches, asserted without running a wallet.

@@ -31,7 +31,12 @@
 #                   does not refuse the unaccredited or untrusted services).
 #                   Builds with the trust screen come first, the others after
 #                   them, labelled. Every link must be the obtain of a listed
-#                   build in conformance/profiles/<id>.yaml, and vice versa
+#                   build in conformance/profiles/<id>.yaml, and vice versa.
+#                   A GitHub link (download, fork, repo) pins a release tag or
+#                   a full commit, never a branch (exceptions, with an expiry,
+#                   in conformance/listing-exceptions.yaml); a store link is
+#                   canonical (no region); a host this repo deploys writes
+#                   __NETWORK__
 #   website         vendor website; the vendor name links to it (new tab)
 #   repo, license, contact, notes
 #   status          recommended | compatible | testing (testing when left out)

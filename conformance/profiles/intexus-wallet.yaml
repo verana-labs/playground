@@ -13,9 +13,9 @@ builds:
   - kind: browser
     listed: true
     label: "INTEXUS-branded hosted instance of the Verana fork, scoped to the events demo"
-    obtain: https://intexus-wallet.eventos.playground.testnet.verana.network
+    obtain: https://intexus-wallet.eventos.playground.__NETWORK__.verana.network
     identity:
-      url: https://intexus-wallet.eventos.playground.testnet.verana.network
+      url: https://intexus-wallet.eventos.playground.__NETWORK__.verana.network
       repo: https://github.com/verana-labs/wallet-frontend
     platforms: [web]
     promises: "Same code as wwwallet with the INTEXUS brand; the wallet the Colombian tour uses"

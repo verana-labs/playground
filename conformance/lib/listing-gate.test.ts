@@ -3,9 +3,11 @@ import { listWalletProfiles, WalletProfileSchema } from "../../app/lib/wallet-pr
 import {
   describeFinding,
   linkFindings,
+  networkHostFindings,
   parseListing,
   readExceptions,
   readListingText,
+  readRawProfiles,
   triage,
   unpinnedBuildFindings,
   type Finding,
@@ -68,6 +70,13 @@ describe("unpinnedBuildFindings", () => {
   });
 });
 
+describe("networkHostFindings", () => {
+  it("names the field that hard-codes a network host", () => {
+    const findings = networkHostFindings("w", { builds: [{ obtain: "https://w.playground.testnet.verana.network" }] });
+    expect(findings).toEqual([expect.objectContaining({ where: "builds[0].obtain", value: "w.playground.testnet.verana.network" })]);
+  });
+});
+
 describe("triage", () => {
   const finding: Finding = { wallet: "w", where: "fork", value: "https://github.com/a/w/tree/main", problem: "pins main" };
 
@@ -82,16 +91,19 @@ describe("triage", () => {
 });
 
 describe("the listing and the profiles", () => {
-  const listing = parseListing(readListingText());
+  const listingText = readListingText();
+  const listing = parseListing(listingText);
   const profiles = listWalletProfiles(profilesDir());
   const exceptions = readExceptions();
   const findings = [
     ...linkFindings(listing, profiles),
     ...unpinnedBuildFindings(profiles),
+    ...listing.flatMap((w) => networkHostFindings(w.id, w)),
+    ...readRawProfiles(profilesDir()).flatMap(({ file, raw }) => networkHostFindings(file.replace(/\.yaml$/, ""), raw, "profile")),
   ];
   const { open, stale, expired } = triage(findings, exceptions, today);
 
-  it("pin every build and link to a release tag or a commit, unless excepted", () => {
+  it("pin every build and link to a release tag or a commit, and follow the network, unless excepted", () => {
     expect(open.map(describeFinding), "fix these links, or add a dated entry to conformance/listing-exceptions.yaml").toEqual([]);
   });
 

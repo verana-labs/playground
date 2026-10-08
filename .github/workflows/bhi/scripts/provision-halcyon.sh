@@ -1,26 +1,19 @@
 #!/usr/bin/env bash
-# Provision Halcyon Talent (demo) - the impostor with real credentials.
-# Halcyon IS a verifiable organisation: ECS-Organization from Orchestrating
-# Identity and a self-issued ECS-Service, so Q1 resolves TRUSTED. What it
-# never gets - deliberately, ever - is a Verified Employer credential or any
-# VERIFIER permission on the candidate schemas: the wallet refuses its
-# requests before any data moves. Legitimate organisation, wrong network.
+# Provision Halcyon Talent (demo) (bhi-10) on Verana V4, the impostor:
+#   1. The ECS credentials: the ECS-Organization credential from ecs-org-issuer
+#      and the self-issued ECS-Service credential.
+# That is all. Halcyon is a verifiable organisation, but it gets no Verified
+# Employer credential and no VERIFIER entry on the candidate schemas, by
+# design. UNSAFE_SKIP_OWN_AUTHORIZATION in config.env lets its agent make
+# presentation requests all the same, so that a wallet can refuse them.
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
-source "${CAST_DIR}/scripts/lib.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
-start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_OID" 3101
-API="http://localhost:3100"
-OID_API="http://localhost:3101"
+bhi_start_agent
 
-AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "Halcyon DID: $AGENT_DID"
+# 1. ECS credentials
+provision_ecs_standalone 3100
 
-obtain_ecs_org_credential "$API" "$OID_API" "$AGENT_DID"
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
-
-ok "Halcyon provisioned: a verifiable organisation - and still no Verified Employer, by design."
+ok "Halcyon provisioned: a verifiable organisation, with no Verified Employer credential, by design"

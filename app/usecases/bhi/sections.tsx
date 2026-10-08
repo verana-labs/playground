@@ -470,7 +470,7 @@ export function Section2() {
 
 /** Draft claim sets of the candidate credentials (partner proposal,
  *  2026-08-19), rendered under journey build 4 for review. DRAFT until
- *  the schemas are created on the testnet - see SCHEMAS in content.ts. */
+ *  the schemas are created on the network - see SCHEMAS in content.ts. */
 function SchemaDrafts() {
   return (
     <div className="mt-10">

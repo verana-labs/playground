@@ -1,56 +1,43 @@
 #!/usr/bin/env bash
-# Provision the Better Hiring Institute anchor: ECS-Organization from
-# Orchestrating Identity (Council-accredited, DVS-certified), self-issued
-# ECS-Service, and the Recruitment Trust Network - deliberately narrow: two
-# schemas, both about organisations. Recognised RecTech Provider is issued
-# by BHI itself (ECOSYSTEM issuance); Verified Employer is issued by the
-# certified DVS providers (OID and, when live, TVS receive ISSUER
-# permissions under BHI's ecosystem - v3's closest fit for the GRANTOR
-# story). Verification of both schemas is OPEN, per the source spec.
+# Provision the Better Hiring Institute (bhi-04) on Verana V4:
+#   1. The ECS credentials: the ECS-Organization credential from ecs-org-issuer
+#      and the self-issued ECS-Service credential.
+#   2. The Recruitment Trust Network: an Ecosystem controlled by the DID of
+#      the Institute, with two schemas and their root entries:
+#        RecognisedRecTechProviderCredential — issuer onboarding by the
+#          Ecosystem, verifier onboarding OPEN, holders onboard through an
+#          issuer;
+#        VerifiedEmployerCredential — issuer onboarding through a GRANTOR,
+#          verifier onboarding OPEN, holders onboard through an issuer. The
+#          certified DVS providers hold the ISSUER_GRANTOR entries (bhi-01 and
+#          bhi-03, second pass).
+#   3. The ISSUER entry of the Institute on the Recognised RecTech Provider
+#      schema. This entry validates the HOLDER entry of JobSearch (bhi-09).
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
-source "${CAST_DIR}/scripts/lib.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
-start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_OID" 3101
-API="http://localhost:3100"
-OID_API="http://localhost:3101"
+bhi_start_agent
 
-AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "BHI DID: $AGENT_DID"
+# 1. ECS credentials
+provision_ecs_standalone 3100
 
-obtain_ecs_org_credential "$API" "$OID_API" "$AGENT_DID"
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
+# 2. The Recruitment Trust Network
+ECOSYSTEM_ID=$(ensure_ecosystem "$AGENT_DID")
 
-# Recruitment Trust Network: one registry, two schemas
-TR_ID=$(ensure_trust_registry "$AGENT_DID" "https://${INGRESS_HOST}" "$EGF_DOC_URL")
+RRP_JSON=$(bhi_schema_json "recognised-rectech-provider.json")
+RRP_CS_ID=$(ensure_credential_schema "$ECOSYSTEM_ID" "$RRP_JSON" \
+  "$ONBOARDING_MODE_ECOSYSTEM" "$ONBOARDING_MODE_OPEN" "$HOLDER_MODE_ISSUER_OP")
+bhi_ensure_root "$RRP_CS_ID" "$AGENT_DID" > /dev/null
 
-RRP_JSON=$(jq -c '.' "${CAST_DIR}/schemas/${RRP_SCHEMA_FILE}")
-RRP_CS_ID=$(ensure_schema_with_root "$TR_ID" "$RRP_JSON" "$AGENT_DID")
-ensure_validated_issuer_perm "$RRP_CS_ID" "$AGENT_DID"
-ensure_jsc "$API" "$RRP_SCHEMA_BASE_ID" "$RRP_CS_ID" > /dev/null
+VE_JSON=$(bhi_schema_json "verified-employer.json")
+VE_CS_ID=$(ensure_credential_schema "$ECOSYSTEM_ID" "$VE_JSON" \
+  "$ONBOARDING_MODE_GRANTOR" "$ONBOARDING_MODE_OPEN" "$HOLDER_MODE_ISSUER_OP")
+bhi_ensure_root "$VE_CS_ID" "$AGENT_DID" > /dev/null
 
-VE_JSON=$(jq -c '.' "${CAST_DIR}/schemas/${VE_SCHEMA_FILE}")
-VE_CS_ID=$(ensure_schema_with_root "$TR_ID" "$VE_JSON" "$AGENT_DID")
-# The registry owner publishes the canonical VTJSC on its own DID document -
-# bhi-08/09 discover the schema id from the institute host (the vesta ISO
-# pattern: owner JSC for discovery, issuer-local JSC for issuance).
-ensure_jsc "$API" "$VE_SCHEMA_BASE_ID" "$VE_CS_ID" > /dev/null
+# 3. The own ISSUER entry on the Recognised RecTech Provider schema
+RRP_ISSUER_ID=$(join_under_root "$RRP_CS_ID" "$PP_ROLE_ISSUER" "$VSOA_ISSUER" institute)
 
-# The certified DVS providers issue Verified Employer under BHI's ecosystem
-OID_DID=$(get_agent_did "$OID_API")
-[ -n "$OID_DID" ] || { err "Could not read the Orchestrating Identity DID - run bhi-01 first"; exit 1; }
-ensure_validated_issuer_perm "$VE_CS_ID" "$OID_DID"
-ensure_jsc "$OID_API" "$VE_SCHEMA_BASE_ID" "$VE_CS_ID" > /dev/null
-
-TVS_DID=$(get_public_did_from_host "$TVS_HOST" || true)
-if [ -n "$TVS_DID" ]; then
-  ensure_validated_issuer_perm "$VE_CS_ID" "$TVS_DID"
-else
-  warn "TVS is not live yet - re-run this workflow after bhi-03 to grant its Verified Employer ISSUER permission"
-fi
-
-ok "BHI provisioned: TR=$TR_ID, RRP CS=$RRP_CS_ID, VE CS=$VE_CS_ID."
+ok "Better Hiring Institute provisioned: Ecosystem=$ECOSYSTEM_ID, RRP CS=$RRP_CS_ID (ISSUER=$RRP_ISSUER_ID), VE CS=$VE_CS_ID"
+ok "Next: run bhi-05 and bhi-06, then bhi-01 and bhi-03 again with step=provision (Verified Employer branches)."

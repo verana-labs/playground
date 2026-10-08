@@ -33,7 +33,7 @@ Four trusted services are its delegated sub-services:
 - **Agent accounts.** Each agent has its own Verana account, the
   `vs_operator` of its Participant entries. The workflow creates the mnemonic
   once, keeps it in the Kubernetes secret `<release>-verana-account`, and
-  sends 1 VNA to the new account. The chain does not let one account hold an
+  sends 0.001 VNA (`AGENT_FUNDS`) to the new account. The chain does not let one account hold an
   OperatorAuthorization and a VSOperatorAuthorization, so an agent account is
   never the operator account.
 - **ECS credentials.** The agents get them through vt-flow onboarding

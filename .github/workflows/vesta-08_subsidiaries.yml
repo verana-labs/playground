@@ -1,8 +1,10 @@
 name: "Vesta 08 · Subsidiaries (Iberia + Nordics)"
 
-# Deploys the two Vesta subsidiaries and accredits them as Authorized
-# Repairer issuers under the Vesta Repair Network registry.
-# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+# Deploys the two Vesta subsidiaries: ECS credentials and an ISSUER entry on
+# the Authorized Repairer schema of the Vesta Repair Network.
+# CAUTION: the provision step needs vesta-06 first.
+# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# see .github/workflows/vesta/README.md for the run order.
 
 on:
   workflow_dispatch:
@@ -25,11 +27,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   vesta-iberia:
@@ -38,11 +35,10 @@ jobs:
     with:
       org: vesta-iberia
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit
 
-  # Runs after Iberia, never in parallel: both sign with the same veranad
-  # account, and concurrent broadcasts race on its transaction sequence.
+  # Runs after Iberia, never in parallel: both sign with the same operator
+  # account, and two broadcasts at the same time race on its sequence number.
   vesta-nordics:
     needs: vesta-iberia
     if: >-
@@ -53,5 +49,4 @@ jobs:
     with:
       org: vesta-nordics
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

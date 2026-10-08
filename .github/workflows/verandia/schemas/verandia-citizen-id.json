@@ -1,5 +1,5 @@
 {
-  "$id": "https://civil-registry.verandia.playground.testnet.verana.network/schemas/verandia-citizen-id.json",
+  "$id": "https://civil-registry.verandia.playground.__NETWORK__.verana.network/schemas/verandia-citizen-id.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "VerandiaCitizenIDCredential",
   "description": "The Verandia Citizen ID - national identity credential of the Republic of Verandia (demo), with eIDAS-2-PID-inspired claims. For demonstration only.",

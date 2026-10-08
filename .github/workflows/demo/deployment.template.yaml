@@ -10,7 +10,7 @@
 # turns on the OpenID4VC plugin, so the DemoCredential is served over both
 # rails: AnonCreds/DIDComm and OpenID4VCI/OpenID4VP.
 chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
-chartVersion: v2.0.0-pr766.6
+chartVersion: v2.0.0-dev.88
 
 global:
   domain: playground.__NETWORK__.verana.network
@@ -20,7 +20,7 @@ replicas: 1
 
 image:
   repository: veranalabs/vs-agent
-  tag: v2.0.0-pr766.6
+  tag: v2.0.0-dev.88
 
 adminPort: 3000
 enablePublicApiSwagger: true
@@ -68,6 +68,15 @@ extraEnv:
     value: "info"
   - name: USE_CORS
     value: "true"
+  # Show the banner that presents the agent page as the placeholder of a
+  # Verana business wallet.
+  - name: UI_SHOW_PLACEHOLDER_MESSAGE
+    value: "true"
+  # The gas price of the agent transactions. The Corporation pays them through
+  # a fee grant. The devnet minimum is 0.0025uvna. vs-agent uses 1uvna when
+  # this variable is not set.
+  - name: VERANA_GAS_PRICE
+    value: "0.01uvna"
   # The own Verana account of the agent (the vs_operator of its Participant
   # entries). demo-00_core creates the secret.
   - name: VERANA_ACCOUNT_MNEMONIC

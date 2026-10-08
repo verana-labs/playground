@@ -1,7 +1,11 @@
 name: "BHI 05 · Northbank Identity (DVS issuer)"
 
-# Deploys Northbank Identity (demo): ECS creds, its registry with the
-# Right to Work and Employment schemas, and the OpenID4VC issuer rail.
+# Creates the Corporation of Northbank Identity (demo), deploys its agent,
+# onboards it with the devnet ECS Ecosystem, and creates its Ecosystem with
+# the Right to Work and Employment schemas (verifiers through a GRANTOR),
+# its ISSUER entries, the AnonCreds credential definitions and the OpenID4VC
+# issuer rail.
+# Verana V4 (devnet): select the v4 branch.
 # Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
 
 on:
@@ -16,11 +20,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   northbank:
@@ -28,5 +27,4 @@ jobs:
     with:
       org: northbank
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

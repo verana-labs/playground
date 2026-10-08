@@ -1,0 +1,29 @@
+id: namirial
+rails: [openid4vc-sdjwt]
+openid4vc:
+  library: "Namirial's own OpenID4VC, SD-JWT VC and mdoc stack, closed source"
+  proxy: "@openid4vc/openid4vci, @openid4vc/openid4vp, @sd-jwt/sd-jwt-vc"
+  vciDrafts: [v1]
+  offerSchemes: [openid-credential-offer, openid4vci, oid4vci, haip-vci]
+  requestSchemes: [openid4vp, openid, openid-vp, eudi-openid4vp, mdoc-openid4vp, haip, haip-vp]
+  asDiscovery: [oauth-authorization-server]
+  presentation: { query: dcql, clientId: x509_hash, responseMode: direct_post.jwt }
+  demoParams: signer=x5c
+builds:
+  - kind: store
+    listed: true
+    label: "Namirial Wallet on Google Play and the App Store"
+    obtain:
+      - https://play.google.com/store/apps/details?id=com.namirial.wallet
+      - https://apps.apple.com/app/namirial-wallet/id6739498969
+    identity:
+      package: com.namirial.wallet
+      version: "1.13.9"
+    platforms: [android, ios]
+    presumptive: [ios]
+    promises: "No Verana trust screen: its own \"Issuer not verified\" and \"Relying Party not verified\" labels are the same for every service and nothing is checked against the registry, so the unaccredited and untrusted services are not refused. All six demos complete: issues the DemoCredential and presents it on DCQL to an x509_hash verifier with an encrypted direct_post.jwt response (device-tested 2026-10-06 on devnet, Android, Play version 1.13.9)"
+quirks:
+  actsOnLinkOnlyAtColdStart: false
+  locksOnBackground: false
+  viewTree: readable
+  notes: "Sets FLAG_SECURE, so screenshots come out black: read the screens through the view tree. Titles the credential with its raw vct URL because our Type Metadata has no display yet (fix in progress). Unlocks with the phone's device credential. Link schemes as registered by the Play build's manifest, leaving out its vendor-prefixed ones. Only the offer and request links of the default mint were exercised; the locking behaviour has not been characterised"

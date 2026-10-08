@@ -26,7 +26,8 @@
 //     (nav, sitemap, indexable) per Verana's decision. It had been
 //     unlisted + noindex while the OID-Verana agreement was pending.
 //  4. [CAST] The cast is DEPLOYED on the testnet (2026-09-02 bootstrap;
-//     bhi-* workflows, one vs-agent per participant) and chapter 4 demos
+//     bhi-* workflows, one vs-agent per participant; the v4 branch deploys
+//     it on the devnet, see .github/workflows/bhi/README.md) and chapter 4 demos
 //     1-3 run live against it; demos 4-5 (revocation, directory) are
 //     follow-ups. Hosts remain our proposal, pending OID confirmation.
 //     Claim sets follow the partner review of 2026-08-20 (see SCHEMAS):
@@ -36,11 +37,20 @@
 //     as draft until then.
 // ---------------------------------------------------------------------
 
+import { ENDPOINTS } from "../../lib/site";
+import { NETWORK, PROTOCOL } from "../../lib/network";
 import type { Stage } from "./scenes";
 import type {
   JourneyNeed as GenericJourneyNeed,
   SubStep as GenericSubStep,
 } from "../story-blocks";
+
+/** How to resolve a DID on the network of the build: the trust resolver on
+ *  V3 (testnet), the indexer on V4 (devnet). */
+const RESOLVE_STEP =
+  PROTOCOL === "v4"
+    ? `Resolve it: POST {"did": "<your-did>"} to ${ENDPOINTS.indexer}/v4/verifiable-trust/resolve. The indexer does not know your DID yet, so it is UNTRUSTED. That is the starting line.`
+    : `Resolve it: ${ENDPOINTS.resolver}/v1/trust/resolve?did=<your-did> returns UNTRUSTED. That is the starting line.`;
 
 export type SubStep = GenericSubStep<Stage>;
 export type JourneyNeed = GenericJourneyNeed<Stage>;
@@ -361,17 +371,24 @@ export const JOURNEY: {
           points: [
             "DVS certification is the accreditation criterion: any provider certified under the UK DVS trust framework can be accredited by the Verana Council the same way and issue ECS-Organization credentials. The route is not the point, the credential is; build 3 shows a participant taking a different one.",
             "New in this step: BHI's DID is born, the check turns green, and the Recruitment Trust Network exists.",
+            ...(PROTOCOL === "v4"
+              ? [
+                  `On the Verana ${NETWORK}, the demonstrator takes a shorter route: the organization issuer of the ECS Ecosystem issues the ECS-Organization credential of every organisation in the cast. Orchestrating Identity and Trustworthy Verification Services (demo) take part as grantors in the Recruitment Trust Network.`,
+                ]
+              : []),
           ],
           reproduce: [
             "Deploy a vs-agent on a public domain (Docker image and compose examples in the vs-agent repository).",
             "Open https://<your-host>/.well-known/did.json - that document is your Business Wallet's DID.",
-            "Resolve it: https://resolver.testnet.verana.network/v1/trust/resolve?did=<your-did> returns UNTRUSTED. That is the starting line.",
+            RESOLVE_STEP,
             "In the Verana app: Discover & Join → ECS Ecosystem → Organization schema → Participants → join under an active issuer branch. Complete the KYB exchange over DIDComm.",
             "My Ecosystems → create an ecosystem (name plus governance-framework document) → add credential schemas → create root Participant entries.",
           ],
           underHood: [
             "The vs-agent generates the DID (did:webvh recommended) and publishes its DID Document with a DIDComm endpoint.",
-            "Orchestrating Identity holds an ISSUER Participant entry on the ECS-Organization schema, granted under the ECS Ecosystem governed by the Verana Council; its UK DVS certification is the accreditation criterion. Joining creates a HOLDER Participant entry on the same schema; the validating issuer sets it to VALIDATED and it becomes ACTIVE in the public tree.",
+            PROTOCOL === "v4"
+              ? `On the Verana ${NETWORK}, the organization issuer of the ECS Ecosystem holds the ISSUER Participant entry on the ECS-Organization schema. Joining creates a HOLDER Participant entry on the same schema; the validating issuer sets it to VALIDATED and it becomes ACTIVE in the public tree.`
+              : "Orchestrating Identity holds an ISSUER Participant entry on the ECS-Organization schema, granted under the ECS Ecosystem governed by the Verana Council; its UK DVS certification is the accreditation criterion. Joining creates a HOLDER Participant entry on the same schema; the validating issuer sets it to VALIDATED and it becomes ACTIVE in the public tree.",
             "Ecosystem creation is three transactions: Create New Ecosystem (with the EGF document) → Create New Credential Schema → Create Root Participant.",
           ],
         },
@@ -516,7 +533,7 @@ export const JOURNEY: {
 
 /** The proposed claims of the candidate credentials, rendered under
  *  journey build 4 for review. Field names as supplied; DRAFT until the
- *  schemas are created on the testnet. Partner review 2026-08-20: three
+ *  schemas are created on the network. Partner review 2026-08-20: three
  *  schema families - Qualification (many per wallet: degrees and
  *  professional certifications alike), Employment (one per employment,
  *  one or more current employments possible), Right to Work (exactly
@@ -527,7 +544,7 @@ export const JOURNEY: {
 export const SCHEMAS = {
   title: "The draft claim sets",
   intro:
-    "The proposed claims of the three schema families, for review. Field names and formats are finalised when BHI defines each schema (a definition template is in preparation) and the schemas are created on the testnet.",
+    `The proposed claims of the three schema families, for review. Field names and formats are finalised when BHI defines each schema (a definition template is in preparation) and the schemas are created on the ${NETWORK}.`,
   modelNote:
     "Modelling note: a verifiable credential carries a flat claim set, so lists repeat as credentials, not as fields inside one credential. Each employment and each qualification is issued as its own credential, and the wallet accumulates them: employments until the record reaches back five years (with one or more current employments), qualifications from any number of institutions. Right to work is a single credential. An employment-reference schema was considered and dropped as redundant.",
   items: [
@@ -584,11 +601,11 @@ export const SCHEMAS = {
 
 export const DEMOS = {
   intro:
-    "Chapter 4 is a simulation you play. Create an applicant, fill a wallet with verifiable credentials, then apply to two jobs that look alike: one posted by a Verified Employer, one by an organisation the network has never authorised. Everything runs live against the Verana testnet, and every QR is minted at the moment it appears.",
+    `Chapter 4 is a simulation you play. Create an applicant, fill a wallet with verifiable credentials, then apply to two jobs that look alike: one posted by a Verified Employer, one by an organisation the network has never authorised. Everything runs live against the Verana ${NETWORK}, and every QR is minted at the moment it appears.`,
   verifyRule:
     "Always verify the certified organisation name and data shown in the Proof-of-Trust card in your wallet before proceeding.",
   freeNote:
-    "Participation in the demonstrator is free. It runs on the Verana testnet, and no party charges a fee for joining, issuing or verifying within it.",
+    `Participation in the demonstrator is free. It runs on the Verana ${NETWORK}, and no party charges a fee for joining, issuing or verifying within it.`,
 };
 
 // The applicant-journey wizard (chapter 4). Steps, personas, job ads and
@@ -601,7 +618,7 @@ export const WIZARD = {
     firstNameLabel: "First name",
     surnameLabel: "Surname",
     privacyNote:
-      "The name goes only into a demo credential on the Verana testnet, nowhere else. Leave the defaults to play as Alex Chen (demo).",
+      `The name goes only into a demo credential on the Verana ${NETWORK}, nowhere else. Leave the defaults to play as Alex Chen (demo).`,
     backstoryTitle: "Your backstory",
     backstory: [
       "BSc in Computer Science, First Class Honours, Caledonian University (demo), 2017.",

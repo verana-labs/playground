@@ -1,7 +1,11 @@
 name: "Vesta 03 · Vesta Appliances anchor"
 
-# Deploys the Vesta anchor: ECS-Organization from Helvetia, self ECS-Service, ECS-Badge issuer.
-# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+# Deploys the Vesta anchor: ECS credentials (ECS Organization from
+# ecs-org-issuer, self-issued ECS Service), ECS Badge issuer, and the ISO
+# 9001-style (demo) credential from NormaCert.
+# CAUTION: the provision step needs vesta-04 and vesta-05 first.
+# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# see .github/workflows/vesta/README.md for the run order.
 
 on:
   workflow_dispatch:
@@ -15,11 +19,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   vesta:
@@ -27,5 +26,4 @@ jobs:
     with:
       org: vesta
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

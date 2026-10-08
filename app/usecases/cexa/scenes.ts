@@ -6,8 +6,9 @@
 // Association's checklist. Rendering machinery is shared with the other use
 // cases (app/components/scene-graph.ts / StoryDiagram.tsx).
 
-import { CEXA_CAST } from "../../lib/cexa-cast";
+import { CEXA_CAST, CEXA_ECS_ORG_ISSUER, type CexaMember } from "../../lib/cexa-cast";
 import { shortDid } from "../../lib/did";
+import { NETWORK } from "../../lib/network";
 import type {
   Accreditation,
   NodeCredential,
@@ -32,8 +33,13 @@ export const STAGES = [
 
 export type Stage = (typeof STAGES)[number];
 
-const sceneDid = (did: string) =>
-  shortDid(did).replace(/\.cexa\.playground\.testnet\.verana\.network$/, "…");
+/** The short label of a member: its short DID on testnet. On devnet the DID
+ *  is known only at run time, so the label is the host. */
+const sceneDid = (member: CexaMember) =>
+  (member.did ? shortDid(member.did) : member.host).replace(
+    `.cexa.playground.${NETWORK}.verana.network`,
+    "…",
+  );
 
 const NODES: SceneNode[] = [
   // ---- the trust layer
@@ -70,7 +76,7 @@ const NODES: SceneNode[] = [
     toneByStage: { "3.2": "blue" },
     labelByStage: {
       "3.2": { sub: "accredited ISSUER member" },
-      "3.4": { sub: sceneDid(CEXA_CAST.aurum.did) },
+      "3.4": { sub: sceneDid(CEXA_CAST.aurum) },
     },
   },
   {
@@ -353,7 +359,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "violet",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: CEXA_ECS_ORG_ISSUER,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.1",
     },
@@ -368,7 +374,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: CEXA_ECS_ORG_ISSUER,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.2",
       note: "Only accredited issuers of the Verana ECS Ecosystem issue ECS-Organization credentials. Being verifiable is an entry requirement of the EGF - the Association issues membership identities, not identity itself.",
@@ -392,7 +398,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: CEXA_ECS_ORG_ISSUER,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.3",
     },
@@ -414,7 +420,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: CEXA_ECS_ORG_ISSUER,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.6",
       note: "Banks join under the same EGF eligibility rule as exchanges: licensed, already-verifiable institutions, one membership, one fee schedule.",
@@ -437,7 +443,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: CEXA_ECS_ORG_ISSUER,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.8",
     },
@@ -586,5 +592,7 @@ export const CEXA_SCENES: SceneGraph = {
     },
   },
   verifiedNote:
-    "Trust cards go live against the Verana testnet resolver once the CEXA cast deploys - the DIDs above are placeholders today.",
+    NETWORK === "testnet"
+      ? "Trust cards go live against the Verana testnet resolver once the CEXA cast deploys - the DIDs above are placeholders today."
+      : `Trust cards resolve live against the Verana ${NETWORK} indexer when the CEXA cast is deployed.`,
 };

@@ -8,7 +8,7 @@ Proves, on every change, which listed wallets work against the deployed playgrou
 - `networks.yaml` the networks a run can target. `CONFORMANCE_NETWORK=testnet-v3` selects one; by
   default every testable network runs and the others are reported as not yet testable. A network resolves
   trust through its resolver (v3) or its indexer (v4); `casts` limits it to the casts it has deployed
-  (devnet v4: `demo` only), whatever `CONFORMANCE_CASTS` says.
+  (devnet v4: demo, vesta, verandia, cexa and bhi), whatever `CONFORMANCE_CASTS` says.
 - `tier1/` contract checks: what a wallet fetches, asserted without running a wallet.
 - `tier2/` headless OpenID4VCI/OpenID4VP flows with the wallets' own libraries, asserting the resolver inputs of
   the verdict. Behind `CONFORMANCE_MINTS=1`. See "Tier 2" below.

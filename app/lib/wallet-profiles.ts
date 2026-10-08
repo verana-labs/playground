@@ -98,7 +98,7 @@ const BuildSchema = z.object({
   listed: z.boolean().optional(),
   networks: z.array(z.string().regex(/^[a-z0-9-]+$/)).min(1).optional(),
   label: z.string().min(1),
-  obtain: z.url(),
+  obtain: z.union([z.url(), z.array(z.url()).min(1)]),
   signerSha256: z.string().min(1).optional(),
   identity: IdentitySchema,
   platforms: z.array(z.enum(PLATFORMS)).min(1),
@@ -158,8 +158,7 @@ export const WalletProfileSchema = z
     if (profile.openid4vc)
       for (const m of demoParamsIssues(profile.openid4vc.presentation, profile.openid4vc.demoParams))
         issue(m, ["openid4vc", "demoParams"]);
-    const listed = profile.builds.filter((b) => b.listed);
-    if (listed.length !== 1) issue(`exactly one build must be listed, found ${listed.length}`, ["builds"]);
+    if (!profile.builds.some((b) => b.listed)) issue("at least one build must be listed", ["builds"]);
     profile.builds.forEach((build, i) => {
       const at = (...p: (string | number)[]) => ["builds", i, ...p];
       if (profile.builds.slice(0, i).some((other) => other.kind === build.kind && sharesNetwork(other, build)))
@@ -169,8 +168,6 @@ export const WalletProfileSchema = z
       if (build.kind === "browser" && !build.identity.url) issue("a browser build needs identity.url", at("identity"));
       if (build.kind !== "browser" && build.platforms.includes("android") && !build.identity.package)
         issue("an android build needs identity.package", at("identity"));
-      if (build.kind !== "browser" && build.platforms.includes("android") && !build.device)
-        issue("an android build needs a device block", at("device"));
       if (build.kind === "browser" && build.device) issue("a browser build has no device block", at("device"));
       if (build.kind === "fork") {
         const { repo, ref } = build.identity;
@@ -208,18 +205,21 @@ export function getWalletProfile(id: string, dir: string = defaultProfilesDir())
   return listWalletProfiles(dir).find((p) => p.id === id);
 }
 
-export function listedBuild(profile: WalletProfile): WalletBuild {
-  const build = profile.builds.find((b) => b.listed);
-  if (!build) throw new Error(`${profile.id}: no listed build`);
-  return build;
+export function listedBuilds(profile: WalletProfile): WalletBuild[] {
+  const builds = profile.builds.filter((b) => b.listed);
+  if (!builds.length) throw new Error(`${profile.id}: no listed build`);
+  return builds;
 }
+
+export const obtainUrls = (build: WalletBuild): string[] =>
+  typeof build.obtain === "string" ? [build.obtain] : build.obtain;
 
 export const targetsNetwork = (build: WalletBuild, network: string): boolean =>
   !build.networks || build.networks.includes(network);
 
 export function networkBuild(profile: WalletProfile, network: string): WalletBuild | undefined {
-  const listed = listedBuild(profile);
-  if (targetsNetwork(listed, network)) return listed;
+  const [listed] = listedBuilds(profile);
+  if (!listed || targetsNetwork(listed, network)) return listed;
   return profile.builds.find((b) => b.kind === listed.kind && b.networks?.includes(network));
 }
 

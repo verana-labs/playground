@@ -1,7 +1,9 @@
 name: "Vesta 04 · ISO Certification Ecosystem (demo)"
 
-# Deploys the certification registry and creates the ISO 9001-style (demo) schema + root permission.
-# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+# Deploys the ISO Certification Ecosystem (demo): ECS credentials, the
+# Ecosystem, the ISO 9001-style (demo) schema and its root Participant entry.
+# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# see .github/workflows/vesta/README.md for the run order.
 
 on:
   workflow_dispatch:
@@ -15,11 +17,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   iso-certification:
@@ -27,5 +24,4 @@ jobs:
     with:
       org: iso-certification
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

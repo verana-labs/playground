@@ -40,6 +40,11 @@ def network_build(profile, network):
     return listed, other
 
 
+def apk_or_first(obtain):
+    urls = [obtain] if isinstance(obtain, str) else obtain
+    return next((u for u in urls if urllib.parse.urlparse(u).path.endswith(".apk")), urls[0])
+
+
 def incompatibility(build, scenario, service):
     for entry in build.get("incompatibilities") or []:
         if (entry["scenarios"] == "all" or scenario in entry["scenarios"]) and (not entry.get("services") or service in entry["services"]):
@@ -95,7 +100,7 @@ def resolve(networks_json, profile_json, scenarios_json, workflows, network_id, 
     identity = (build or {}).get("identity") or {}
     if build is not None:
         plan["build"] = {
-            "kind": build["kind"], "label": build["label"], "obtain": build["obtain"],
+            "kind": build["kind"], "label": build["label"], "obtain": apk_or_first(build["obtain"]),
             "version": identity.get("version"), "package": identity.get("package"),
             "signerSha256": build.get("signerSha256"), "networks": build.get("networks"),
             "delivery": device.get("delivery", "scan"), "secret": device.get("secret", ""),
@@ -128,7 +133,7 @@ def resolve(networks_json, profile_json, scenarios_json, workflows, network_id, 
                                   **({"reference": hit["reference"]} if hit.get("reference") else {})})
             continue
         cause = None
-        if not urllib.parse.urlparse(build["obtain"]).path.endswith(".apk"):
+        if not urllib.parse.urlparse(plan["build"]["obtain"]).path.endswith(".apk"):
             cause = "the build has no direct apk download"
         elif scenario.get("login"):
             cause = "tier 3 does not drive the eventos login"

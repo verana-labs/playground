@@ -9,5 +9,5 @@ networks:
     rpc: https://rpc.testnet.verana.network
     playground: https://playground.testnet.verana.network
     vocabulary: { ecosystem: Ecosystem, participant: Participant }
-    testable: false
-    reason: "testnet runs Verana V4, where the indexer resolves trust; the harness has a V3 resolver client only"
+    casts: [demo, vesta, verandia, cexa, bhi]
+    testable: true

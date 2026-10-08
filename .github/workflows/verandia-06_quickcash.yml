@@ -1,8 +1,9 @@
 name: "Verandia 06 · QuickCash Loans (over-asking verifier)"
 
-# Deploys the over-asking verifier (demo): a verifiable company that is
-# deliberately NEVER registered as a Citizen ID relying party.
-# Part of the Verandia cast CI/CD — see .github/workflows/verandia/README.md.
+# Deploys the over-asking verifier (demo): its Corporation and its ECS
+# credentials only. By design it NEVER gets a VERIFIER entry on the Verandia
+# Citizen ID. Run it after verandia-03, so that its request has a schema.
+# Part of the Verandia cast CI/CD (Verana V4, devnet) — see .github/workflows/verandia/README.md.
 
 on:
   workflow_dispatch:
@@ -16,8 +17,8 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
         required: false
         type: boolean
         default: false
@@ -28,5 +29,5 @@ jobs:
     with:
       org: quickcash
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

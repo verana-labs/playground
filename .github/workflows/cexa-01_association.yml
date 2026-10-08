@@ -1,9 +1,12 @@
-name: "CEXA 01 · Crypto Exchange Association (anchor)"
+name: "CEXA 01 · Crypto Exchange Association (Ecosystem)"
 
-# Deploys the Association anchor: ECS-Organization from Helvetia, self ECS-Service, the CEXA trust
-# registry with the CEXA-Kyc (governed both sides) and CEXA-VerifiedCounterparty schemas, VTJSCs,
-# and the AnonCreds schema for the dual rail. Anchors the example EGF by digest.
-# Part of the CEXA cast CI/CD — see .github/workflows/cexa/README.md.
+# Deploys the Association agent: its Corporation, the ECS Organization credential from
+# ecs-org-issuer, the self-issued ECS Service credential, the Ecosystem "Crypto Exchange
+# Association (demo)" with the CEXAKycCredential schema (governed on both sides) and the
+# CEXAVerifiedCounterpartyCredential schema, their root Participant entries, and the ISSUER entry
+# of the Association on the counterparty schema. The chain keeps the digest of the EGF document:
+# run Deploy Playground for devnet first, so that /cexa/cexa-egf-v4.md answers.
+# Part of the CEXA cast CI/CD (Verana V4, devnet) — see .github/workflows/cexa/README.md.
 
 on:
   workflow_dispatch:
@@ -17,8 +20,8 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
         required: false
         type: boolean
         default: false
@@ -29,5 +32,5 @@ jobs:
     with:
       org: association
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

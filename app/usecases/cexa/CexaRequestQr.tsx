@@ -7,6 +7,10 @@ import { useSelectedWallet } from "../vesta/DemoWalletFlow";
 // A live CEXA presentation request (Borealis, Novara, DarkPool): the service
 // asks the selected wallet for the CEXA-Kyc credential on the rail the
 // wallet speaks. The wallet's trust checks decide what happens next.
+//
+// Novara issues AND verifies, so /api/demo would mint an offer for its
+// "issuer" role. The query parameter action=request asks /api/demo for a
+// presentation request instead.
 
 export default function CexaRequestQr({
   wallets,
@@ -43,7 +47,7 @@ export default function CexaRequestQr({
       label={label}
       format={format}
       credential={credential}
-      demoParams={wallet.demoParams}
+      demoParams={[wallet.demoParams, "action=request"].filter(Boolean).join("&")}
     />
   );
 }

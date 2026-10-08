@@ -3,12 +3,15 @@
 // §1 is a civic article (no protocol vocabulary); §2 is the solution
 // (Minister quote + pillars + ecosystem choices); §3 is the technical build
 // with the progressive scene graph; §4 the demos. Protocol facts target v3;
-// reproduce recipes follow the current verana-frontend UX.
+// on V4 (devnet) the `V4` switches give the V4 facts of the live cast: each
+// organization gets its ECS-Organization credential from the organization
+// issuer of the ECS Ecosystem, and story step 3.2 is not on chain.
+// Reproduce recipes follow the current verana-frontend UX.
 
 import { withBase } from "../../lib/base-path";
+import { NETWORK, NETWORK_CONFIG, PROTOCOL } from "../../lib/network";
 import { ENDPOINTS, LINKS } from "../../lib/site";
-import { VERANDIA_CAST } from "../../lib/verandia-cast";
-import { VESTA_CAST } from "../../lib/vesta-cast";
+import { displayDid, VERANDIA_CAST } from "../../lib/verandia-cast";
 import type { Stage } from "./scenes";
 import type {
   JourneyNeed as GenericJourneyNeed,
@@ -17,6 +20,9 @@ import type {
 
 const app = ENDPOINTS.frontend;
 const resolver = ENDPOINTS.resolver;
+const V4 = PROTOCOL === "v4";
+/** The issuer of the ECS-Organization credentials of the live cast on V4. */
+const V4_ECS_ORG_ISSUER = "the organization issuer of the Verana ECS Ecosystem";
 
 export type SubStep = GenericSubStep<Stage>;
 export type JourneyNeed = GenericJourneyNeed<Stage>;
@@ -201,12 +207,13 @@ export const FACTS =
 export const ECOSYSTEM_JOIN = {
   icon: "landmark",
   tone: "violet",
-  roles: "HOLDER + ISSUER",
+  roles: V4 ? "HOLDER" : "HOLDER + ISSUER",
   name: "Verana ECS Ecosystem",
   label: "Business IDs as ECS-Organization credentials",
-  about:
-    "The shared identity-card trust registry: certified Organization credentials, recognized by every Verana-aware wallet and service. Verandia's National Business Registry becomes an accredited ECS-Organization issuer - and because the register IS the source of truth, KYB becomes a lookup, not paperwork.",
-  did: VESTA_CAST.ecs.did,
+  about: V4
+    ? `The shared identity-card trust registry: certified Organization credentials, recognized by every Verana-aware wallet and service. On the Verana ${NETWORK}, ${V4_ECS_ORG_ISSUER} issues the Organization credential of each Verandian institution and company.`
+    : "The shared identity-card trust registry: certified Organization credentials, recognized by every Verana-aware wallet and service. Verandia's National Business Registry becomes an accredited ECS-Organization issuer - and because the register IS the source of truth, KYB becomes a lookup, not paperwork.",
+  did: NETWORK_CONFIG.ecsEcosystemDid,
   why: "Verandia could run Business IDs in a custom ecosystem - but joining the shared ECS ecosystem means a Verandian company's credential is recognized everywhere, not just in Verandia. Interop wins.",
 };
 
@@ -221,7 +228,7 @@ export const ECOSYSTEMS_BUILD = [
     about:
       "One schema: the Verandia Citizen ID (names, birth date, personal identifier, portrait). Issuance governed - only the Civil Registry issues. Verification governed too: a service must register as a relying party before any wallet will share the ID. That is the eIDAS 2 relying-party rule, made structural.",
     why: "identity fraud dies when the ID is cryptographic, and over-collection dies when verifiers need permission to ask.",
-    did: VERANDIA_CAST.civilRegistry.did,
+    did: displayDid(VERANDIA_CAST.civilRegistry),
   },
   {
     icon: "network",
@@ -233,7 +240,7 @@ export const ECOSYSTEMS_BUILD = [
     about:
       "One schema: the Legal Representative credential (company, registry id, person, role, powers, validity). Issuance governed - only the Business Registry issues, after the applicant identifies with their Citizen ID. Verification open: checking who represents a company is the register's public function.",
     why: "the notarized-paper-and-fax problem becomes a scan - and a representative who leaves is revoked the same day.",
-    did: VERANDIA_CAST.businessRegistry.did,
+    did: displayDid(VERANDIA_CAST.businessRegistry),
   },
 ] as const;
 
@@ -268,21 +275,28 @@ export const JOURNEY: {
           stage: "3.1",
           title: "The Business Registry becomes a Verifiable Service",
           kind: "watch",
-          story:
-            "The National Business Registry deploys a vs-agent, an open source Business Wallet natively integrated with the public Verana infrastructure. A DID is generated for the register; Helvetia Trust Services (demo), an accredited ECS-Organization issuer, runs the KYB - trivially, for a national institution - and issues the register's Organization credential. The register self-issues its Service credential: the Republic's first green check.",
+          story: `The National Business Registry deploys a vs-agent, an open source Business Wallet natively integrated with the public Verana infrastructure. A DID is generated for the register; ${
+            V4 ? V4_ECS_ORG_ISSUER : "Helvetia Trust Services (demo), an accredited ECS-Organization issuer,"
+          } runs the KYB - trivially, for a national institution - and issues the register's Organization credential. The register self-issues its Service credential: the Republic's first green check.`,
           code: {
             label: "The DID of the National Business Registry",
-            value: VERANDIA_CAST.businessRegistry.did,
-            note: "The live DID of the deployed register on the Verana testnet - resolve it yourself at resolver.testnet.verana.network.",
+            value: displayDid(VERANDIA_CAST.businessRegistry),
+            note: V4
+              ? `The deployed register on the Verana ${NETWORK} (the did:web alias of its did:webvh) - resolve it yourself with the indexer at ${resolver}.`
+              : "The live DID of the deployed register on the Verana testnet - resolve it yourself at resolver.testnet.verana.network.",
           },
           underHood: [
             "The vs-agent generates the DID (did:webvh recommended) and publishes its DID Document with a DIDComm endpoint at https://<host>/.well-known/did.json.",
-            "Helvetia's ECS-Org issuance and the self-issued ECS-Service follow the exact flow of the Vesta story (3.1/3.2) - the pattern replicates across sectors; that is the point.",
+            V4
+              ? "The ECS-Organization credential comes from the organization issuer of the ECS Ecosystem, after an onboarding process; the register self-issues its ECS-Service. The pattern replicates across sectors; that is the point."
+              : "Helvetia's ECS-Org issuance and the self-issued ECS-Service follow the exact flow of the Vesta story (3.1/3.2) - the pattern replicates across sectors; that is the point.",
           ],
           reproduce: [
             "Deploy a vs-agent on a public domain (Docker image + compose examples in the vs-agent repo).",
             "Open https://<your-host>/.well-known/did.json - that document is your Business Wallet's DID.",
-            `Resolve it: ${resolver}/v1/trust/resolve?did=<your-did> → UNTRUSTED. That's the starting line.`,
+            V4
+              ? `Resolve it: POST ${resolver}/v4/verifiable-trust/resolve with {"did": "<your-did>"} → UNTRUSTED. That's the starting line.`
+              : `Resolve it: ${resolver}/v1/trust/resolve?did=<your-did> → UNTRUSTED. That's the starting line.`,
           ],
           links: [
             { label: "vs-agent home", href: "https://github.com/verana-labs/vs-agent" },
@@ -300,14 +314,23 @@ export const JOURNEY: {
             "Verandia deliberately joins the shared ECS ecosystem instead of building a national silo: a Verandian company's Business ID is recognized by every Verana-aware wallet and service worldwide.",
             "From now on, the state's own register issues - and every issuance is anchored in the public registry, checkable by anyone.",
           ],
-          underHood: [
-            "An ISSUER permission on the ECS-Organization schema, granted in the ECS Ecosystem's permission tree - the same accreditation Helvetia holds.",
-            "Governed issuance, public accountability: the register's permission entry, its trust deposit, and every issuance are on-chain.",
-          ],
-          reproduce: [
-            "In the Verana app: Discover & Join → ECS Ecosystem → Organization credential schema → Participants - the accreditation tree is public.",
-            "Trust-resolve any credential the register issues: the chain ends at the ECS Ecosystem root.",
-          ],
+          underHood: V4
+            ? [
+                `Story only on the Verana ${NETWORK}: the register holds no ISSUER entry on the ECS-Organization schema, and ${V4_ECS_ORG_ISSUER} issues the Organization credentials of the live cast.`,
+                "On Verana V4 the accreditation is an ISSUER Participant entry on the ECS-Organization schema, validated in the ECS Ecosystem - public and on-chain.",
+              ]
+            : [
+                "An ISSUER permission on the ECS-Organization schema, granted in the ECS Ecosystem's permission tree - the same accreditation Helvetia holds.",
+                "Governed issuance, public accountability: the register's permission entry, its trust deposit, and every issuance are on-chain.",
+              ],
+          reproduce: V4
+            ? [
+                "In the Verana app: open the ECS Ecosystem → Organization credential schema → Participants - the participant tree is public.",
+              ]
+            : [
+                "In the Verana app: Discover & Join → ECS Ecosystem → Organization credential schema → Participants - the accreditation tree is public.",
+                "Trust-resolve any credential the register issues: the chain ends at the ECS Ecosystem root.",
+              ],
           links: [
             { label: "Verana app", href: app },
             { label: "Verifiable Trust spec", href: LINKS.vtSpec },
@@ -328,20 +351,27 @@ export const JOURNEY: {
           stage: "3.3",
           title: "The Citizen ID ecosystem - both directions governed",
           kind: "watch",
-          story:
-            "The Civil Registry becomes verifiable the Verandian way: its Organization credential is issued by the National Business Registry - the Republic dogfoods its own register. Then it creates the Verandia Citizen ID trust ecosystem with a single schema, and two governance decisions that define the whole story: issuance is governed (only the Civil Registry issues), and verification is governed too - a service must register as a relying party before any wallet will share a Citizen ID.",
+          story: `${
+            V4
+              ? `The Civil Registry becomes verifiable: ${V4_ECS_ORG_ISSUER} issues its Organization credential.`
+              : "The Civil Registry becomes verifiable the Verandian way: its Organization credential is issued by the National Business Registry - the Republic dogfoods its own register."
+          } Then it creates the Verandia Citizen ID trust ecosystem with a single schema, and two governance decisions that define the whole story: issuance is governed (only the Civil Registry issues), and verification is governed too - a service must register as a relying party before any wallet will share a Citizen ID.`,
           points: [
             "The schema carries eIDAS-2-PID-inspired claims: names, birth date, personal identifier, nationality, portrait.",
             "Governed verification is the eIDAS 2 relying-party registration, made structural: over-asking is not policed after the fact - it is impossible by default.",
           ],
           underHood: [
-            "Create New Trust Registry (+ EGF document) → Create New Credential Schema (issuer mode ECOSYSTEM, verifier mode ECOSYSTEM) → Create Root Permission.",
+            V4
+              ? "Create an Ecosystem (+ EGF document) → create a Credential Schema (issuer mode ECOSYSTEM, verifier mode ECOSYSTEM, holders PERMISSIONLESS) → create the root Participant."
+              : "Create New Trust Registry (+ EGF document) → Create New Credential Schema (issuer mode ECOSYSTEM, verifier mode ECOSYSTEM) → Create Root Permission.",
             "birthDate is a dateint (YYYYMMDD), so AnonCreds predicate proofs (age over 18) work without revealing the date.",
             "The Citizen ID is a personal credential: AnonCreds/DIDComm and OpenID4VC SD-JWT rails, never published as a Linked VP.",
           ],
           reproduce: [
-            "In the Verana app: My Ecosystems → create a trust registry (name + governance-framework document).",
-            "Add the Citizen ID schema with issuance mode ECOSYSTEM and verification mode ECOSYSTEM. Create the root permission.",
+            V4
+              ? "In the Verana app: My Ecosystems → create an Ecosystem (governance-framework document)."
+              : "In the Verana app: My Ecosystems → create a trust registry (name + governance-framework document).",
+            `Add the Citizen ID schema with issuance mode ECOSYSTEM and verification mode ECOSYSTEM. Create the root ${V4 ? "Participant" : "permission"}.`,
           ],
           links: [
             { label: "Verana app", href: app },
@@ -394,11 +424,15 @@ export const JOURNEY: {
             "Banks are the most-phished brand category: a provable bank is the single highest-value green check in the Republic.",
           ],
           underHood: [
-            "ECS-Org issued by the Business Registry (accredited issuer) + self-issued ECS-Service, published as Linked VPs - the standard Verifiable Service pattern.",
+            V4
+              ? `ECS-Org issued by ${V4_ECS_ORG_ISSUER} (story step 3.2 is not on chain on the Verana ${NETWORK}) + self-issued ECS-Service, published as Linked VPs - the standard Verifiable Service pattern.`
+              : "ECS-Org issued by the Business Registry (accredited issuer) + self-issued ECS-Service, published as Linked VPs - the standard Verifiable Service pattern.",
             "Customers' wallets trust-resolve the bank's DID before any connection: Q1 on every session.",
           ],
           reproduce: [
-            "Once the Verandia cast is live: resolve the bank's DID and see the Proof-of-Trust with the register-issued Organization credential.",
+            V4
+              ? "Resolve the bank's DID and see the Proof-of-Trust with its Organization credential."
+              : "Once the Verandia cast is live: resolve the bank's DID and see the Proof-of-Trust with the register-issued Organization credential.",
           ],
           links: [
             { label: "Business wallets", href: "/business-wallets" },
@@ -426,7 +460,9 @@ export const JOURNEY: {
             "The credential is revoked the day Tomás leaves the bakery - and every verifier knows within a scan.",
           ],
           underHood: [
-            "Second trust registry + Legal Representative schema (issuer mode ECOSYSTEM, verifier mode OPEN) + root permission.",
+            V4
+              ? "Second Ecosystem + Legal Representative schema (issuer mode ECOSYSTEM, verifier mode OPEN, holders PERMISSIONLESS) + root Participant."
+              : "Second trust registry + Legal Representative schema (issuer mode ECOSYSTEM, verifier mode OPEN) + root permission.",
             "Identification by Citizen ID presentation over the session: the ID layer is the KYC other ecosystems build on - exactly like the ECS layer in the Vesta story.",
           ],
           reproduce: [
@@ -451,17 +487,23 @@ export const JOURNEY: {
           stage: "3.7",
           title: "The Tax Buro and Meridian Bank register as relying parties",
           kind: "watch",
-          story:
-            "The Tax Buro becomes verifiable (Organization credential from the Business Registry, of course) and registers as a VERIFIER of the Verandia Citizen ID. Meridian Bank does the same. From that day: Aria signs in to her tax space by presenting her Citizen ID - no password. Tomás opens the bakery's tax space and its bank account with his Legal Representative credential. Opening a personal account at Meridian is KYC in one scan.",
+          story: `The Tax Buro becomes verifiable (Organization credential from ${
+            V4 ? "the ECS Ecosystem" : "the Business Registry, of course"
+          }) and registers as a VERIFIER of the Verandia Citizen ID. Meridian Bank does the same. From that day: Aria signs in to her tax space by presenting her Citizen ID - no password. Tomás opens the bakery's tax space and its bank account with his Legal Representative credential. Opening a personal account at Meridian is KYC in one scan.`,
           points: [
             "One credential, public and private sector: the same Citizen ID signs Aria in at the Tax Buro and opens her account at the bank.",
             "The wallet checks the verifier before sharing (Q3): who is asking, and are they authorized to ask for this?",
             "The portal decides from the issuer chain: Citizen ID from the Civil Registry, Legal Representative from the Business Registry. Two rules cover the whole Republic.",
           ],
-          underHood: [
-            "VERIFIER permissions on the Citizen ID schema, granted by the Civil Registry's ecosystem - the relying-party register, on-chain and public.",
-            "Legal Representative verification is OPEN, so the Tax Buro and the bank check it with no extra permission - the register meant it to be checked.",
-          ],
+          underHood: V4
+            ? [
+                "VERIFIER Participant entries on the Citizen ID schema, validated by the Civil Registry's Ecosystem - the relying-party register, on-chain and public.",
+                "Legal Representative verification is OPEN: the Tax Buro and the bank create their own VERIFIER entry, with no validation - the register meant it to be checked. The entry is still necessary: a vs-agent makes no presentation request without it.",
+              ]
+            : [
+                "VERIFIER permissions on the Citizen ID schema, granted by the Civil Registry's ecosystem - the relying-party register, on-chain and public.",
+                "Legal Representative verification is OPEN, so the Tax Buro and the bank check it with no extra permission - the register meant it to be checked.",
+              ],
           reproduce: [
             "Run both demos below: the Tax Buro login and the Meridian Bank window - citizen path and company path each.",
           ],

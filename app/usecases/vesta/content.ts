@@ -2,27 +2,43 @@
 // Source of truth: verana-spec → playground/verana-explained/spec.md (0.5).
 // §1 is a marketing-style company article (no protocol vocabulary);
 // §2 is the solution section (CTO quote + pillars + ecosystem choices); §3–§5 are the technical build with the
-// progressive scene graph. Protocol facts target v3; reproduce recipes
+// progressive scene graph. Protocol facts target v3; the network-specific
+// values (DIDs, ids, endpoints, the ECS-Org issuer) follow the build network.
+// Reproduce recipes
 // follow the current verana-frontend UX: ecosystem → credential schema →
 // Participants tree → Join from the branch you want to join under.
 
 import { withBase } from "../../lib/base-path";
 import { ENDPOINTS, LINKS } from "../../lib/site";
+import { NETWORK, PROTOCOL } from "../../lib/network";
 import {
   VESTA_CAST,
+  ECS_ORG_ISSUER,
+  SCHEMA_IDS,
   TRUST_REGISTRY_IDS,
+  credentialSchemaUrl,
+  didDocUrl,
   trustRegistryUrl,
 } from "../../lib/vesta-cast";
 import type { Stage } from "./scenes";
 import type { JourneyNeed as GenericJourneyNeed, SubStep as GenericSubStep } from "../story-blocks";
 
 const app = ENDPOINTS.frontend;
-const resolver = ENDPOINTS.resolver;
 
-// Deep link to a credential schema's public participants tree in the Verana
-// app. Live testnet schema ids: ECS-Organization 168, ECS-Service 170,
-// ECS-Badge 250, ISO 9001 (demo) 251, Authorized Repairer 252.
-const participants = (schemaId: number) => `${app}/participants/${schemaId}`;
+// How to resolve the trust of a DID: the trust resolver (V3), or the trust
+// resolution of the indexer (V4).
+const resolveRecipe =
+  PROTOCOL === "v4"
+    ? `Resolve it: POST ${ENDPOINTS.resolver}/v4/verifiable-trust/resolve {"did": "<your-did>"} → not trusted. That's the starting line.`
+    : `Resolve it: ${ENDPOINTS.resolver}/v1/trust/resolve?did=<your-did> → UNTRUSTED. That's the starting line.`;
+
+// Deep link to a credential schema in the Verana app (testnet: its public
+// participants tree). The ids are known on testnet only (SCHEMA_IDS), so the
+// link is absent on devnet.
+const schemaLink = (label: string, schemaId: number | undefined) => {
+  const href = credentialSchemaUrl(schemaId);
+  return href ? [{ label, href }] : [];
+};
 
 /** Generated brand assets (open item 8): web-optimized WebP in
  *  public/images/ (PNG originals kept alongside). Set a path to null to fall
@@ -299,12 +315,17 @@ export const JOURNEY: {
           kind: "watch",
           story:
             "Marc deploys a vs-agent, an open source Business Wallet natively integrated with the public Verana infrastructure. Upon deployment, a decentralized identifier (DID) is generated for Vesta: the identifier everything else attaches to. It proves nothing yet; it is the empty identity card.",
-          code: {
-            label: "The DID generated for Vesta",
-            value: VESTA_CAST.vesta.did,
-            note:
-              "The live DID of Vesta's Business Wallet on the Verana testnet - resolve it yourself.",
-          },
+          code: VESTA_CAST.vesta.did
+            ? {
+                label: "The DID generated for Vesta",
+                value: VESTA_CAST.vesta.did,
+                note: `The live DID of Vesta's Business Wallet on the Verana ${NETWORK} - resolve it yourself.`,
+              }
+            : {
+                label: "The DID document of Vesta",
+                value: didDocUrl(VESTA_CAST.vesta),
+                note: `The live DID document of Vesta's Business Wallet on the Verana ${NETWORK} - open it, and resolve its DID yourself.`,
+              },
           underHood: [
             "The vs-agent generates the DID (did:webvh recommended) and publishes its DID Document with a DIDComm endpoint at https://<host>/.well-known/did.json.",
             "The Business Wallet will hold and present Vesta's credentials as Linked Verifiable Presentations.",
@@ -312,7 +333,7 @@ export const JOURNEY: {
           reproduce: [
             "Deploy a vs-agent on a public domain (Docker image + compose examples in the vs-agent repo).",
             "Open https://<your-host>/.well-known/did.json - that document is your Business Wallet's DID.",
-            `Resolve it: ${resolver}/v1/trust/resolve?did=<your-did> → UNTRUSTED. That's the starting line.`,
+            resolveRecipe,
           ],
           links: [
             { label: "vs-agent home", href: "https://github.com/verana-labs/vs-agent" },
@@ -327,8 +348,8 @@ export const JOURNEY: {
           story:
             "Marc connects to the Verana ECS Ecosystem and chooses an accredited issuer to obtain an Organization credential for Vesta:",
           points: [
-            "Marc chooses Helvetia Trust Services (demo), an accredited ECS-Org issuer.",
-            "A Know-Your-Business (KYB) process runs between Vesta and Helvetia Trust Services, over DIDComm.",
+            `Marc chooses ${ECS_ORG_ISSUER.described}.`,
+            `A Know-Your-Business (KYB) process runs between Vesta and ${ECS_ORG_ISSUER.label}, over DIDComm.`,
             "KYB concludes and Vesta is verified: Vesta's Business Wallet receives its Organization credential.",
           ],
           underHood: [
@@ -337,7 +358,7 @@ export const JOURNEY: {
             "The credential is issued over DIDComm and published by the Business Wallet as a Linked VP (#vpr-schemas-org-vtc-vp).",
           ],
           reproduce: [
-            "Create a testnet account, get VNA from the faucet, and open the Verana app (links below).",
+            `Create a ${NETWORK} account, get VNA from the faucet, and open the Verana app (links below).`,
             "Discover & Join → ECS Ecosystem → Organization credential schema → Participants.",
             "In the permission tree, pick an active Issuer branch and click Join: you apply as Holder under that issuer, and it becomes your validator. Enter your Business Wallet's DID and submit.",
             "Complete the KYB exchange with the issuer's service over DIDComm; on validation, the ECS-Organization credential lands in your Business Wallet.",
@@ -345,7 +366,7 @@ export const JOURNEY: {
           links: [
             { label: "Verana app", href: app },
             { label: "Faucet", href: ENDPOINTS.faucet },
-            { label: "ECS-Organization participants", href: participants(168) },
+            ...schemaLink("ECS-Organization participants", SCHEMA_IDS.ecsOrganization),
           ],
         },
       ],
@@ -374,7 +395,7 @@ export const JOURNEY: {
             "Issue the ECS-Service credential to yourself via the vs-agent Admin API and link it (the verana-demos scripts wrap this).",
           ],
           links: [
-            { label: "ECS-Service participants", href: participants(170) },
+            ...schemaLink("ECS-Service participants", SCHEMA_IDS.ecsService),
             { label: "verana-demos examples", href: LINKS.veranaDemos },
           ],
         },
@@ -408,7 +429,7 @@ export const JOURNEY: {
             "Get your own badge in Run the demos below: reveal the Vesta offer, and accept it after your wallet's issuer check.",
           ],
           links: [
-            { label: "ECS-Badge participants", href: participants(250) },
+            ...schemaLink("ECS-Badge participants", SCHEMA_IDS.ecsBadge),
             { label: "Get a badge (Run the demos)", href: "/usecases/vesta/demos#demo-badge" },
           ],
         },
@@ -434,7 +455,7 @@ export const JOURNEY: {
             "The portal login demo is coming to Run the demos: review the request (who asks, what for), present the badge - you're in.",
           ],
           links: [
-            { label: "ECS-Badge participants", href: participants(250) },
+            ...schemaLink("ECS-Badge participants", SCHEMA_IDS.ecsBadge),
             { label: "Personal-wallet guideline", href: LINKS.guidelineUserWallet },
           ],
         },
@@ -469,7 +490,7 @@ export const JOURNEY: {
             "Present ECS-Org over the DIDComm session when asked to identify; receive ISO 9001 on the Organization DID.",
           ],
           links: [
-            { label: "ISO 9001 participants", href: participants(251) },
+            ...schemaLink("ISO 9001 participants", SCHEMA_IDS.iso9001Demo),
           ],
         },
       ],
@@ -503,7 +524,7 @@ export const JOURNEY: {
           ],
           links: [
             { label: "Verana app", href: app },
-            { label: "Authorized Repairer participants", href: participants(252) },
+            ...schemaLink("Authorized Repairer participants", SCHEMA_IDS.authorizedRepairer),
           ],
         },
         {
@@ -534,7 +555,7 @@ export const JOURNEY: {
           ],
           links: [
             { label: "Get a badge (Run the demos)", href: "/usecases/vesta/demos#demo-badge" },
-            { label: "Authorized Repairer participants", href: participants(252) },
+            ...schemaLink("Authorized Repairer participants", SCHEMA_IDS.authorizedRepairer),
           ],
         },
         {
@@ -558,7 +579,7 @@ export const JOURNEY: {
             organization: {
               name: "ECS-Organization",
               orgName: "Umbra Repairs (demo)",
-              issuedBy: "Helvetia Trust Services (demo)",
+              issuedBy: ECS_ORG_ISSUER.name,
               ecosystem: "Verana ECS Ecosystem",
             },
             trusted: true,

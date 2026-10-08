@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Container, Section, SectionHeading } from "./components/ui";
 import { AddYourWalletTileCompact } from "./components/WalletTile";
+import { BuildsHint, WalletStatusChip } from "./components/WalletBuilds";
 import WalletLogo from "./components/WalletLogo";
 import { businessWallets, type Integration } from "./lib/integrations";
 import { listPersonalWallets, type PersonalWallet } from "./lib/wallets";
@@ -99,15 +100,12 @@ function PersonalWalletHomeTile({ w }: { w: PersonalWallet }) {
         </span>
       )}
       <span className="min-w-0">
-        <span className="flex items-center gap-2">
+        <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
           <span className="truncate font-semibold text-gray-900">{w.name}</span>
-          {w.recommended ? (
-            <span className="shrink-0 rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
-              Recommended
-            </span>
-          ) : null}
+          <WalletStatusChip status={w.status} />
         </span>
         <span className="block truncate text-sm text-gray-500">{w.vendor}</span>
+        <BuildsHint links={w.links} className="text-xs" />
       </span>
     </Link>
   );

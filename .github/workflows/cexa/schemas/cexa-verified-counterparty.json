@@ -1,5 +1,5 @@
 {
-  "$id": "https://association.cexa.playground.testnet.verana.network/schemas/cexa-verified-counterparty.json",
+  "$id": "https://association.cexa.playground.__NETWORK__.verana.network/schemas/cexa-verified-counterparty.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "CEXAVerifiedCounterpartyCredential",
   "description": "CEXA-VerifiedCounterparty - the Travel Rule identity of a member of the Crypto Exchange Association (demo), issued by the Association at validation and renewal, published on the member's DID as a Linked VP and free to verify. Revoked on license loss (EGF section 10). For demonstration only.",

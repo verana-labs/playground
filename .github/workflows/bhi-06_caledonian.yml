@@ -1,7 +1,10 @@
-name: "BHI 06 · Caledonian University (Qualification registry)"
+name: "BHI 06 · Caledonian University (Qualification ecosystem)"
 
-# Deploys Caledonian University (demo): ECS creds, the Qualification
-# registry + schema, and the OpenID4VC issuer rail.
+# Creates the Corporation of Caledonian University (demo), deploys its agent,
+# onboards it with the devnet ECS Ecosystem, and creates its Ecosystem with
+# the Qualification schema (verifiers through a GRANTOR), its ISSUER entry,
+# the AnonCreds credential definition and the OpenID4VC issuer rail.
+# Verana V4 (devnet): select the v4 branch.
 # Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
 
 on:
@@ -16,11 +19,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   caledonian:
@@ -28,5 +26,4 @@ jobs:
     with:
       org: caledonian
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

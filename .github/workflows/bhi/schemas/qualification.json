@@ -1,5 +1,5 @@
 {
-  "$id": "https://caledonian.bhi.playground.testnet.verana.network/schemas/qualification.json",
+  "$id": "https://caledonian.bhi.playground.__NETWORK__.verana.network/schemas/qualification.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "QualificationCredential",
   "description": "A qualification awarded by an educational or certification body (demo): one credential per qualification, degrees and professional certifications alike. For demonstration only.",

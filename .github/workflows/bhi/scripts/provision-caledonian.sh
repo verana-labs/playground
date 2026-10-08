@@ -1,32 +1,39 @@
 #!/usr/bin/env bash
-# Provision Caledonian University (demo) - the awarding body: ECS creds and
-# the Qualification registry + schema (one credential per qualification,
-# degrees and professional certifications alike). Issuance governed,
-# verification OPEN; Cirrus Certification joins as a second accredited
-# issuer in bhi-07 - qualifications from any number of institutions.
+# Provision Caledonian University (demo) (bhi-06) on Verana V4, the awarding
+# body:
+#   1. The ECS credentials: the ECS-Organization credential from ecs-org-issuer
+#      and the self-issued ECS-Service credential.
+#   2. An Ecosystem controlled by the DID of Caledonian, with the
+#      QualificationCredential schema (one credential for each qualification)
+#      and its root entry. Issuer onboarding by the Ecosystem, verifier
+#      onboarding through a GRANTOR (the certified DVS providers), holders
+#      PERMISSIONLESS (personal wallets).
+#   3. The ISSUER entry of Caledonian. Cirrus gets a second ISSUER entry in
+#      bhi-07.
+#   4. The AnonCreds credential definition on the VTJSC (DIDComm rail).
+#      OID4VC_ROLE in config.env turns on the OpenID4VC rail.
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
-source "${CAST_DIR}/scripts/lib.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
-start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_OID" 3101
-API="http://localhost:3100"
-OID_API="http://localhost:3101"
+bhi_start_agent
 
-AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "Caledonian DID: $AGENT_DID"
+# 1. ECS credentials
+provision_ecs_standalone 3100
 
-obtain_ecs_org_credential "$API" "$OID_API" "$AGENT_DID"
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
+# 2. The Ecosystem and the Qualification schema
+QUAL_JSON=$(bhi_schema_json "qualification.json")
+ECOSYSTEM_ID=$(ensure_ecosystem "$AGENT_DID")
+QUAL_CS_ID=$(ensure_credential_schema "$ECOSYSTEM_ID" "$QUAL_JSON" \
+  "$ONBOARDING_MODE_ECOSYSTEM" "$ONBOARDING_MODE_GRANTOR" "$HOLDER_MODE_PERMISSIONLESS")
+bhi_ensure_root "$QUAL_CS_ID" "$AGENT_DID" > /dev/null
 
-SCHEMA_JSON=$(jq -c '.' "${CAST_DIR}/schemas/${SCHEMA_FILE}")
-TR_ID=$(ensure_trust_registry "$AGENT_DID" "https://${INGRESS_HOST}" "$EGF_DOC_URL")
-CS_ID=$(ensure_schema_with_root "$TR_ID" "$SCHEMA_JSON" "$AGENT_DID")
-ensure_validated_issuer_perm "$CS_ID" "$AGENT_DID"
-QUAL_JSC_URL=$(ensure_jsc "$API" "$CUSTOM_SCHEMA_BASE_ID" "$CS_ID")
-ensure_anoncreds_credential_type "$API" "Qualification" "1.0" "$QUAL_JSC_URL"
+# 3. The own ISSUER entry
+ISSUER_ID=$(join_under_root "$QUAL_CS_ID" "$PP_ROLE_ISSUER" "$VSOA_ISSUER" caledonian)
 
-ok "Caledonian provisioned: TR=$TR_ID, Qualification CS=$CS_ID."
+# 4. The credential definition on the own VTJSC
+VTJSC_ID=$(bhi_vtjsc_id "$INGRESS_HOST" "$QUAL_CS_ID")
+ensure_credential_definition "$API" "$VTJSC_ID"
+
+ok "Caledonian provisioned: Ecosystem=$ECOSYSTEM_ID, Qualification CS=$QUAL_CS_ID (ISSUER=$ISSUER_ID), VTJSC=$VTJSC_ID"

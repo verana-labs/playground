@@ -82,6 +82,13 @@ describe("WalletPicker", () => {
     expect(testing).toContain("In testing");
   });
 
+  it("keeps the status badge on the title row of every card", () => {
+    renderPicker([wallet("a", "recommended"), wallet("c", "compatible"), wallet("t", "testing")]);
+    expect(screen.getByTitle("Wallet a").parentElement!.textContent).toBe("Wallet aRecommended");
+    expect(screen.getByTitle("Wallet c").parentElement!.textContent).toBe("Wallet cCompatible");
+    expect(screen.getByTitle("Wallet t").parentElement!.textContent).toBe("Wallet tIn testing");
+  });
+
   it("selects a wallet from its card", () => {
     const onSelect = renderPicker(THIRTEEN);
     fireEvent.click(screen.getByRole("button", { name: /Wallet c/ }));

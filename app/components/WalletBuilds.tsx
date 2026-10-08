@@ -66,15 +66,19 @@ const STATUS_CHIP = {
 export function WalletStatusChip({
   status,
   showRecommended = false,
+  compact = false,
 }: {
   status: WalletStatus;
   showRecommended?: boolean;
+  compact?: boolean;
 }) {
   if (status === "recommended" && !showRecommended) return null;
   const chip = STATUS_CHIP[status];
   return (
     <span className="shrink-0 whitespace-nowrap">
-      <Chip tone={chip.tone}>{chip.label}</Chip>
+      <Chip tone={chip.tone} compact={compact}>
+        {chip.label}
+      </Chip>
     </span>
   );
 }

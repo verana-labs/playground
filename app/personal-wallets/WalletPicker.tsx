@@ -82,7 +82,7 @@ export function WalletPicker({
   return (
     <div
       id="wallet-picker"
-      className="grid auto-rows-fr gap-3 sm:grid-cols-2 lg:grid-cols-3"
+      className="grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
     >
       {shown.map((w) => (
         <PickerCard
@@ -93,16 +93,19 @@ export function WalletPicker({
         >
           <WalletIcon w={w} />
           <span className="flex min-w-0 flex-1 flex-col">
-            <span className="truncate font-semibold text-gray-900" title={w.name}>
-              {w.name}
+            <span className="flex items-center gap-1.5">
+              <span
+                className="min-w-0 flex-1 truncate font-semibold text-gray-900"
+                title={w.name}
+              >
+                {w.name}
+              </span>
+              <WalletStatusChip status={w.status} viaFork={Boolean(w.fork)} showRecommended compact />
             </span>
             <span className="truncate text-xs text-gray-500" title={w.vendor}>
               {w.vendor}
             </span>
             <BuildsHint links={w.links} />
-            <span className="mt-1.5 flex">
-              <WalletStatusChip status={w.status} showRecommended />
-            </span>
           </span>
         </PickerCard>
       ))}

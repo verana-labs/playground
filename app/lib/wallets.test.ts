@@ -51,6 +51,7 @@ describe("personal wallets configuration", () => {
 
   it("lists the recommended wallets first, then the compatible ones, then those in testing", () => {
     expect(listPersonalWallets().map((w) => [w.id, w.status])).toEqual([
+      ["hologram", "recommended"],
       ["inji", "recommended"],
       ["eudi", "recommended"],
       ["wwwallet", "recommended"],
@@ -63,7 +64,6 @@ describe("personal wallets configuration", () => {
       ["namirial", "compatible"],
       ["talao-wallet", "compatible"],
       ["bcwallet", "testing"],
-      ["hologram", "testing"],
     ]);
   });
 

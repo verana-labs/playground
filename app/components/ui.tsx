@@ -106,15 +106,17 @@ export function Chip({
   compact = false,
 }: {
   children: React.ReactNode;
-  tone?: "default" | "verified" | "pending";
+  tone?: "default" | "verified" | "pending" | "brand";
   compact?: boolean;
 }) {
   const cls =
-    tone === "verified"
-      ? "bg-emerald-50 text-emerald-700"
-      : tone === "pending"
-        ? "bg-amber-50 text-amber-700"
-        : "bg-gray-100 text-gray-600";
+    tone === "brand"
+      ? "bg-violet-100 text-violet-700"
+      : tone === "verified"
+        ? "bg-emerald-50 text-emerald-700"
+        : tone === "pending"
+          ? "bg-amber-50 text-amber-700"
+          : "bg-gray-100 text-gray-600";
   const size = compact ? "px-2 py-0.5 text-[11px]" : "px-2.5 py-1 text-xs";
   return (
     <span
@@ -155,7 +157,9 @@ export function Breadcrumb({
                 {it.label}
               </Link>
             ) : (
-              <span className={`font-medium ${onDark ? "text-white" : "text-gray-900"}`}>
+              <span
+                className={`font-medium ${onDark ? "text-white" : "text-gray-900"}`}
+              >
                 {it.label}
               </span>
             )}

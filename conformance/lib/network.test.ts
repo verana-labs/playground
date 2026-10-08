@@ -33,7 +33,7 @@ describe("networks.yaml", () => {
     expect(trustBackend(testnet)).toEqual({ kind: "resolver", url: "https://resolver.testnet.verana.network" });
   });
 
-  it("declares devnet v4 as testable through its indexer, on the demo cast only", () => {
+  it("declares devnet v4 as testable through its indexer, on the casts it has deployed", () => {
     const devnet = listNetworks().find((n) => n.id === "devnet-v4")!;
     expect(devnet.testable).toBe(true);
     expect(devnet.resolver).toBeNull();
@@ -41,7 +41,7 @@ describe("networks.yaml", () => {
     expect(devnet.rpc).toBe("https://rpc.devnet.verana.network");
     expect(devnet.playground).toBe("https://playground.devnet.verana.network");
     expect(devnet.vocabulary).toEqual({ ecosystem: "Ecosystem", participant: "Participant" });
-    expect(devnet.casts).toEqual(["demo"]);
+    expect(devnet.casts).toEqual(["demo", "vesta", "verandia", "cexa", "bhi"]);
     expect(trustBackend(devnet)).toEqual({ kind: "indexer", url: "https://idx.devnet.verana.network" });
   });
 

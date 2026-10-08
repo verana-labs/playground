@@ -20,5 +20,5 @@ networks:
     rpc: https://rpc.devnet.verana.network
     playground: https://playground.devnet.verana.network
     vocabulary: { ecosystem: Ecosystem, participant: Participant }
-    casts: [demo]
+    casts: [demo, vesta, verandia, cexa, bhi]
     testable: true

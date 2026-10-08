@@ -100,10 +100,10 @@ describe("listCastServices", () => {
     expect(() => listCastServices({ ...testnet, id: "scoped", casts: ["demo", "nope"] }, dir)).toThrow(/scoped: no cast nope with orgs/);
   });
 
-  it("yields only demo services on devnet v4, even when every cast is in scope", () => {
+  it("yields only the deployed casts on devnet v4, even when every cast is in scope", () => {
     const devnet = listNetworks().find((n) => n.id === "devnet-v4")!;
     const services = listCastServices(devnet).filter(inScope);
-    expect(new Set(services.map((s) => s.cast))).toEqual(new Set(["demo"]));
+    expect(new Set(services.map((s) => s.cast))).toEqual(new Set(["bhi", "cexa", "demo", "verandia", "vesta"]));
     expect(services.map((s) => s.id)).toEqual(expect.arrayContaining(["demo-issuer-accredited", "demo-verifier-accredited", "playground-demo"]));
     expect(services.every((s) => s.host.endsWith(".playground.devnet.verana.network"))).toBe(true);
   });

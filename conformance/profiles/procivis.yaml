@@ -18,6 +18,8 @@ builds:
       - https://apps.apple.com/app/procivis-one-wallet/id6480111491
     identity:
       package: ch.procivis.one.wallet.trial
+      appStoreId: "6480111491"
+      bundle: ch.procivis.one.wallet.trial
       version: "1.87.1"
     platforms: [android, ios]
     presumptive: [ios]

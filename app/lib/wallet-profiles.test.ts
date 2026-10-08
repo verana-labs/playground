@@ -83,7 +83,8 @@ describe("WalletProfileSchema", () => {
 
   it("lets a build be obtained from one store per platform", () => {
     const stores = ["https://play.google.com/store/apps/details?id=org.example", "https://apps.apple.com/app/example/id1"];
-    const both = { ...valid, builds: [valid.builds[0], { ...valid.builds[1], obtain: stores }] };
+    const identity = { ...valid.builds[1].identity, appStoreId: "1", bundle: "org.example.ios" };
+    const both = { ...valid, builds: [valid.builds[0], { ...valid.builds[1], obtain: stores, identity }] };
     expect(obtainUrls(WalletProfileSchema.parse(both).builds[1])).toEqual(stores);
     const empty = { ...valid, builds: [valid.builds[0], { ...valid.builds[1], obtain: [] }] };
     expect(WalletProfileSchema.safeParse(empty).success).toBe(false);
@@ -164,6 +165,20 @@ describe("WalletProfileSchema", () => {
       identity: { ...valid.builds[0].identity, ref: "Wallet/Demo_Version=1.2-Demo_Build=3" },
     };
     expect(WalletProfileSchema.safeParse({ ...valid, builds: [publisher] }).success).toBe(true);
+  });
+
+  it("requires canonical store links that name the declared app ids", () => {
+    const withStore = (obtain: string, identity: Record<string, string>) => ({
+      ...valid,
+      builds: [valid.builds[0], { ...valid.builds[1], obtain, identity: { version: "2.0.0", ...identity } }],
+    });
+    const ios = { package: "org.example", appStoreId: "6474701855", bundle: "org.example.ios" };
+    expect(WalletProfileSchema.safeParse(withStore("https://apps.apple.com/app/example/id6474701855", ios)).success).toBe(true);
+    expect(WalletProfileSchema.safeParse(withStore("https://apps.apple.com/cl/app/example/id6474701855", ios)).success).toBe(false);
+    expect(WalletProfileSchema.safeParse(withStore("https://apps.apple.com/app/example/id1", ios)).success).toBe(false);
+    expect(WalletProfileSchema.safeParse(withStore("https://apps.apple.com/app/example/id6474701855", { package: "org.example", appStoreId: "6474701855" })).success).toBe(false);
+    expect(WalletProfileSchema.safeParse(withStore("https://play.google.com/store/apps/details?id=org.other", { package: "org.example" })).success).toBe(false);
+    expect(WalletProfileSchema.safeParse(withStore("https://play.google.com/store/apps/details?id=org.example&hl=fr", { package: "org.example" })).success).toBe(false);
   });
 
   it("rejects query=pe on the dcql rail", () => {

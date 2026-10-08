@@ -18,6 +18,8 @@ builds:
       - https://apps.apple.com/app/sprucekit-showcase/id6599845610
     identity:
       package: com.spruceid.mobilesdkexample
+      appStoreId: "6599845610"
+      bundle: com.spruceid.mobile
       version: "1.19.0"
     platforms: [android, ios]
     presumptive: [ios]

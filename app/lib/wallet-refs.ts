@@ -72,3 +72,20 @@ export function mutableLinkProblem(url: string, role: LinkRole, tags: KnownTags)
       return "is neither a release, a tag nor a commit";
   }
 }
+
+const PLAY = /^https:\/\/play\.google\.com\/store\/apps\/details\?id=([A-Za-z0-9_.]+)$/;
+const APP_STORE = /^https:\/\/apps\.apple\.com\/app\/[a-z0-9-]+\/id(\d+)$/;
+
+export type StoreLink = { store: "play" | "appstore"; id: string | null };
+
+export function parseStoreLink(url: string): StoreLink | null {
+  let host: string;
+  try {
+    host = new URL(url).hostname;
+  } catch {
+    return null;
+  }
+  if (host === "play.google.com") return { store: "play", id: PLAY.exec(url)?.[1] ?? null };
+  if (host === "apps.apple.com") return { store: "appstore", id: APP_STORE.exec(url)?.[1] ?? null };
+  return null;
+}

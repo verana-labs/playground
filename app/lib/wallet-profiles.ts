@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
 import { z } from "zod";
-import { isCommit, parseGitHubLink, releaseTag } from "./wallet-refs";
+import { isCommit, parseGitHubLink, parseStoreLink, releaseTag } from "./wallet-refs";
 
 export const RAILS = ["anoncreds", "openid4vc-sdjwt"] as const;
 export const BUILD_KINDS = ["store", "publisher", "fork", "browser"] as const;
@@ -67,6 +67,8 @@ const IdentitySchema = z.object({
   repo: z.url().optional(),
   ref: z.string().min(1).optional(),
   url: z.url().optional(),
+  appStoreId: z.string().regex(/^\d+$/).optional(),
+  bundle: z.string().min(1).optional(),
 });
 
 const IncompatibilitySchema = z.object({
@@ -119,6 +121,18 @@ function refProblem(build: z.infer<typeof BuildSchema>): string | null {
   return released ? null : `identity.ref ${ref} is neither a 40-char commit nor the tag of the release the build is obtained from`;
 }
 
+function storeProblems(build: z.infer<typeof BuildSchema>): string[] {
+  return [build.obtain].flat().flatMap((url) => {
+    const store = parseStoreLink(url);
+    if (!store) return [];
+    if (!store.id) return [`${url} is not a canonical store link`];
+    if (store.store === "play")
+      return store.id === build.identity.package ? [] : [`${url} lists ${store.id}, not identity.package`];
+    const problems = store.id === build.identity.appStoreId ? [] : [`${url} lists id${store.id}, not identity.appStoreId`];
+    return build.identity.bundle ? problems : [...problems, "an App Store build needs identity.bundle"];
+  });
+}
+
 function demoParamsIssues(presentation: z.infer<typeof PresentationSchema>, demoParams: string): string[] {
   const parts = new Set(demoParams.split("&").filter(Boolean));
   const issues: string[] = [];
@@ -165,6 +179,7 @@ export const WalletProfileSchema = z
         issue("a fork build needs identity.repo and identity.ref (a commit or a tag)", at("identity"));
       const ref = refProblem(build);
       if (ref) issue(ref, at("identity", "ref"));
+      for (const m of storeProblems(build)) issue(m, at("obtain"));
       const presentation = build.presentation ?? profile.openid4vc?.presentation;
       const demoParams = build.demoParams ?? profile.openid4vc?.demoParams;
       if (presentation && demoParams !== undefined)

@@ -18,6 +18,8 @@ builds:
       - https://apps.apple.com/app/paradym-wallet/id6449846111
     identity:
       package: id.paradym.wallet
+      appStoreId: "6449846111"
+      bundle: id.paradym.wallet
       version: "1.20.2"
     platforms: [android, ios]
     presumptive: [ios]

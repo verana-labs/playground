@@ -14,6 +14,8 @@ builds:
       - https://apps.apple.com/app/hologram-messaging/id6474701855
     identity:
       package: io.twentysixty.mobileagent.m
+      appStoreId: "6474701855"
+      bundle: io.2060.mobileagent.m
       version: "2.0.0"
     platforms: [android, ios]
     presumptive: [ios]

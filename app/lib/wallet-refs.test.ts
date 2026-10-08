@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { knownTags, mutableLinkProblem, parseGitHubLink } from "./wallet-refs";
+import { knownTags, mutableLinkProblem, parseGitHubLink, parseStoreLink } from "./wallet-refs";
 
 const SHA = "e6992fccc6540ae297e20082ccc80e0c8cda0e5d";
 
@@ -41,5 +41,15 @@ describe("mutableLinkProblem", () => {
     expect(mutableLinkProblem("https://github.com/a/w", "source", tags)).toBeNull();
     expect(mutableLinkProblem("https://github.com/a/w/pull/5", "source", tags)).not.toBeNull();
     expect(mutableLinkProblem("https://example.org/app.apk", "build", tags)).toBeNull();
+  });
+});
+
+describe("parseStoreLink", () => {
+  it("reads the app id of a canonical link only", () => {
+    expect(parseStoreLink("https://play.google.com/store/apps/details?id=io.a.b")).toEqual({ store: "play", id: "io.a.b" });
+    expect(parseStoreLink("https://play.google.com/store/apps/details?id=io.a.b&hl=fr")).toEqual({ store: "play", id: null });
+    expect(parseStoreLink("https://apps.apple.com/app/hologram-messaging/id6474701855")).toEqual({ store: "appstore", id: "6474701855" });
+    expect(parseStoreLink("https://apps.apple.com/cl/app/hologram-messaging/id6474701855")).toEqual({ store: "appstore", id: null });
+    expect(parseStoreLink("https://example.org")).toBeNull();
   });
 });

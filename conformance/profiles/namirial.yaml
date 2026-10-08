@@ -18,6 +18,8 @@ builds:
       - https://apps.apple.com/app/namirial-wallet/id6739498969
     identity:
       package: com.namirial.wallet
+      appStoreId: "6739498969"
+      bundle: com.namirial.wallet
       version: "1.13.9"
     platforms: [android, ios]
     presumptive: [ios]

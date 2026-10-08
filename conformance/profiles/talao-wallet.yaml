@@ -18,6 +18,8 @@ builds:
       - https://apps.apple.com/app/talao-wallet/id1582183266
     identity:
       package: co.talao.wallet
+      appStoreId: "1582183266"
+      bundle: co.talao.wallet
       version: "3.7.0"
     platforms: [android, ios]
     presumptive: [ios]

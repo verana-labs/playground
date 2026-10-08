@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminBase, adminJson } from "@/app/lib/demo-admin";
+import { adminBase, adminJson, DIDCOMM_INVITATION_VERSION } from "@/app/lib/demo-admin";
 import { getDemoService } from "@/app/lib/demo-services";
 import { PROTOCOL } from "@/app/lib/network";
 import { vtjscIdFor } from "@/app/lib/vtjsc";
@@ -99,6 +99,7 @@ async function mintV4(
       requestedCredentials: [{ jsonSchemaCredentialId: vtjsc, attributes: claims }],
       // Without autoAccept the exchange stops at presentation-received.
       autoAccept: true,
+      didcommVersion: DIDCOMM_INVITATION_VERSION,
     }),
   });
   const url = str(request, "shortUrl");

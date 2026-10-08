@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { getDemoService } from "@/app/lib/demo-services";
-import { adminBase, adminJson, CAST_DOMAIN, demoVtjscUrl, VTJSC_URL } from "@/app/lib/demo-admin";
+import {
+  adminBase,
+  adminJson,
+  CAST_DOMAIN,
+  demoVtjscUrl,
+  DIDCOMM_INVITATION_VERSION,
+  VTJSC_URL,
+} from "@/app/lib/demo-admin";
 import { PROTOCOL } from "@/app/lib/network";
 import { ECS_ECOSYSTEM_DID } from "@/app/lib/site";
 import { vtjscIdFor } from "@/app/lib/vtjsc";
@@ -486,6 +493,7 @@ export async function GET(
             claims: kind.claims(serviceId, applicant, search),
             // Without autoAccept the exchange stops at request-received.
             autoAccept: true,
+            didcommVersion: DIDCOMM_INVITATION_VERSION,
           }),
         });
         return NextResponse.json({
@@ -500,6 +508,7 @@ export async function GET(
         body: JSON.stringify({
           requestedCredentials: [{ jsonSchemaCredentialId: kind.jscUrl }],
           autoAccept: true,
+          didcommVersion: DIDCOMM_INVITATION_VERSION,
         }),
       });
       return NextResponse.json({

@@ -64,8 +64,10 @@ tier artifact and runs:
 
 It fails on a `broken` or `unknown` cell that no active gap of `testnet-services.yaml` covers, on a required tier with
 no cells, and, on a nightly, on a cell of a tier that ran and that existed in the previous nightly and is gone. Tier 3
-runs only when dispatched with `tier3: true`: it calls `conformance-tier3.yml` and the gate then adds
-`--require-tier t3`; otherwise t3 cells are gated when present and never required.
+runs on the nightlies and when dispatched with `tier3: true`, never on a push or a pull request. It is advisory until it
+has passed once: the gate job reads the `conformance-t3-*` artifacts in a separate step that writes their verdict
+against `testnet-services.yaml` to the job summary and never fails, and the tier 3 jobs themselves do not fail the run.
+Once a nightly passes, the gate takes `conformance-t3-*` with the other tiers again.
 
 A gap covers live cells through `cells`, one matcher or a list (`tier` and `check` required, then `cast`, `service`,
 `wallet`, `build`, `scenario`, each a value or a list), on the network the file names. A gap with a `rail` also feeds

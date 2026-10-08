@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
-  ChevronDown,
   FileBadge,
   FileSearch,
   Maximize2,
@@ -17,14 +16,12 @@ import { NETWORK } from "../lib/network";
 import { ServiceQr } from "../components/ServiceQr";
 import HostedWalletQr from "../components/HostedWalletQr";
 import LiveTrustCard from "../components/LiveTrustCard";
-import { ComingSoonPickerTile } from "../components/ComingSoonTile";
 import {
-  BuildsHint,
   NoTrustScreenNote,
   TestingNotice,
   WalletBuildActions,
-  WalletStatusChip,
 } from "../components/WalletBuilds";
+import { WalletIcon, WalletPicker } from "./WalletPicker";
 import type { ComingSoonWallet } from "../lib/coming-soon";
 import type {
   CredentialFormat,
@@ -154,31 +151,6 @@ const VERIFIER_SCENARIOS: Scenario[] = [
       "The untrusted counterpart on the verifier side: it asks you to present your DemoCredential, trust resolution fails, and your wallet refuses to share - your data never leaves.",
   },
 ];
-
-function WalletIcon({ w, size = 40 }: { w: PersonalWallet; size?: number }) {
-  if (w.icon) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element -- pre-optimized small assets from wallets/
-      <img
-        src={w.icon}
-        alt=""
-        aria-hidden
-        width={size}
-        height={size}
-        className="shrink-0 rounded-lg bg-white object-contain ring-1 ring-black/5"
-      />
-    );
-  }
-  return (
-    <span
-      aria-hidden
-      className="flex shrink-0 items-center justify-center rounded-lg bg-violet-50 font-bold text-violet-700"
-      style={{ width: size, height: size, fontSize: Math.round(size * 0.4) }}
-    >
-      {w.name.charAt(0)}
-    </span>
-  );
-}
 
 /** Corner control that opens the sibling media in the lightbox. */
 function ExpandButton({
@@ -412,12 +384,6 @@ export default function PersonalWalletsPlayground({
     () => wallets.find((w) => w.id === selectedId) ?? wallets[0],
     [wallets, selectedId],
   );
-  const recommendedCount = wallets.filter(
-    (w) => w.status === "recommended",
-  ).length;
-  const collapsible =
-    recommendedCount > 0 && recommendedCount < wallets.length;
-  const [expanded, setExpanded] = useState(wallet?.status !== "recommended");
   const [formatChoice, setFormatChoice] = useState<CredentialFormat | null>(
     null,
   );
@@ -434,11 +400,6 @@ export default function PersonalWalletsPlayground({
   };
 
   if (!wallet) return null;
-
-  const showAll = expanded || !collapsible;
-  const shown = showAll
-    ? wallets
-    : wallets.filter((w) => w.status === "recommended" || w.id === wallet.id);
 
   return (
     <Section>
@@ -520,58 +481,12 @@ export default function PersonalWalletsPlayground({
             subtitle="Start with a recommended wallet: each one carries the Verana trust screen and passes all six demos below."
           />
           <div className="space-y-4">
-            <div
-              id="wallet-picker"
-              className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"
-            >
-              {shown.map((w) => (
-                <button
-                  key={w.id}
-                  type="button"
-                  onClick={() => select(w.id)}
-                  aria-pressed={w.id === wallet.id}
-                  className={`flex items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
-                    w.id === wallet.id
-                      ? "border-violet-400 bg-violet-50 ring-1 ring-violet-300"
-                      : "border-gray-200 bg-white hover:border-violet-200"
-                  }`}
-                >
-                  <WalletIcon w={w} />
-                  <span className="min-w-0">
-                    <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-                      <span className="truncate font-semibold text-gray-900">
-                        {w.name}
-                      </span>
-                      <WalletStatusChip status={w.status} />
-                    </span>
-                    <span className="block truncate text-xs text-gray-500">
-                      {w.vendor}
-                    </span>
-                    <BuildsHint links={w.links} />
-                  </span>
-                </button>
-              ))}
-              {showAll
-                ? comingSoon.map((w) => (
-                    <ComingSoonPickerTile key={w.id} w={w} />
-                  ))
-                : null}
-            </div>
-            {collapsible ? (
-              <button
-                type="button"
-                onClick={() => setExpanded((e) => !e)}
-                aria-expanded={expanded}
-                aria-controls="wallet-picker"
-                className="inline-flex items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:border-violet-300 hover:text-violet-700"
-              >
-                {expanded ? "Show fewer" : `Show all ${wallets.length} wallets`}
-                <ChevronDown
-                  className={`h-4 w-4 transition-transform ${expanded ? "rotate-180" : ""}`}
-                  aria-hidden
-                />
-              </button>
-            ) : null}
+            <WalletPicker
+              wallets={wallets}
+              comingSoon={comingSoon}
+              selectedId={wallet.id}
+              onSelect={select}
+            />
 
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <div className="mb-4 flex flex-wrap items-center gap-4">

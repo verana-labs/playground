@@ -225,3 +225,22 @@ issues:
     cause: "the bolivia, ccm and eventos casts still use the Verana V3 model and do not run on devnet (docs/networks.md), so no devnet service mints their credentials"
     reference: https://github.com/verana-labs/playground/blob/v4/docs/networks.md
     expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: flow
+      network: devnet-v4
+      cast: vesta
+      service: [umbra, vesta, zenith]
+      scenario: [vesta-umbra-issue-ecs-badge, vesta-vesta-issue-ecs-badge, vesta-zenith-issue-ecs-badge]
+    cause: "the ecs-badge mint answers {kind: unsupported} on vesta, zenith and umbra (2026-10-08): the route's v4 offer call to the agent fails although the devnet ECS Ecosystem publishes the BadgeCredential VTJSC (schema 9), so tier 2 has no badge offer to run"
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: [reference-holder-issue, reference-holder-validate, reference-holder-decode, reference-holder-haip, reference-holder-replay-offer]
+      network: devnet-v4
+      cast: vesta
+      service: umbra
+    cause: "umbra is an untrusted demo service, and app/api/demo/[serviceId]/route.ts answers every non-badge mint from it with its DIDComm /invitation, even under format=oid4vc and without a fallback flag, so the matrix takes it for an issuer of every credential: eudi-dev cannot read the invitation as an offer, and its HAIP wallet server reads it as an authorization request without client_id"
+    expires: 2026-10-30

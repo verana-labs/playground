@@ -59,8 +59,8 @@ gated when present and never required.
 
 An entry names the cells it covers (`tier` and `check` required, then `network`, `cast`, `service`, `wallet`, `build`,
 `scenario`, each a value or a list; every entry names its network), a `cause` and an `expires` date; after that date
-its cells fail again. The gate lists the entries that matched nothing in a run of their tier and network so they can
-be deleted. Add an entry only for a failure that is understood and has an owner; never widen an entry to silence a new
+its cells fail again. The gate lists the entries that matched nothing in a run of their tier, network, check and cast so
+they can be deleted. Add an entry only for a failure that is understood and has an owner; never widen an entry to silence a new
 cell.
 
 ## Tier 2

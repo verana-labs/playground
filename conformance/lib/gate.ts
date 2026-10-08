@@ -103,7 +103,7 @@ export function evaluate(input: GateInput): GateReport {
     }
   }
 
-  const ran = (issue: KnownIssue): boolean => input.cells.some((c) => matchesOn(issue, c, ["tier", "network"]));
+  const ran = (issue: KnownIssue): boolean => input.cells.some((c) => matchesOn(issue, c, ["tier", "network", "check", "cast"]));
   return { failures, known, resolved: active.filter((i) => !used.has(i) && ran(i)), expired };
 }
 

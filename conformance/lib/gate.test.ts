@@ -109,6 +109,13 @@ describe("evaluate", () => {
     expect(report.resolved).toEqual([]);
   });
 
+  it("does not call an issue resolved when its check or cast did not run", () => {
+    const otherCheck = issue({ match: { tier: "t1", check: "tls-certificate", network: "testnet-v3" } });
+    const otherCast = issue({ match: { tier: "t1", check: "serving-version", network: "testnet-v3", cast: "vesta" } });
+    const report = evaluate({ ...base, cells: [cell({ outcome: "works" })], issues: [otherCheck, otherCast] });
+    expect(report.resolved).toEqual([]);
+  });
+
   it("fails when a required tier produced no cells", () => {
     const report = evaluate({ ...base, requiredTiers: ["t1", "t2"], cells: [cell({ outcome: "works" })], issues: [] });
     expect(report.failures).toEqual([{ kind: "missing", key: "t2|*", cause: "no t2 results were produced" }]);

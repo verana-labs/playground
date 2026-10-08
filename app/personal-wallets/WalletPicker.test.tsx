@@ -75,7 +75,7 @@ describe("WalletPicker", () => {
     };
     renderPicker([wallet("a", "recommended"), storeOnly, wallet("t", "testing")]);
     const [recommended, compatible, testing] = cells();
-    expect(recommended).toContain("Integrated");
+    expect(recommended).toContain("Recommended");
     expect(recommended).not.toContain("No Verana trust screen");
     expect(compatible).toContain("Compatible");
     expect(compatible).toContain("No Verana trust screen");
@@ -84,9 +84,16 @@ describe("WalletPicker", () => {
 
   it("keeps the status badge on the title row of every card", () => {
     renderPicker([wallet("a", "recommended"), wallet("c", "compatible"), wallet("t", "testing")]);
-    expect(screen.getByTitle("Wallet a").parentElement!.textContent).toBe("Wallet aIntegrated");
+    expect(screen.getByTitle("Wallet a").parentElement!.textContent).toBe("Wallet aRecommended");
     expect(screen.getByTitle("Wallet c").parentElement!.textContent).toBe("Wallet cCompatible");
     expect(screen.getByTitle("Wallet t").parentElement!.textContent).toBe("Wallet tIn testing");
+  });
+
+  it("calls a recommended official build recommended, and one that ships through a fork integrated", () => {
+    renderPicker([wallet("h", "recommended"), { ...wallet("f", "recommended"), fork: "https://github.com/x/f/releases/tag/v1" }]);
+    const [builtin, fork] = cells();
+    expect(builtin).toContain("Recommended");
+    expect(fork).toContain("Integrated");
   });
 
   it("selects a wallet from its card", () => {

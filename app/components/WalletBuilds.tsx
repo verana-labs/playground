@@ -58,22 +58,25 @@ export function NoTrustScreenNote({ name }: { name: string }) {
 }
 
 const STATUS_CHIP = {
-  recommended: { tone: "verified", label: "Integrated" },
+  recommended: { tone: "verified", label: "Recommended" },
+  integrated: { tone: "verified", label: "Integrated" },
   compatible: { tone: "default", label: "Compatible" },
   testing: { tone: "pending", label: "In testing" },
 } as const;
 
 export function WalletStatusChip({
   status,
+  viaFork = false,
   showRecommended = false,
   compact = false,
 }: {
   status: WalletStatus;
+  viaFork?: boolean;
   showRecommended?: boolean;
   compact?: boolean;
 }) {
   if (status === "recommended" && !showRecommended) return null;
-  const chip = STATUS_CHIP[status];
+  const chip = STATUS_CHIP[status === "recommended" && viaFork ? "integrated" : status];
   return (
     <span className="shrink-0 whitespace-nowrap">
       <Chip tone={chip.tone} compact={compact}>

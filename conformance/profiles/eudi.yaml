@@ -28,10 +28,12 @@ builds:
       coldStart: false
   - kind: publisher
     label: "Demo APK from the EU reference wallet releases"
-    obtain: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui/releases
+    obtain: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui/releases/tag/Wallet/Demo_Version%3D2026.07.39-Demo_Build%3D39
     identity:
       package: eu.europa.ec.euidi
       version: "2026.07.39"
+      repo: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui
+      ref: Wallet/Demo_Version=2026.07.39-Demo_Build=39
     platforms: [android]
     promises: "Refuses any issuer whose metadata is not signed by a certificate anchored in the EU trusted list"
     policies: [signed-issuer-metadata, eu-trusted-list-anchor, no-did-issuers]

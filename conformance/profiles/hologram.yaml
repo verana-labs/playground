@@ -11,7 +11,7 @@ builds:
     label: "Hologram Messaging on Google Play and the App Store"
     obtain:
       - https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
-      - https://apps.apple.com/cl/app/hologram-messaging/id6474701855
+      - https://apps.apple.com/app/hologram-messaging/id6474701855
     identity:
       package: io.twentysixty.mobileagent.m
       version: "2.0.0"
@@ -26,12 +26,12 @@ builds:
       neverForceStop: true
   - kind: fork
     label: "Verana trust fork, staging build of hologram-app#514"
-    obtain: https://github.com/AirKyzzZ/hologram-app/tree/e6992fccc654
+    obtain: https://github.com/AirKyzzZ/hologram-app/tree/e6992fccc6540ae297e20082ccc80e0c8cda0e5d
     identity:
       package: io.twentysixty.mobileagent.st
       version: e6992fccc654
       repo: https://github.com/AirKyzzZ/hologram-app
-      ref: e6992fccc654
+      ref: e6992fccc6540ae297e20082ccc80e0c8cda0e5d
     platforms: [android]
     promises: "Q1, Q2 and Q3 with the guideline wording"
     device:

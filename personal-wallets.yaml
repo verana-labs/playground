@@ -134,7 +134,7 @@ wallets:
     download: https://github.com/AirKyzzZ/eudi-app-android-wallet/releases/download/verana-2026-10-02/eudi-wallet-verana-2026-10-02.apk
     website: https://ec.europa.eu
     repo: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui
-    fork: https://github.com/AirKyzzZ/eudi-app-android-wallet/tree/v4
+    fork: https://github.com/AirKyzzZ/eudi-app-android-wallet/tree/verana-2026-10-02
     license: EUPL-1.2
     notes: The European Commission's reference Android wallet (Kotlin, Jetpack Compose), with the Verana trust card on both consent screens and every accept or share gated on Q1 + Q2/Q3 against the live registry.
     video:
@@ -175,7 +175,7 @@ wallets:
     download: https://github.com/AirKyzzZ/eudi-app-android-wallet/releases/download/authbound-verana-2026-08-08/authbound-wallet-verana-2026-08-08.apk
     website: https://authbound.io
     repo: https://github.com/Authbound/eudi-app-android-wallet
-    fork: https://github.com/AirKyzzZ/eudi-app-android-wallet/tree/feat/verana-trust-authbound
+    fork: https://github.com/AirKyzzZ/eudi-app-android-wallet/tree/authbound-verana-2026-08-08
     license: EUPL-1.2
     notes: Authbound's consumer wallet, a product fork of the EUDI reference app with its own onboarding, carrying the Verana trust card on both consent screens with every accept or share gated on Q1 + Q2/Q3 against the live registry.
     captures:
@@ -338,7 +338,7 @@ wallets:
     demoParams: signer=x5c
     browser: true
     hosted: https://wwwallet.playground.__NETWORK__.verana.network
-    download: https://github.com/verana-labs/wallet-frontend
+    download: https://wwwallet.playground.__NETWORK__.verana.network
     website: https://wwwallet.org
     repo: https://github.com/wwWallet/wallet-frontend
     fork: https://github.com/verana-labs/wallet-frontend
@@ -369,10 +369,10 @@ wallets:
     formats: [anoncreds]
     download: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
     playstore: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
-    appstore: https://apps.apple.com/cl/app/hologram-messaging/id6474701855
+    appstore: https://apps.apple.com/app/hologram-messaging/id6474701855
     website: https://2060.io
     repo: https://github.com/2060-io/hologram-app
-    fork: https://github.com/AirKyzzZ/hologram-app/tree/feat/verana-trust
+    fork: https://github.com/AirKyzzZ/hologram-app/tree/e6992fccc6540ae297e20082ccc80e0c8cda0e5d
     license: Apache-2.0
     notes: Reference personal wallet, DemoCredential scenarios over AnonCreds/DIDComm. Q1 + Q2/Q3 and the trust chain card on both consent screens; the captures below are from that build, which is upstream-pending, so the published store build still resolves Q1 only.
     captures:
@@ -455,7 +455,7 @@ wallets:
     download: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-10-02/swiyu-verana-universal-debug.apk
     website: https://www.eid.admin.ch
     repo: https://github.com/swiyu-admin-ch/eidch-android-wallet
-    fork: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/tree/v4
+    fork: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/tree/verana-2026-10-02
     license: MIT
     notes: The Swiss federal wallet. Q1 and Q2/Q3 are resolved before the accept action on both the offer and the presentation surface, and the wallet keeps its own ecosystem warning alongside the Verana card, so the two trust systems are visible side by side. Presentation runs on the x5c rail, where the request object is authenticated by its certificate thumbprint.
     captures:
@@ -537,6 +537,6 @@ wallets:
     download: https://github.com/AirKyzzZ/nl-wallet/releases/download/verana-2026-08-12/nl-wallet-verana-demo-2026-08-12.apk
     website: https://edi.pleio.nl
     repo: https://github.com/MinBZK/nl-wallet
-    fork: https://github.com/AirKyzzZ/nl-wallet/tree/feat/verana-trust
+    fork: https://github.com/AirKyzzZ/nl-wallet/tree/verana-2026-08-12
     license: EUPL-1.2
     notes: The Dutch government's EUDI wallet, Flutter over a Rust core. The Verana trust card and accept gate sit on all three consent surfaces - login, disclosure, and issuance - with the real request origin threaded through, and the resolver checks run live against the testnet. Issuance against the demo cast is blocked one layer below Verana, in ETSI territory - the wallet core rejects any certificate chain that contains its own trust anchor, and the demo cast signs with a single self-signed leaf. That is a demo-PKI limitation rather than a trust-model one, so the six on-device captures land once the cast serves a two-level chain.

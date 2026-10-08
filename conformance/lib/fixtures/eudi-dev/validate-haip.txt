@@ -1,0 +1,48 @@
+SD-JWT Credential
+──────────────────────────────────────────────────
+
+┌ Header
+  alg: ES256
+  typ: dc+sd-jwt
+  x5c: (1 entries, use -v to show)
+
+┌ Payload (signed claims)
+  _sd: ["jgOHzrqGuf0_nX34CATRbbfSY9XKlUybkvJhNc3mPfk","p47UwoK9Ga9uJ306kwnwJHnoJdKv_GO4V3vDSQi_LXU"]
+  _sd_alg: sha-256
+  cnf: {
+      "jwk": {
+        "crv": "P-256",
+        "kty": "EC",
+        "x": "5R6-J0GhM40SeKbRYOiqHsSi5qFWpOfj3j-ntwXKqVw",
+        "y": "KFJoDhnoqNORrbhInfti4UKeZY8uFzmPszrV_Cr0qQs"
+      }
+    }
+  exp: 1793538510
+  iat: 1790946510
+  iss: https://demo-issuer-accredited.playground.devnet.verana.network
+  vct: https://playground-demo.playground.devnet.verana.network/vt/vct/8
+  vct#integrity: sha384-K55yE8WKwlZbf1LCS9o+2Zkfa07tQAB+ZXuQkeDKzN2zuhS4n0kFxAoF/ER+9fPF
+
+┌ Disclosed Claims (2)
+  [1] demoId: demo-7914dba9
+  [2] name: Playground Visitor
+
+┌ Holder Key (cnf)
+  jwk: {
+      "crv": "P-256",
+      "kty": "EC",
+      "x": "5R6-J0GhM40SeKbRYOiqHsSi5qFWpOfj3j-ntwXKqVw",
+      "y": "KFJoDhnoqNORrbhInfti4UKeZY8uFzmPszrV_Cr0qQs"
+    }
+
+
+  HAIP 1.0 findings:
+    - HAIP 1.0 §6.1.1: the certificate signing the credential MUST NOT be self-signed
+
+┌ Signature Verification
+  ✓ Signature valid
+  Algorithm: ES256
+  Issuer: https://demo-issuer-accredited.playground.devnet.verana.network
+  Issued: 2026-10-02T15:08:30+02:00
+  Expires: 2026-11-01T14:08:30+01:00 (in 29 days)
+  Note: verified with the credential's embedded certificate (chain not validated). Pass --trust-list to also validate trust.

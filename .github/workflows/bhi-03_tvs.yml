@@ -1,8 +1,11 @@
 name: "BHI 03 · Trustworthy Verification Services (second grantor)"
 
-# Deploys Trustworthy Verification Services (demo): ECS creds from
-# Orchestrating Identity plus its DVS-Aligned Provider credential. Re-run
-# 'BHI 02' afterwards to accredit it as an ECS-Organization issuer.
+# Creates the Corporation of Trustworthy Verification Services (demo), deploys
+# its agent, onboards it with the devnet ECS Ecosystem, and gets its
+# DVS-Aligned Provider credential from Orchestrating Identity (bhi-01). Run it
+# again with step=provision after bhi-06: the second pass adds the Verified
+# Employer branch and the VERIFIER_GRANTOR entries on the candidate schemas.
+# Verana V4 (devnet): select the v4 branch.
 # Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
 
 on:
@@ -17,11 +20,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   tvs:
@@ -29,5 +27,4 @@ jobs:
     with:
       org: tvs
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

@@ -1,11 +1,11 @@
 name: "CEXA 05 · DarkPool Exchange (outsider)"
 
-# Deploys DarkPool Exchange (demo), the outsider: a REAL, verifiable exchange (ECS-Org from
-# Helvetia + self ECS-Service) that never joined the Association - no membership, no
-# CEXA-VerifiedCounterparty, no permission on any CEXA schema. Runs the openid4vc verifier config
-# so wallets get a genuine request to refuse at Q3. It appearing in a CEXA participant tree, or
-# publishing a CEXA-VerifiedCounterparty VP, is a paging incident.
-# Part of the CEXA cast CI/CD — see .github/workflows/cexa/README.md.
+# Deploys DarkPool Exchange (demo), the outsider: a real, verifiable exchange (its own
+# Corporation, ECS credentials from ecs-org-issuer and self-issued) that did not join the
+# Association. It has no CEXA Participant entry and no CEXAVerifiedCounterpartyCredential. It asks
+# wallets for the CEXAKycCredential (UNSAFE_SKIP_OWN_AUTHORIZATION, demo only), and the wallet
+# must refuse. CAUTION: a DarkPool entry in a CEXA participant tree is an incident.
+# Part of the CEXA cast CI/CD (Verana V4, devnet) — see .github/workflows/cexa/README.md.
 
 on:
   workflow_dispatch:
@@ -19,8 +19,8 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
         required: false
         type: boolean
         default: false
@@ -31,5 +31,5 @@ jobs:
     with:
       org: darkpool
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

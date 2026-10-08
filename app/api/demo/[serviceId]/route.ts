@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getDemoService } from "@/app/lib/demo-services";
 import { adminBase, adminJson, CAST_DOMAIN, demoVtjscUrl, VTJSC_URL } from "@/app/lib/demo-admin";
 import { PROTOCOL } from "@/app/lib/network";
+import { ECS_ECOSYSTEM_DID } from "@/app/lib/site";
+import { vtjscIdFor } from "@/app/lib/vtjsc";
 import {
   BADGE_CREDENTIAL_TYPE_NAME,
   badgeDemoClaims,
@@ -14,6 +16,7 @@ import {
   legalRepOid4vcClaims,
 } from "@/app/lib/demo-verandia";
 import {
+  VERANDIA_CAST,
   VERANDIA_CITIZEN_ID_JSC,
   VERANDIA_CITIZEN_ID_NAME,
   VERANDIA_LEGAL_REP_JSC,
@@ -36,8 +39,9 @@ import {
   ccmLegalRepOid4vcClaims,
 } from "@/app/lib/demo-ccm";
 import { CCM_LEGAL_REP_JSC, CCM_LEGAL_REP_NAME } from "@/app/lib/ccm-cast";
-import { CEXA_KYC_JSC } from "@/app/lib/cexa-cast";
+import { CEXA_CAST, CEXA_KYC_JSC } from "@/app/lib/cexa-cast";
 import {
+  BHI_CAST,
   BHI_EMPLOYMENT_JSC,
   BHI_EMPLOYMENT_NAME,
   BHI_QUALIFICATION_JSC,
@@ -97,6 +101,10 @@ type CredentialKind = {
   oid4vcPolicy: string;
   /** VTJSC the DIDComm presentation request asks for. */
   jscUrl: string;
+  /** V4: the Ecosystem controller host and the JSON Schema title of the
+   *  credential. The VTJSC is then found at run time (app/lib/vtjsc.ts),
+   *  because V4 names it after the numeric schema id. */
+  v4Vtjsc?: { host: string; title: string };
   /** The events kinds read their mint params (event, name, organization)
    *  from the request query; every other kind ignores the third argument. */
   claims: (
@@ -133,6 +141,8 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     oid4vcConfig: process.env.DEMO_OID4VC_BADGE_CONFIG ?? "ecs-badge",
     oid4vcPolicy: process.env.DEMO_OID4VC_BADGE_POLICY ?? "ecs-badge",
     jscUrl: `https://${VESTA_CAST.vesta.host}/vt/schemas-badge-jsc.json`,
+    // V4: the ECS Ecosystem controls the BadgeCredential schema.
+    v4Vtjsc: { host: ECS_ECOSYSTEM_DID.split(":").pop() ?? "", title: "BadgeCredential" },
     claims: badgeDemoClaims,
     oid4vcClaims: badgeOid4vcClaims,
   },
@@ -143,6 +153,7 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     oid4vcConfig: process.env.DEMO_OID4VC_CEXA_CONFIG ?? "cexa-kyc",
     oid4vcPolicy: process.env.DEMO_OID4VC_CEXA_POLICY ?? "cexa-kyc",
     jscUrl: CEXA_KYC_JSC,
+    v4Vtjsc: { host: CEXA_CAST.association.host, title: "CEXAKycCredential" },
     claims: cexaKycDemoClaims,
     oid4vcClaims: cexaKycOid4vcClaims,
   },
@@ -153,6 +164,7 @@ const CREDENTIALS: Record<string, CredentialKind> = {
       process.env.DEMO_OID4VC_CITIZEN_CONFIG ?? "verandia-citizen-id",
     oid4vcPolicy: process.env.DEMO_OID4VC_CITIZEN_POLICY ?? "verandia-citizen-id",
     jscUrl: VERANDIA_CITIZEN_ID_JSC,
+    v4Vtjsc: { host: VERANDIA_CAST.civilRegistry.host, title: "VerandiaCitizenIDCredential" },
     claims: () => citizenDemoClaims(),
     oid4vcClaims: () => citizenOid4vcClaims(),
   },
@@ -164,6 +176,7 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     oid4vcPolicy:
       process.env.DEMO_OID4VC_LEGAL_REP_POLICY ?? "verandia-legal-rep",
     jscUrl: VERANDIA_LEGAL_REP_JSC,
+    v4Vtjsc: { host: VERANDIA_CAST.businessRegistry.host, title: "LegalRepresentativeCredential" },
     claims: () => legalRepDemoClaims(),
     oid4vcClaims: () => legalRepOid4vcClaims(),
   },
@@ -195,6 +208,7 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     oid4vcConfig: process.env.DEMO_OID4VC_BHI_QUAL_CONFIG ?? "bhi-qualification",
     oid4vcPolicy: process.env.DEMO_OID4VC_BHI_QUAL_POLICY ?? "bhi-qualification",
     jscUrl: BHI_QUALIFICATION_JSC,
+    v4Vtjsc: { host: BHI_CAST.caledonian.host, title: "QualificationCredential" },
     claims: (serviceId) => qualificationDemoClaims(serviceId),
     oid4vcClaims: (serviceId) => qualificationOid4vcClaims(serviceId),
   },
@@ -204,6 +218,7 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     oid4vcConfig: process.env.DEMO_OID4VC_BHI_EMP_CONFIG ?? "bhi-employment",
     oid4vcPolicy: process.env.DEMO_OID4VC_BHI_EMP_POLICY ?? "bhi-employment",
     jscUrl: BHI_EMPLOYMENT_JSC,
+    v4Vtjsc: { host: BHI_CAST.northbank.host, title: "EmploymentCredential" },
     claims: () => employmentDemoClaims(),
     oid4vcClaims: () => employmentOid4vcClaims(),
   },
@@ -213,6 +228,7 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     oid4vcConfig: process.env.DEMO_OID4VC_BHI_RTW_CONFIG ?? "bhi-right-to-work",
     oid4vcPolicy: process.env.DEMO_OID4VC_BHI_RTW_POLICY ?? "bhi-right-to-work",
     jscUrl: BHI_RTW_JSC,
+    v4Vtjsc: { host: BHI_CAST.northbank.host, title: "RightToWorkCredential" },
     // The one claim set that takes the wizard's applicant name (sanitized
     // firstName/surname query params; Alex Chen otherwise).
     claims: (_serviceId, applicant) => rtwDemoClaims(applicant),
@@ -354,10 +370,7 @@ export async function GET(
   // presentation_definition, which is what Altme needs.
   const queryLanguage =
     search.get("query") === "pe" ? "presentation_exchange" : undefined;
-  // The EUDI reference wallet resolves no DIDs; ?signer=x5c mints the request
-  // signed under the development certificate instead, an x509_hash client_id
-  // its stack accepts, and the wallet-side check binds that cert back to the
-  // DID it names in its URI SAN.
+  // devnet's vs-agent v2 signs with x5c by default; ?signer=x5c only matters on testnet, whose config sets requestSigner "did".
   const requestSigner = search.get("signer") === "x5c" ? "x5c" : undefined;
   const applicant = applicantFromParams(search);
   const registered = CREDENTIALS[credentialId];
@@ -375,11 +388,14 @@ export async function GET(
   };
   const wantsOid4vc = format === "openid4vc-sdjwt" || format === "oid4vc";
   // Umbra, the badge impostor, mints badge offers despite its untrusted role.
+  // A service that issues AND verifies (CEXA Novara) has the role "issuer".
+  // ?action=request asks it for a presentation request, not an offer.
+  const wantsRequest = search.get("action") === "request";
   const mintRole =
     service.role === "untrusted"
       ? (UNTRUSTED_MINTERS[serviceId] ?? (isBadge ? "issuer" : undefined))
       : service.role === "issuer" || service.role === "verifier"
-        ? service.role
+        ? (wantsRequest ? "verifier" : service.role)
         : undefined;
 
   // Only the Playground cast has reachable admin APIs; anything else (and,
@@ -414,6 +430,11 @@ export async function GET(
     try {
       if (credentialId === "demo-credential")
         kind = { ...registered, jscUrl: await demoVtjscUrl() };
+      else if (registered.v4Vtjsc)
+        kind = {
+          ...registered,
+          jscUrl: await vtjscIdFor(registered.v4Vtjsc.host, registered.v4Vtjsc.title),
+        };
       if (wantsOid4vc) {
         if (mintRole === "issuer") {
           const offer = await adminJson(`${admin}/v2/openid4vc/credential-offer`, {
@@ -539,7 +560,7 @@ export async function GET(
   }
 
   try {
-    if (service.role === "issuer" || (isBadge && service.role === "untrusted")) {
+    if (!wantsRequest && (service.role === "issuer" || (isBadge && service.role === "untrusted"))) {
       const credentialDefinitionId = await credDefId(admin, kind);
       if (!credentialDefinitionId)
         return NextResponse.json(

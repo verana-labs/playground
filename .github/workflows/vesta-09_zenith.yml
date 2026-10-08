@@ -1,7 +1,10 @@
 name: "Vesta 09 · Zenith Repairs"
 
-# Deploys Zenith: ECS credentials, Authorized Repairer from Vesta Iberia, ECS-Badge issuer.
-# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+# Deploys Zenith: ECS credentials, the Authorized Repairer credential from
+# Vesta Iberia, and ECS Badge issuer.
+# CAUTION: the provision step needs vesta-08 (Vesta Iberia) first.
+# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# see .github/workflows/vesta/README.md for the run order.
 
 on:
   workflow_dispatch:
@@ -15,11 +18,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   zenith:
@@ -27,5 +25,4 @@ jobs:
     with:
       org: zenith
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

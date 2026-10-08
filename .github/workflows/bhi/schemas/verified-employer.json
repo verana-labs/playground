@@ -1,5 +1,5 @@
 {
-  "$id": "https://institute.bhi.playground.testnet.verana.network/schemas/verified-employer.json",
+  "$id": "https://institute.bhi.playground.__NETWORK__.verana.network/schemas/verified-employer.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "VerifiedEmployerCredential",
   "description": "Verified Employer of the Recruitment Trust Network (demo): issued by a certified DVS provider on the strength of the employer's verified organisation identity. For demonstration only.",

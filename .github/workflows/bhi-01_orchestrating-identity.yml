@@ -1,7 +1,12 @@
 name: "BHI 01 · Orchestrating Identity (OSP + DVS ecosystem)"
 
-# Deploys Orchestrating Identity, bootstraps its ECS-Organization (Helvetia) +
-# ECS-Service and creates the DVS-Aligned Provider Ecosystem (demo).
+# Creates the Corporation of Orchestrating Identity, deploys its agent, onboards
+# it with the devnet ECS Ecosystem, and creates the DVS-Aligned Provider
+# Ecosystem (demo) with its schema, root entry and the ISSUER entry of
+# Orchestrating Identity. Run it again with step=provision after bhi-06: the
+# second pass adds the Verified Employer branch (ISSUER_GRANTOR and ISSUER)
+# and the VERIFIER_GRANTOR entries on the candidate schemas.
+# Verana V4 (devnet): select the v4 branch.
 # Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
 
 on:
@@ -16,11 +21,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
 
 jobs:
   orchestrating-identity:
@@ -28,5 +28,4 @@ jobs:
     with:
       org: orchestrating-identity
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
     secrets: inherit

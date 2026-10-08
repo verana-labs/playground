@@ -1,5 +1,5 @@
 {
-  "$id": "https://repair-network.vesta.playground.testnet.verana.network/schemas/authorized-repairer.json",
+  "$id": "https://repair-network.vesta.playground.__NETWORK__.verana.network/schemas/authorized-repairer.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "AuthorizedRepairerCredential",
   "description": "Accreditation of an organization as an Authorized Repairer of the Vesta Repair Network (demo).",

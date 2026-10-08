@@ -24,3 +24,13 @@ quirks:
   locksOnBackground: false
   viewTree: browser
   notes: "Links are handed over as the hosted URL plus the offer or request query string. Sign-in is WebAuthn only, so a device run needs a passkey already enrolled"
+capabilities:
+  openid4vc:
+    grants: { pre-authorized_code: yes }
+    proofTypes: { jwt: yes }
+    formats: { dc+sd-jwt: yes }
+    queryLanguages: { dcql: yes }
+    clientIdPrefixes: { x509_hash: yes }
+    responseModes: { direct_post.jwt: yes }
+    sendsWalletAttestation: no
+    requiresMetadataKid: no

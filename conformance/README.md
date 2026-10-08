@@ -5,6 +5,9 @@ Proves, on every change, which listed wallets work against the deployed playgrou
 
 - `profiles/` one YAML per listed wallet: rails, builds, promises, quirks. Every tier reads it; nothing
   wallet-specific is hard-coded anywhere else. Validated by `app/lib/wallet-profiles.ts` in the main CI.
+- Every profile declares `capabilities`: what its listed build takes (grant types, proof types, formats, query
+  languages, client id prefixes, response modes, wallet attestation, DIDComm versions), each `yes`, `no` or
+  `unknown`, filled from what the profile and the device results state.
 - `listing-exceptions.yaml` links and builds of the listing that cannot be pinned to a release tag or a commit
   yet, each with a reason and an expiry date. `lib/listing-gate.test.ts` refuses any other mutable link (a branch,
   a repository root or a releases index as a build, a short sha), a store link that is not canonical or names

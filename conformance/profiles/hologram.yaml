@@ -47,3 +47,6 @@ quirks:
   locksOnBackground: false
   viewTree: ocr
   notes: "React Native new architecture: uiautomator returns an empty tree, so screens are read by OCR. Cold start sits behind the system biometric prompt (tap Use PIN, then the phone PIN over adb), so deliver links while it is already open and never force-stop it"
+capabilities:
+  didcomm:
+    versions: { v1: yes, v2: no }

@@ -24,6 +24,7 @@ const profile = (builds: unknown[]) =>
     didcomm: { library: "credo", proxy: "credo", invitationSchemes: ["didcomm"], demoParams: "" },
     builds,
     quirks: { actsOnLinkOnlyAtColdStart: false, locksOnBackground: false, viewTree: "readable" },
+    capabilities: { didcomm: { versions: { v1: "yes" } } },
   });
 
 const fork = {

@@ -12,6 +12,12 @@ export const VCI_DRAFTS = ["draft11", "draft13", "draft15", "v1"] as const;
 export const VP_QUERY_LANGUAGES = ["dcql", "presentation_exchange"] as const;
 export const VP_CLIENT_ID_PREFIXES = ["x509_hash", "did"] as const;
 export const VP_RESPONSE_MODES = ["direct_post", "direct_post.jwt"] as const;
+export const SUPPORT = ["yes", "no", "unknown"] as const;
+export const VCI_GRANTS = ["pre-authorized_code", "authorization_code"] as const;
+export const VCI_PROOF_TYPES = ["jwt", "jwt+key_attestation", "attestation"] as const;
+export const VC_FORMATS = ["dc+sd-jwt", "vc+sd-jwt", "mso_mdoc"] as const;
+export const CLIENT_ID_PREFIXES = ["x509_hash", "x509_san_dns", "did", "redirect_uri"] as const;
+export const DIDCOMM_VERSIONS = ["v1", "v2"] as const;
 export const AS_DOCUMENTS = ["oauth-authorization-server", "openid-configuration"] as const;
 export const UNLOCK_RECIPES = ["password", "passcode", "pinfield", "keypad6", "device-credential", "none"] as const;
 export const VIEW_TREES = ["readable", "ocr", "browser"] as const;
@@ -111,6 +117,27 @@ const QuirksSchema = z.object({
   notes: z.string().optional(),
 });
 
+const Support = z.enum(SUPPORT);
+const supportOf = <const T extends readonly [string, ...string[]]>(values: T) => z.partialRecord(z.enum(values), Support);
+
+const OpenId4VcCapabilitiesSchema = z.strictObject({
+  grants: supportOf(VCI_GRANTS),
+  proofTypes: supportOf(VCI_PROOF_TYPES),
+  formats: supportOf(VC_FORMATS),
+  queryLanguages: supportOf(VP_QUERY_LANGUAGES),
+  clientIdPrefixes: supportOf(CLIENT_ID_PREFIXES),
+  responseModes: supportOf(VP_RESPONSE_MODES),
+  sendsWalletAttestation: Support,
+  requiresMetadataKid: Support,
+});
+
+const DidCommCapabilitiesSchema = z.strictObject({ versions: supportOf(DIDCOMM_VERSIONS) });
+
+const CapabilitiesSchema = z.strictObject({
+  openid4vc: OpenId4VcCapabilitiesSchema.optional(),
+  didcomm: DidCommCapabilitiesSchema.optional(),
+});
+
 function refProblem(build: z.infer<typeof BuildSchema>): string | null {
   const { repo, ref } = build.identity;
   if (!ref || isCommit(ref)) return null;
@@ -156,6 +183,7 @@ export const WalletProfileSchema = z
     didcomm: DidCommSchema.optional(),
     builds: z.array(BuildSchema).min(1),
     quirks: QuirksSchema,
+    capabilities: CapabilitiesSchema,
   })
   .superRefine((profile, ctx) => {
     const issue = (message: string, p: (string | number)[] = []) =>
@@ -167,6 +195,11 @@ export const WalletProfileSchema = z
     if (profile.openid4vc)
       for (const m of demoParamsIssues(profile.openid4vc.presentation, profile.openid4vc.demoParams))
         issue(m, ["openid4vc", "demoParams"]);
+    const caps = profile.capabilities;
+    if (profile.rails.includes("openid4vc-sdjwt") !== Boolean(caps.openid4vc))
+      issue("capabilities.openid4vc goes with the openid4vc-sdjwt rail, and only with it", ["capabilities", "openid4vc"]);
+    if (profile.rails.includes("anoncreds") !== Boolean(caps.didcomm))
+      issue("capabilities.didcomm goes with the anoncreds rail, and only with it", ["capabilities", "didcomm"]);
     if (!profile.builds.some((b) => b.listed)) issue("at least one build must be listed", ["builds"]);
     profile.builds.forEach((build, i) => {
       const at = (...p: (string | number)[]) => ["builds", i, ...p];
@@ -185,6 +218,14 @@ export const WalletProfileSchema = z
       const demoParams = build.demoParams ?? profile.openid4vc?.demoParams;
       if (presentation && demoParams !== undefined)
         for (const m of demoParamsIssues(presentation, demoParams)) issue(m, at("demoParams"));
+      if (build.listed && presentation && caps.openid4vc) {
+        const refused = [
+          caps.openid4vc.queryLanguages[presentation.query] === "no" && presentation.query,
+          caps.openid4vc.clientIdPrefixes[presentation.clientId] === "no" && presentation.clientId,
+          caps.openid4vc.responseModes[presentation.responseMode] === "no" && presentation.responseMode,
+        ].filter(Boolean);
+        if (refused.length) issue(`the listing mints ${refused.join(", ")}, which capabilities say the build does not take`, at("presentation"));
+      }
     });
   });
 

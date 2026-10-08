@@ -52,3 +52,13 @@ quirks:
   locksOnBackground: false
   viewTree: readable
   notes: "wallet-core 0.29.0 requires key_attestations_required in the advertised jwt proof type; swiyu sends the same Accept header and must never receive that flag, so the server tells them apart per request"
+capabilities:
+  openid4vc:
+    grants: { pre-authorized_code: yes }
+    proofTypes: { jwt: yes }
+    formats: { dc+sd-jwt: yes }
+    queryLanguages: { dcql: yes }
+    clientIdPrefixes: { x509_hash: yes }
+    responseModes: { direct_post.jwt: yes }
+    sendsWalletAttestation: no
+    requiresMetadataKid: no

@@ -56,6 +56,18 @@ const valid = {
     },
   ],
   quirks: { actsOnLinkOnlyAtColdStart: false, locksOnBackground: false, viewTree: "readable" },
+  capabilities: {
+    openid4vc: {
+      grants: { "pre-authorized_code": "yes" },
+      proofTypes: { jwt: "yes" },
+      formats: { "dc+sd-jwt": "yes" },
+      queryLanguages: { dcql: "yes" },
+      clientIdPrefixes: { x509_hash: "yes", did: "unknown" },
+      responseModes: { "direct_post.jwt": "yes" },
+      sendsWalletAttestation: "no",
+      requiresMetadataKid: "unknown",
+    },
+  },
 };
 
 const SHA = "e6992fccc6540ae297e20082ccc80e0c8cda0e5d";
@@ -181,6 +193,27 @@ describe("WalletProfileSchema", () => {
     expect(WalletProfileSchema.safeParse(withStore("https://play.google.com/store/apps/details?id=org.example&hl=fr", { package: "org.example" })).success).toBe(false);
   });
 
+  it("requires the capabilities of every rail the profile declares, and only those", () => {
+    const without = Object.fromEntries(Object.entries(valid).filter(([key]) => key !== "capabilities"));
+    expect(WalletProfileSchema.safeParse(without).success).toBe(false);
+    const extra = { ...valid, capabilities: { ...valid.capabilities, didcomm: { versions: { v2: "yes" } } } };
+    expect(WalletProfileSchema.safeParse(extra).success).toBe(false);
+    const typo = { ...valid, capabilities: { openid4vc: { ...valid.capabilities.openid4vc, queryLanguage: { dcql: "yes" } } } };
+    expect(WalletProfileSchema.safeParse(typo).success).toBe(false);
+    const badValue = { ...valid, capabilities: { openid4vc: { ...valid.capabilities.openid4vc, formats: { "dc+sd-jwt": "maybe" } } } };
+    expect(WalletProfileSchema.safeParse(badValue).success).toBe(false);
+  });
+
+  it("rejects capabilities that refuse the rail the listing mints", () => {
+    const refusing = {
+      ...valid,
+      capabilities: { openid4vc: { ...valid.capabilities.openid4vc, clientIdPrefixes: { x509_hash: "no" } } },
+    };
+    const result = WalletProfileSchema.safeParse(refusing);
+    expect(result.success).toBe(false);
+    expect(JSON.stringify(result.error?.issues)).toContain("x509_hash");
+  });
+
   it("rejects query=pe on the dcql rail", () => {
     const bad = { ...valid, openid4vc: { ...valid.openid4vc, demoParams: "signer=x5c&query=pe" } };
     expect(WalletProfileSchema.safeParse(bad).success).toBe(false);
@@ -207,6 +240,7 @@ describe("profile helpers", () => {
       ...valid,
       rails: ["anoncreds", "openid4vc-sdjwt"],
       didcomm: { library: "credo", proxy: "credo", invitationSchemes: ["didcomm"], demoParams: "" },
+      capabilities: { ...valid.capabilities, didcomm: { versions: { v1: "yes" } } },
     });
     expect(effectiveDemoParams(dual, dual.builds[0], "anoncreds")).toBe("");
     expect(effectiveDemoParams(dual, dual.builds[0], "openid4vc-sdjwt")).toBe("signer=x5c");

@@ -161,3 +161,67 @@ issues:
       wallet: [bcwallet, hologram]
     cause: DIDComm connection scenarios have no tier 2 coverage yet
     expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: reference-holder-haip
+      network: devnet-v4
+      cast: [cexa, demo, verandia]
+      service: [aurum, novara, demo-issuer-accredited, demo-issuer-unaccredited, demo-issuer-untrusted, business-registry, civil-registry]
+    cause: "HAIP 1.0 §4.4.1: the token endpoint answers invalid_client to eudi-dev's wallet attestation (Credo: trustedCertificates is required when the JWS protected header contains an 'x5c' property) since the devnet issuers set no issuer.walletAttestationCertificates; their credentials are also signed with vs-agent's self-signed development certificate, which HAIP 1.0 §6.1.1 forbids. eudi-dev 2.6.1's one-shot --haip issuance gets the same invalid_client (2026-10-08)"
+    reference: https://github.com/verana-labs/vs-agent/blob/main/packages/plugin-openid4vc/src/trust/CertificateTrust.ts
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: reference-holder-haip
+      network: devnet-v4
+      cast: [cexa, demo, verandia]
+      service: [borealis, darkpool, demo-verifier-accredited, demo-verifier-unaccredited, demo-verifier-untrusted, meridian-bank, quickcash, tax-buro]
+      scenario: [bhi-employment@dcql+x5c, bhi-qualification@dcql+x5c, bhi-right-to-work@dcql+x5c, cexa-kyc@dcql+x5c, demo-credential@dcql+x5c, verandia-citizen-id@dcql+x5c, verandia-legal-rep@dcql+x5c]
+    cause: "HAIP 1.0 §5: the devnet verifiers sign their request objects with vs-agent's self-signed development x5c certificate (no configured certificate chain), which eudi-dev in HAIP strict mode refuses; eudi-dev 2.6.1's one-shot --haip presentation refuses it too (2026-10-08)"
+    reference: https://github.com/verana-labs/vs-agent/blob/main/packages/plugin-openid4vc/src/services/CertificateService.ts
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: reference-holder-error-response
+      network: devnet-v4
+      scenario: [bhi-employment@dcql, bhi-employment@dcql+x5c, bhi-qualification@dcql, bhi-qualification@dcql+x5c, bhi-right-to-work@dcql, bhi-right-to-work@dcql+x5c, cexa-kyc@dcql, cexa-kyc@dcql+x5c, demo-credential@dcql, demo-credential@dcql+x5c, ecs-badge@dcql, ecs-badge@dcql+x5c, verandia-citizen-id@dcql, verandia-citizen-id@dcql+x5c, verandia-legal-rep@dcql, verandia-legal-rep@dcql+x5c]
+    cause: "every devnet vs-agent verifier (Credo openid4vc response endpoint) answers an access_denied Authorization Error Response, plain or direct_post.jwt, with HTTP 500 server_error while moving the session to Error; OID4VP 1.0 §8.2 requires HTTP 200 once it is processed"
+    reference: https://openid.net/specs/openid-4-verifiable-presentations-1_0-final.html#section-8.2
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: reference-holder-error-response
+      network: devnet-v4
+      scenario: [bhi-employment@pe, bhi-employment@pe+x5c, bhi-qualification@pe, bhi-qualification@pe+x5c, bhi-right-to-work@pe, bhi-right-to-work@pe+x5c, cexa-kyc@pe, cexa-kyc@pe+x5c, demo-credential@pe, demo-credential@pe+x5c, ecs-badge@pe, ecs-badge@pe+x5c, verandia-citizen-id@pe, verandia-citizen-id@pe+x5c, verandia-legal-rep@pe, verandia-legal-rep@pe+x5c]
+    cause: "VerifierService.buildRequestSigner signs the ?query=pe (draft 21) request with clientIdPrefix x509_hash, so it carries client_id_scheme=x509_hash, which draft 21 never defined and oid4vc-ts's legacy scheme list lacks: every devnet verifier answers every reply, error responses and vp_tokens alike, with 400 Unsupported client_id_scheme value 'x509_hash'. vs-agent#791 signs these requests with an x509_san_dns client id"
+    reference: https://github.com/verana-labs/vs-agent/pull/791
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: [reference-holder-present, reference-holder-replay-presentation]
+      network: devnet-v4
+      scenario: [bhi-employment@dcql, bhi-employment@dcql+x5c, bhi-right-to-work@dcql, bhi-right-to-work@dcql+x5c]
+    cause: "the bhi DCQL queries list every schema property as a claim and set no claim_sets, so they also ask for claims the schema leaves optional: portrait and rtwExpiryDate, which no bhi-right-to-work credential carries, and endDate, which the current employment the demo issues one time in three lacks; eudi-dev finds no matching credential, and there is no presentation to replay"
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: [reference-holder-mint, reference-holder-present, reference-holder-haip, reference-holder-replay-presentation]
+      network: devnet-v4
+      scenario: [ecs-badge, ecs-badge@dcql, ecs-badge@dcql+x5c, ecs-badge@pe, ecs-badge@pe+x5c]
+    cause: "no devnet service mints an ecs-badge offer (every issuer answers unsupported, only verifiers mint ecs-badge requests), so eudi-dev holds no ecs-badge to present"
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: reference-holder-mint
+      network: devnet-v4
+      scenario: [bolivia-cedula, bolivia-legal-rep, ccm-legal-rep, eventos-asistente, eventos-patrocinador]
+    cause: "the bolivia, ccm and eventos casts still use the Verana V3 model and do not run on devnet (docs/networks.md), so no devnet service mints their credentials"
+    reference: https://github.com/verana-labs/playground/blob/v4/docs/networks.md
+    expires: 2026-10-30

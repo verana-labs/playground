@@ -108,10 +108,10 @@ wallets:
     icon: ./eudi/logo.svg
     formats: [openid4vc-sdjwt]
     demoParams: signer=x5c
-    download: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/releases/download/verana-2026-08-06.1/eudi-wallet-verana-2026-08-06.1.apk
+    download: https://github.com/AirKyzzZ/eudi-app-android-wallet/releases/download/verana-2026-10-02/eudi-wallet-verana-2026-10-02.apk
     website: https://ec.europa.eu
     repo: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui
-    fork: https://github.com/verana-labs/eudi-app-android-wallet-ui
+    fork: https://github.com/AirKyzzZ/eudi-app-android-wallet/tree/v4
     license: EUPL-1.2
     notes: The European Commission's reference Android wallet (Kotlin, Jetpack Compose), with the Verana trust card on both consent screens and every accept or share gated on Q1 + Q2/Q3 against the live registry.
     video:

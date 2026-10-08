@@ -43,7 +43,7 @@ function PickerCard({
     <button
       type="button"
       {...button}
-      className={`flex items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
+      className={`flex h-full items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
         selected
           ? "border-violet-400 bg-violet-50 ring-1 ring-violet-300"
           : "border-gray-200 bg-white hover:border-violet-200"
@@ -92,17 +92,17 @@ export function WalletPicker({
           selected={w.id === selectedId}
         >
           <WalletIcon w={w} />
-          <span className="min-w-0">
-            <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <span className="truncate font-semibold text-gray-900">
-                {w.name}
-              </span>
-              <WalletStatusChip status={w.status} />
+          <span className="flex min-w-0 flex-1 flex-col">
+            <span className="truncate font-semibold text-gray-900" title={w.name}>
+              {w.name}
             </span>
-            <span className="block truncate text-xs text-gray-500">
+            <span className="truncate text-xs text-gray-500" title={w.vendor}>
               {w.vendor}
             </span>
             <BuildsHint links={w.links} />
+            <span className="mt-1.5 flex">
+              <WalletStatusChip status={w.status} showRecommended />
+            </span>
           </span>
         </PickerCard>
       ))}

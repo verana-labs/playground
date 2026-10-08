@@ -1,4 +1,4 @@
-import { Download, ExternalLink, Github } from "lucide-react";
+import { Download, ExternalLink, Github, ShieldOff } from "lucide-react";
 import { walletTabTarget } from "../lib/wallet-tab";
 import {
   buildsHint,
@@ -27,9 +27,18 @@ export function BuildsHint({
   const hint = buildsHint(links, lang);
   return (
     <span
-      className={`block truncate ${className} ${hint.trusted ? "text-gray-400" : "text-amber-700"}`}
+      className={`flex min-w-0 items-center gap-1.5 text-gray-400 ${className}`}
     >
-      {hint.text}
+      <span className="shrink-0">{hint.builds}</span>
+      {hint.caveat ? (
+        <span
+          className="flex min-w-0 items-center gap-1 text-gray-500"
+          title={hint.caveat}
+        >
+          <ShieldOff className="h-3 w-3 shrink-0 text-amber-600" aria-hidden />
+          <span className="truncate">{hint.caveat}</span>
+        </span>
+      ) : null}
     </span>
   );
 }
@@ -48,13 +57,24 @@ export function NoTrustScreenNote({ name }: { name: string }) {
   );
 }
 
-export function WalletStatusChip({ status }: { status: WalletStatus }) {
-  if (status === "recommended") return null;
+const STATUS_CHIP = {
+  recommended: { tone: "verified", label: "Recommended" },
+  compatible: { tone: "default", label: "Compatible" },
+  testing: { tone: "pending", label: "In testing" },
+} as const;
+
+export function WalletStatusChip({
+  status,
+  showRecommended = false,
+}: {
+  status: WalletStatus;
+  showRecommended?: boolean;
+}) {
+  if (status === "recommended" && !showRecommended) return null;
+  const chip = STATUS_CHIP[status];
   return (
     <span className="shrink-0 whitespace-nowrap">
-      <Chip tone={status === "testing" ? "pending" : "default"}>
-        {status === "testing" ? "In testing" : "Compatible"}
-      </Chip>
+      <Chip tone={chip.tone}>{chip.label}</Chip>
     </span>
   );
 }

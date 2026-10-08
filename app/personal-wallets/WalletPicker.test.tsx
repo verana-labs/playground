@@ -68,6 +68,20 @@ describe("WalletPicker", () => {
     expect(screen.getByRole("button", { name: /Wallet l/ }).getAttribute("aria-pressed")).toBe("true");
   });
 
+  it("gives every wallet card its status badge and flags the builds without the trust screen", () => {
+    const storeOnly: PersonalWallet = {
+      ...wallet("s", "compatible"),
+      links: [{ kind: "playstore", url: "https://play.google.com/store/apps/details?id=s", trust_screen: false }],
+    };
+    renderPicker([wallet("a", "recommended"), storeOnly, wallet("t", "testing")]);
+    const [recommended, compatible, testing] = cells();
+    expect(recommended).toContain("Recommended");
+    expect(recommended).not.toContain("No Verana trust screen");
+    expect(compatible).toContain("Compatible");
+    expect(compatible).toContain("No Verana trust screen");
+    expect(testing).toContain("In testing");
+  });
+
   it("selects a wallet from its card", () => {
     const onSelect = renderPicker(THIRTEEN);
     fireEvent.click(screen.getByRole("button", { name: /Wallet c/ }));

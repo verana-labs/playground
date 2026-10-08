@@ -61,8 +61,8 @@ const HINT: Record<
     playstore: "Stores",
     appstore: "Stores",
     web: "Web wallet",
-    plainOnly: "Stores, no Verana trust screen",
-    plainToo: "stores without trust screen",
+    plainOnly: "No Verana trust screen",
+    plainToo: "Stores without trust screen",
   },
   es: {
     hosted: "Wallet web",
@@ -70,23 +70,20 @@ const HINT: Record<
     playstore: "Tiendas",
     appstore: "Tiendas",
     web: "Wallet web",
-    plainOnly: "Tiendas, sin pantalla de confianza Verana",
-    plainToo: "tiendas sin pantalla de confianza",
+    plainOnly: "Sin pantalla de confianza Verana",
+    plainToo: "Tiendas sin pantalla de confianza",
   },
 };
 
 export function buildsHint(
   links: WalletLink[],
   lang: Lang = "en",
-): { text: string; trusted: boolean } {
+): { builds: string; caveat: string | null } {
   const t = HINT[lang];
-  const verana = [
-    ...new Set(links.filter((l) => l.trust_screen).map((l) => t[l.kind])),
-  ];
+  const labels = (list: WalletLink[]) =>
+    [...new Set(list.map((l) => t[l.kind]))].join(" + ");
+  const verana = links.filter((l) => l.trust_screen);
   const plain = links.some((l) => !l.trust_screen);
-  if (!verana.length) return { text: t.plainOnly, trusted: false };
-  return {
-    text: plain ? [...verana, t.plainToo].join(" + ") : verana.join(" + "),
-    trusted: true,
-  };
+  if (!verana.length) return { builds: labels(links), caveat: t.plainOnly };
+  return { builds: labels(verana), caveat: plain ? t.plainToo : null };
 }

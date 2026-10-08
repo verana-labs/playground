@@ -370,10 +370,7 @@ export async function GET(
   // presentation_definition, which is what Altme needs.
   const queryLanguage =
     search.get("query") === "pe" ? "presentation_exchange" : undefined;
-  // The EUDI reference wallet resolves no DIDs; ?signer=x5c mints the request
-  // signed under the development certificate instead, an x509_hash client_id
-  // its stack accepts, and the wallet-side check binds that cert back to the
-  // DID it names in its URI SAN.
+  // devnet's vs-agent v2 signs with x5c by default; ?signer=x5c only matters on testnet, whose config sets requestSigner "did".
   const requestSigner = search.get("signer") === "x5c" ? "x5c" : undefined;
   const applicant = applicantFromParams(search);
   const registered = CREDENTIALS[credentialId];

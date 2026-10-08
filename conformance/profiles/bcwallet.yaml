@@ -1,0 +1,24 @@
+id: bcwallet
+rails: [anoncreds]
+didcomm:
+  library: "Bifold on Credo (DIDComm v1, Out-of-Band 1.1 only), AnonCreds over the v2 credential and proof protocols"
+  proxy: "@credo-ts/didcomm and @credo-ts/anoncreds"
+  invitationSchemes: [didcomm, bcwallet]
+  demoParams: ""
+builds:
+  - kind: fork
+    listed: true
+    label: "Verana trust fork APK"
+    obtain: https://github.com/AirKyzzZ/bc-wallet-mobile/releases/download/verana-2026-08-07.1/BCWallet-Verana-verana-2026-08-07.1.apk
+    identity:
+      package: ca.bc.gov.BCWallet
+      version: verana-2026-08-07.1
+      repo: https://github.com/AirKyzzZ/bc-wallet-mobile
+      ref: verana-2026-08-07.1
+    platforms: [android]
+    promises: "Q1 card with Q2/Q3 gating on testnet v3 (2026-08). In testing on devnet v4: the store build 4.1.0 rejects devnet's Out-of-Band 2.0 invitations with error 1039 (2026-10-06), the fork is not re-tested yet"
+quirks:
+  actsOnLinkOnlyAtColdStart: false
+  locksOnBackground: true
+  viewTree: readable
+  notes: "Asks the wallet PIN on every cold deep link; type it then press Enter, Back leaves the app and drops the link"

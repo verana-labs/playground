@@ -23,7 +23,7 @@ Proves, on every change, which listed wallets work against the deployed playgrou
   (testnet v4: demo, vesta, verandia, cexa and bhi), whatever `CONFORMANCE_CASTS` says.
 - `tier1/` contract checks: what a wallet fetches, asserted without running a wallet.
 - `tier2/` headless OpenID4VCI/OpenID4VP flows with the wallets' own libraries, asserting the resolver inputs of
-  the verdict. Nightly only, behind `CONFORMANCE_MINTS=1`. See "Tier 2" below.
+  the verdict. Behind `CONFORMANCE_MINTS=1`. See "Tier 2" below.
 - `tier3/` wallet apps on a cloud Android emulator: the QR of a freshly minted offer or request goes into the
   emulator's virtual camera, the wallet scans it with its own scanner, and the outcome is read from the service API.
   It proves rendering and gating, nightly, one job per wallet and network. See "Tier 3" below. The device pass on a
@@ -48,13 +48,36 @@ not read what it needed and says why) or `not-testable` (a network without a pla
 sorted by code point, so `diff` between two `results.json` shows exactly what changed.
 
 Environment: `CONFORMANCE_NETWORK` selects one network; `CONFORMANCE_CASTS` limits the casts that receive
-live mints (default `demo,eventos`); `CONFORMANCE_MINTS=1` enables the checks that create sessions on the
-services (off in the per-change CI job, on nightly); `CONFORMANCE_K8S_NAMESPACE` enables the cluster read of
-the image tag actually serving and the detection of services that rolled during the run (nightly only).
+live mints (default every cast; CI passes `demo,vesta,verandia,cexa,bhi`); `CONFORMANCE_MINTS=1` enables the checks that create sessions on the
+services (on in every CI run); `CONFORMANCE_K8S_NAMESPACE` enables the cluster read of the image tag actually
+serving and the detection of services that rolled during the run (on in every CI run).
+
+## Gate
+
+CI never trusts a tier's exit code. `.github/workflows/conformance.yml` runs tier 1 and tier 2 in parallel against
+`testnet-v4` on the nightly schedule, on dispatch, on push to `main` and on same-repository pull requests that touch
+conformance, the wallet list or the profile schema. The tier 2 job installs the pinned eudi-dev release (checked
+against its `checksums.txt`) and points `EUDI_DEV_BIN` at it. The `gate` job then merges the `latest.json` of every
+tier artifact and runs:
+
+    node --experimental-strip-types lib/gate.ts --services testnet-services.yaml --results <latest.json>... --require-tier t1 --require-tier t2
+
+It fails on a `broken` or `unknown` cell that no active gap of `testnet-services.yaml` covers, on a required tier with
+no cells, and, on a nightly, on a cell of a tier that ran and that existed in the previous nightly and is gone. Tier 3
+runs only when dispatched with `tier3: true`: it calls `conformance-tier3.yml` and the gate then adds
+`--require-tier t3`; otherwise t3 cells are gated when present and never required.
+
+A gap covers live cells through `cells`, one matcher or a list (`tier` and `check` required, then `cast`, `service`,
+`wallet`, `build`, `scenario`, each a value or a list), on the network the file names. A gap with a `rail` also feeds
+the static wallet verdicts of that rail, so one service problem is written once, with its `cause`, `until`, `reference`
+and `expires`; a gap that only explains live cells (a scenario no tier can drive yet, say) names no rail. After that
+date its cells fail again and `lib/verdicts.test.ts` fails every pull request until it is re-checked. The gate
+lists the gaps whose cells matched nothing in a run of their tier so they can be dropped. Add cells only for a
+failure that is understood and has an owner; never widen a matcher to silence a new cell.
 
 ## Tier 2
 
-`npm run t2` (nightly only, `CONFORMANCE_MINTS=1`) runs the OpenID4VCI and OpenID4VP protocols end to end as a
+`npm run t2` (`CONFORMANCE_MINTS=1`) runs the OpenID4VCI and OpenID4VP protocols end to end as a
 headless holder (`@openid4vc/*`, `@sd-jwt/sd-jwt-vc`), once per listed wallet build on the `openid4vc-sdjwt` rail
 and canonical scenario, and asserts the resolver inputs a real wallet's accept/refuse verdict depends on: the Q1
 trust status by field, Q2 and Q3 from the issuer/verifier authorization endpoints, and the service's own exchange

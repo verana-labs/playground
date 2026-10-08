@@ -10,16 +10,21 @@ function isUntrustedService(service: CastService): boolean {
   return service.demoPerm === null && service.oid4vcRole !== null && service.id.includes("untrusted");
 }
 
+const serviceIdsOf = (scenario: Scenario): string[] => (typeof scenario.service === "string" ? [scenario.service] : Object.values(scenario.service));
+
 function refusedForAnUntrustedService(scenario: Scenario): boolean {
   if (scenario.expect !== "refuse") return false;
-  const ids = typeof scenario.service === "string" ? [scenario.service] : Object.values(scenario.service);
-  return ids.some((id) => id.includes("untrusted"));
+  return serviceIdsOf(scenario).some((id) => id.includes("untrusted"));
 }
 
 export function expectedTrust(scenario: Scenario, service: CastService): TrustExpectation {
   if (isUntrustedService(service) || refusedForAnUntrustedService(scenario)) return { q1: "UNTRUSTED", q2: null, q3: null };
   if (scenario.kind === "issue") return { q1: "TRUSTED", q2: service.id === "taquilla" ? true : scenario.expect === "accept", q3: null };
   return { q1: "TRUSTED", q2: null, q3: service.id.startsWith("evento-") ? true : scenario.expect === "accept" };
+}
+
+export function expectsUntrusted(service: CastService, scenarios: Scenario[]): boolean {
+  return scenarios.some((s) => serviceIdsOf(s).includes(service.id) && expectedTrust(s, service).q1 === "UNTRUSTED");
 }
 
 const freshResolutions = new Map<string, Promise<TrustResolution | null>>();

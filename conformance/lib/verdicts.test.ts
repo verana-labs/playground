@@ -86,6 +86,11 @@ describe("walletVerdicts", () => {
     expect(walletVerdicts([wallet({})], degraded)[0]).toMatchObject({ verdict: "works with known issues", reasons: ["known gap decline"] });
   });
 
+  it("leaves the verdict alone for a gap that names no rail", () => {
+    const cellsOnly = { ...services, gaps: [...services.gaps, { id: "harness", cause: "no tier drives it", until: "a holder", expires: "2026-11-16", cells: { tier: "t1", check: "link:issue" } }] };
+    expect(walletVerdicts([wallet({})], ServicesSchema.parse(cellsOnly))[0]).toMatchObject({ verdict: "works", reasons: [] });
+  });
+
   it("refuses an unknown dimension in a gap", () => {
     expect(ServicesSchema.safeParse({ ...services, gaps: [{ ...services.gaps[0], blocks: { queryLanguage: ["dcql"] } }] }).success).toBe(false);
   });

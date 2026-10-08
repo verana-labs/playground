@@ -91,8 +91,8 @@ jobs:
       - name: Install the eudi-dev reference holder
         if: matrix.tier == 't2'
         env:
-          EUDI_DEV_VERSION: v2.6.0
-          EUDI_DEV_SHA256: 3063880b8a4f6ab294518fae54febaace42329115cffed63ca1381e2bedf5802
+          EUDI_DEV_VERSION: v2.6.1
+          EUDI_DEV_SHA256: 827e61d52fd4fbb534cd4277da6d065df0f8f9fc80c5e816e5a5da5751877c73
         run: |
           asset="eudi-${EUDI_DEV_VERSION}-linux-amd64"
           dir="$RUNNER_TEMP/eudi-dev"

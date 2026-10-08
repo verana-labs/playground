@@ -58,7 +58,7 @@ export function NoTrustScreenNote({ name }: { name: string }) {
 }
 
 const STATUS_CHIP = {
-  recommended: { tone: "verified", label: "Recommended" },
+  recommended: { tone: "verified", label: "Integrated" },
   compatible: { tone: "default", label: "Compatible" },
   testing: { tone: "pending", label: "In testing" },
 } as const;

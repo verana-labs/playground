@@ -68,23 +68,23 @@ describe("WalletPicker", () => {
     expect(screen.getByRole("button", { name: /Wallet l/ }).getAttribute("aria-pressed")).toBe("true");
   });
 
-  it("badges the compatible and testing cards, not the recommended ones, and flags the builds without the trust screen", () => {
+  it("badges the integrated, compatible and testing cards and flags the builds without the trust screen", () => {
     const storeOnly: PersonalWallet = {
       ...wallet("s", "compatible"),
       links: [{ kind: "playstore", url: "https://play.google.com/store/apps/details?id=s", trust_screen: false }],
     };
     renderPicker([wallet("a", "recommended"), storeOnly, wallet("t", "testing")]);
     const [recommended, compatible, testing] = cells();
-    expect(recommended).not.toContain("Recommended");
+    expect(recommended).toContain("Integrated");
     expect(recommended).not.toContain("No Verana trust screen");
     expect(compatible).toContain("Compatible");
     expect(compatible).toContain("No Verana trust screen");
     expect(testing).toContain("In testing");
   });
 
-  it("keeps the status badge on the title row of the cards that have one", () => {
+  it("keeps the status badge on the title row of every card", () => {
     renderPicker([wallet("a", "recommended"), wallet("c", "compatible"), wallet("t", "testing")]);
-    expect(screen.getByTitle("Wallet a").parentElement!.textContent).toBe("Wallet a");
+    expect(screen.getByTitle("Wallet a").parentElement!.textContent).toBe("Wallet aIntegrated");
     expect(screen.getByTitle("Wallet c").parentElement!.textContent).toBe("Wallet cCompatible");
     expect(screen.getByTitle("Wallet t").parentElement!.textContent).toBe("Wallet tIn testing");
   });

@@ -100,7 +100,7 @@ export function WalletPicker({
               >
                 {w.name}
               </span>
-              <WalletStatusChip status={w.status} showRecommended compact />
+              <WalletStatusChip status={w.status} compact />
             </span>
             <span className="truncate text-xs text-gray-500" title={w.vendor}>
               {w.vendor}

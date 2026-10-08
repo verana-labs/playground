@@ -205,8 +205,8 @@ issues:
       tier: t2
       check: [reference-holder-present, reference-holder-replay-presentation]
       network: devnet-v4
-      scenario: [bhi-right-to-work@dcql, bhi-right-to-work@dcql+x5c]
-    cause: "the bhi-right-to-work DCQL query lists every schema property as a claim and sets no claim_sets, so it also asks for portrait and rtwExpiryDate, which the schema leaves optional and the issued credential omits; eudi-dev finds no matching credential, and there is no presentation to replay"
+      scenario: [bhi-employment@dcql, bhi-employment@dcql+x5c, bhi-right-to-work@dcql, bhi-right-to-work@dcql+x5c]
+    cause: "the bhi DCQL queries list every schema property as a claim and set no claim_sets, so they also ask for claims the schema leaves optional: portrait and rtwExpiryDate, which no bhi-right-to-work credential carries, and endDate, which the current employment the demo issues one time in three lacks; eudi-dev finds no matching credential, and there is no presentation to replay"
     expires: 2026-10-30
 
   - match:

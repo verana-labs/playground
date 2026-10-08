@@ -269,7 +269,7 @@ check_balance() {
     err "Account '$1' is not in the keyring"
     return 1
   fi
-  balance=$(account_balance "$addr")
+  balance=$(account_balance "$addr") || return 1
   if [ "${balance:-0}" -lt "$min" ]; then
     err "Account '$1' ($addr) has ${balance:-0} uvna and needs at least ${min} uvna. Get funds from the faucet: ${FAUCET_URL}"
     return 1
@@ -277,13 +277,22 @@ check_balance() {
   ok "Account '$1' balance: ${balance} uvna"
 }
 
-# The uvna balance of an address (0 when the account does not exist).
+# The uvna balance of an address (0 when the account does not exist). The
+# query is tried 5 times. When it fails each time, the function prints an
+# error and returns 1, so that a failed query does not look like a balance of 0.
 # Usage: account_balance <address>
 account_balance() {
-  local balance
-  balance=$(veranad q bank balances "$1" --node "$NODE_RPC" --output json 2>/dev/null \
-    | jq -r '.balances[]? | select(.denom == "uvna") | .amount' 2>/dev/null)
-  echo "${balance:-0}"
+  local json i
+  for i in 1 2 3 4 5; do
+    if json=$(veranad q bank balances "$1" --node "$NODE_RPC" --output json 2>/dev/null) \
+       && echo "$json" | jq -e '.balances' > /dev/null 2>&1; then
+      echo "$json" | jq -r '[.balances[] | select(.denom == "uvna") | .amount][0] // "0"'
+      return 0
+    fi
+    sleep 3
+  done
+  err "Could not read the balance of $1 from $NODE_RPC"
+  return 1
 }
 
 # Send a message as a group proposal of the Corporation, vote YES, and run it.
@@ -357,7 +366,9 @@ ensure_agent_account() {
   export AGENT_ADDR
   ok "Agent account of ${release}: $AGENT_ADDR"
 
-  if [ "$(account_balance "$AGENT_ADDR")" = "0" ]; then
+  local agent_balance
+  agent_balance=$(account_balance "$AGENT_ADDR") || return 1
+  if [ "$agent_balance" = "0" ]; then
     log "Funding ${AGENT_ADDR} with ${AGENT_FUNDS}, so that the account exists on the chain..."
     # The transfer and its fee.
     check_balance "$USER_ACC" $((${AGENT_FUNDS%uvna} + TX_FEE_MAX))
@@ -420,7 +431,7 @@ top_up_corporation() {
   local target="${funds%uvna}"
   local min="${CORPORATION_MIN_FUNDS:-$((target / 2))uvna}"
   local balance
-  balance=$(account_balance "$1")
+  balance=$(account_balance "$1") || return 1
   if [ "$balance" -ge "${min%uvna}" ]; then
     ok "Corporation balance: ${balance} uvna"
     return 0

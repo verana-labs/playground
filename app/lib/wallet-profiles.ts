@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
 import { z } from "zod";
+import { isCommit, parseGitHubLink, releaseTag } from "./wallet-refs";
 
 export const RAILS = ["anoncreds", "openid4vc-sdjwt"] as const;
 export const BUILD_KINDS = ["store", "publisher", "fork", "browser"] as const;
@@ -107,7 +108,16 @@ const QuirksSchema = z.object({
   notes: z.string().optional(),
 });
 
-const BRANCH_LIKE = /\/|^(main|master|develop|dev|trunk)$/;
+function refProblem(build: z.infer<typeof BuildSchema>): string | null {
+  const { repo, ref } = build.identity;
+  if (!ref || isCommit(ref)) return null;
+  const repoKey = repo ? parseGitHubLink(repo)?.repo : undefined;
+  const released = [build.obtain].flat().some((url) => {
+    const link = parseGitHubLink(url);
+    return link?.repo === repoKey && releaseTag(link) === ref;
+  });
+  return released ? null : `identity.ref ${ref} is neither a 40-char commit nor the tag of the release the build is obtained from`;
+}
 
 function demoParamsIssues(presentation: z.infer<typeof PresentationSchema>, demoParams: string): string[] {
   const parts = new Set(demoParams.split("&").filter(Boolean));
@@ -151,11 +161,10 @@ export const WalletProfileSchema = z
       if (build.kind !== "browser" && build.platforms.includes("android") && !build.identity.package)
         issue("an android build needs identity.package", at("identity"));
       if (build.kind === "browser" && build.device) issue("a browser build has no device block", at("device"));
-      if (build.kind === "fork") {
-        const { repo, ref } = build.identity;
-        if (!repo || !ref) issue("a fork build needs identity.repo and identity.ref (a commit or a tag)", at("identity"));
-        else if (BRANCH_LIKE.test(ref)) issue(`identity.ref ${ref} looks like a branch; name a commit or a tag`, at("identity", "ref"));
-      }
+      if (build.kind === "fork" && (!build.identity.repo || !build.identity.ref))
+        issue("a fork build needs identity.repo and identity.ref (a commit or a tag)", at("identity"));
+      const ref = refProblem(build);
+      if (ref) issue(ref, at("identity", "ref"));
       const presentation = build.presentation ?? profile.openid4vc?.presentation;
       const demoParams = build.demoParams ?? profile.openid4vc?.demoParams;
       if (presentation && demoParams !== undefined)

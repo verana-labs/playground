@@ -9,7 +9,9 @@ import {
   getWalletProfile,
   listWalletProfiles,
   listedBuilds,
+  networkBuild,
   obtainUrls,
+  targetsNetwork,
   WalletProfileSchema,
 } from "./wallet-profiles";
 import { WalletsFileSchema } from "./wallets";
@@ -248,6 +250,45 @@ describe("profile helpers", () => {
   });
 });
 
+describe("builds per network", () => {
+  const [fork, store] = valid.builds;
+  const testnetFork = { ...fork, networks: ["testnet-v4"] };
+  const devnetFork = {
+    ...fork,
+    listed: false,
+    networks: ["devnet-v4"],
+    obtain: "https://github.com/example/wallet/releases/download/verana-2026-10-01/app-devnet.apk",
+    identity: { ...fork!.identity, ref: "verana-2026-10-01" },
+  };
+
+  it("lets builds of one kind split the networks between them", () => {
+    expect(WalletProfileSchema.safeParse({ ...valid, builds: [testnetFork, devnetFork, store] }).success).toBe(true);
+  });
+
+  it("refuses two builds of one kind on the same network", () => {
+    expect(WalletProfileSchema.safeParse({ ...valid, builds: [fork, devnetFork, store] }).success).toBe(false);
+    const overlap = { ...devnetFork, networks: ["devnet-v4", "testnet-v4"] };
+    expect(WalletProfileSchema.safeParse({ ...valid, builds: [testnetFork, overlap, store] }).success).toBe(false);
+  });
+
+  it("treats a build without networks as targeting every network", () => {
+    const profile = WalletProfileSchema.parse(valid);
+    expect(targetsNetwork(profile.builds[0], "devnet-v4")).toBe(true);
+    expect(networkBuild(profile, "devnet-v4")?.obtain).toBe(fork!.obtain);
+  });
+
+  it("stands in the same kind of build where the listed one does not go", () => {
+    const profile = WalletProfileSchema.parse({ ...valid, builds: [testnetFork, devnetFork, store] });
+    expect(networkBuild(profile, "testnet-v4")?.obtain).toBe(fork!.obtain);
+    expect(networkBuild(profile, "devnet-v4")?.obtain).toBe(devnetFork.obtain);
+  });
+
+  it("has no build for a network that no build of the listed kind targets", () => {
+    const profile = WalletProfileSchema.parse({ ...valid, builds: [testnetFork, store] });
+    expect(networkBuild(profile, "devnet-v4")).toBeUndefined();
+  });
+});
+
 describe("listWalletProfiles", () => {
   let dir: string;
   beforeEach(() => {
@@ -325,6 +366,14 @@ describe("profiles match the listing", () => {
     }
   });
 
+  it("builds only name networks from conformance/networks.yaml", () => {
+    const file = yaml.load(fs.readFileSync(path.join(process.cwd(), "conformance", "networks.yaml"), "utf8")) as { networks: { id: string }[] };
+    const known = file.networks.map((n) => n.id);
+    for (const profile of profiles)
+      for (const build of profile.builds)
+        for (const network of build.networks ?? []) expect(known, `${profile.id}/${build.kind}`).toContain(network);
+  });
+
   it("the listing mints with the listed build's parameters", () => {
     for (const w of visible) {
       const profile = byId.get(w.id)!;
@@ -333,5 +382,35 @@ describe("profiles match the listing", () => {
         expect((w.demoParams ?? "").split("&").filter(Boolean).sort(), `${w.id} ${build.label}`).toEqual(expected);
       }
     }
+  });
+});
+
+describe("device steps", () => {
+  const [fork, store] = valid.builds;
+  const withDevice = (extra: Record<string, unknown>, steps: Record<string, unknown>) => ({
+    ...valid,
+    builds: [{ ...fork, ...extra, device: { ...device, ...steps } }, store],
+  });
+
+  it("accepts a profile with onboarding and scanner steps", () => {
+    const profile = WalletProfileSchema.parse(
+      withDevice(
+        { signerSha256: "AA:BB:CC" },
+        {
+          delivery: "scan",
+          onboard: [{ tap: "get started" }, { type: "secret" }, { wait: 2 }],
+          scan: { issue: [{ tap: "documents" }, { tap: "scan qr" }] },
+        },
+      ),
+    );
+    const build = profile.builds[0];
+    expect(build?.device?.delivery).toBe("scan");
+    expect(build?.device?.onboard?.[1]).toEqual({ type: "secret" });
+    expect(build?.device?.scan?.issue?.[1]).toEqual({ tap: "scan qr" });
+    expect(build?.signerSha256).toBe("AA:BB:CC");
+  });
+
+  it("rejects a step that is neither a tap, a type nor a wait", () => {
+    expect(WalletProfileSchema.safeParse(withDevice({}, { onboard: [{ swipe: "left" }] })).success).toBe(false);
   });
 });

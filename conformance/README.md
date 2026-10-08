@@ -12,7 +12,9 @@ Proves, on every change, which listed wallets work against the deployed playgrou
 - `tier1/` (planned, next PR) contract checks: what a wallet fetches, asserted without running a wallet.
 - `tier2/` headless OpenID4VCI/OpenID4VP flows with the wallets' own libraries, asserting the resolver inputs of
   the verdict. Nightly only, behind `CONFORMANCE_MINTS=1`. See "Tier 2" below.
-- `tier3/` (planned) device spot-checks: rendering and gating only.
+- `tier3/` wallet apps on a cloud Android emulator: the QR of a freshly minted offer or request goes into the
+  emulator's virtual camera, the wallet scans it with its own scanner, and the outcome is read from the service API.
+  It proves rendering and gating, nightly, one job per wallet and network. See "Tier 3" below.
 
 This directory is its own npm package so that the Tier 2 native dependencies never enter the site build.
 
@@ -60,3 +62,40 @@ for OpenID4VCI 1.0 and HAIP, and writes `reference-holder` cells. It calls `eudi
 --mode strict` from `EUDI_DEV_BIN` (default `eudi` on `PATH`), one run at a time. A cell is `works` when eudi-dev
 receives a credential whose signature it verifies, or when the verifier accepts its presentation and records
 `verified`. A missing binary or a timeout is `unknown`, never `works`.
+
+## Tier 3
+
+`WALLET=<profile id> CONFORMANCE_NETWORK=<network id> bash tier3/run.sh` installs the wallet's build for that network,
+onboards it and runs every scenario of `scenarios.yaml` the profile supports, on an Android emulator.
+`TIER3_DRY_RUN=1` resolves the same plan (build, APK, signer, scenarios, the mint and state URLs it would call),
+prints it and stops before touching a device or a service.
+
+The build comes from the profile. A build may name the networks it targets (`networks: [devnet-v4]`); one without
+`networks` targets every network. On a network the listed build does not target, the build of the same kind that
+names it stands in, and two builds of one kind may not share a network. When no build targets the network, every
+scenario is `not-testable`. Everything wallet-specific lives under the build's `device`:
+
+    delivery: scan            # or link, when the wallet has no scanner path
+    onboard:                  # steps to a usable home screen, run once after install
+      - tap: get started      # taps the first enabled control whose label starts with this
+      - type: secret          # types device.secret
+      - wait: 30              # seconds
+    scan:
+      issue: [{ tap: documents }, { tap: scan qr }]
+      present: [{ tap: home }, { tap: authenticate }, { tap: scan qr }]
+
+Scenarios run when their service belongs to a cast in scope: the network's `casts`, intersected with
+`CONFORMANCE_CASTS` (default `demo` for tier 3). Issue scenarios run before presentations. A scenario is
+`incompatible-by-design` when the build declares it, `not-testable` when it needs the eventos login, scan steps the
+profile lacks, or a credential no planned scenario issues. A wallet without the `openid4vc-sdjwt` rail or without
+`onboard` steps is skipped with no cell, never guessed at. A build may pin `signerSha256`, the APK signing
+certificate; when it does not match what was downloaded every scenario is `unknown` and none runs.
+
+Each scenario records one cell with the build version, the delivery used, the server state, what the accept control
+reported and the screenshot, and a verdict of `works` (the server completed, or a refused payload stayed blocked),
+`broken` (the wallet showed an error, accepted an untrusted payload or blocked a trusted one) or `unknown` with its
+reason. Cells land in `results/<run id>/cells-t3-<network>-<wallet>.jsonl` and `results.json`. `tier3/fixtures.sh`
+checks the screen reader against saved dumps and the planner against fixture profiles, without an emulator.
+`.github/workflows/conformance-tier3.yml` runs one job per wallet and network (`workflow_call` or dispatch with
+`network` and `wallets`), boots the emulator only when the plan has something to run, and uploads
+`conformance-t3-<network>-<wallet>`.

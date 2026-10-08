@@ -12,6 +12,7 @@ openid4vc:
 builds:
   - kind: fork
     listed: true
+    networks: [devnet-v4]
     label: "Verana fork APK, dev flavour, wallet-core 0.30.2-verana.2 on openid4vci-kt 0.14.0, trust policy INFORM"
     obtain: https://github.com/AirKyzzZ/eudi-app-android-wallet/releases/download/verana-2026-10-02/eudi-wallet-verana-2026-10-02.apk
     identity:
@@ -26,6 +27,20 @@ builds:
       unlock: pinfield
       secret: "123456"
       coldStart: false
+      delivery: scan
+      onboard:
+        - type: secret
+        - type: secret
+        - tap: go to home
+      scan:
+        issue:
+          - tap: documents
+          - tap: add
+          - tap: scan qr
+        present:
+          - tap: home
+          - tap: authenticate
+          - tap: scan qr
   - kind: publisher
     label: "Demo APK from the EU reference wallet releases"
     obtain: https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui/releases
@@ -45,6 +60,36 @@ builds:
       unlock: pinfield
       secret: "123456"
       coldStart: false
+  - kind: fork
+    networks: [testnet-v3]
+    label: "Verana fork APK, wallet-core 0.29.0, signed metadata off, trust policy INFORM"
+    obtain: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui/releases/download/verana-2026-08-06.1/eudi-wallet-verana-2026-08-06.1.apk
+    identity:
+      package: eu.europa.ec.euidi
+      version: verana-2026-08-06.1
+      repo: https://github.com/AirKyzzZ/eudi-app-android-wallet-ui
+      ref: verana-2026-08-06.1
+    platforms: [android]
+    promises: "Q1 trust card with the service and operator blocks and a TESTNET chip. No Q2 or Q3 sentence, so an unauthorised verifier looks like an authorised one"
+    device:
+      activity: eu.europa.ec.assemblylogic.ui.MainActivity
+      unlock: pinfield
+      secret: "123456"
+      coldStart: false
+      delivery: scan
+      onboard:
+        - type: secret
+        - type: secret
+        - tap: go to home
+      scan:
+        issue:
+          - tap: documents
+          - tap: add
+          - tap: scan qr
+        present:
+          - tap: home
+          - tap: authenticate
+          - tap: scan qr
 quirks:
   actsOnLinkOnlyAtColdStart: false
   locksOnBackground: false

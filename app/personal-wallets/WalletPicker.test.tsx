@@ -68,7 +68,7 @@ describe("WalletPicker", () => {
     expect(screen.getByRole("button", { name: /Wallet l/ }).getAttribute("aria-pressed")).toBe("true");
   });
 
-  it("gives every wallet card its status badge and flags the builds without the trust screen", () => {
+  it("badges the integrated, compatible and testing cards and flags the builds without the trust screen", () => {
     const storeOnly: PersonalWallet = {
       ...wallet("s", "compatible"),
       links: [{ kind: "playstore", url: "https://play.google.com/store/apps/details?id=s", trust_screen: false }],
@@ -80,6 +80,20 @@ describe("WalletPicker", () => {
     expect(compatible).toContain("Compatible");
     expect(compatible).toContain("No Verana trust screen");
     expect(testing).toContain("In testing");
+  });
+
+  it("keeps the status badge on the title row of every card", () => {
+    renderPicker([wallet("a", "recommended"), wallet("c", "compatible"), wallet("t", "testing")]);
+    expect(screen.getByTitle("Wallet a").parentElement!.textContent).toBe("Wallet aRecommended");
+    expect(screen.getByTitle("Wallet c").parentElement!.textContent).toBe("Wallet cCompatible");
+    expect(screen.getByTitle("Wallet t").parentElement!.textContent).toBe("Wallet tIn testing");
+  });
+
+  it("calls a recommended official build recommended, and one that ships through a fork integrated", () => {
+    renderPicker([wallet("h", "recommended"), { ...wallet("f", "recommended"), fork: "https://github.com/x/f/releases/tag/v1" }]);
+    const [builtin, fork] = cells();
+    expect(builtin).toContain("Recommended");
+    expect(fork).toContain("Integrated");
   });
 
   it("selects a wallet from its card", () => {

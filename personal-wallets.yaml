@@ -87,6 +87,48 @@ wallets:
     license: BSD-2-Clause
     scope: eventos
     notes: "The INTEXUS-branded browser wallet of the events tour: a hosted instance of our wwWallet fork with the same Verana integration (trust card and gate on both consent moments). Nothing to install: it opens in the browser, on the phone too, and the account is a passkey."
+  - id: hologram
+    name: Hologram Messaging
+    vendor: "2060"
+    status: recommended
+    icon: ./hologram/logo.webp
+    formats: [anoncreds]
+    download: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
+    playstore: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
+    appstore: https://apps.apple.com/app/hologram-messaging/id6474701855
+    website: https://2060.io
+    repo: https://github.com/2060-io/hologram-app
+    license: Apache-2.0
+    notes: Reference personal wallet, DemoCredential scenarios over AnonCreds/DIDComm. Q1 + Q2/Q3 and the trust chain card on both consent screens, built into the official app.
+    captures:
+      issue-accredited:
+        src: ./hologram/screenshots/1.webp
+        clip: ./hologram/clips/1-issuer-accredited.mp4
+        caption: "Accredited issuer: identity verified, authorized for this credential, accept enabled"
+      issue-unaccredited:
+        src: ./hologram/screenshots/2.webp
+        clip: ./hologram/clips/2-issuer-unaccredited.mp4
+        caption: Identified but not accredited to issue this credential, so accept is withdrawn
+      issue-untrusted:
+        src: ./hologram/screenshots/3.webp
+        clip: ./hologram/clips/3-issuer-untrusted.mp4
+        caption: "Untrusted issuer: the refusal happens at connect on the AnonCreds rail"
+      present-accredited:
+        src: ./hologram/screenshots/4.webp
+        clip: ./hologram/clips/4-verifier-accredited.mp4
+        caption: "Accredited verifier: authorized to request this credential, and the presentation completes"
+      present-unaccredited:
+        src: ./hologram/screenshots/5.webp
+        clip: ./hologram/clips/5-verifier-unaccredited.mp4
+        caption: Identified but not authorized to ask for this credential, so sharing is refused
+      present-untrusted:
+        src: ./hologram/screenshots/6.webp
+        clip: ./hologram/clips/6-verifier-untrusted.mp4
+        caption: "Untrusted verifier: self-issued claims withheld, sharing refused"
+    video:
+      src: ./hologram/demo.mp4
+      note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end, human-paced, silent, otherwise unedited. Scenario 1 stores the credential and scenario 4 presents that same credential back to the accredited verifier.
+
   - id: inji
     name: Inji Wallet
     vendor: MOSIP
@@ -365,50 +407,6 @@ wallets:
       present-untrusted:
         src: ./wwwallet/screenshots/6.webp
         caption: "Untrusted verifier: self-issued claims withheld, share blocked"
-  - id: hologram
-    name: Hologram Messaging
-    vendor: "2060"
-    # Not recommended yet: the store build fails on devnet's DIDComm v2-only invitations.
-    status: testing
-    icon: ./hologram/logo.webp
-    formats: [anoncreds]
-    download: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
-    playstore: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
-    appstore: https://apps.apple.com/app/hologram-messaging/id6474701855
-    website: https://2060.io
-    repo: https://github.com/2060-io/hologram-app
-    fork: https://github.com/AirKyzzZ/hologram-app/tree/e6992fccc6540ae297e20082ccc80e0c8cda0e5d
-    license: Apache-2.0
-    notes: Reference personal wallet, DemoCredential scenarios over AnonCreds/DIDComm. Q1 + Q2/Q3 and the trust chain card on both consent screens; the captures below are from that build, which is upstream-pending, so the published store build still resolves Q1 only.
-    captures:
-      issue-accredited:
-        src: ./hologram/screenshots/1.webp
-        clip: ./hologram/clips/1-issuer-accredited.mp4
-        caption: "Accredited issuer: identity verified, authorized for this credential, accept enabled"
-      issue-unaccredited:
-        src: ./hologram/screenshots/2.webp
-        clip: ./hologram/clips/2-issuer-unaccredited.mp4
-        caption: Identified but not accredited to issue this credential, so accept is withdrawn
-      issue-untrusted:
-        src: ./hologram/screenshots/3.webp
-        clip: ./hologram/clips/3-issuer-untrusted.mp4
-        caption: "Untrusted issuer: the refusal happens at connect on the AnonCreds rail"
-      present-accredited:
-        src: ./hologram/screenshots/4.webp
-        clip: ./hologram/clips/4-verifier-accredited.mp4
-        caption: "Accredited verifier: authorized to request this credential, and the presentation completes"
-      present-unaccredited:
-        src: ./hologram/screenshots/5.webp
-        clip: ./hologram/clips/5-verifier-unaccredited.mp4
-        caption: Identified but not authorized to ask for this credential, so sharing is refused
-      present-untrusted:
-        src: ./hologram/screenshots/6.webp
-        clip: ./hologram/clips/6-verifier-untrusted.mp4
-        caption: "Untrusted verifier: self-issued claims withheld, sharing refused"
-    video:
-      src: ./hologram/demo.mp4
-      note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end, human-paced, silent, otherwise unedited. Scenario 1 stores the credential and scenario 4 presents that same credential back to the accredited verifier.
-
   - id: sphereon
     name: Sphereon Wallet
     vendor: Sphereon

@@ -1,0 +1,114 @@
+{
+  "did": "did:webvh:Qmaup6XHn4UMTEUu9PWMEwcRAYmZ74SpPpUGYpnXj9dTPf:demo-issuer-accredited.playground.devnet.verana.network",
+  "trusted": true,
+  "evaluatedAtTime": "2026-10-01T15:56:44.662Z",
+  "evaluatedAtBlock": 45820,
+  "expiresAtTime": "2027-10-01T00:00:00.000Z",
+  "corporationId": 7,
+  "participations": [
+    {
+      "id": 23,
+      "vsOperator": "verana1xd7knpuxn233gfqtja57gtczz0fhzn9nd0uqla",
+      "role": "HOLDER",
+      "state": "ACTIVE",
+      "credentialSchemaId": 5,
+      "ecosystemId": 3,
+      "weight": "0uvna",
+      "validatorParticipantId": 20,
+      "issuedCredentials": 0,
+      "verifiedCredentials": 0,
+      "participants": {
+        "HOLDER": 1
+      }
+    },
+    {
+      "id": 24,
+      "vsOperator": "verana1xd7knpuxn233gfqtja57gtczz0fhzn9nd0uqla",
+      "role": "ISSUER",
+      "state": "ACTIVE",
+      "credentialSchemaId": 8,
+      "ecosystemId": 6,
+      "weight": "0uvna",
+      "validatorParticipantId": 22,
+      "issuedCredentials": 0,
+      "verifiedCredentials": 0,
+      "participants": {
+        "ISSUER": 1
+      }
+    }
+  ],
+  "ecsCredentials": [
+    {
+      "ecsSchema": "ServiceCredential",
+      "ecsSchemaVersion": "v4",
+      "credentialSchemaId": 5,
+      "issuerParticipantId": 20,
+      "ecosystemId": 3,
+      "participantId": 23,
+      "id": "did:webvh:QmdLKxG6ZdBRJbUevm1mQdPr3arKSE3bg5RfA8cg8uUszF:playground-demo.playground.devnet.verana.network#7d3b3b4c-deec-41f9-84b5-87032fd7561e",
+      "digestJCS": "0OZRqrmyBWms1qFSpBBl5PKoC2Z/SYq7qPjQvT1as/BFxehSITSkTw/SnBK/7wq4",
+      "issuedAtTime": "2026-10-01T15:17:58.073Z",
+      "validFrom": "2026-10-01T15:17:55.476Z",
+      "validUntil": "2027-10-01T00:00:00.000Z",
+      "credentialSubject": {
+        "id": "did:webvh:Qmaup6XHn4UMTEUu9PWMEwcRAYmZ74SpPpUGYpnXj9dTPf:demo-issuer-accredited.playground.devnet.verana.network",
+        "name": "Accredited Issuer (demo)",
+        "type": "IssuerService",
+        "logoUri": "https://raw.githubusercontent.com/verana-labs/playground/main/public/images/cast/demo-issuer.svg",
+        "description": "Playground demo service authorized to issue the DemoCredential in the Playground Ecosystem (demo)",
+        "logoDigestSri": "sha384-d45oKkfdOoSHKpctNKpxX1+SHhe5AzQDTQ56DAGqEPU2Jq5ZuVkKz8QVUOB2IKFu",
+        "privacyPolicyUri": "https://verana-labs.github.io/governance-docs/EGF/example.pdf",
+        "minimumAgeRequired": 0,
+        "termsAndConditionsUri": "https://verana-labs.github.io/governance-docs/EGF/example.pdf",
+        "privacyPolicyDigestSri": "sha384-B+nl2K+YKMw/wrNi+fE50ARjkFgXMYPB5aH77E5I2u6jM0PxIGHg5Ni+NXy9+b0S",
+        "termsAndConditionsDigestSri": "sha384-B+nl2K+YKMw/wrNi+fE50ARjkFgXMYPB5aH77E5I2u6jM0PxIGHg5Ni+NXy9+b0S"
+      }
+    },
+    {
+      "ecsSchema": "OrganizationCredential",
+      "ecsSchemaVersion": "v4",
+      "credentialSchemaId": 3,
+      "issuerParticipantId": 5,
+      "ecosystemId": 3,
+      "participantId": 21,
+      "id": "did:webvh:QmQsrFSoTjpbutWFvdu7aeiR1748JbmTZBB2SSK1ygEyAp:ecs-org-issuer.devnet.verana.network#62abf22f-5442-4331-b293-f9a2d42f5418",
+      "digestJCS": "htgUsu7pPkE+A4Ww1mSCJyZmiZIlX/xG6lJSV4kGJHrbzsexQC887PflKWITz2JS",
+      "issuedAtTime": "2026-10-01T14:40:29.096Z",
+      "validFrom": "2026-10-01T14:40:28.370Z",
+      "validUntil": "2027-10-01T00:00:00.000Z",
+      "credentialSubject": {
+        "id": "did:webvh:QmdLKxG6ZdBRJbUevm1mQdPr3arKSE3bg5RfA8cg8uUszF:playground-demo.playground.devnet.verana.network",
+        "name": "Playground Organization (demo)",
+        "address": "Playground Plaza 1, 8000 Zurich, Switzerland",
+        "logoUri": "https://raw.githubusercontent.com/verana-labs/playground/main/public/images/cast/playground-demo.svg",
+        "registryId": "CHE-100.100.100",
+        "countryCode": "CH",
+        "registryUri": "https://www.zefix.ch",
+        "logoDigestSri": "sha384-6XGGTsZ5JENWkcg0Qykh2XetKyJgXITf27B4H/fkB5ph1WasTeJpiyX40AWC0DkL",
+        "organizationKind": "PRIVATE"
+      }
+    }
+  ],
+  "presentations": [
+    {
+      "id": "https://demo-issuer-accredited.playground.devnet.verana.network/vt/schemas-8-vtjsc-vp.json",
+      "serviceId": "did:webvh:Qmaup6XHn4UMTEUu9PWMEwcRAYmZ74SpPpUGYpnXj9dTPf:demo-issuer-accredited.playground.devnet.verana.network#vpr-schemas-8-vtjsc-vp",
+      "vtcCredentials": [],
+      "unresolvableCredentialIds": [
+        "https://demo-issuer-accredited.playground.devnet.verana.network/vt/schemas-8-jsc.json"
+      ]
+    },
+    {
+      "id": "https://demo-issuer-accredited.playground.devnet.verana.network/vt/schemas-service-vtc-vp.json",
+      "serviceId": "did:webvh:Qmaup6XHn4UMTEUu9PWMEwcRAYmZ74SpPpUGYpnXj9dTPf:demo-issuer-accredited.playground.devnet.verana.network#vpr-schemas-service-vtc-vp",
+      "vtcCredentials": [],
+      "unresolvableCredentialIds": []
+    },
+    {
+      "id": "https://demo-issuer-accredited.playground.devnet.verana.network/whois.vp",
+      "serviceId": "did:webvh:Qmaup6XHn4UMTEUu9PWMEwcRAYmZ74SpPpUGYpnXj9dTPf:demo-issuer-accredited.playground.devnet.verana.network#whois",
+      "vtcCredentials": [],
+      "unresolvableCredentialIds": []
+    }
+  ]
+}

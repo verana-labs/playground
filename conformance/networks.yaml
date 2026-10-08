@@ -16,9 +16,9 @@ networks:
     production: false
     castToken: devnet
     resolver: null
-    indexer: null
-    rpc: null
-    playground: null
+    indexer: https://idx.devnet.verana.network
+    rpc: https://rpc.devnet.verana.network
+    playground: https://playground.devnet.verana.network
     vocabulary: { ecosystem: Ecosystem, participant: Participant }
-    testable: false
-    reason: "devnet exposes no resolver and no deployed cast services; its indexer url is not confirmed yet"
+    casts: [demo, vesta, verandia, cexa, bhi]
+    testable: true

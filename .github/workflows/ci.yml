@@ -27,6 +27,9 @@ jobs:
         working-directory: conformance
       - run: npm run test:lib
         working-directory: conformance
+      - if: always() && hashFiles('conformance/results/wallet-verdicts.md') != ''
+        run: cat results/wallet-verdicts.md >> "$GITHUB_STEP_SUMMARY"
+        working-directory: conformance
 
   conformance-t1:
     runs-on: ubuntu-latest

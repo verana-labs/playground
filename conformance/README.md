@@ -8,6 +8,10 @@ Proves, on every change, which listed wallets work against the deployed playgrou
 - Every profile declares `capabilities`: what its listed build takes (grant types, proof types, formats, query
   languages, client id prefixes, response modes, wallet attestation, DIDComm versions), each `yes`, `no` or
   `unknown`, filled from what the profile and the device results state.
+- `devnet-services.yaml` what the devnet services offer and their known gaps, each with a re-check date.
+  `lib/verdicts.test.ts` compares every listed wallet's capabilities with it on every PR, fails when a
+  recommended or compatible wallet will not work or is not established, and CI puts the verdict table in the job
+  summary.
 - `listing-exceptions.yaml` links and builds of the listing that cannot be pinned to a release tag or a commit
   yet, each with a reason and an expiry date. `lib/listing-gate.test.ts` refuses any other mutable link (a branch,
   a repository root or a releases index as a build, a short sha), a store link that is not canonical or names

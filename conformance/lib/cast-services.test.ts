@@ -6,6 +6,7 @@ import { inScope, issuerMetadataUrls, listCastServices, scopedCasts } from "./ca
 import { listNetworks } from "./network";
 
 const testnet = listNetworks().find((n) => n.id === "testnet-v4")!;
+const unscoped = { ...testnet, casts: undefined };
 
 function fixture(dir: string): void {
   const cast = path.join(dir, "demo");
@@ -34,20 +35,20 @@ describe("listCastServices", () => {
   });
 
   it("derives one service per org with the network token substituted", () => {
-    const services = listCastServices(testnet, dir);
+    const services = listCastServices(unscoped, dir);
     expect(services.map((s) => s.id)).toEqual(["a", "b", "c", "d"]);
     expect(services[0]?.host).toBe("a.playground.testnet.verana.network");
     expect(services[0]?.cast).toBe("demo");
   });
 
   it("lets a per-org tag override the template tag", () => {
-    const [a, b] = listCastServices(testnet, dir);
+    const [a, b] = listCastServices(unscoped, dir);
     expect(a?.pinnedTag).toBe("v0.9");
     expect(b?.pinnedTag).toBe("v1.0");
   });
 
   it("reads roles, permissions and the issuer id of the org's own template", () => {
-    const [a, b, c, d] = listCastServices(testnet, dir);
+    const [a, b, c, d] = listCastServices(unscoped, dir);
     expect(a?.oid4vcRole).toBe("issuer");
     expect(a?.demoPerm).toBe("issuer");
     expect(a?.issuerId).toBe("demo-did");
@@ -60,11 +61,11 @@ describe("listCastServices", () => {
   });
 
   it("ignores directories without orgs", () => {
-    expect(listCastServices(testnet, dir).every((s) => s.cast === "demo")).toBe(true);
+    expect(listCastServices(unscoped, dir).every((s) => s.cast === "demo")).toBe(true);
   });
 
   it("builds the metadata urls, bare alias first", () => {
-    const [a] = listCastServices(testnet, dir);
+    const [a] = listCastServices(unscoped, dir);
     expect(issuerMetadataUrls(a!)).toEqual([
       "https://a.playground.testnet.verana.network/.well-known/openid-credential-issuer",
       "https://a.playground.testnet.verana.network/oid4vci/demo-did/.well-known/openid-credential-issuer",
@@ -75,16 +76,35 @@ describe("listCastServices", () => {
     expect(scopedCasts()).toEqual(["bhi", "bolivia", "cexa", "demo", "eventos", "verandia", "vesta"]);
     process.env.CONFORMANCE_CASTS = "vesta, bhi";
     expect(scopedCasts()).toEqual(["vesta", "bhi"]);
-    const [a] = listCastServices(testnet, dir);
+    const [a] = listCastServices(unscoped, dir);
     expect(inScope(a!)).toBe(false);
   });
 
   it("reads the real repository and finds the demo and eventos casts", () => {
-    const services = listCastServices(testnet);
+    const services = listCastServices(unscoped);
     const ids = services.map((s) => s.id);
     expect(ids).toEqual(expect.arrayContaining(["demo-issuer-accredited", "demo-verifier-accredited", "taquilla", "evento-costa-rica"]));
     expect(ids.length).toBeGreaterThanOrEqual(40);
     expect(services.find((s) => s.id === "taquilla")?.issuerId).not.toBeNull();
     expect(services.filter((s) => s.oid4vcRole === "verifier").length).toBeGreaterThanOrEqual(12);
+  });
+
+  it("keeps only the casts a network has deployed", () => {
+    fs.mkdirSync(path.join(dir, "other", "orgs", "e"), { recursive: true });
+    fs.writeFileSync(path.join(dir, "other", "deployment.template.yaml"), "image:\n  tag: v2.0\n");
+    fs.writeFileSync(path.join(dir, "other", "orgs", "e", "config.env"), 'RELEASE_NAME="e"\nINGRESS_HOST="e.playground.__NETWORK__.verana.network"\n');
+    expect(listCastServices(unscoped, dir).map((s) => s.id)).toEqual(["a", "b", "c", "d", "e"]);
+    expect(listCastServices({ ...testnet, casts: ["other"] }, dir).map((s) => s.id)).toEqual(["e"]);
+  });
+
+  it("rejects a network scoped to a cast the repository does not have", () => {
+    expect(() => listCastServices({ ...testnet, id: "scoped", casts: ["demo", "nope"] }, dir)).toThrow(/scoped: no cast nope with orgs/);
+  });
+
+  it("yields only the deployed casts on testnet v4, even when every cast is in scope", () => {
+    const services = listCastServices(testnet).filter(inScope);
+    expect(new Set(services.map((s) => s.cast))).toEqual(new Set(["bhi", "cexa", "demo", "verandia", "vesta"]));
+    expect(services.map((s) => s.id)).toEqual(expect.arrayContaining(["demo-issuer-accredited", "demo-verifier-accredited", "playground-demo"]));
+    expect(services.every((s) => s.host.endsWith(".playground.testnet.verana.network"))).toBe(true);
   });
 });

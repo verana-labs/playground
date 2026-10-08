@@ -58,10 +58,14 @@ function permOf(value: string | undefined): CastService["demoPerm"] {
 }
 
 export function listCastServices(network: Network, workflowsDir: string = DEFAULT_WORKFLOWS_DIR): CastService[] {
-  const casts = fs
+  const available = fs
     .readdirSync(workflowsDir)
     .filter((d) => fs.existsSync(path.join(workflowsDir, d, "orgs")))
     .sort();
+  const deployed = network.casts;
+  const unknownCasts = deployed?.filter((c) => !available.includes(c)) ?? [];
+  if (unknownCasts.length > 0) throw new Error(`${network.id}: no cast ${unknownCasts.join(", ")} with orgs in ${workflowsDir}`);
+  const casts = deployed ? available.filter((c) => deployed.includes(c)) : available;
   return casts.flatMap((cast) => {
     const castDir = path.join(workflowsDir, cast);
     const tag = templateTag(castDir, cast);

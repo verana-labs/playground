@@ -193,7 +193,7 @@ describe("sequential runs", () => {
 
 describe("eudiVersion", () => {
   it("returns the version line", async () => {
-    writeStub({ stdout: "eudi v2.4.4 (eudi-dev)\n" });
-    expect(await eudiVersion()).toBe("eudi v2.4.4 (eudi-dev)");
+    writeStub({ stdout: "eudi v2.6.0 (eudi-dev)\n" });
+    expect(await eudiVersion()).toBe("eudi v2.6.0 (eudi-dev)");
   });
 });

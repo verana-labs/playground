@@ -25,6 +25,8 @@ The workflows use `NETWORK` for these items:
 
 To deploy to another network by hand, set `NETWORK` in the workflow and add the network to `set_network_vars`. The app has a `devnet` entry in `app/lib/network.ts` for a local build.
 
+The conformance workflows (`conformance.yml`, `conformance-tier3.yml`) test `testnet-v4`, the only network of `conformance/networks.yaml`, with the same `K8S_NAMESPACE` and `KUBECONFIG_VERANA_DEV` secrets.
+
 ## Secrets
 
 | Secret | Value |

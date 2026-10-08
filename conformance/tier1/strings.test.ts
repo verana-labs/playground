@@ -6,10 +6,12 @@ import { fetchOobInvitation } from "../lib/links";
 import { issuanceParamsFor, mintsEnabled } from "../lib/mints";
 import { mintIssuance, mintPresentation } from "../lib/playground-client";
 import { check } from "../lib/report";
+import { listScenarios } from "../lib/scenarios";
 import { serviceDid } from "../lib/service-did";
 import { collectStrings, encodingDamage } from "../lib/strings";
 import { describeNetworks } from "../lib/suite";
 import { trustClientFor } from "../lib/trust-client";
+import { expectsUntrusted } from "../lib/trust-expectation";
 
 type Damage = { source: string; path: string; value: string; damage: string };
 
@@ -22,6 +24,8 @@ function scan(source: string, value: unknown): Damage[] {
 
 const describeDamage = (damage: Damage[]): string | undefined => damage.map((d) => `${d.source}.${d.path}: ${d.damage}`).join(" | ") || undefined;
 
+const scenarios = listScenarios();
+
 describeNetworks("human-visible strings [CONF-T1-7]", (network) => {
   const trust = trustClientFor(network);
   const services = listCastServices(network);
@@ -32,11 +36,14 @@ describeNetworks("human-visible strings [CONF-T1-7]", (network) => {
       check({ ...base, check: "strings:ecs-claims" }, async () => {
         const { did } = await serviceDid(service);
         const answer = await trust.resolve(did);
+        const evidence = { did, trustProtocol: trust.protocol, trustStatus: answer?.trustStatus, evaluatedAt: answer?.evaluatedAt };
+        if (answer && answer.credentials.length === 0 && expectsUntrusted(service, scenarios))
+          return { outcome: "works", evidence: { ...evidence, expected: "an untrusted service holds no credentials to display" } };
         if (!answer || answer.credentials.length === 0)
           return {
             outcome: "unknown",
             cause: answer ? "trust backend holds no credentials for this service (cached negative, unregistered or never provisioned)" : "trust backend has no verdict",
-            evidence: { did, trustProtocol: trust.protocol, trustStatus: answer?.trustStatus, evaluatedAt: answer?.evaluatedAt },
+            evidence,
           };
         const damage = answer.credentials.flatMap((c) => scan(`${c.ecsType} claims`, c.claims));
         return { outcome: damage.length ? "broken" : "works", cause: describeDamage(damage), evidence: { did, damage } };

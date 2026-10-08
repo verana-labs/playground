@@ -17,6 +17,7 @@ import {
   type WalletProfile,
   type WalletRail,
 } from "../../app/lib/wallet-profiles";
+import { GapCellsSchema } from "./gate";
 
 const OpenId4VcOfferSchema = z.strictObject({
   grants: z.array(z.enum(VCI_GRANTS)),
@@ -33,7 +34,7 @@ const FLAGS = ["sendsWalletAttestation", "requiresMetadataKid"] as const;
 
 const GapSchema = z.strictObject({
   id: z.string().regex(/^[a-z0-9-]+$/),
-  rail: z.enum(RAILS),
+  rail: z.enum(RAILS).optional(),
   blocks: OpenId4VcOfferSchema.partial()
     .extend({
       didcommVersions: z.array(z.enum(DIDCOMM_VERSIONS)).optional(),
@@ -46,6 +47,7 @@ const GapSchema = z.strictObject({
   until: z.string().min(1),
   reference: z.url().optional(),
   expires: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  cells: GapCellsSchema.optional(),
 });
 
 export const ServicesSchema = z.strictObject({

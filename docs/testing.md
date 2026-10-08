@@ -5,8 +5,8 @@ they do. There are three layers. The first two run in GitHub Actions, the third 
 
 | Layer | When | What it proves | Where |
 |---|---|---|---|
-| CI | every pull request and push | the site builds, the listing is valid and pinned, the wallet profiles agree with what the services offer, the contract checks pass | `.github/workflows/ci.yml` |
-| Nightly conformance | 03:17 UTC every day, or by hand | the same contract checks plus live OpenID4VCI and OpenID4VP flows with a headless holder per listed wallet build | `.github/workflows/conformance.yml` |
+| CI | every pull request and push | the site builds, the listing is valid and pinned, the wallet profiles agree with what the services offer | `.github/workflows/ci.yml` |
+| Conformance | 03:17 UTC every day, by hand, and on pull requests that touch conformance, the listing or the profile schema | the contract checks plus live OpenID4VCI and OpenID4VP flows with a headless holder per listed wallet build and the reference holders, gated on the known gaps | `.github/workflows/conformance.yml` |
 | Device pass (Tier 3) | after a new wallet build, a new vs-agent image on the casts, or a chain reset | the real wallet shows the trust card, gates Add and Share on it, and the service sees the exchange complete | this document |
 
 The automated layers are described in detail in [`conformance/README.md`](../conformance/README.md), and the
@@ -14,24 +14,19 @@ reasoning behind them in the [wallet conformance testing guideline](https://gith
 
 ## CI on every change
 
-`ci.yml` runs two jobs.
+`ci.yml` runs lint, typecheck, `validate:registry`, the site unit tests and `next build`, then in `conformance/` its
+typecheck and `test:lib`. `test:lib` validates every wallet profile, compares each listed wallet's `capabilities`
+with `conformance/testnet-services.yaml` (a recommended or compatible wallet that will not work fails the build),
+and refuses mutable or wrong links in the listing (`listing-exceptions.yaml` holds the few allowed ones, each with
+an expiry date). A red `ci` job is always ours to fix.
 
-- `ci`: lint, typecheck, `validate:registry`, the site unit tests and `next build`, then in `conformance/` its
-  typecheck and `test:lib`. `test:lib` validates every wallet profile, compares each listed wallet's
-  `capabilities` with `conformance/devnet-services.yaml` (a recommended or compatible wallet that will not work
-  fails the build), and refuses mutable or wrong links in the listing (`listing-exceptions.yaml` holds the few
-  allowed ones, each with an expiry date).
-- `conformance-t1`: the Tier 1 contract checks against the live network without creating sessions. The verdict
-  table lands in the job summary and `results.json` is uploaded as an artifact.
+## Conformance
 
-A red `ci` job is always ours to fix. A red `conformance-t1` cell names the check, the service and the wallet; when
-the cause is on the service side, record it as a gap in `devnet-services.yaml` with a reference and a re-check
-date instead of weakening the check.
-
-## Nightly conformance
-
-`conformance.yml` runs Tier 1 and Tier 2 with `CONFORMANCE_MINTS=1`, so it creates real sessions on the casts, and
-reads the image tag actually serving from the cluster. Tier 2 completes every flow headless and asserts the
+`conformance.yml` runs Tier 1 and Tier 2 against `testnet-v4` with `CONFORMANCE_MINTS=1`, so it creates real sessions
+on the casts, and reads the image tag actually serving from the cluster. A `gate` job fails on any `broken` or
+`unknown` cell that no gap of `testnet-services.yaml` covers. A red cell names the check, the service and the wallet;
+when the cause is on the service side, add the cells to the gap of that cause (or a new gap) with a reference and a
+re-check date instead of weakening the check. Tier 2 completes every flow headless and asserts the
 resolver inputs a wallet decides on (trust status, issuer and verifier authorization) plus the service's own
 exchange state. It does not prove a wallet's UI, and it does not cover the DIDComm/AnonCreds rail yet. Both are
 the device pass.
@@ -102,4 +97,4 @@ said, the service state, and a note for anything unexpected. A failure is only r
 wallet log or the service state that explains it.
 
 When a device result contradicts a profile, update the profile's `capabilities` or the gap in
-`devnet-services.yaml` in the same pull request, so CI carries what the phone showed.
+`testnet-services.yaml` in the same pull request, so CI carries what the phone showed.

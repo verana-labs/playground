@@ -134,6 +134,67 @@ jobs:
       network: ${{ (github.base_ref || github.ref_name) == 'v4' && 'devnet-v4' || 'testnet-v3' }}
     secrets: inherit
 
+  protocolsoup:
+    if: (github.base_ref || github.ref_name) == 'v4' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    env:
+      PROTOCOLSOUP_REF: v4.1.1
+      PROTOCOLSOUP_SHA: 98621452523e74ede5f0bf909cdd0cd70f486f59
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Fetch the pinned ProtocolSoup source
+        run: |
+          dir="$RUNNER_TEMP/protocolsoup"
+          git init -q "$dir"
+          git -C "$dir" fetch -q --depth 1 https://github.com/ParleSec/ProtocolSoup "$PROTOCOLSOUP_SHA"
+          git -C "$dir" checkout -q FETCH_HEAD
+          test "$(git -C "$dir" rev-parse HEAD)" = "$PROTOCOLSOUP_SHA"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: ${{ runner.temp }}/protocolsoup/backend/go.mod
+          cache: false
+      - name: Build the ProtocolSoup wallet harness
+        working-directory: ${{ runner.temp }}/protocolsoup/backend
+        run: |
+          go build -trimpath -o "$RUNNER_TEMP/walletharness" ./cmd/walletharness
+          echo "PROTOCOLSOUP_BIN=$RUNNER_TEMP/walletharness" >> "$GITHUB_ENV"
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: conformance/package-lock.json
+      - run: npm ci
+        working-directory: conformance
+      - run: npm run t2:protocolsoup
+        working-directory: conformance
+        continue-on-error: true
+        env:
+          CONFORMANCE_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}-protocolsoup
+          CONFORMANCE_CASTS: ${{ inputs.casts || 'demo,eventos' }}
+          CONFORMANCE_MINTS: "1"
+      - name: Summary
+        if: always() && hashFiles('conformance/results/latest.json') != ''
+        working-directory: conformance
+        run: |
+          {
+            echo "## ProtocolSoup reference holder ${PROTOCOLSOUP_REF}, non-gating"
+            echo
+            echo "| check | service | scenario | outcome | cause |"
+            echo "| --- | --- | --- | --- | --- |"
+            jq -r '.cells[] | select(.check | startswith("protocolsoup-")) | [.check, .service, .scenario, .outcome, ((.cause // "") | gsub("\\|"; "/") | .[0:220])] | "| " + join(" | ") + " |"' results/latest.json
+            echo
+            node --experimental-strip-types lib/gate.ts --issues known-issues.yaml --results results/latest.json | sed 's/^## Conformance gate:/## ProtocolSoup against known-issues.yaml:/' || true
+          } >> "$GITHUB_STEP_SUMMARY"
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: protocolsoup-t2-${{ env.CONFORMANCE_NETWORK }}
+          path: conformance/results/
+          retention-days: 30
+          overwrite: true
+
   gate:
     needs: [tier, tier3]
     if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)

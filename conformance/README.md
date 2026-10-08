@@ -125,6 +125,26 @@ No offer carries a `tx_code` today; the issue cell records whether one did. Mint
 eudi-dev task runs at a time on the host (a lock file in the temp directory), so at most two eudi-dev processes run, a
 wallet server and the CLI driving it, and presentations pass an explicit free `--port` instead of 8085.
 
+`tier2/protocolsoup.test.ts` is a second, optional reference holder: the headless wallet harness of
+[ProtocolSoup](https://github.com/ParleSec/ProtocolSoup) (Apache-2.0, OpenID Foundation certified for OpenID4VCI and
+OpenID4VP with HAIP), started from `PROTOCOLSOUP_BIN` and driven through its `/api/import`, `/api/resolve` and `/api/present`
+endpoints. It speaks OpenID4VCI 1.0 and OpenID4VP 1.0 final only, with no Presentation Exchange, no decline path, no
+did:webvh and no status list, so it runs on v4 networks and only the DCQL `x509_hash` `direct_post.jwt` request
+(`?signer=x5c`). It plans its cells like the deep matrix and trusts nothing by default: before it starts the harness it
+reads the x5c root of each issuer's signed metadata and of each verifier's request object and passes them as
+`WALLET_MDOC_IACA_ROOT_PEM` and `WALLET_VERIFIER_X509_TRUST_ANCHOR_PEM`. Cells use clause `CONF-T2-1`:
+
+- `protocolsoup-issue`: the offer imported by the harness, then the issuance state of the service.
+- `protocolsoup-request`: the request object resolved and its signature verified against the verifier's x5c root,
+  with an `x509_hash` client id, `direct_post.jwt` and a DCQL query.
+- `protocolsoup-present`: the imported credential presented, accepted by the verifier and recorded `verified`;
+  `not-testable` while no issuer's credential could be imported.
+
+Without `PROTOCOLSOUP_BIN` and `CONFORMANCE_MINTS=1` the file records nothing, so `npm run t2` never runs it. The
+`protocolsoup` job of `conformance.yml` builds the pinned release (`go build ./cmd/walletharness` from the tag's commit),
+runs `npm run t2:protocolsoup` on the v4 network, writes every cell and its verdict against `known-issues.yaml` to the job
+summary and uploads `protocolsoup-t2-<network>`, which the gate does not read: it never fails a run.
+
 ## Tier 3
 
 `WALLET=<profile id> CONFORMANCE_NETWORK=<network id> bash tier3/run.sh` installs the wallet's build for that network,

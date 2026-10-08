@@ -238,9 +238,17 @@ issues:
 
   - match:
       tier: t2
-      check: [reference-holder-issue, reference-holder-validate, reference-holder-decode, reference-holder-haip, reference-holder-replay-offer]
+      check: [reference-holder-issue, reference-holder-validate, reference-holder-decode, reference-holder-haip, reference-holder-replay-offer, protocolsoup-issue]
       network: devnet-v4
       cast: vesta
       service: umbra
     cause: "umbra is an untrusted demo service, and app/api/demo/[serviceId]/route.ts answers every non-badge mint from it with its DIDComm /invitation, even under format=oid4vc and without a fallback flag, so the matrix takes it for an issuer of every credential: eudi-dev cannot read the invitation as an offer, and its HAIP wallet server reads it as an authorization request without client_id"
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: protocolsoup-issue
+      network: devnet-v4
+    cause: "ProtocolSoup requires the SD-JWT VC iss to equal the offer's credential_issuer before it checks the issuer signature, and every devnet vs-agent issuer signs with the bare service origin as iss while its credential_issuer is <origin>/oid4vci/issuer, so no devnet credential is imported (vs-agent finding, 2026-10-08)"
+    reference: https://github.com/ParleSec/ProtocolSoup/blob/v4.1.1/backend/cmd/walletharness/oid4vci_external.go#L1978
     expires: 2026-10-30

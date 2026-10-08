@@ -113,7 +113,7 @@ issues:
       network: testnet-v3
       cast: demo
       service: demo-untrusted
-      wallet: hologram
+      wallet: [bcwallet, hologram]
     cause: DIDComm connection scenarios have no tier 2 coverage yet
     expires: 2026-10-30
 
@@ -158,6 +158,6 @@ issues:
       network: devnet-v4
       cast: demo
       service: demo-untrusted
-      wallet: hologram
+      wallet: [bcwallet, hologram]
     cause: DIDComm connection scenarios have no tier 2 coverage yet
     expires: 2026-10-30

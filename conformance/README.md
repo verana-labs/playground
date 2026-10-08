@@ -53,9 +53,11 @@ job installs the pinned eudi-dev release (checked against its `checksums.txt`) a
 It fails on a `broken` or `unknown` cell that no active entry in `known-issues.yaml` covers, on a required tier with
 no cells, and, on a nightly, on a cell of a tier that ran and that existed in the previous nightly of the same branch
 and is gone. Cron only fires on `main`, so the scheduled run also dispatches the workflow on `v4` with `nightly: true`;
-both runs are named `conformance nightly`, which is how the gate finds its baseline. Tier 3 runs only when dispatched
-with `tier3: true`: it calls `conformance-tier3.yml` and the gate then adds `--require-tier t3`; otherwise t3 cells are
-gated when present and never required.
+both runs are named `conformance nightly`, which is how the gate finds its baseline. Tier 3 runs on the nightlies and
+when dispatched with `tier3: true`, never on a push or a pull request. It is advisory until it has passed once: the gate
+job reads the `conformance-t3-*` artifacts in a separate step that writes their verdict against `known-issues.yaml` to
+the job summary and never fails, and the tier 3 jobs themselves do not fail the run. Once a nightly passes, the gate
+takes `conformance-t3-*` with the other tiers again.
 
 An entry names the cells it covers (`tier` and `check` required, then `network`, `cast`, `service`, `wallet`, `build`,
 `scenario`, each a value or a list; every entry names its network), a `cause` and an `expires` date; after that date

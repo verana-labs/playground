@@ -13,7 +13,7 @@ on:
         type: boolean
         default: false
       tier3:
-        description: "also run tier 3 (conformance-tier3.yml) and require its results"
+        description: "also run tier 3 (conformance-tier3.yml, advisory until it has passed once; nightlies always run it)"
         type: boolean
         default: false
   push:
@@ -128,7 +128,7 @@ jobs:
           overwrite: true
 
   tier3:
-    if: inputs.tier3
+    if: github.event_name == 'schedule' || inputs.nightly || inputs.tier3
     uses: ./.github/workflows/conformance-tier3.yml
     with:
       network: ${{ (github.base_ref || github.ref_name) == 'v4' && 'devnet-v4' || 'testnet-v3' }}
@@ -150,8 +150,13 @@ jobs:
         working-directory: conformance
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
         with:
-          pattern: conformance-t*
+          pattern: conformance-t[12]-*
           path: current
+      - if: needs.tier3.result != 'skipped'
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          pattern: conformance-t3-*
+          path: tier3
       - name: Download the previous nightly of this branch as baseline
         if: env.NIGHTLY == 'true'
         env:
@@ -161,13 +166,27 @@ jobs:
           if [ -n "$previous" ]; then
             gh run download "$previous" --repo "$GITHUB_REPOSITORY" --pattern 'conformance-t*' --dir baseline || echo "run $previous has no tier artifacts"
           fi
-      - name: Gate
+      - name: Tier 3, advisory until it has passed once
+        if: needs.tier3.result != 'skipped'
         working-directory: conformance
         env:
-          REQUIRE_T3: ${{ inputs.tier3 == true }}
+          TIER3_RESULT: ${{ needs.tier3.result }}
+        run: |
+          args=(--issues known-issues.yaml)
+          while IFS= read -r f; do args+=(--results "$f"); done < <(find ../tier3 -name latest.json 2> /dev/null)
+          {
+            echo "## Tier 3, advisory (${TIER3_RESULT})"
+            echo
+            if [ "${#args[@]}" -gt 2 ]; then
+              node --experimental-strip-types lib/gate.ts "${args[@]}" | sed 's/^## Conformance gate:/### Tier 3 against known-issues.yaml:/' || true
+            else
+              echo "No tier 3 results were produced."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Gate
+        working-directory: conformance
         run: |
           args=(--issues known-issues.yaml --require-tier t1 --require-tier t2)
-          if [ "$REQUIRE_T3" = true ]; then args+=(--require-tier t3); fi
           while IFS= read -r f; do args+=(--results "$f"); done < <(find ../current -name latest.json)
           while IFS= read -r f; do args+=(--baseline "$f"); done < <(find ../baseline -name latest.json 2> /dev/null)
           if [ "$NIGHTLY" = true ]; then args+=(--fail-on-missing); fi

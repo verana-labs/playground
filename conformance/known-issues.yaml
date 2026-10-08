@@ -1,0 +1,163 @@
+issues:
+  - match:
+      tier: t1
+      check: [did-resolves, no-cleartext, serving-version, "strings:ecs-claims", tls-certificate, webvh-log-signed]
+      network: testnet-v3
+      cast: ccm
+      service: bancolombia
+    cause: ccm/bancolombia has never been deployed (no StatefulSet, no certificate); ccm/camara is up
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: serving-version
+      network: testnet-v3
+      cast: demo
+      service: [demo-issuer-accredited, demo-issuer-unaccredited, demo-issuer-untrusted, demo-untrusted, demo-verifier-accredited, demo-verifier-unaccredited, demo-verifier-untrusted, playground-demo]
+    cause: the testnet demo cast serves uiprofile .42/.43/.45 while its template pins .49; the demo workflows were not re-dispatched
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: serving-version
+      network: testnet-v3
+      cast: bhi
+      service: [institute, orchestrating-identity, tvs]
+    cause: bhi/institute, orchestrating-identity and tvs serve uiprofile .35 while the template pins .49
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: serving-version
+      network: testnet-v3
+      cast: bolivia
+      service: [banco-union, impuestos, prestamista, segip, seprec]
+    cause: bolivia serves uiprofile .31/.39 while its template pins .41
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: serving-version
+      network: testnet-v3
+      cast: cexa
+      service: [borealis, darkpool, novara]
+    cause: cexa serves uiprofile .31 while the per-org config.env pins .39
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: serving-version
+      network: testnet-v3
+      cast: verandia
+      service: [business-registry, civil-registry, meridian-bank, quickcash, tax-buro]
+    cause: verandia serves uiprofile .31/.39 while its template pins .41
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: serving-version
+      network: testnet-v3
+      cast: vesta
+      service: [helvetia-trust, iso-certification, normacert, umbra, vesta, vesta-iberia, vesta-nordics, vesta-portal, vesta-repair-network, zenith]
+    cause: vesta serves uiprofile .31 while its template pins .41 (.39 for vesta-portal and vesta-repair-network)
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: metadata-both-shapes
+      network: testnet-v3
+      cast: [bolivia, ccm, cexa, verandia, vesta]
+      service: [segip, seprec, camara, aurum, novara, business-registry, civil-registry, umbra, vesta, zenith]
+    cause: images up to .41 publish no display or claims on the credential configuration itself
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: webvh-log-signed
+      network: testnet-v3
+      cast: [demo, vesta]
+      service: [demo-untrusted, playground-demo, helvetia-trust, iso-certification, normacert, umbra, vesta, vesta-iberia, vesta-nordics, vesta-portal, vesta-repair-network, zenith]
+    cause: did:webvh logs created before the 2026-08-03 fix; only reset_identity repairs them
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: short-link-browser
+      network: testnet-v3
+      cast: [demo, eventos]
+      service: [demo-issuer-accredited, demo-issuer-unaccredited, taquilla]
+    cause: the short link answers 502 to a browser Accept header
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: "strings:invitation-label"
+      network: testnet-v3
+      cast: eventos
+      service: [evento-costa-rica, evento-guatemala, evento-panama]
+    cause: "*-00_core.yml sets didcommLabel with yq env(), which parses a name containing ': ' as a map; it needs strenv()"
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: "strings:invitation-label"
+      network: testnet-v3
+      cast: demo
+      service: [demo-issuer-untrusted, demo-verifier-untrusted]
+    cause: the untrusted demo services answer with a plain invitation page that has no label to read
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: ["link:issue", "link:present"]
+      network: testnet-v3
+      cast: demo
+      service: demo-untrusted
+      wallet: [bcwallet, hologram]
+    cause: DIDComm connection scenarios have no tier 2 coverage yet
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: resolver-production-flag
+      network: testnet-v3
+    cause: the resolver reports production true for demo DIDs while networks.yaml marks testnet as not production; to raise with the team (last seen 2026-09-18, tier 2 has not run on testnet since)
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: metadata-both-shapes
+      network: devnet-v4
+      cast: [bhi, cexa, demo, verandia, vesta]
+      service: [caledonian, cirrus, northbank, aurum, novara, demo-issuer-accredited, demo-issuer-unaccredited, demo-issuer-untrusted, business-registry, civil-registry, umbra, vesta, zenith]
+    cause: vs-agent main serves only the OID4VCI 1.0 credential_metadata.{display,claims}, while draft 13 wallets (Inji) need them at the top level of the credential configuration
+    reference: https://github.com/verana-labs/vs-agent
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: "strings:issuer-metadata"
+      network: devnet-v4
+      cast: [bhi, cexa, demo, verandia, vesta]
+      service: [caledonian, cirrus, northbank, aurum, novara, demo-issuer-unaccredited, demo-issuer-untrusted, business-registry, civil-registry, umbra, vesta, zenith]
+    cause: these issuers list the ECS credential configurations of the devnet ECS Ecosystem, whose Type Metadata at ecs-ecosystem.devnet.verana.network/vt/vct/5 and /vt/vct/9 answers 404
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: ["strings:invitation-label", "link:issue", "link:present"]
+      network: devnet-v4
+      cast: demo
+      service: [demo-issuer-accredited, demo-issuer-unaccredited, demo-issuer-untrusted, demo-verifier-accredited, demo-verifier-unaccredited, demo-verifier-untrusted]
+    cause: "vs-agent v2 answers the DIDComm short links with a DIDComm v2 out-of-band invitation (type out-of-band/2.0/invitation, no @type and no label), which lib/links.ts only parses in its v1 shape; the Hologram builds read only v1 invitations too"
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: ["link:issue", "link:present"]
+      network: devnet-v4
+      cast: demo
+      service: demo-untrusted
+      wallet: [bcwallet, hologram]
+    cause: DIDComm connection scenarios have no tier 2 coverage yet
+    expires: 2026-10-30

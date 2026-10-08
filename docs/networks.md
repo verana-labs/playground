@@ -27,6 +27,8 @@ The workflows use `NETWORK` for these items:
 
 To run a cast workflow on devnet, select the `v4` branch in the "Run workflow" menu.
 
+The conformance workflow (`conformance.yml`) follows the same rule with the ids of `conformance/networks.yaml`: it tests `devnet-v4` on `v4` and `testnet-v3` on the other branches, and a pull request tests the network of its base branch. GitHub runs scheduled workflows only on the default branch, so the nightly on `main` also starts the workflow on `v4` with `nightly: true`. That only works once `main` carries this version of `conformance.yml`.
+
 ## Secrets for each network
 
 The workflows set `SECRET_SUFFIX` from the branch: `_V4` on the `v4` branch, empty on the other branches. They read the secrets of the network by name, so a devnet run never uses a testnet secret:
@@ -44,7 +46,7 @@ CAUTION: do not use `secrets.X_V4 || secrets.X` instead. When `X_V4` is empty, t
 | `KUBECONFIG_VERANA_DEV` | `KUBECONFIG_VERANA_DEV` | The same cluster for both networks. |
 | variable `CLUSTER_POD_CIDR` | variable `CLUSTER_POD_CIDR` | Optional. The pod CIDR of the cluster (default `10.2.0.0/16`). The V4 agents trust Admin API calls from this network. |
 
-Each deploy workflow and each core workflow stop at the "Check network secrets" step when the namespace secret of the branch is empty. The casts that still use the Verana V3 model (bolivia, ccm, eventos) stop at the "Check network protocol" step on the `v4` branch.
+Each deploy workflow, each core workflow and the tier jobs of `conformance.yml` stop at the "Check network secrets" step when the namespace secret of the branch is empty. The casts that still use the Verana V3 model (bolivia, ccm, eventos) stop at the "Check network protocol" step on the `v4` branch.
 
 ## The app
 

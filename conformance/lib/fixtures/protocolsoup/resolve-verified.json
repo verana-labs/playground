@@ -1,0 +1,53 @@
+{
+  "status": 200,
+  "body": {
+    "client_id": "x509_hash:w5dHa_PtVP97vV49-BwLFaKg-n021dOB3abj9W-DTYc",
+    "credential_matches": {
+      "query_type": "dcql",
+      "matched": false,
+      "matched_credential_count": 0
+    },
+    "dcql_query": {
+      "credentials": [
+        {
+          "claims": [
+            {
+              "path": [
+                "demoId"
+              ]
+            },
+            {
+              "path": [
+                "name"
+              ]
+            }
+          ],
+          "format": "dc+sd-jwt",
+          "id": "cs-8",
+          "meta": {
+            "vct_values": [
+              "https://playground-demo.playground.devnet.verana.network/vt/vct/8"
+            ]
+          }
+        }
+      ]
+    },
+    "nonce": "eBEYRGLuVLfYj4e9txKnPsTTXcbpfI3vPFRThRJaT80",
+    "request_id": "ext-e82909ff5e41fcb4a8a7bdb5",
+    "request_uri": "https://demo-verifier-accredited.playground.devnet.verana.network/oid4vp/verifier/authorization-requests/3737f81e-d05d-4c7b-b6f7-51b56c128218",
+    "request_uri_source": "openid4vp_uri",
+    "response_mode": "direct_post.jwt",
+    "response_uri": "https://demo-verifier-accredited.playground.devnet.verana.network/oid4vp/verifier/authorize?session=3737f81e-d05d-4c7b-b6f7-51b56c128218",
+    "state": "1nZMDEzXRBUDGqKjDkPG3MOVZd1Oe3a_h0oQvvqdzuw",
+    "trust": {
+      "trusted_target": false,
+      "requires_external_approval": true,
+      "allow_external_verifiers": true,
+      "client_id_scheme": "x509_hash",
+      "request_object_verification": {
+        "verified": true,
+        "key_type": "EC"
+      }
+    }
+  }
+}

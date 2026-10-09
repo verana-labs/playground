@@ -19,10 +19,10 @@ Proves, on every change, which listed wallets work against the deployed playgrou
   checks the pins against GitHub and the stores (not in CI).
 - `networks.yaml` the networks a run can target. `CONFORMANCE_NETWORK=testnet-v3` selects one; by
   default every testable network runs and the others are reported as not yet testable.
-- `tier1/` (planned, next PR) contract checks: what a wallet fetches, asserted without running a wallet.
+- `tier1/` contract checks: what a wallet fetches, asserted without running a wallet.
 - `tier2/` headless OpenID4VCI/OpenID4VP flows with the wallets' own libraries, asserting the resolver inputs of
   the verdict. Nightly only, behind `CONFORMANCE_MINTS=1`. See "Tier 2" below.
-- `tier3/` (planned) device spot-checks: rendering and gating only.
+- Tier 3 is the device pass, run by hand on a phone: see [`docs/testing.md`](../docs/testing.md).
 
 This directory is its own npm package so that the Tier 2 native dependencies never enter the site build.
 

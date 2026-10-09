@@ -18,6 +18,8 @@ builds:
       - https://apps.apple.com/app/sprucekit-showcase/id6599845610
     identity:
       package: com.spruceid.mobilesdkexample
+      appStoreId: "6599845610"
+      bundle: com.spruceid.mobile
       version: "1.19.0"
     platforms: [android, ios]
     presumptive: [ios]
@@ -27,3 +29,13 @@ quirks:
   locksOnBackground: false
   viewTree: readable
   notes: "Shows the credential under its raw vct URL because our Type Metadata has no display yet (fix in progress). Link schemes as registered by the Play build's manifest. Only the offer and request links of the default mint were exercised; the view tree and the locking behaviour have not been characterised"
+capabilities:
+  openid4vc:
+    grants: { pre-authorized_code: yes }
+    proofTypes: { jwt: yes }
+    formats: { dc+sd-jwt: yes }
+    queryLanguages: { dcql: yes }
+    clientIdPrefixes: { x509_hash: yes }
+    responseModes: { direct_post.jwt: yes }
+    sendsWalletAttestation: no
+    requiresMetadataKid: no

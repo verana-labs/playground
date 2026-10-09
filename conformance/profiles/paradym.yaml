@@ -18,6 +18,8 @@ builds:
       - https://apps.apple.com/app/paradym-wallet/id6449846111
     identity:
       package: id.paradym.wallet
+      appStoreId: "6449846111"
+      bundle: id.paradym.wallet
       version: "1.20.2"
     platforms: [android, ios]
     presumptive: [ios]
@@ -37,3 +39,13 @@ quirks:
   locksOnBackground: true
   viewTree: readable
   notes: "Asks for its own PIN on every deep link, on a keypad it draws itself that takes taps only, no injected text. Link schemes as registered upstream in apps/wallet/base.app.config.js"
+capabilities:
+  openid4vc:
+    grants: { pre-authorized_code: yes }
+    proofTypes: { jwt: yes }
+    formats: { dc+sd-jwt: yes }
+    queryLanguages: { dcql: yes }
+    clientIdPrefixes: { x509_hash: yes }
+    responseModes: { direct_post.jwt: yes }
+    sendsWalletAttestation: no
+    requiresMetadataKid: no

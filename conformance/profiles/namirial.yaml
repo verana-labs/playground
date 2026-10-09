@@ -18,6 +18,8 @@ builds:
       - https://apps.apple.com/app/namirial-wallet/id6739498969
     identity:
       package: com.namirial.wallet
+      appStoreId: "6739498969"
+      bundle: com.namirial.wallet
       version: "1.13.9"
     platforms: [android, ios]
     presumptive: [ios]
@@ -27,3 +29,13 @@ quirks:
   locksOnBackground: false
   viewTree: readable
   notes: "Sets FLAG_SECURE, so screenshots come out black: read the screens through the view tree. Titles the credential with its raw vct URL because our Type Metadata has no display yet (fix in progress). Unlocks with the phone's device credential. Link schemes as registered by the Play build's manifest, leaving out its vendor-prefixed ones. Only the offer and request links of the default mint were exercised; the locking behaviour has not been characterised"
+capabilities:
+  openid4vc:
+    grants: { pre-authorized_code: yes }
+    proofTypes: { jwt: yes }
+    formats: { dc+sd-jwt: yes, mso_mdoc: yes }
+    queryLanguages: { dcql: yes }
+    clientIdPrefixes: { x509_hash: yes }
+    responseModes: { direct_post.jwt: yes }
+    sendsWalletAttestation: no
+    requiresMetadataKid: no

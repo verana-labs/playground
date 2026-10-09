@@ -1,0 +1,13 @@
+exceptions:
+  - wallet: talao-wallet
+    value: https://github.com/TalaoDAO/AltMe/tree/TALAO
+    reason: "Talao builds the store app from the TALAO branch of AltMe, which has no tags, so nothing ties store version 3.7.0 to a commit"
+    expires: "2026-11-16"
+  - wallet: wwwallet
+    value: https://github.com/verana-labs/wallet-frontend
+    reason: "wwwallet.yml redeploys the hosted instance from the wallet-frontend branch of the network (v4 on devnet, master on testnet); pin frontend_ref to a commit and record it as identity.ref"
+    expires: "2026-11-16"
+  - wallet: intexus-wallet
+    value: https://github.com/verana-labs/wallet-frontend
+    reason: "Same deployment as wwwallet with the intexus brand, redeployed from the wallet-frontend branch of the network"
+    expires: "2026-11-16"

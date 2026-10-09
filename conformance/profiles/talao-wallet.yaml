@@ -18,6 +18,8 @@ builds:
       - https://apps.apple.com/app/talao-wallet/id1582183266
     identity:
       package: co.talao.wallet
+      appStoreId: "1582183266"
+      bundle: co.talao.wallet
       version: "3.7.0"
     platforms: [android, ios]
     presumptive: [ios]
@@ -27,3 +29,13 @@ quirks:
   locksOnBackground: false
   viewTree: readable
   notes: "Takes an offer only after a cold start and its PIN unlock; a warm delivery failed silently. Names the verifier by its raw x509_hash client_id. Link schemes as registered by the Play build's manifest, leaving out its vendor-prefixed ones. Only the offer and request links of the default mint were exercised; the view tree and the locking behaviour have not been characterised"
+capabilities:
+  openid4vc:
+    grants: { pre-authorized_code: yes }
+    proofTypes: { jwt: yes }
+    formats: { dc+sd-jwt: yes }
+    queryLanguages: { dcql: yes }
+    clientIdPrefixes: { x509_hash: yes }
+    responseModes: { direct_post.jwt: yes }
+    sendsWalletAttestation: no
+    requiresMetadataKid: no

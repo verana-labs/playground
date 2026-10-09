@@ -18,6 +18,8 @@ builds:
       - https://apps.apple.com/app/lissi-id-wallet/id6475958390
     identity:
       package: io.lissi.mobile.android
+      appStoreId: "6475958390"
+      bundle: io.lissi.wallet.ios
       version: "3.2.0"
     platforms: [android, ios]
     presumptive: [ios]
@@ -27,3 +29,13 @@ quirks:
   locksOnBackground: false
   viewTree: readable
   notes: "Unlocks with the phone's device credential. Only the offer and request links of the default mint were exercised; the view tree and the locking behaviour have not been characterised"
+capabilities:
+  openid4vc:
+    grants: { pre-authorized_code: yes }
+    proofTypes: { jwt: yes }
+    formats: { dc+sd-jwt: yes }
+    queryLanguages: { dcql: yes }
+    clientIdPrefixes: { x509_hash: yes }
+    responseModes: { direct_post.jwt: yes }
+    sendsWalletAttestation: no
+    requiresMetadataKid: no

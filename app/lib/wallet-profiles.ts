@@ -2,6 +2,8 @@ import fs from "node:fs";
 import path from "node:path";
 import yaml from "js-yaml";
 import { z } from "zod";
+import { NETWORK } from "./network";
+import { isCommit, parseGitHubLink, parseStoreLink, releaseTag } from "./wallet-refs";
 
 export const RAILS = ["anoncreds", "openid4vc-sdjwt"] as const;
 export const BUILD_KINDS = ["store", "publisher", "fork", "browser"] as const;
@@ -10,6 +12,12 @@ export const VCI_DRAFTS = ["draft11", "draft13", "draft15", "v1"] as const;
 export const VP_QUERY_LANGUAGES = ["dcql", "presentation_exchange"] as const;
 export const VP_CLIENT_ID_PREFIXES = ["x509_hash", "did"] as const;
 export const VP_RESPONSE_MODES = ["direct_post", "direct_post.jwt"] as const;
+export const SUPPORT = ["yes", "no", "unknown"] as const;
+export const VCI_GRANTS = ["pre-authorized_code", "authorization_code"] as const;
+export const VCI_PROOF_TYPES = ["jwt", "jwt+key_attestation", "attestation"] as const;
+export const VC_FORMATS = ["dc+sd-jwt", "vc+sd-jwt", "mso_mdoc"] as const;
+export const CLIENT_ID_PREFIXES = ["x509_hash", "x509_san_dns", "did", "redirect_uri"] as const;
+export const DIDCOMM_VERSIONS = ["v1", "v2"] as const;
 export const AS_DOCUMENTS = ["oauth-authorization-server", "openid-configuration"] as const;
 export const UNLOCK_RECIPES = ["password", "passcode", "pinfield", "keypad6", "device-credential", "none"] as const;
 export const VIEW_TREES = ["readable", "ocr", "browser"] as const;
@@ -66,6 +74,8 @@ const IdentitySchema = z.object({
   repo: z.url().optional(),
   ref: z.string().min(1).optional(),
   url: z.url().optional(),
+  appStoreId: z.string().regex(/^\d+$/).optional(),
+  bundle: z.string().min(1).optional(),
 });
 
 const IncompatibilitySchema = z.object({
@@ -107,7 +117,49 @@ const QuirksSchema = z.object({
   notes: z.string().optional(),
 });
 
-const BRANCH_LIKE = /\/|^(main|master|develop|dev|trunk)$/;
+const Support = z.enum(SUPPORT);
+const supportOf = <const T extends readonly [string, ...string[]]>(values: T) => z.partialRecord(z.enum(values), Support);
+
+const OpenId4VcCapabilitiesSchema = z.strictObject({
+  grants: supportOf(VCI_GRANTS),
+  proofTypes: supportOf(VCI_PROOF_TYPES),
+  formats: supportOf(VC_FORMATS),
+  queryLanguages: supportOf(VP_QUERY_LANGUAGES),
+  clientIdPrefixes: supportOf(CLIENT_ID_PREFIXES),
+  responseModes: supportOf(VP_RESPONSE_MODES),
+  sendsWalletAttestation: Support,
+  requiresMetadataKid: Support,
+});
+
+const DidCommCapabilitiesSchema = z.strictObject({ versions: supportOf(DIDCOMM_VERSIONS) });
+
+const CapabilitiesSchema = z.strictObject({
+  openid4vc: OpenId4VcCapabilitiesSchema.optional(),
+  didcomm: DidCommCapabilitiesSchema.optional(),
+});
+
+function refProblem(build: z.infer<typeof BuildSchema>): string | null {
+  const { repo, ref } = build.identity;
+  if (!ref || isCommit(ref)) return null;
+  const repoKey = repo ? parseGitHubLink(repo)?.repo : undefined;
+  const released = [build.obtain].flat().some((url) => {
+    const link = parseGitHubLink(url);
+    return link?.repo === repoKey && releaseTag(link) === ref;
+  });
+  return released ? null : `identity.ref ${ref} is neither a 40-char commit nor the tag of the release the build is obtained from`;
+}
+
+function storeProblems(build: z.infer<typeof BuildSchema>): string[] {
+  return [build.obtain].flat().flatMap((url) => {
+    const store = parseStoreLink(url);
+    if (!store) return [];
+    if (!store.id) return [`${url} is not a canonical store link`];
+    if (store.store === "play")
+      return store.id === build.identity.package ? [] : [`${url} lists ${store.id}, not identity.package`];
+    const problems = store.id === build.identity.appStoreId ? [] : [`${url} lists id${store.id}, not identity.appStoreId`];
+    return build.identity.bundle ? problems : [...problems, "an App Store build needs identity.bundle"];
+  });
+}
 
 function demoParamsIssues(presentation: z.infer<typeof PresentationSchema>, demoParams: string): string[] {
   const parts = new Set(demoParams.split("&").filter(Boolean));
@@ -131,6 +183,7 @@ export const WalletProfileSchema = z
     didcomm: DidCommSchema.optional(),
     builds: z.array(BuildSchema).min(1),
     quirks: QuirksSchema,
+    capabilities: CapabilitiesSchema,
   })
   .superRefine((profile, ctx) => {
     const issue = (message: string, p: (string | number)[] = []) =>
@@ -142,6 +195,11 @@ export const WalletProfileSchema = z
     if (profile.openid4vc)
       for (const m of demoParamsIssues(profile.openid4vc.presentation, profile.openid4vc.demoParams))
         issue(m, ["openid4vc", "demoParams"]);
+    const caps = profile.capabilities;
+    if (profile.rails.includes("openid4vc-sdjwt") !== Boolean(caps.openid4vc))
+      issue("capabilities.openid4vc goes with the openid4vc-sdjwt rail, and only with it", ["capabilities", "openid4vc"]);
+    if (profile.rails.includes("anoncreds") !== Boolean(caps.didcomm))
+      issue("capabilities.didcomm goes with the anoncreds rail, and only with it", ["capabilities", "didcomm"]);
     if (!profile.builds.some((b) => b.listed)) issue("at least one build must be listed", ["builds"]);
     profile.builds.forEach((build, i) => {
       const at = (...p: (string | number)[]) => ["builds", i, ...p];
@@ -151,15 +209,23 @@ export const WalletProfileSchema = z
       if (build.kind !== "browser" && build.platforms.includes("android") && !build.identity.package)
         issue("an android build needs identity.package", at("identity"));
       if (build.kind === "browser" && build.device) issue("a browser build has no device block", at("device"));
-      if (build.kind === "fork") {
-        const { repo, ref } = build.identity;
-        if (!repo || !ref) issue("a fork build needs identity.repo and identity.ref (a commit or a tag)", at("identity"));
-        else if (BRANCH_LIKE.test(ref)) issue(`identity.ref ${ref} looks like a branch; name a commit or a tag`, at("identity", "ref"));
-      }
+      if (build.kind === "fork" && (!build.identity.repo || !build.identity.ref))
+        issue("a fork build needs identity.repo and identity.ref (a commit or a tag)", at("identity"));
+      const ref = refProblem(build);
+      if (ref) issue(ref, at("identity", "ref"));
+      for (const m of storeProblems(build)) issue(m, at("obtain"));
       const presentation = build.presentation ?? profile.openid4vc?.presentation;
       const demoParams = build.demoParams ?? profile.openid4vc?.demoParams;
       if (presentation && demoParams !== undefined)
         for (const m of demoParamsIssues(presentation, demoParams)) issue(m, at("demoParams"));
+      if (build.listed && presentation && caps.openid4vc) {
+        const refused = [
+          caps.openid4vc.queryLanguages[presentation.query] === "no" && presentation.query,
+          caps.openid4vc.clientIdPrefixes[presentation.clientId] === "no" && presentation.clientId,
+          caps.openid4vc.responseModes[presentation.responseMode] === "no" && presentation.responseMode,
+        ].filter(Boolean);
+        if (refused.length) issue(`the listing mints ${refused.join(", ")}, which capabilities say the build does not take`, at("presentation"));
+      }
     });
   });
 
@@ -169,13 +235,14 @@ export type WalletPresentation = z.infer<typeof PresentationSchema>;
 
 export const defaultProfilesDir = (): string => path.join(process.cwd(), "conformance", "profiles");
 
-export function listWalletProfiles(dir: string = defaultProfilesDir()): WalletProfile[] {
+export function listWalletProfiles(dir: string = defaultProfilesDir(), network: string = NETWORK): WalletProfile[] {
   return fs
     .readdirSync(dir)
     .filter((f) => f.endsWith(".yaml"))
     .sort()
     .map((file) => {
-      const raw = yaml.load(fs.readFileSync(path.join(dir, file), "utf8"), { schema: yaml.JSON_SCHEMA });
+      const text = fs.readFileSync(path.join(dir, file), "utf8").replaceAll("__NETWORK__", network);
+      const raw = yaml.load(text, { schema: yaml.JSON_SCHEMA });
       const parsed = WalletProfileSchema.safeParse(raw);
       if (!parsed.success) throw new Error(`${file}: ${parsed.error.message}`);
       if (`${parsed.data.id}.yaml` !== file) throw new Error(`${file}: file name must be ${parsed.data.id}.yaml`);

@@ -6,7 +6,7 @@
 # and adds the per-org environment (agent mode, ECS claims, account mnemonic,
 # OpenID4VC, demo flag) from the org's config.env.
 chartSource: oci://registry-1.docker.io/veranalabs/vs-agent-chart
-chartVersion: v2.0.0-dev.88
+chartVersion: v2.0.0-dev.91
 
 global:
   domain: __DOMAIN__
@@ -16,7 +16,7 @@ replicas: 1
 
 image:
   repository: veranalabs/vs-agent
-  tag: v2.0.0-dev.88
+  tag: v2.0.0-dev.91
 
 adminPort: 3000
 enablePublicApiSwagger: true

@@ -63,7 +63,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        tier: [t1, t2]
+        tier: ${{ fromJSON((github.base_ref || github.ref_name) == 'v4' && '["t1","t2","t2-wwwallet"]' || '["t1","t2"]') }}
     steps:
       - name: Check network secrets
         env:
@@ -108,17 +108,32 @@ jobs:
       - run: npm ci
       - run: npm ci
         working-directory: conformance
+      - name: Install headless Chromium for the wwWallet journeys
+        if: matrix.tier == 't2-wwwallet'
+        run: npx playwright-core install --with-deps --only-shell chromium
+        working-directory: conformance
       - run: npm run ${{ matrix.tier }}
         working-directory: conformance
         continue-on-error: true
         env:
           CONFORMANCE_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.tier }}
-          CONFORMANCE_CASTS: ${{ inputs.casts || 'demo,eventos' }}
+          CONFORMANCE_CASTS: ${{ matrix.tier == 't2-wwwallet' && 'bhi,cexa,verandia,vesta' || inputs.casts || 'demo,eventos' }}
           CONFORMANCE_MINTS: "1"
           CONFORMANCE_K8S_NAMESPACE: ${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}
       - if: always()
         run: npm run summary >> "$GITHUB_STEP_SUMMARY"
         working-directory: conformance
+      - name: wwWallet journeys summary
+        if: always() && matrix.tier == 't2-wwwallet' && hashFiles('conformance/results/latest.json') != ''
+        working-directory: conformance
+        run: |
+          {
+            echo "## wwWallet journeys on ${CONFORMANCE_NETWORK}, headless with a virtual passkey"
+            echo
+            echo "| use case | service | step | outcome | wallet screen | cause |"
+            echo "| --- | --- | --- | --- | --- | --- |"
+            jq -r '.cells[] | select(.check == "wwwallet-journey") | [.cast, .service, .scenario, .outcome, (.evidence.screen // ""), ((.cause // "") | .[0:220])] | map(gsub("\\|"; "/")) | "| " + join(" | ") + " |"' results/latest.json
+          } >> "$GITHUB_STEP_SUMMARY"
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:

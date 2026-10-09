@@ -145,6 +145,26 @@ Without `PROTOCOLSOUP_BIN` and `CONFORMANCE_MINTS=1` the file records nothing, s
 runs `npm run t2:protocolsoup` on the v4 network, writes every cell and its verdict against `known-issues.yaml` to the job
 summary and uploads `protocolsoup-t2-<network>`, which the gate does not read: it never fails a run.
 
+`tier2/wwwallet-journeys.test.ts` walks the hosted wwWallet of the network (`hosted` in `personal-wallets.yaml`) through
+the vesta, verandia, cexa and bhi use cases on a v4 network, in headless Chromium (`playwright-core`). Each use case signs
+up a throwaway wallet with a CDP virtual WebAuthn authenticator that has PRF, so no passkey, account or person is
+involved. Every step mints its offer or request through the playground API right before the wallet opens it (devnet
+offers expire after about three minutes) and writes a `wwwallet-journey` cell, clause `CONF-T2-1`, scenario
+`<credential>-offer`, `-request` or `-login`:
+
+- an offer: the trust screen reads TRUSTED and an authorized issuer with Continue enabled, then the service records the
+  issuance as done.
+- a request or a portal login: TRUSTED and an authorized verifier with Next enabled, then wwWallet reports a successful
+  sharing and the service records it done and verified, with the portal's decision for a login.
+- a verifier that must be refused (QuickCash, DarkPool, Halcyon): the trust screen says it is not an authorized verifier
+  and Next is disabled, and the service records nothing.
+
+A step whose credential the wallet never received is `unknown`. A wallet or mint error is retried once with a fresh mint,
+then `unknown`. Screenshots of the trust screen and of the result land in `results/<run id>/wwwallet/`. Locally it runs
+with `npm run t2` when its casts are in scope, after `npx playwright-core install --only-shell chromium`. CI runs it on v4
+as the `t2-wwwallet` entry of the tier job (`npm run t2-wwwallet` with those four casts), gated like the rest of tier 2,
+and lists every journey cell in the job summary.
+
 ## Tier 3
 
 `WALLET=<profile id> CONFORMANCE_NETWORK=<network id> bash tier3/run.sh` installs the wallet's build for that network,

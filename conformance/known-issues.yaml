@@ -252,3 +252,33 @@ issues:
     cause: "ProtocolSoup requires the SD-JWT VC iss to equal the offer's credential_issuer before it checks the issuer signature, and every devnet vs-agent issuer signs with the bare service origin as iss while its credential_issuer is <origin>/oid4vci/issuer, so no devnet credential is imported (vs-agent finding, 2026-10-08)"
     reference: https://github.com/ParleSec/ProtocolSoup/blob/v4.1.1/backend/cmd/walletharness/oid4vci_external.go#L1978
     expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: wwwallet-journey
+      network: devnet-v4
+      cast: vesta
+      service: [umbra, vesta, vesta-portal, zenith]
+      scenario: [ecs-badge-offer, ecs-badge-login]
+    cause: "the ecs-badge mint answers {kind: unsupported} on vesta, zenith and umbra (2026-10-08), so wwWallet gets no badge offer and the Vesta portal login has no badge to present"
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: wwwallet-journey
+      network: devnet-v4
+      cast: bhi
+      service: [halcyon, meridian-tech]
+      scenario: [bhi-employment-request, bhi-right-to-work-request]
+    cause: "the bhi DCQL queries list every schema property as a claim with no claim_sets, so they ask for portrait and rtwExpiryDate, which no right-to-work credential carries, and endDate, which the current employment lacks one time in three: wwWallet answers Insufficient Credentials before its trust screen, so Halcyon's Q3 refusal is never shown"
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: wwwallet-journey
+      network: devnet-v4
+      cast: cexa
+      service: novara
+      scenario: cexa-kyc-request
+    cause: "GET /api/demo/novara/proof/<id> answers 404 unknown service: the proof route only serves the verifier and untrusted roles, and novara has the issuer role although it also verifies"
+    expires: 2026-10-30

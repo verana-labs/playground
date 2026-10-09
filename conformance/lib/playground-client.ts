@@ -6,6 +6,7 @@ import type { Network } from "./network";
 export type Rail = "anoncreds" | "openid4vc-sdjwt";
 export type Mint = { rail: "oid4vc" | "didcomm"; kind: string; url: string; id: string | null };
 export type Login = { evento: string; rol: string };
+export type PortalLogin = { route: "verandia-login" | "portal-login"; params: Record<string, string> };
 
 const DemoMintSchema = z.looseObject({
   kind: z.string(),
@@ -66,6 +67,18 @@ export async function mintPresentation(
   }
   const url = withParams(`${playground(network)}/api/demo/${service.id}`, { format: opts.format, credential: opts.credential }, opts.demoParams);
   return fromDemo(await fetchJson(url, { timeoutMs: 40_000 }), opts.format);
+}
+
+export async function mintPortalLogin(network: Network, login: PortalLogin, format: Rail): Promise<Mint> {
+  const url = withParams(`${playground(network)}/api/${login.route}`, { ...login.params, format }, "");
+  const mint = LoginMintSchema.parse(await fetchJson(url, { timeoutMs: 40_000 }));
+  return { rail: mint.rail, kind: login.route, url: mint.url, id: mint.id };
+}
+
+export async function portalLoginState(network: Network, login: PortalLogin, mint: Mint): Promise<z.infer<typeof LoginStateSchema>> {
+  if (!mint.id) throw new Error("a plain invitation has no exchange to poll");
+  const query = new URLSearchParams({ ...login.params, rail: mint.rail });
+  return LoginStateSchema.parse(await fetchJson(`${playground(network)}/api/${login.route}/${encodeURIComponent(mint.id)}?${query}`));
 }
 
 export async function issuanceState(network: Network, service: CastService, mint: Mint): Promise<z.infer<typeof IssuanceStateSchema>> {

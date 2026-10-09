@@ -19,6 +19,11 @@ on:
           - provision
           - all
         default: all
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   vesta-portal:
@@ -26,4 +31,5 @@ jobs:
     with:
       org: vesta-portal
       step: ${{ inputs.step }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

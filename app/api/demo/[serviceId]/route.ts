@@ -1,6 +1,13 @@
 import { NextResponse } from "next/server";
 import { getDemoService } from "@/app/lib/demo-services";
-import { adminBase, adminJson, CAST_DOMAIN, demoVtjscUrl, VTJSC_URL } from "@/app/lib/demo-admin";
+import {
+  adminBase,
+  adminJson,
+  CAST_DOMAIN,
+  demoVtjscUrl,
+  DIDCOMM_INVITATION_VERSION,
+  VTJSC_URL,
+} from "@/app/lib/demo-admin";
 import { PROTOCOL } from "@/app/lib/network";
 import { ECS_ECOSYSTEM_DID } from "@/app/lib/site";
 import { vtjscIdFor } from "@/app/lib/vtjsc";
@@ -348,6 +355,25 @@ async function anoncredsAttrNames(jscUrl: string): Promise<string[] | null> {
   }
 }
 
+// AnonCreds needs every schema attribute, and VTJSC-derived schemas add an id the demo claims lack.
+async function withEverySchemaAttribute(
+  demoClaims: Claim[],
+  jscUrl: string,
+): Promise<Claim[]> {
+  const claims = [...demoClaims];
+  const attrNames = await anoncredsAttrNames(jscUrl);
+  if (!attrNames) return claims;
+  const present = new Set(claims.map((c) => c.name));
+  for (const name of attrNames) {
+    if (!present.has(name))
+      claims.push({
+        name,
+        value: name === "id" ? `urn:uuid:${crypto.randomUUID()}` : "-",
+      });
+  }
+  return claims;
+}
+
 function str(body: unknown, key: string): string | null {
   if (!body || typeof body !== "object") return null;
   const value = (body as Record<string, unknown>)[key];
@@ -483,9 +509,13 @@ export async function GET(
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             credentialDefinitionId,
-            claims: kind.claims(serviceId, applicant, search),
+            claims: await withEverySchemaAttribute(
+              kind.claims(serviceId, applicant, search),
+              kind.jscUrl,
+            ),
             // Without autoAccept the exchange stops at request-received.
             autoAccept: true,
+            didcommVersion: DIDCOMM_INVITATION_VERSION,
           }),
         });
         return NextResponse.json({
@@ -500,6 +530,7 @@ export async function GET(
         body: JSON.stringify({
           requestedCredentials: [{ jsonSchemaCredentialId: kind.jscUrl }],
           autoAccept: true,
+          didcommVersion: DIDCOMM_INVITATION_VERSION,
         }),
       });
       return NextResponse.json({
@@ -567,26 +598,10 @@ export async function GET(
           { error: `no ${kind.label} credential type on this issuer` },
           { status: 503 },
         );
-      // AnonCreds requires a value for every schema attribute. Schemas
-      // derived from a VTJSC carry credentialSubject.id in attrNames, which
-      // the demo claim sets do not provide (and the agent refuses empty
-      // values) - fill the gap with a per-scan subject urn. Self-healing:
-      // if the derivation ever stops including id, the probe finds nothing
-      // missing and adds nothing.
-      // Copy before the attr-fill below: a claims function may hand out a
-      // shared array, and pushing into it would pollute every later offer.
-      const claims = [...kind.claims(serviceId, applicant, search)];
-      const attrNames = await anoncredsAttrNames(kind.jscUrl);
-      if (attrNames) {
-        const present = new Set(claims.map((c) => c.name));
-        for (const name of attrNames) {
-          if (!present.has(name))
-            claims.push({
-              name,
-              value: name === "id" ? `urn:uuid:${crypto.randomUUID()}` : "-",
-            });
-        }
-      }
+      const claims = await withEverySchemaAttribute(
+        kind.claims(serviceId, applicant, search),
+        kind.jscUrl,
+      );
       const offer = await adminJson(`${admin}/v1/invitation/credential-offer`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },

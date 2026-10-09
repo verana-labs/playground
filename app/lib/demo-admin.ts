@@ -52,6 +52,11 @@ const TIMEOUT_MS = 15_000;
 
 export const adminBase = (id: string) => ADMIN_TEMPLATE.replace("{id}", id);
 
+// The DIDComm version of the Out-of-Band invitations that the agents make for
+// presentation requests and credential offers. vs-agent enables v1 and v2 and
+// makes v2 invitations when a request does not set the version.
+export const DIDCOMM_INVITATION_VERSION = "v1";
+
 export async function adminJson(
   url: string,
   init?: RequestInit,

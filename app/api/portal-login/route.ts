@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { adminBase, adminJson } from "@/app/lib/demo-admin";
+import { adminBase, adminJson, DIDCOMM_INVITATION_VERSION } from "@/app/lib/demo-admin";
 import { PROTOCOL } from "@/app/lib/network";
 import { VESTA_CAST } from "@/app/lib/vesta-cast";
 import { vtjscIdFor } from "@/app/lib/vtjsc";
@@ -50,6 +50,7 @@ async function requestV4(admin: string, oid4vc: boolean) {
       requestedCredentials: [{ jsonSchemaCredentialId }],
       // Without autoAccept the exchange stops at presentation-received.
       autoAccept: true,
+      didcommVersion: DIDCOMM_INVITATION_VERSION,
     }),
   });
   const url = str(request, "shortUrl") ?? str(request, "url");

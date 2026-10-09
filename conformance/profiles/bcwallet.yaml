@@ -22,3 +22,6 @@ quirks:
   locksOnBackground: true
   viewTree: readable
   notes: "Asks the wallet PIN on every cold deep link; type it then press Enter, Back leaves the app and drops the link"
+capabilities:
+  didcomm:
+    versions: { v1: yes, v2: no }

@@ -1,0 +1,38 @@
+network: devnet-v4
+offer:
+  openid4vc:
+    grants: [pre-authorized_code]
+    proofTypes: [jwt]
+    formats: [dc+sd-jwt]
+    queryLanguages: [dcql, presentation_exchange]
+    clientIdPrefixes: [x509_hash]
+    responseModes: [direct_post.jwt]
+  anoncreds:
+    didcommVersions: [v2]
+gaps:
+  - id: pe-x509-hash
+    rail: openid4vc-sdjwt
+    blocks: { queryLanguages: [presentation_exchange] }
+    cause: "Presentation Exchange requests signed with x5c go out with client_id_scheme x509_hash on draft 21, which the response endpoint rejects"
+    until: "vs-agent#791 signs that rail with an x509_san_dns client id"
+    reference: https://github.com/verana-labs/vs-agent/pull/791
+    expires: "2026-11-16"
+  - id: decline-500
+    rail: openid4vc-sdjwt
+    cause: "A declined presentation (an access_denied error response) is answered 500 instead of 200"
+    until: "vs-agent moves to Credo 0.8, which carries credo-ts#3010"
+    reference: https://github.com/openwallet-foundation/credo-ts/pull/3010
+    expires: "2026-11-16"
+  - id: haip-wallet-attestation
+    rail: openid4vc-sdjwt
+    blocks: { sendsWalletAttestation: "yes" }
+    cause: "The token endpoint refuses a request that carries a HAIP wallet attestation, since the demo issuers configure no attestation roots"
+    until: "vs-agent#781 moves to a Credo that ignores unsolicited wallet attestations"
+    reference: https://github.com/verana-labs/vs-agent/issues/781
+    expires: "2026-11-16"
+  - id: metadata-x5c-without-kid
+    rail: openid4vc-sdjwt
+    blocks: { requiresMetadataKid: "yes" }
+    cause: "Signed issuer metadata carries an x5c chain and no kid, which swiyu 1.18 and later refuse"
+    until: "vs-agent signs the issuer metadata with a DID kid"
+    expires: "2026-11-16"

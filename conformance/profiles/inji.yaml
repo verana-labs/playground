@@ -32,3 +32,13 @@ quirks:
   locksOnBackground: false
   viewTree: readable
   notes: "Drops a VIEW intent when idle at home, so force-stop before delivering; the biometric prompt sometimes stops responding to taps. MOSIP publishes no APK and no store listing, so the fork is the only installable build. The listed APK is upstream develop with the Verana port, device-tested on devnet 2026-10-02"
+capabilities:
+  openid4vc:
+    grants: { pre-authorized_code: yes }
+    proofTypes: { jwt: yes }
+    formats: { dc+sd-jwt: yes }
+    queryLanguages: { dcql: yes }
+    clientIdPrefixes: { x509_hash: yes }
+    responseModes: { direct_post.jwt: yes }
+    sendsWalletAttestation: no
+    requiresMetadataKid: no

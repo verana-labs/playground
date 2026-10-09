@@ -79,7 +79,7 @@ set_network_vars() {
       FAUCET_URL="https://faucet.devnet.verana.network"
       INDEXER_URL="${INDEXER_URL:-https://idx.devnet.verana.network}"
       # The shared ECS Ecosystem (verana-deploy scripts/ecs-ecosystem).
-      ECS_ECOSYSTEM_DID="${ECS_ECOSYSTEM_DID:-did:webvh:QmVWnZrJ3B5cR3oGhdBHcbE6YhYe9FHRGwaGxY7c2wPMFN:ecs-ecosystem.devnet.verana.network}"
+      ECS_ECOSYSTEM_DID="${ECS_ECOSYSTEM_DID:-did:webvh:QmQueP3dCakEphRR694eYzZEhF53FvzPCPrdoHK3aMeFKh:ecs-ecosystem.devnet.verana.network}"
       # The service that holds the ISSUER entry on the ECS Organization
       # schema. It lives in the chain namespace, not in the cast namespace.
       ECS_ORG_ISSUER_PUBLIC_URL="${ECS_ORG_ISSUER_PUBLIC_URL:-https://ecs-org-issuer.devnet.verana.network}"

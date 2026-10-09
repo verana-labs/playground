@@ -30,7 +30,7 @@ const NETWORKS: Record<VeranaNetwork, NetworkConfig> = {
     label: "DEVNET",
     chainId: "vna-devnet-1",
     ecsEcosystemDid:
-      "did:webvh:QmVWnZrJ3B5cR3oGhdBHcbE6YhYe9FHRGwaGxY7c2wPMFN:ecs-ecosystem.devnet.verana.network",
+      "did:webvh:QmQueP3dCakEphRR694eYzZEhF53FvzPCPrdoHK3aMeFKh:ecs-ecosystem.devnet.verana.network",
   },
 };
 

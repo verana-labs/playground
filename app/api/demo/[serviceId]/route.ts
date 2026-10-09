@@ -485,6 +485,7 @@ export async function GET(
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             jsonSchemaCredentialId: kind.jscUrl,
+            requestedClaims: Object.keys(kind.oid4vcClaims(serviceId, applicant, search)),
             ...(queryLanguage ? { queryLanguage } : {}),
             ...(requestSigner ? { requestSigner } : {}),
           }),
@@ -524,11 +525,15 @@ export async function GET(
           credentialExchangeId: str(offer, "credentialExchangeId"),
         });
       }
+      // Holders store AnonCreds credentials as W3C ones, whose credentialSubject cannot hold an `id` claim.
+      const attributes = (await anoncredsAttrNames(kind.jscUrl))?.filter((name) => name !== "id");
       const request = await adminJson(`${admin}/v2/didcomm/presentation-request`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          requestedCredentials: [{ jsonSchemaCredentialId: kind.jscUrl }],
+          requestedCredentials: [
+            { jsonSchemaCredentialId: kind.jscUrl, ...(attributes ? { attributes } : {}) },
+          ],
           autoAccept: true,
           didcommVersion: DIDCOMM_INVITATION_VERSION,
         }),

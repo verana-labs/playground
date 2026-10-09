@@ -217,6 +217,10 @@ spec:
               value: "false"
             - name: DEV_MODE
               value: "false"
+            # Verana trust checks: the fork derives the indexer and playground
+            # hosts from the network.
+            - name: VERANA_NETWORK
+              value: "${NETWORK}"
             - name: WELLKNOWN_APPLE_APPIDS
               value: ""
             - name: WELLKNOWN_ANDROID_PACKAGE_NAMES_AND_FINGERPRINTS

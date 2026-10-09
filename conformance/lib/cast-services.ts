@@ -28,7 +28,10 @@ function parseEnv(text: string): Record<string, string> {
 }
 
 function templateTag(castDir: string, cast: string): string {
-  const doc = yaml.load(fs.readFileSync(path.join(castDir, "deployment.template.yaml"), "utf8"), { schema: yaml.JSON_SCHEMA });
+  // The V4 casts have no template of their own: they use the shared V4 template.
+  const own = path.join(castDir, "deployment.template.yaml");
+  const file = fs.existsSync(own) ? own : path.join(castDir, "..", "v4", "deployment.template.yaml");
+  const doc = yaml.load(fs.readFileSync(file, "utf8"), { schema: yaml.JSON_SCHEMA });
   const record = doc as { image?: { tag?: unknown }; chartVersion?: unknown };
   const tag = record.image?.tag ?? record.chartVersion;
   if (typeof tag !== "string" || !tag) throw new Error(`${cast}: deployment.template.yaml has no image tag`);

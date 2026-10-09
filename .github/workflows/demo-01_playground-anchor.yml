@@ -1,6 +1,6 @@
 name: "Demo 01 · Playground Demo"
 
-# Deploys the Playground Demo anchor and creates the Playground Ecosystem (demo) + DemoCredential schema + root permission. Requires Helvetia (vesta-01) to be provisioned.
+# Creates the cast Corporation, deploys the Playground Demo anchor, onboards it with the devnet ECS ecosystem, and creates the Playground Ecosystem (demo) + DemoCredential schema + root participant.
 # Part of the Playground demo cast CI/CD — see .github/workflows/demo/README.md.
 
 on:
@@ -15,8 +15,8 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
         required: false
         type: boolean
         default: false
@@ -27,5 +27,5 @@ jobs:
     with:
       org: playground-demo
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

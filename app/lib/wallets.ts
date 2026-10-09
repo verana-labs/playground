@@ -9,9 +9,14 @@ import { withBase } from "./base-path";
 import path from "node:path";
 import yaml from "js-yaml";
 import { z } from "zod";
+import { NETWORK } from "./network";
+import { walletLinks, type WalletLink } from "./wallet-links";
 
 export const CREDENTIAL_FORMATS = ["anoncreds", "openid4vc-sdjwt"] as const;
 export type CredentialFormat = (typeof CREDENTIAL_FORMATS)[number];
+
+export const WALLET_STATUSES = ["recommended", "compatible", "testing"] as const;
+export type WalletStatus = (typeof WALLET_STATUSES)[number];
 
 // The six demo scenarios of the single personal-wallets page - capture keys.
 export const SCENARIO_KEYS = [
@@ -30,23 +35,31 @@ const MediaSchema = z.object({
   note: z.string().optional(),
 });
 
+const LinkSchema = z.union([
+  z.string().url(),
+  z.object({
+    url: z.string().url(),
+    trust_screen: z.boolean().optional(),
+  }),
+]);
+
 const WalletSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   name: z.string().min(1),
   vendor: z.string().min(1),
+  status: z.enum(WALLET_STATUSES).default("testing"),
   icon: z.string().optional(),
   formats: z.array(z.enum(CREDENTIAL_FORMATS)).min(1),
   verana_builtin: z.boolean().optional(),
   browser: z.boolean().optional(),
   hosted: z.string().url().optional(),
-  download: z.string().url(),
-  playstore: z.string().url().optional(),
-  appstore: z.string().url().optional(),
-  web: z.string().url().optional(),
+  download: LinkSchema.optional(),
+  playstore: LinkSchema.optional(),
+  appstore: LinkSchema.optional(),
+  web: LinkSchema.optional(),
   repo: z.string().url().optional(),
   // Our fork carrying the Verana integration, shown next to the download.
   fork: z.string().url().optional(),
-  recommended: z.boolean().optional(),
   hidden: z.boolean().optional(),
   // Restricts the wallet to one use case: a scoped wallet is left out of the default
   // list (the main playground, /personal-wallets, every use-case chooser) and only
@@ -78,13 +91,25 @@ const WalletSchema = z.object({
 });
 
 export const WalletsFileSchema = z.object({
-  wallets: z.array(WalletSchema).min(1),
+  wallets: z
+    .array(
+      WalletSchema.refine((w) => walletLinks(w).length > 0, {
+        message: "a wallet needs at least one install link",
+      }).refine(
+        (w) =>
+          w.status !== "recommended" ||
+          walletLinks(w).some((l) => l.trust_screen),
+        { message: "a recommended wallet needs a build with the trust screen" },
+      ),
+    )
+    .min(1),
 });
 
 export type PersonalWallet = Omit<
   z.infer<typeof WalletSchema>,
   "icon" | "captures" | "video"
 > & {
+  links: WalletLink[];
   icon?: string;
   captures: Partial<
     Record<ScenarioKey, { src: string; caption?: string; clip?: string }>
@@ -115,7 +140,10 @@ function loadPersonalWallets(): PersonalWallet[] {
     cache = [];
     return cache;
   }
-  const raw = yaml.load(fs.readFileSync(file, "utf8"));
+  // Hosts of the instances that this repo deploys per network use the
+  // __NETWORK__ placeholder (the same one as wwwallet/brands/*/brand.env).
+  const text = fs.readFileSync(file, "utf8").replaceAll("__NETWORK__", NETWORK);
+  const raw = yaml.load(text);
   const parsed = WalletsFileSchema.safeParse(raw);
   if (!parsed.success) {
     const issues = parsed.error.issues
@@ -141,6 +169,7 @@ function loadPersonalWallets(): PersonalWallet[] {
     const videoSrc = publicAsset(w.video?.src);
     return {
       ...w,
+      links: walletLinks(w),
       icon: publicAsset(w.icon),
       captures: Object.fromEntries(
         Object.entries(w.captures ?? {}).flatMap(([key, m]) => {
@@ -158,20 +187,19 @@ function loadPersonalWallets(): PersonalWallet[] {
 
 export type ListPersonalWalletsOptions = {
   // Also include the wallets scoped to this use case (they are never in the
-  // default list); they keep their place in the recommended-first order.
+  // default list); they keep their place in the status order.
   scope?: string;
 };
 
 export function listPersonalWallets({
   scope,
 }: ListPersonalWalletsOptions = {}): PersonalWallet[] {
-  const wallets = loadPersonalWallets().filter(
-    (w) => !w.scope || w.scope === scope,
-  );
-  return [
-    ...wallets.filter((w) => w.recommended),
-    ...wallets.filter((w) => !w.recommended),
-  ];
+  return loadPersonalWallets()
+    .filter((w) => !w.scope || w.scope === scope)
+    .sort(
+      (a, b) =>
+        WALLET_STATUSES.indexOf(a.status) - WALLET_STATUSES.indexOf(b.status),
+    );
 }
 
 // By id, whatever its scope.

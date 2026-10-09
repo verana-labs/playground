@@ -4,68 +4,82 @@ The shared demo services of the **user-wallet playground pages** (spec §4 —
 [verana-spec → playground/spec.md](https://github.com/verana-labs/verana-spec/blob/main/playground/spec.md)):
 one cast, six scenarios, identical on every wallet page.
 
-The **Playground Organization (demo)** controls the anchor VS **Playground
-Demo**, which owns the **Playground Ecosystem (demo)** and its single
-**DemoCredential** schema (`schemas/demo-credential.json`; issuer mode
-ecosystem-governed, verifier mode open). Four trusted services are its
-delegated sub-services; the fifth is deliberately unprovisioned:
+This branch runs the cast on **Verana V4 (devnet)** with veranad v0.10.5 and
+vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md).
 
-| Workflow | Release | Q1 | DemoCredential |
+The **Playground Organization (demo)** is a Corporation on the chain. The
+anchor VS **Playground Demo** controls the **Playground Ecosystem (demo)** and
+its single **DemoCredential** schema (`schemas/demo-credential.json`; issuer
+onboarding by the Ecosystem, verifier onboarding OPEN, holders PERMISSIONLESS).
+Four trusted services are its delegated sub-services:
+
+| Workflow | Release | Agent mode | DemoCredential |
 | --- | --- | --- | --- |
-| demo-01 | `playground-demo` (anchor) | TRUSTED | ecosystem owner |
-| demo-02 | `demo-issuer-accredited` | TRUSTED | ISSUER (validated) |
-| demo-03 | `demo-issuer-unaccredited` | TRUSTED | none, by design |
-| demo-04 | `demo-verifier-accredited` | TRUSTED | VERIFIER (open) |
-| demo-05 | `demo-verifier-unaccredited` | TRUSTED | none, by design |
-| demo-06 | `demo-untrusted` | UNTRUSTED | n/a — deploy-only, DIDComm only, superseded by 07/08 |
-| demo-07 | `demo-issuer-untrusted` | UNTRUSTED | n/a — deploy-only, `OID4VC_ROLE=issuer` |
-| demo-08 | `demo-verifier-untrusted` | UNTRUSTED | n/a — deploy-only, `OID4VC_ROLE=verifier` |
+| demo-01 | `playground-demo` (anchor) | standalone | Ecosystem controller, root Participant |
+| demo-02 | `demo-issuer-accredited` | delegated | ISSUER Participant (validated) |
+| demo-03 | `demo-issuer-unaccredited` | delegated | none, by design (mints anyway, demo flag) |
+| demo-04 | `demo-verifier-accredited` | delegated | VERIFIER Participant (OPEN) |
+| demo-05 | `demo-verifier-unaccredited` | delegated | none, by design (requests anyway, demo flag) |
+| demo-06 | `demo-untrusted` | standalone | n/a — deploy-only, no ECS credentials |
+| demo-07 | `demo-issuer-untrusted` | standalone | n/a — no ECS credentials, mints anyway (demo flag), credential definition only |
+| demo-08 | `demo-verifier-untrusted` | standalone | n/a — deploy-only, no ECS credentials, requests anyway (demo flag) |
 
-Seven agents, one per case a wallet has to render: the anchor, then a trio each
-side. `demo-06` predates the OID4VC rail and carries no `OID4VC_ROLE`, so it only
-speaks DIDComm and a Track B wallet has no untrusted counterparty to exercise at
-all. `demo-07` and `demo-08` fix that; tear `demo-06` down once they are up.
+## The V4 model
+
+- **Corporation.** `demo-01` creates the Corporation with the DID
+  `did:example:playground-demo-<chain id>`. The other members find it by this
+  DID. The operator account (`PLAYGROUND_V4_MNEMONIC`) holds its
+  OperatorAuthorization and signs every transaction.
+- **Agent accounts.** Each agent has its own Verana account, the
+  `vs_operator` of its Participant entries. The workflow creates the mnemonic
+  once, keeps it in the Kubernetes secret `<release>-verana-account`, and
+  sends 0.001 VNA (`AGENT_FUNDS`) to the new account. The chain does not let one account hold an
+  OperatorAuthorization and a VSOperatorAuthorization, so an agent account is
+  never the operator account.
+- **ECS credentials.** The agents get them through vt-flow onboarding
+  processes (DIDComm). The operator creates the Participant entry, the agent
+  sends the onboarding request with its `ECS_CLAIMS_*` values, and the
+  validator side validates it:
+  - The anchor gets its ECS-Organization credential from `ecs-org-issuer` and
+    issues its own ECS-Service credential.
+  - A delegated service gets its ECS-Service credential from the anchor.
+- **VTJSC.** The anchor agent publishes the VTJSC, the SD-JWT Type Metadata
+  and the AnonCreds schema of the DemoCredential when the schema is created.
 
 ## Running
 
-Same pattern as the vesta cast: each numbered workflow is a
-`workflow_dispatch` calling `demo-00_core.yml` with `step` = `deploy` |
-`provision` | `all`. Run them **in order, one at a time** (both casts share
-the veranad account, so all runs serialize on the `vesta-cast` concurrency
-group):
+Each numbered workflow is a `workflow_dispatch` that calls
+`demo-00_core.yml` with `step` = `deploy` | `provision` | `all`. Select the
+`v4` branch. Run them **in order, one at a time** (all runs serialize on the
+`vesta-cast-<network>` concurrency group):
 
-1. **Prerequisite:** the vesta cast's Helvetia (`vesta-01`) must be deployed
-   and provisioned — it issues the anchor's ECS-Organization.
-2. `demo-01` — anchor: ECS-Org (from Helvetia) + self ECS-Service + trust
-   registry + DemoCredential schema + root permission + VTJSC.
-3. `demo-02` … `demo-05` — delegated services + their `DEMO_PERM`.
-4. `demo-06` … `demo-08` — deploy-only. Run 07/08 after the accredited
-   issuers, the verifier role reads their fingerprints.
+1. `demo-01` with `step=all`: Corporation, anchor agent, ECS onboarding,
+   Ecosystem, DemoCredential schema and root Participant.
+2. `demo-02` … `demo-05` with `step=all`: delegated services, their
+   ECS-Service onboarding, and their `DEMO_PERM` Participant entry.
+3. `demo-06` and `demo-08`: deploy-only. `demo-07` with `step=all`: it also
+   creates its AnonCreds credential definition.
 
-Secrets: `PLAYGROUND_MNEMONIC`, `KUBECONFIG_VERANA_DEV`, `K8S_NAMESPACE`
-(same as the vesta cast). `common.sh` is shared from
-[`../vesta/common.sh`](../vesta/common.sh).
+Secrets and variables: see [`docs/networks.md`](../../../docs/networks.md).
 
 ## Dual rail
 
 The DemoCredential is served over AnonCreds/DIDComm (Track N wallets, Hologram)
 and OpenID4VCI/OpenID4VP SD-JWT (Track B wallets):
 
-- The anchor and `demo-untrusted` run the plain image
-  (`deployment.template.yaml` defaults).
-- The four issuer/verifier services set `OID4VC_ROLE` in their `config.env`,
-  which switches them to `veranalabs/vs-agent-openid4vc` + the oid4vc-enabled
-  chart and injects their `openid4vc.json` (rendered from
-  `oid4vc/<role>.json.tpl` by `scripts/render-oid4vc-config.sh`).
-- Development signing is used: each agent self-generates its P-256 leaf and
-  publishes the key to its DID document. Verifier configs pin the issuers'
-  leaf fingerprints, read live from each issuer's
-  `GET /v1/oid4vc/certificates` at deploy time - so **deploy the issuers
-  (demo-02, demo-03) before the verifiers (demo-04, demo-05)** whenever the
-  oid4vc setup changes.
-- Both rails share the ecosystem VTJSC and one canonical `vct` URL; a
-  presentation is accepted only when the Verana resolver returns
-  TRUSTED_AUTHORIZED for the credential's issuer.
+- Services with `OID4VC_ROLE` in their `config.env` get an empty
+  `openid4vc.config`. This turns on the OpenID4VC plugin with development
+  signing. The agent takes the credential types, the display name, the `vct`
+  and the trust decision from the VPR.
+- The issuers with `DEMO_CREDDEF=true` create an AnonCreds credential
+  definition that refers to the anchor's VTJSC.
+- vs-agent v2 refuses to make an offer or a request when the agent has no
+  active ISSUER or VERIFIER Participant entry. The unaccredited and untrusted
+  services set `UNSAFE_SKIP_OWN_AUTHORIZATION="true"` in their `config.env`,
+  which sets the chart value `unsafeSkipOwnAuthorization` (vs-agent
+  `AGENT_UNSAFE_SKIP_OWN_AUTHORIZATION`, from v2.0.0-pr766.2). This flag is
+  for demos only and is not in the spec: the agent then makes the offer or
+  the request, and the wallet must refuse it.
 
 ## Monitoring invariant
 

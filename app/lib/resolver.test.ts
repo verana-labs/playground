@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { resolveTrust } from "./resolver";
+import { mapV4Body, resolveTrust } from "./resolver";
 
 const DID = "did:webvh:Qm:example.demos.testnet.verana.network";
 const ok = (body: unknown) =>
@@ -47,5 +47,43 @@ describe("resolveTrust", () => {
   it("mismatched did in body is UNVERIFIED", async () => {
     vi.stubGlobal("fetch", vi.fn(() => ok({ did: "did:web:other", trustStatus: "TRUSTED" })));
     expect((await resolveTrust(DID)).state).toBe("UNVERIFIED");
+  });
+});
+
+describe("mapV4Body (indexer trust resolution)", () => {
+  const V4_DID = "did:webvh:Qm:verifier.example.demos.devnet.verana.network";
+  const ORG_ISSUER = "did:webvh:Qm:ecs-org-issuer.devnet.verana.network";
+
+  it("maps trusted with the ECS credentials to the V3 shape", () => {
+    const r = mapV4Body(V4_DID, {
+      did: V4_DID,
+      trusted: true,
+      evaluatedAtTime: "2026-09-29T18:50:32.517Z",
+      evaluatedAtBlock: 15121,
+      expiresAtTime: "2027-09-29T00:00:00.000Z",
+      ecsCredentials: [
+        { ecsSchema: "ServiceCredential", credentialSchemaId: 5,
+          id: `${V4_DID}#a`, credentialSubject: { name: "Svc", type: "WEB_PORTAL" } },
+        { ecsSchema: "OrganizationCredential", credentialSchemaId: 3,
+          id: `${ORG_ISSUER}#b`, credentialSubject: { name: "Org", countryCode: "CH" } },
+      ],
+    });
+    expect(r.state).toBe("TRUSTED");
+    expect(r.trustStatus).toBe("TRUSTED");
+    expect(r.evaluatedAt).toBe("2026-09-29T18:50:32.517Z");
+    expect(r.expiresAt).toBe("2027-09-29T00:00:00.000Z");
+    expect(r.credentials.map((c) => c.ecsType)).toEqual(["ECS-SERVICE", "ECS-ORG"]);
+    expect(r.credentials[1].issuedBy).toBe(ORG_ISSUER);
+    expect(r.credentials[1].claims.countryCode).toBe("CH");
+    expect(r.credentials[0].schema?.id).toBe(5);
+  });
+
+  it("maps trusted=false to UNTRUSTED", () => {
+    expect(mapV4Body(V4_DID, { did: V4_DID, trusted: false }).state).toBe("UNTRUSTED");
+  });
+
+  it("maps a body for another DID, or with no verdict, to UNVERIFIED", () => {
+    expect(mapV4Body(V4_DID, { did: "did:web:other", trusted: true }).state).toBe("UNVERIFIED");
+    expect(mapV4Body(V4_DID, { did: V4_DID }).state).toBe("UNVERIFIED");
   });
 });

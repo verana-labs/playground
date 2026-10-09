@@ -1,18 +1,22 @@
 id: hologram
 rails: [anoncreds]
 didcomm:
-  library: "@credo-ts/didcomm and @credo-ts/anoncreds 0.7.1-pr-2704: DIDComm v1, AnonCreds over the v2 credential and proof protocols, mediator pickup, WebSocket outbound"
+  library: "@credo-ts/didcomm and @credo-ts/anoncreds 0.7.1-pr-2704: DIDComm v1 and v2, AnonCreds over the v2 credential and proof protocols, mediator pickup, WebSocket outbound"
   proxy: "@credo-ts/didcomm and @credo-ts/anoncreds on the same 0.7.1-pr-2704 line, WebSocket outbound with return routing"
   invitationSchemes: [didcomm, https]
   demoParams: ""
 builds:
   - kind: store
     listed: true
-    label: "Hologram Messaging on Google Play"
-    obtain: https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
+    label: "Hologram Messaging on Google Play and the App Store"
+    obtain:
+      - https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m
+      - https://apps.apple.com/app/hologram-messaging/id6474701855
     identity:
       package: io.twentysixty.mobileagent.m
-      version: "2.0.0"
+      appStoreId: "6474701855"
+      bundle: io.2060.mobileagent.m
+      version: "2.14.0"
     platforms: [android, ios]
     presumptive: [ios]
     promises: "Full Proof-of-Trust on offers and requests: Q1 card with service and operator blocks, the Q2 issuer sentence and the Q3 verifier sentence; on a Q2 denial the offer renders no Accept control at all (device-verified 2026-09-14 on Play version 2.0.0)"
@@ -22,24 +26,21 @@ builds:
       secret: "132006"
       coldStart: false
       neverForceStop: true
-  - kind: fork
-    label: "Verana trust fork, staging build of hologram-app#514"
-    obtain: https://github.com/AirKyzzZ/hologram-app/tree/e6992fccc654
+  - kind: publisher
+    label: "Official hologram-app dev build v2.15.0-dev.5, published on 2060's dev channel only"
+    obtain: https://github.com/2060-io/hologram-app/releases/tag/v2.15.0-dev.5
     identity:
-      package: io.twentysixty.mobileagent.st
-      version: e6992fccc654
-      repo: https://github.com/AirKyzzZ/hologram-app
-      ref: e6992fccc654
+      package: io.twentysixty.mobileagent.dev
+      version: "2.15.0-dev.5"
+      repo: https://github.com/2060-io/hologram-app
+      ref: v2.15.0-dev.5
     platforms: [android]
-    promises: "Q1, Q2 and Q3 with the guideline wording"
-    device:
-      activity: io.twentysixty.mobileagent.MainActivity
-      unlock: device-credential
-      secret: "132006"
-      coldStart: false
-      neverForceStop: true
+    promises: "Issuer and verifier authorization checked against the Verana v4 indexer (hologram-app#519), the proof of trust card and the first contact gate (hologram-app#520), DIDComm v2 on by default"
 quirks:
   actsOnLinkOnlyAtColdStart: false
   locksOnBackground: false
   viewTree: ocr
-  notes: "React Native new architecture: uiautomator returns an empty tree, so screens are read by OCR. Cold start sits behind the system biometric prompt (tap Use PIN, then the phone PIN over adb), so deliver links while it is already open and never force-stop it"
+  notes: "React Native new architecture: uiautomator returns an empty tree, so screens are read by OCR. Cold start sits behind the system biometric prompt (tap Use PIN, then the phone PIN over adb), so deliver links while it is already open and never force-stop it. Play 2.14.0 speaks DIDComm v2 only once developer mode is on and v2 is ticked under Settings > Developer > Supported DIDComm versions; the official app has v2 on by default from v2.15.0-dev.2"
+capabilities:
+  didcomm:
+    versions: { v1: yes, v2: yes }

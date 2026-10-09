@@ -1,24 +1,24 @@
 id: inji
 rails: [openid4vc-sdjwt]
 openid4vc:
-  library: "io.inji:inji-vci-client-aar 1.0.0-beta (OpenID4VCI drafts 11 and 13) and io.inji:inji-openid4vp-aar 1.0.0-beta (OpenID4VP drafts 21 and 23, presentation_definition, did client ids)"
-  proxy: "@openid4vc/openid4vci draft-11 parser, @credo-ts/openid4vc holder for the presentation_exchange submission"
-  vciDrafts: [draft11, draft13]
+  library: "io.inji:inji-vci-client-aar 1.0.0-alpha.2-SNAPSHOT (OpenID4VCI 1.0) and io.inji:inji-openid4vp-aar 1.0.0-alpha.2-verana.1 (OpenID4VP 1.0, DCQL, x509_hash client ids, ES256 requests, encrypted direct_post.jwt)"
+  proxy: "@openid4vc/openid4vci, @openid4vc/openid4vp, @sd-jwt/sd-jwt-vc"
+  vciDrafts: [v1]
   offerSchemes: [openid-credential-offer]
   requestSchemes: [openid4vp]
   asDiscovery: [oauth-authorization-server]
-  presentation: { query: presentation_exchange, clientId: did, responseMode: direct_post }
-  demoParams: query=pe
+  presentation: { query: dcql, clientId: x509_hash, responseMode: direct_post.jwt }
+  demoParams: signer=x5c
 builds:
   - kind: fork
     listed: true
     label: "Verana fork APK"
-    obtain: https://github.com/AirKyzzZ/inji-wallet/releases/download/verana-2026-08-08.2/Inji_arm64-v8a.apk
+    obtain: https://github.com/AirKyzzZ/inji-wallet/releases/download/verana-2026-10-02/Inji_arm64-v8a.apk
     identity:
       package: io.mosip.residentapp
-      version: verana-2026-08-08.2
+      version: verana-2026-10-02
       repo: https://github.com/AirKyzzZ/inji-wallet
-      ref: verana-2026-08-08.2
+      ref: verana-2026-10-02
     platforms: [android]
     promises: "Q1 card plus the Q2 issuer sentence and the Q3 verifier sentence. The affirmative control stays drawn on a denial. An issuer host already trusted skips consent entirely"
     device:
@@ -30,4 +30,14 @@ quirks:
   actsOnLinkOnlyAtColdStart: true
   locksOnBackground: false
   viewTree: readable
-  notes: "Drops a VIEW intent when idle at home, so force-stop before delivering; the biometric prompt sometimes stops responding to taps. MOSIP publishes no APK and no store listing, so the fork is the only installable build. The device APK predates verana-labs/inji-wallet#2 (merged 2026-09-08)"
+  notes: "Drops a VIEW intent when idle at home, so force-stop before delivering; the biometric prompt sometimes stops responding to taps. MOSIP publishes no APK and no store listing, so the fork is the only installable build. The listed APK is upstream develop with the Verana port, device-tested on devnet 2026-10-02"
+capabilities:
+  openid4vc:
+    grants: { pre-authorized_code: yes }
+    proofTypes: { jwt: yes }
+    formats: { dc+sd-jwt: yes }
+    queryLanguages: { dcql: yes }
+    clientIdPrefixes: { x509_hash: yes }
+    responseModes: { direct_post.jwt: yes }
+    sendsWalletAttestation: no
+    requiresMetadataKid: no

@@ -1,8 +1,11 @@
 name: "BHI 08 · Meridian Technologies (Verified Employer)"
 
-# Deploys Meridian Technologies (demo): ECS creds, the Verified Employer
-# credential issued by Orchestrating Identity, and VERIFIER permissions on
-# the three candidate schemas.
+# Creates the Corporation of Meridian Technologies (demo), deploys its agent,
+# onboards it with the devnet ECS Ecosystem, gets the Verified Employer
+# credential from Orchestrating Identity, and gets VERIFIER entries on the
+# three candidate schemas, validated by Orchestrating Identity. Run it after
+# the second pass of bhi-01.
+# Verana V4 (devnet): select the v4 branch.
 # Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
 
 on:
@@ -17,8 +20,8 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
         required: false
         type: boolean
         default: false
@@ -29,5 +32,5 @@ jobs:
     with:
       org: meridian
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

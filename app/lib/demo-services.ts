@@ -5,9 +5,10 @@ import { CEXA_CAST } from "./cexa-cast";
 import { VERANDIA_CAST } from "./verandia-cast";
 import { BHI_CAST } from "./bhi-cast";
 import { EVENTOS_CAST } from "./eventos-cast";
+import { networkHost, PROTOCOL } from "./network";
 
-const BASE = process.env.DEMOS_BASE_DOMAIN ?? "main.demos.testnet.verana.network";
-const CAST = process.env.CAST_BASE_DOMAIN ?? "playground.testnet.verana.network";
+const BASE = process.env.DEMOS_BASE_DOMAIN ?? networkHost("main.demos");
+const CAST = process.env.CAST_BASE_DOMAIN ?? networkHost("playground");
 
 export type DemoService = { id: string; label: string; host: string;
   appUrl?: string; did?: string; role: "anchor" | "issuer" | "verifier" | "untrusted" };
@@ -23,7 +24,9 @@ export const DEMO_SERVICES: DemoService[] = [
   // Vesta is the organization anchor AND an ECS-Badge issuer; role "issuer"
   // lets /api/demo mint badge offers from it.
   { id: "vesta", label: "Vesta Appliances (demo)", host: VESTA_CAST.vesta.host, did: VESTA_CAST.vesta.did, appUrl: invite(VESTA_CAST.vesta.host), role: "issuer" },
-  { id: "helvetia-trust", label: "Helvetia Trust Services (demo)", host: VESTA_CAST.helvetia.host, did: VESTA_CAST.helvetia.did, role: "issuer" },
+  // On V4 Helvetia issues nothing to wallets: ecs-org-issuer issues the ECS
+  // Organization credentials, so the service is only a member of the cast.
+  { id: "helvetia-trust", label: "Helvetia Trust Services (demo)", host: VESTA_CAST.helvetia.host, did: VESTA_CAST.helvetia.did, role: PROTOCOL === "v4" ? "anchor" : "issuer" },
   { id: "vesta-portal", label: "Vesta Portal (demo)", host: VESTA_CAST.portal.host, did: VESTA_CAST.portal.did, appUrl: invite(VESTA_CAST.portal.host), role: "verifier" },
   { id: "vesta-repair-network", label: "Vesta Repair Network (demo)", host: VESTA_CAST.repairNetwork.host, did: VESTA_CAST.repairNetwork.did, role: "anchor" },
   { id: "iso-certification", label: "ISO Certification Ecosystem (demo)", host: VESTA_CAST.iso.host, did: VESTA_CAST.iso.did, role: "anchor" },
@@ -76,8 +79,8 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "evento-guatemala", label: "Creando un mundo confiable: Guatemala", host: EVENTOS_CAST.guatemala.host, did: EVENTOS_CAST.guatemala.did, appUrl: invite(EVENTOS_CAST.guatemala.host), role: "verifier" },
   { id: "evento-panama", label: "Creando un mundo confiable: Panamá", host: EVENTOS_CAST.panama.host, did: EVENTOS_CAST.panama.did, appUrl: invite(EVENTOS_CAST.panama.host), role: "verifier" },
   // The CEXA cast (reusable KYC for exchanges and banks at /usecases/cexa,
-  // unlisted), deployed by .github/workflows/cexa-*. DIDs come from host
-  // discovery until the placeholder values in cexa-cast.ts are replaced.
+  // unlisted), deployed by .github/workflows/cexa-*. The DIDs come from host
+  // discovery.
   { id: "cexa-association", label: "Crypto Exchange Association (demo)", host: CEXA_CAST.association.host, role: "anchor" },
   { id: "aurum", label: "Aurum Exchange (demo)", host: CEXA_CAST.aurum.host, appUrl: invite(CEXA_CAST.aurum.host), role: "issuer" },
   { id: "borealis", label: "Borealis Markets (demo)", host: CEXA_CAST.borealis.host, appUrl: invite(CEXA_CAST.borealis.host), role: "verifier" },

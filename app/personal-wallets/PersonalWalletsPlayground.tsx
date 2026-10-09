@@ -1,25 +1,27 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { walletTabTarget } from "../lib/wallet-tab";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import {
-  Download,
-  ExternalLink,
   FileBadge,
   FileSearch,
-  Github,
   Maximize2,
   ShieldQuestion,
 } from "lucide-react";
 import MediaLightbox, { type LightboxMedia } from "../components/MediaLightbox";
 import { Container, Section, SectionHeading, Chip } from "../components/ui";
 import { LINKS } from "../lib/site";
+import { NETWORK } from "../lib/network";
 import { ServiceQr } from "../components/ServiceQr";
 import HostedWalletQr from "../components/HostedWalletQr";
 import LiveTrustCard from "../components/LiveTrustCard";
-import { ComingSoonPickerTile } from "../components/ComingSoonTile";
+import {
+  NoTrustScreenNote,
+  TestingNotice,
+  WalletBuildActions,
+} from "../components/WalletBuilds";
+import { WalletIcon, WalletPicker } from "./WalletPicker";
 import type { ComingSoonWallet } from "../lib/coming-soon";
 import type {
   CredentialFormat,
@@ -150,31 +152,6 @@ const VERIFIER_SCENARIOS: Scenario[] = [
   },
 ];
 
-function WalletIcon({ w, size = 40 }: { w: PersonalWallet; size?: number }) {
-  if (w.icon) {
-    return (
-      // eslint-disable-next-line @next/next/no-img-element -- pre-optimized small assets from wallets/
-      <img
-        src={w.icon}
-        alt=""
-        aria-hidden
-        width={size}
-        height={size}
-        className="shrink-0 rounded-lg bg-white object-contain ring-1 ring-black/5"
-      />
-    );
-  }
-  return (
-    <span
-      aria-hidden
-      className="flex shrink-0 items-center justify-center rounded-lg bg-violet-50 font-bold text-violet-700"
-      style={{ width: size, height: size, fontSize: Math.round(size * 0.4) }}
-    >
-      {w.name.charAt(0)}
-    </span>
-  );
-}
-
 /** Corner control that opens the sibling media in the lightbox. */
 function ExpandButton({
   label,
@@ -299,6 +276,7 @@ function ScenarioCard({
   hosted,
   capture,
   walletName,
+  plainBuilds = false,
 }: {
   s: Scenario;
   format: CredentialFormat;
@@ -307,6 +285,7 @@ function ScenarioCard({
   hosted?: string;
   capture?: { src: string; caption?: string; clip?: string };
   walletName: string;
+  plainBuilds?: boolean;
 }) {
   const orientation = useImageOrientation(capture?.src);
   const accreditations = s.accredited
@@ -335,6 +314,12 @@ function ScenarioCard({
         ) : null}
       </div>
       <p className="mt-2 text-sm leading-relaxed text-gray-500">{s.blurb}</p>
+      {plainBuilds && !(s.trusted && s.accredited) ? (
+        <p className="mt-1.5 text-xs font-medium text-amber-700">
+          The {walletName} store builds have no Verana trust screen and
+          won&apos;t refuse this service.
+        </p>
+      ) : null}
       <div
         className={
           sideCapture
@@ -470,7 +455,7 @@ export default function PersonalWalletsPlayground({
               Playground Ecosystem (demo)
             </strong>{" "}
             and its single <em>DemoCredential</em> schema - real registry
-            entries, resolved live on the Verana testnet. The same services for
+            entries, resolved live on the Verana {NETWORK}. The same services for
             every wallet; only the QR format changes.
           </p>
           <p className="mt-3 text-sm leading-relaxed text-gray-500">
@@ -490,43 +475,18 @@ export default function PersonalWalletsPlayground({
 
         {/* 2 · Get the wallet - pick, then install */}
         <div>
-          <SectionHeading eyebrow="Choose your wallet" title="Get the wallet" />
+          <SectionHeading
+            eyebrow="Choose your wallet"
+            title="Get the wallet"
+            subtitle="Start with a recommended wallet: each one carries the Verana trust screen and passes all six demos below."
+          />
           <div className="space-y-4">
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {wallets.map((w) => (
-                <button
-                  key={w.id}
-                  type="button"
-                  onClick={() => select(w.id)}
-                  aria-pressed={w.id === wallet.id}
-                  className={`flex items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
-                    w.id === wallet.id
-                      ? "border-violet-400 bg-violet-50 ring-1 ring-violet-300"
-                      : "border-gray-200 bg-white hover:border-violet-200"
-                  }`}
-                >
-                  <WalletIcon w={w} />
-                  <span className="min-w-0">
-                    <span className="flex items-center gap-2">
-                      <span className="truncate font-semibold text-gray-900">
-                        {w.name}
-                      </span>
-                      {w.recommended ? (
-                        <span className="shrink-0 rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
-                          Recommended
-                        </span>
-                      ) : null}
-                    </span>
-                    <span className="block truncate text-xs text-gray-500">
-                      {w.vendor}
-                    </span>
-                  </span>
-                </button>
-              ))}
-              {comingSoon.map((w) => (
-                <ComingSoonPickerTile key={w.id} w={w} />
-              ))}
-            </div>
+            <WalletPicker
+              wallets={wallets}
+              comingSoon={comingSoon}
+              selectedId={wallet.id}
+              onSelect={select}
+            />
 
             <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
               <div className="mb-4 flex flex-wrap items-center gap-4">
@@ -568,6 +528,9 @@ export default function PersonalWalletsPlayground({
                   ))}
                 </span>
               </div>
+              {wallet.status === "testing" ? (
+                <TestingNotice name={wallet.name} />
+              ) : null}
               {wallet.verana_builtin ? (
                 <p className="text-sm leading-relaxed text-gray-600">
                   {wallet.name} supports Verana{" "}
@@ -585,20 +548,32 @@ export default function PersonalWalletsPlayground({
                   </strong>{" "}
                   - there is no APK to install.{" "}
                   {wallet.hosted
-                    ? `Open our hosted build below; it is the Verana-integrated ${wallet.name}, configured for the testnet.`
+                    ? `Open our hosted build below; it is the Verana-integrated ${wallet.name}, configured for the ${NETWORK}.`
                     : `Our Verana build is not hosted yet - run it from the fork below. `}
                   The public {wallet.name} instance does not include the
                   integration.
                 </p>
-              ) : (
+              ) : !wallet.links.some((l) => l.trust_screen) ? (
+                <NoTrustScreenNote name={wallet.name} />
+              ) : wallet.links.some(
+                  (l) => l.kind === "download" && l.trust_screen,
+                ) ? (
                 <p className="text-sm leading-relaxed text-gray-600">
                   Download the{" "}
                   <strong className="font-semibold text-gray-900">
                     modified APK
                   </strong>{" "}
                   by clicking the link below - it is the Verana-integrated build
-                  of {wallet.name}, configured for the testnet. Store builds may
+                  of {wallet.name}, configured for the {NETWORK}. Store builds may
                   not include the integration.
+                </p>
+              ) : (
+                <p className="text-sm leading-relaxed text-gray-600">
+                  Install {wallet.name} from the{" "}
+                  <strong className="font-semibold text-gray-900">
+                    stores
+                  </strong>{" "}
+                  below: its published builds carry the Verana trust screen.
                 </p>
               )}
               {wallet.notes ? (
@@ -606,81 +581,7 @@ export default function PersonalWalletsPlayground({
                   {wallet.notes}
                 </p>
               ) : null}
-              <div className="mt-4 flex flex-wrap items-center gap-3">
-                <a
-                  href={wallet.hosted ?? wallet.download}
-                  target={
-                    wallet.browser && wallet.hosted
-                      ? walletTabTarget(wallet.hosted)
-                      : "_blank"
-                  }
-                  rel={
-                    wallet.browser && wallet.hosted
-                      ? undefined
-                      : "noopener noreferrer"
-                  }
-                  className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-violet-700"
-                >
-                  {wallet.browser ? (
-                    <ExternalLink className="h-4 w-4" />
-                  ) : (
-                    <Download className="h-4 w-4" />
-                  )}{" "}
-                  {wallet.browser
-                    ? wallet.hosted
-                      ? "Open the wallet"
-                      : "Run it from source"
-                    : wallet.verana_builtin
-                      ? "Get the wallet"
-                      : "Download the modified APK"}
-                </a>
-                {(wallet.fork ?? wallet.repo) ? (
-                  <a
-                    href={wallet.fork ?? wallet.repo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    title={
-                      wallet.fork
-                        ? "The modified source behind this build"
-                        : "Upstream source"
-                    }
-                    className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
-                  >
-                    <Github className="h-4 w-4" />
-                    {wallet.fork ? "Source" : "Upstream"}
-                  </a>
-                ) : null}
-                {wallet.playstore ? (
-                  <a
-                    href={wallet.playstore}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
-                  >
-                    Google Play
-                  </a>
-                ) : null}
-                {wallet.appstore ? (
-                  <a
-                    href={wallet.appstore}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
-                  >
-                    App Store
-                  </a>
-                ) : null}
-                {wallet.web ? (
-                  <a
-                    href={wallet.web}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 rounded-lg bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-200"
-                  >
-                    Open the web wallet
-                  </a>
-                ) : null}
-              </div>
+              <WalletBuildActions wallet={wallet} source />
               {wallet.browser && wallet.hosted ? (
                 <div className="mt-4">
                   <HostedWalletQr
@@ -755,6 +656,7 @@ export default function PersonalWalletsPlayground({
                 hosted={wallet.hosted}
                 capture={wallet.captures[s.key as ScenarioKey]}
                 walletName={wallet.name}
+                plainBuilds={wallet.links.some((l) => !l.trust_screen)}
               />
             ))}
           </div>
@@ -777,6 +679,7 @@ export default function PersonalWalletsPlayground({
                 hosted={wallet.hosted}
                 capture={wallet.captures[s.key as ScenarioKey]}
                 walletName={wallet.name}
+                plainBuilds={wallet.links.some((l) => !l.trust_screen)}
               />
             ))}
           </div>

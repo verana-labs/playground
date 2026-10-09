@@ -16,9 +16,10 @@ import {
 } from "lucide-react";
 import { Container, Section, SectionHeading } from "./components/ui";
 import { AddYourWalletTileCompact } from "./components/WalletTile";
+import { HomeWalletGrid } from "./components/HomeWalletGrid";
 import WalletLogo from "./components/WalletLogo";
 import { businessWallets, type Integration } from "./lib/integrations";
-import { listPersonalWallets, type PersonalWallet } from "./lib/wallets";
+import { listPersonalWallets } from "./lib/wallets";
 import { CHAPTERS_NAV } from "./usecases/vesta/chapters";
 import { CHAPTERS_NAV as VERANDIA_CHAPTERS } from "./usecases/verandia/chapters";
 import { CHAPTERS_NAV as CEXA_CHAPTERS } from "./usecases/cexa/chapters";
@@ -73,45 +74,6 @@ const DISCOVERY_QA = [
     a: { icon: Award, text: "2 ecosystems found, with 14 accredited issuers" },
   },
 ];
-
-function PersonalWalletHomeTile({ w }: { w: PersonalWallet }) {
-  return (
-    <Link
-      href={`/personal-wallets?wallet=${w.id}`}
-      className="flex items-center gap-3 rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors hover:border-violet-300"
-    >
-      {w.icon ? (
-        // eslint-disable-next-line @next/next/no-img-element -- pre-optimized small assets from wallets/
-        <img
-          src={w.icon}
-          alt=""
-          aria-hidden
-          width={40}
-          height={40}
-          className="shrink-0 rounded-lg bg-white object-contain ring-1 ring-black/5"
-        />
-      ) : (
-        <span
-          aria-hidden
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-50 font-bold text-violet-700"
-        >
-          {w.name.charAt(0)}
-        </span>
-      )}
-      <span className="min-w-0">
-        <span className="flex items-center gap-2">
-          <span className="truncate font-semibold text-gray-900">{w.name}</span>
-          {w.recommended ? (
-            <span className="shrink-0 rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-violet-700">
-              Recommended
-            </span>
-          ) : null}
-        </span>
-        <span className="block truncate text-sm text-gray-500">{w.vendor}</span>
-      </span>
-    </Link>
-  );
-}
 
 function BusinessWalletHomeTile({ w }: { w: Integration }) {
   return (
@@ -375,10 +337,10 @@ export default function Home() {
                   </span>
                 </span>
                 <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
-                  Verana, explained by a country: an eIDAS-2-compatible
-                  Citizen ID, Business IDs from the national register, legal
-                  representation as proof - and passwordless sign-in at the
-                  Tax Buro and the bank, fail-closed.
+                  Verana, explained by a country: an eIDAS-2-compatible Citizen
+                  ID, Business IDs from the national register, legal
+                  representation as proof - and passwordless sign-in at the Tax
+                  Buro and the bank, fail-closed.
                 </p>
                 <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
                   Follow the Verandia story →
@@ -408,9 +370,9 @@ export default function Home() {
                 </span>
                 <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
                   Verana, explained by exchanges and banks: one reusable KYC
-                  checked once and accepted everywhere, the original issuer
-                  paid on every reuse, free Travel Rule counterparty proof -
-                  and a real exchange refused because trust is not membership.
+                  checked once and accepted everywhere, the original issuer paid
+                  on every reuse, free Travel Rule counterparty proof - and a
+                  real exchange refused because trust is not membership.
                 </p>
                 <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
                   Follow the CEXA story →
@@ -440,10 +402,10 @@ export default function Home() {
                 </span>
                 <p className="mt-1.5 flex-1 text-sm leading-relaxed text-gray-500">
                   Verana, explained by UK hiring: BHI governs a Recruitment
-                  Trust Network where employers prove they are legitimate
-                  before a candidate shares a thing - name your applicant,
-                  collect verifiable credentials and play the journey with
-                  your own wallet.
+                  Trust Network where employers prove they are legitimate before
+                  a candidate shares a thing - name your applicant, collect
+                  verifiable credentials and play the journey with your own
+                  wallet.
                 </p>
                 <span className="mt-3 text-sm font-medium text-violet-600 group-hover:underline">
                   Follow the BHI story →
@@ -462,12 +424,10 @@ export default function Home() {
             title="Personal wallets"
             subtitle="One playground for every integrated open-source personal wallet: pick your wallet and run the six DemoCredential scenarios"
           />
-          <div className="reveal-stagger grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {users.map((w) => (
-              <PersonalWalletHomeTile key={w.id} w={w} />
-            ))}
-            <AddYourWalletTileCompact />
-          </div>
+          <HomeWalletGrid
+            wallets={users}
+            trailing={<AddYourWalletTileCompact />}
+          />
         </Container>
       </Section>
 

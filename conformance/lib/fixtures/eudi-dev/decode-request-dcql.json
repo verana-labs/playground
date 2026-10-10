@@ -1,0 +1,94 @@
+{
+  "client_id": "x509_hash:w5dHa_PtVP97vV49-BwLFaKg-n021dOB3abj9W-DTYc",
+  "nonce": "0mPkb3fBfNYUt_SOGZdCD0jP-tjVD_X-P4nRQvNkkLc",
+  "request_object": {
+    "header": {
+      "alg": "ES256",
+      "typ": "oauth-authz-req+jwt",
+      "x5c": [
+        "MIICsjCCAlmgAwIBAgIQKzutWB9L3gaxg9nOHwfx0TAKBggqhkjOPQQDAjBNMUswSQYDVQQDE0JkZW1vLXZlcmlmaWVyLWFjY3JlZGl0ZWQucGxheWdyb3VuZC5kZXZuZXQudmVyYW5hLm5ldHdvcmsgdmVyaWZpZXIwHhcNMjYxMDAxMTU1NTAxWhcNMjcxMDAxMTU1NjAxWjBNMUswSQYDVQQDE0JkZW1vLXZlcmlmaWVyLWFjY3JlZGl0ZWQucGxheWdyb3VuZC5kZXZuZXQudmVyYW5hLm5ldHdvcmsgdmVyaWZpZXIwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARex6qpcJ8dxTQj/+3eccx1Cib9Lbu2bIFKf5BZh4MtLMggkdmFrMKjdMC8XW9EijbTXOBc44P7vlEqOroz5vNxo4IBGTCCARUwHQYDVR0OBBYEFMO81Y5VTikBL6PiF4bvUVZKuIvkMAsGA1UdDwQEAwIHgDAfBgNVHSMEGDAWgBTDvNWOVU4pAS+j4heG71FWSriL5DCBugYDVR0RBIGyMIGvhnJkaWQ6d2Vidmg6UW1VWFZLNTlkVGJLY1VpU3NiTEdBQnJqYXFoQmlubTJ0dTllVllqQVg1d2JFQTpkZW1vLXZlcmlmaWVyLWFjY3JlZGl0ZWQucGxheWdyb3VuZC5kZXZuZXQudmVyYW5hLm5ldHdvcmuCOWRlbW8tdmVyaWZpZXItYWNjcmVkaXRlZC5wbGF5Z3JvdW5kLmRldm5ldC52ZXJhbmEubmV0d29yazAJBgNVHRMEAjAAMAoGCCqGSM49BAMCA0cAMEQCIFTvvf65wvzzm0938qEMUFa/q4HEKwoP6Y667ic1z3rtAiAA9Zq+w2p4iaEAOpQ/KLL8wTEQbISEw3hxsKkT/nT1Xg=="
+      ]
+    },
+    "payload": {
+      "aud": "https://self-issued.me/v2",
+      "client_id": "x509_hash:w5dHa_PtVP97vV49-BwLFaKg-n021dOB3abj9W-DTYc",
+      "client_metadata": {
+        "client_name": "Accredited Verifier (demo)",
+        "encrypted_response_enc_values_supported": [
+          "A128GCM",
+          "A256GCM",
+          "A128CBC-HS256"
+        ],
+        "jwks": {
+          "keys": [
+            {
+              "alg": "ECDH-ES",
+              "crv": "P-256",
+              "kid": "a95a173d-ff60-49eb-95f5-73621ac6b76c",
+              "kty": "EC",
+              "use": "enc",
+              "x": "IPypo_dOLEAI3n7QWokEVeE1JQ00sy2Zoe2lTc2AYIs",
+              "y": "EACj2Qv9_utuk9DZEa59oozZdYHld0L--IMGgb5HkVU"
+            }
+          ]
+        },
+        "logo_uri": "https://raw.githubusercontent.com/verana-labs/playground/main/public/images/cast/demo-verifier.svg",
+        "vp_formats_supported": {
+          "dc+sd-jwt": {
+            "kb-jwt_alg_values": [
+              "ES256",
+              "ES384",
+              "EdDSA",
+              "Ed25519",
+              "ES256K"
+            ],
+            "sd-jwt_alg_values": [
+              "ES256",
+              "ES384",
+              "EdDSA",
+              "Ed25519",
+              "ES256K"
+            ]
+          }
+        }
+      },
+      "dcql_query": {
+        "credentials": [
+          {
+            "claims": [
+              {
+                "path": [
+                  "demoId"
+                ]
+              },
+              {
+                "path": [
+                  "name"
+                ]
+              }
+            ],
+            "format": "dc+sd-jwt",
+            "id": "cs-8",
+            "meta": {
+              "vct_values": [
+                "https://playground-demo.playground.devnet.verana.network/vt/vct/8"
+              ]
+            }
+          }
+        ]
+      },
+      "exp": 1790952680,
+      "iat": 1790952380,
+      "nonce": "0mPkb3fBfNYUt_SOGZdCD0jP-tjVD_X-P4nRQvNkkLc",
+      "response_mode": "direct_post.jwt",
+      "response_type": "vp_token",
+      "response_uri": "https://demo-verifier-accredited.playground.devnet.verana.network/oid4vp/verifier/authorize?session=5b196d82-222d-4700-ac64-f9dd25ebe50d",
+      "state": "ppDbwWqd2IoKeZk-b-h49rDH7G0fEI2Go3upUNPG8iE"
+    }
+  },
+  "response_mode": "direct_post.jwt",
+  "response_type": "vp_token",
+  "response_uri": "https://demo-verifier-accredited.playground.devnet.verana.network/oid4vp/verifier/authorize?session=5b196d82-222d-4700-ac64-f9dd25ebe50d",
+  "state": "ppDbwWqd2IoKeZk-b-h49rDH7G0fEI2Go3upUNPG8iE",
+  "type": "OID4VP Authorization Request"
+}

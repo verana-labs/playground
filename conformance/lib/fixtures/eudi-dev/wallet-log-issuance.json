@@ -1,0 +1,113 @@
+[
+  {
+    "time": "2026-10-02T15:13:28.638086+02:00",
+    "action": "issuance",
+    "detail": "Received credential offer from https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer",
+    "success": true,
+    "details": {
+      "credential_configuration_ids": [
+        "https://playground-demo.playground.devnet.verana.network/vt/schemas-8-jsc.json"
+      ],
+      "direction": "inbound",
+      "event": "credential_offer",
+      "grants": {
+        "AuthorizationCode": "",
+        "IssuerState": "",
+        "PreAuthorizedCode": "fqiT6ejc1KXkGL8BoamAL9nwIUqXUIGcFD1ujhHbUg4",
+        "TxCode": null
+      },
+      "issuer": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer",
+      "offer_uri": "openid-credential-offer://?credential_offer_uri=https%3A%2F%2Fdemo-issuer-accredited.playground.devnet.verana.network%2Foid4vci%2Fissuer%2Foffers%2Fac292c15-5c84-4c07-b0e0-ce0fbb32424c"
+    }
+  },
+  {
+    "time": "2026-10-02T15:13:28.754375+02:00",
+    "action": "issuance",
+    "detail": "Issuer metadata response from https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer",
+    "success": true,
+    "details": {
+      "direction": "inbound",
+      "event": "issuer_metadata_response",
+      "issuer": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer",
+      "metadata": {
+        "credential_configurations_supported": {
+          "https://playground-demo.playground.devnet.verana.network/vt/schemas-8-jsc.json": {
+            "credential_metadata": {
+              "claims": [
+                {
+                  "path": [
+                    "demoId"
+                  ]
+                },
+                {
+                  "path": [
+                    "name"
+                  ]
+                }
+              ],
+              "display": [
+                {
+                  "locale": "en",
+                  "name": "DemoCredential"
+                }
+              ]
+            },
+            "credential_signing_alg_values_supported": [
+              "ES256"
+            ],
+            "cryptographic_binding_methods_supported": [
+              "jwk"
+            ],
+            "format": "dc+sd-jwt",
+            "proof_types_supported": {
+              "jwt": {
+                "proof_signing_alg_values_supported": [
+                  "ES256"
+                ]
+              }
+            },
+            "scope": "https://playground-demo.playground.devnet.verana.network/vt/schemas-8-jsc.json",
+            "vct": "https://playground-demo.playground.devnet.verana.network/vt/vct/8"
+          }
+        },
+        "credential_endpoint": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer/credential",
+        "credential_issuer": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer",
+        "credentials_supported": [
+          {
+            "cryptographic_binding_methods_supported": [
+              "jwk"
+            ],
+            "cryptographic_suites_supported": [
+              "ES256"
+            ],
+            "display": [
+              {
+                "locale": "en",
+                "name": "DemoCredential"
+              }
+            ],
+            "format": "vc+sd-jwt",
+            "id": "https://playground-demo.playground.devnet.verana.network/vt/schemas-8-jsc.json",
+            "vct": "https://playground-demo.playground.devnet.verana.network/vt/vct/8"
+          }
+        ],
+        "deferred_credential_endpoint": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer/deferred-credential",
+        "display": [
+          {
+            "locale": "en",
+            "logo": {
+              "uri": "https://raw.githubusercontent.com/verana-labs/playground/main/public/images/cast/demo-issuer.svg"
+            },
+            "name": "Accredited Issuer (demo)"
+          }
+        ],
+        "dpop_signing_alg_values_supported": [
+          "ES256"
+        ],
+        "nonce_endpoint": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer/nonce",
+        "token_endpoint": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer/token"
+      },
+      "url": "https://demo-issuer-accredited.playground.devnet.verana.network/.well-known/openid-credential-issuer/oid4vci/issuer"
+    }
+  }
+]

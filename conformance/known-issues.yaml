@@ -1,0 +1,284 @@
+issues:
+  - match:
+      tier: t1
+      check: [did-resolves, no-cleartext, serving-version, "strings:ecs-claims", tls-certificate, webvh-log-signed]
+      network: testnet-v3
+      cast: ccm
+      service: bancolombia
+    cause: ccm/bancolombia has never been deployed (no StatefulSet, no certificate); ccm/camara is up
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: serving-version
+      network: testnet-v3
+      cast: demo
+      service: [demo-issuer-accredited, demo-issuer-unaccredited, demo-issuer-untrusted, demo-untrusted, demo-verifier-accredited, demo-verifier-unaccredited, demo-verifier-untrusted, playground-demo]
+    cause: the testnet demo cast serves uiprofile .42/.43/.45 while its template pins .49; the demo workflows were not re-dispatched
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: serving-version
+      network: testnet-v3
+      cast: bhi
+      service: [institute, orchestrating-identity, tvs]
+    cause: bhi/institute, orchestrating-identity and tvs serve uiprofile .35 while the template pins .49
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: serving-version
+      network: testnet-v3
+      cast: bolivia
+      service: [banco-union, impuestos, prestamista, segip, seprec]
+    cause: bolivia serves uiprofile .31/.39 while its template pins .41
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: serving-version
+      network: testnet-v3
+      cast: cexa
+      service: [borealis, darkpool, novara]
+    cause: cexa serves uiprofile .31 while the per-org config.env pins .39
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: serving-version
+      network: testnet-v3
+      cast: verandia
+      service: [business-registry, civil-registry, meridian-bank, quickcash, tax-buro]
+    cause: verandia serves uiprofile .31/.39 while its template pins .41
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: serving-version
+      network: testnet-v3
+      cast: vesta
+      service: [helvetia-trust, iso-certification, normacert, umbra, vesta, vesta-iberia, vesta-nordics, vesta-portal, vesta-repair-network, zenith]
+    cause: vesta serves uiprofile .31 while its template pins .41 (.39 for vesta-portal and vesta-repair-network)
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: metadata-both-shapes
+      network: testnet-v3
+      cast: [bolivia, ccm, cexa, verandia, vesta]
+      service: [segip, seprec, camara, aurum, novara, business-registry, civil-registry, umbra, vesta, zenith]
+    cause: images up to .41 publish no display or claims on the credential configuration itself
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: webvh-log-signed
+      network: testnet-v3
+      cast: [demo, vesta]
+      service: [demo-untrusted, playground-demo, helvetia-trust, iso-certification, normacert, umbra, vesta, vesta-iberia, vesta-nordics, vesta-portal, vesta-repair-network, zenith]
+    cause: did:webvh logs created before the 2026-08-03 fix; only reset_identity repairs them
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: short-link-browser
+      network: testnet-v3
+      cast: [demo, eventos]
+      service: [demo-issuer-accredited, demo-issuer-unaccredited, taquilla]
+    cause: the short link answers 502 to a browser Accept header
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: "strings:invitation-label"
+      network: testnet-v3
+      cast: eventos
+      service: [evento-costa-rica, evento-guatemala, evento-panama]
+    cause: "*-00_core.yml sets didcommLabel with yq env(), which parses a name containing ': ' as a map; it needs strenv()"
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: "strings:invitation-label"
+      network: testnet-v3
+      cast: demo
+      service: [demo-issuer-untrusted, demo-verifier-untrusted]
+    cause: the untrusted demo services answer with a plain invitation page that has no label to read
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: ["link:issue", "link:present"]
+      network: testnet-v3
+      cast: demo
+      service: demo-untrusted
+      wallet: [bcwallet, hologram]
+    cause: DIDComm connection scenarios have no tier 2 coverage yet
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: resolver-production-flag
+      network: testnet-v3
+    cause: the resolver reports production true for demo DIDs while networks.yaml marks testnet as not production; to raise with the team (last seen 2026-09-18, tier 2 has not run on testnet since)
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: metadata-both-shapes
+      network: devnet-v4
+      cast: [bhi, cexa, demo, verandia, vesta]
+      service: [caledonian, cirrus, northbank, aurum, novara, demo-issuer-accredited, demo-issuer-unaccredited, demo-issuer-untrusted, business-registry, civil-registry, umbra, vesta, zenith]
+    cause: vs-agent main serves only the OID4VCI 1.0 credential_metadata.{display,claims}, while draft 13 wallets (Inji) need them at the top level of the credential configuration
+    reference: https://github.com/verana-labs/vs-agent
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: "strings:issuer-metadata"
+      network: devnet-v4
+      cast: [bhi, cexa, demo, verandia, vesta]
+      service: [caledonian, cirrus, northbank, aurum, novara, demo-issuer-unaccredited, demo-issuer-untrusted, business-registry, civil-registry, umbra, vesta, zenith]
+    cause: these issuers list the ECS credential configurations of the devnet ECS Ecosystem, whose Type Metadata at ecs-ecosystem.devnet.verana.network/vt/vct/5 and /vt/vct/9 answers 404
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: ["strings:invitation-label", "link:issue", "link:present"]
+      network: devnet-v4
+      cast: demo
+      service: [demo-issuer-accredited, demo-issuer-unaccredited, demo-issuer-untrusted, demo-verifier-accredited, demo-verifier-unaccredited, demo-verifier-untrusted]
+    cause: "vs-agent v2 answers the DIDComm short links with a DIDComm v2 out-of-band invitation (type out-of-band/2.0/invitation, no @type and no label), which lib/links.ts only parses in its v1 shape; the Hologram builds read only v1 invitations too"
+    expires: 2026-10-30
+
+  - match:
+      tier: t1
+      check: ["link:issue", "link:present"]
+      network: devnet-v4
+      cast: demo
+      service: demo-untrusted
+      wallet: [bcwallet, hologram]
+    cause: DIDComm connection scenarios have no tier 2 coverage yet
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: reference-holder-haip
+      network: devnet-v4
+      cast: [cexa, demo, verandia]
+      service: [aurum, novara, demo-issuer-accredited, demo-issuer-unaccredited, demo-issuer-untrusted, business-registry, civil-registry]
+    cause: "HAIP 1.0 §4.4.1: the token endpoint answers invalid_client to eudi-dev's wallet attestation (Credo: trustedCertificates is required when the JWS protected header contains an 'x5c' property) since the devnet issuers set no issuer.walletAttestationCertificates; their credentials are also signed with vs-agent's self-signed development certificate, which HAIP 1.0 §6.1.1 forbids. eudi-dev 2.6.1's one-shot --haip issuance gets the same invalid_client (2026-10-08)"
+    reference: https://github.com/verana-labs/vs-agent/blob/main/packages/plugin-openid4vc/src/trust/CertificateTrust.ts
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: reference-holder-haip
+      network: devnet-v4
+      cast: [cexa, demo, verandia]
+      service: [borealis, darkpool, demo-verifier-accredited, demo-verifier-unaccredited, demo-verifier-untrusted, meridian-bank, quickcash, tax-buro]
+      scenario: [bhi-employment@dcql+x5c, bhi-qualification@dcql+x5c, bhi-right-to-work@dcql+x5c, cexa-kyc@dcql+x5c, demo-credential@dcql+x5c, verandia-citizen-id@dcql+x5c, verandia-legal-rep@dcql+x5c]
+    cause: "HAIP 1.0 §5: the devnet verifiers sign their request objects with vs-agent's self-signed development x5c certificate (no configured certificate chain), which eudi-dev in HAIP strict mode refuses; eudi-dev 2.6.1's one-shot --haip presentation refuses it too (2026-10-08)"
+    reference: https://github.com/verana-labs/vs-agent/blob/main/packages/plugin-openid4vc/src/services/CertificateService.ts
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: reference-holder-error-response
+      network: devnet-v4
+      scenario: [bhi-employment@dcql, bhi-employment@dcql+x5c, bhi-qualification@dcql, bhi-qualification@dcql+x5c, bhi-right-to-work@dcql, bhi-right-to-work@dcql+x5c, cexa-kyc@dcql, cexa-kyc@dcql+x5c, demo-credential@dcql, demo-credential@dcql+x5c, ecs-badge@dcql, ecs-badge@dcql+x5c, verandia-citizen-id@dcql, verandia-citizen-id@dcql+x5c, verandia-legal-rep@dcql, verandia-legal-rep@dcql+x5c]
+    cause: "every devnet vs-agent verifier (Credo openid4vc response endpoint) answers an access_denied Authorization Error Response, plain or direct_post.jwt, with HTTP 500 server_error while moving the session to Error; OID4VP 1.0 §8.2 requires HTTP 200 once it is processed"
+    reference: https://openid.net/specs/openid-4-verifiable-presentations-1_0-final.html#section-8.2
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: reference-holder-error-response
+      network: devnet-v4
+      scenario: [bhi-employment@pe, bhi-employment@pe+x5c, bhi-qualification@pe, bhi-qualification@pe+x5c, bhi-right-to-work@pe, bhi-right-to-work@pe+x5c, cexa-kyc@pe, cexa-kyc@pe+x5c, demo-credential@pe, demo-credential@pe+x5c, ecs-badge@pe, ecs-badge@pe+x5c, verandia-citizen-id@pe, verandia-citizen-id@pe+x5c, verandia-legal-rep@pe, verandia-legal-rep@pe+x5c]
+    cause: "VerifierService.buildRequestSigner signs the ?query=pe (draft 21) request with clientIdPrefix x509_hash, so it carries client_id_scheme=x509_hash, which draft 21 never defined and oid4vc-ts's legacy scheme list lacks: every devnet verifier answers every reply, error responses and vp_tokens alike, with 400 Unsupported client_id_scheme value 'x509_hash'. vs-agent#791 signs these requests with an x509_san_dns client id"
+    reference: https://github.com/verana-labs/vs-agent/pull/791
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: [reference-holder-present, reference-holder-replay-presentation]
+      network: devnet-v4
+      scenario: [bhi-employment@dcql, bhi-employment@dcql+x5c, bhi-right-to-work@dcql, bhi-right-to-work@dcql+x5c]
+    cause: "the bhi DCQL queries list every schema property as a claim and set no claim_sets, so they also ask for claims the schema leaves optional: portrait and rtwExpiryDate, which no bhi-right-to-work credential carries, and endDate, which the current employment the demo issues one time in three lacks; eudi-dev finds no matching credential, and there is no presentation to replay"
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: [reference-holder-mint, reference-holder-present, reference-holder-haip, reference-holder-replay-presentation]
+      network: devnet-v4
+      scenario: [ecs-badge, ecs-badge@dcql, ecs-badge@dcql+x5c, ecs-badge@pe, ecs-badge@pe+x5c]
+    cause: "no devnet service mints an ecs-badge offer (every issuer answers unsupported, only verifiers mint ecs-badge requests), so eudi-dev holds no ecs-badge to present"
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: reference-holder-mint
+      network: devnet-v4
+      scenario: [bolivia-cedula, bolivia-legal-rep, ccm-legal-rep, eventos-asistente, eventos-patrocinador]
+    cause: "the bolivia, ccm and eventos casts still use the Verana V3 model and do not run on devnet (docs/networks.md), so no devnet service mints their credentials"
+    reference: https://github.com/verana-labs/playground/blob/v4/docs/networks.md
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: flow
+      network: devnet-v4
+      cast: vesta
+      service: [umbra, vesta, zenith]
+      scenario: [vesta-umbra-issue-ecs-badge, vesta-vesta-issue-ecs-badge, vesta-zenith-issue-ecs-badge]
+    cause: "the ecs-badge mint answers {kind: unsupported} on vesta, zenith and umbra (2026-10-08): the route's v4 offer call to the agent fails although the devnet ECS Ecosystem publishes the BadgeCredential VTJSC (schema 9), so tier 2 has no badge offer to run"
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: [reference-holder-issue, reference-holder-validate, reference-holder-decode, reference-holder-haip, reference-holder-replay-offer, protocolsoup-issue]
+      network: devnet-v4
+      cast: vesta
+      service: umbra
+    cause: "umbra is an untrusted demo service, and app/api/demo/[serviceId]/route.ts answers every non-badge mint from it with its DIDComm /invitation, even under format=oid4vc and without a fallback flag, so the matrix takes it for an issuer of every credential: eudi-dev cannot read the invitation as an offer, and its HAIP wallet server reads it as an authorization request without client_id"
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: protocolsoup-issue
+      network: devnet-v4
+    cause: "ProtocolSoup requires the SD-JWT VC iss to equal the offer's credential_issuer before it checks the issuer signature, and every devnet vs-agent issuer signs with the bare service origin as iss while its credential_issuer is <origin>/oid4vci/issuer, so no devnet credential is imported (vs-agent finding, 2026-10-08)"
+    reference: https://github.com/ParleSec/ProtocolSoup/blob/v4.1.1/backend/cmd/walletharness/oid4vci_external.go#L1978
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: wwwallet-journey
+      network: devnet-v4
+      cast: vesta
+      service: [umbra, vesta, vesta-portal, zenith]
+      scenario: [ecs-badge-offer, ecs-badge-login]
+    cause: "the ecs-badge mint answers {kind: unsupported} on vesta, zenith and umbra (2026-10-08), so wwWallet gets no badge offer and the Vesta portal login has no badge to present"
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: wwwallet-journey
+      network: devnet-v4
+      cast: bhi
+      service: [halcyon, meridian-tech]
+      scenario: [bhi-employment-request, bhi-right-to-work-request]
+    cause: "the bhi DCQL queries list every schema property as a claim with no claim_sets, so they ask for portrait and rtwExpiryDate, which no right-to-work credential carries, and endDate, which the current employment lacks one time in three: wwWallet answers Insufficient Credentials before its trust screen, so Halcyon's Q3 refusal is never shown"
+    expires: 2026-10-30
+
+  - match:
+      tier: t2
+      check: wwwallet-journey
+      network: devnet-v4
+      cast: cexa
+      service: novara
+      scenario: cexa-kyc-request
+    cause: "GET /api/demo/novara/proof/<id> answers 404 unknown service: the proof route only serves the verifier and untrusted roles, and novara has the issuer role although it also verifies"
+    expires: 2026-10-30

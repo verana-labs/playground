@@ -1,0 +1,7 @@
+{
+  "status": 400,
+  "body": {
+    "error": "invalid_request",
+    "error_description": "request object must contain exactly one of dcql_query or scope"
+  }
+}

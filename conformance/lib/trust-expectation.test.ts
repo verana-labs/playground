@@ -1,9 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { CastService } from "./cast-services";
+import ACCREDITED_ISSUER_RESOLUTION from "./fixtures/devnet-v4/resolve-demo-issuer-accredited.json";
+import UNTRUSTED_ISSUER_RESOLUTION from "./fixtures/devnet-v4/resolve-demo-issuer-untrusted.json";
 import type { Network } from "./network";
-import { ResolverClient } from "./resolver-client";
 import { listScenarios, serviceFor } from "./scenarios";
-import { assertTrust, expectedTrust, type TrustExpectation } from "./trust-expectation";
+import { IndexerTrustClient, ResolverTrustClient } from "./trust-client";
+import { assertTrust, expectedTrust, expectsUntrusted, type TrustExpectation } from "./trust-expectation";
 
 function service(id: string, demoPerm: CastService["demoPerm"], oid4vcRole: CastService["oid4vcRole"]): CastService {
   return { cast: "demo", org: id, id, host: `${id}.playground.testnet.verana.network`, pinnedTag: "v0", oid4vcRole, demoPerm, issuerId: null, configPath: id };
@@ -85,6 +87,23 @@ describe("expectedTrust", () => {
     });
 });
 
+describe("expectsUntrusted", () => {
+  const scenarios = listScenarios();
+  const untrusted = (s: CastService): boolean => expectsUntrusted(s, scenarios);
+
+  it("holds for the services an untrusted scenario names on either rail", () => {
+    expect(untrusted(service("demo-untrusted", null, null))).toBe(true);
+    expect(untrusted(SERVICES["demo-issuer-untrusted"]!)).toBe(true);
+    expect(untrusted(SERVICES["demo-verifier-untrusted"]!)).toBe(true);
+  });
+
+  it("does not hold for trusted services or services no scenario names", () => {
+    expect(untrusted(SERVICES["demo-issuer-unaccredited"]!)).toBe(false);
+    expect(untrusted(SERVICES["evento-guatemala"]!)).toBe(false);
+    expect(untrusted(service("playground-demo", null, null))).toBe(false);
+  });
+});
+
 const NETWORK: Network = {
   id: "testnet-v3",
   vpr: "vna-testnet-1",
@@ -134,7 +153,7 @@ describe("assertTrust", () => {
         failedCredentials: [],
       },
     );
-    const assertion = await assertTrust(new ResolverClient("https://r"), did, { q1: "UNTRUSTED", q2: null, q3: null }, NETWORK);
+    const assertion = await assertTrust(new ResolverTrustClient("https://r"), did, { q1: "UNTRUSTED", q2: null, q3: null }, NETWORK);
     expect(assertion.ok).toBe(true);
     expect(assertion.problems).toEqual([]);
     expect(assertion.evidence.selfIssued).toEqual(["ECS-SERVICE", "ECS-ORG"]);
@@ -155,8 +174,75 @@ describe("assertTrust", () => {
         failedCredentials: [],
       },
     );
-    const assertion = await assertTrust(new ResolverClient("https://r"), did, { q1: "UNTRUSTED", q2: null, q3: null }, NETWORK);
+    const assertion = await assertTrust(new ResolverTrustClient("https://r"), did, { q1: "UNTRUSTED", q2: null, q3: null }, NETWORK);
     expect(assertion.ok).toBe(false);
     expect(assertion.problems).toEqual(["trustStatus TRUSTED is not UNTRUSTED"]);
+  });
+});
+
+const DEVNET: Network = {
+  ...NETWORK,
+  id: "devnet-v4",
+  vpr: "vna-devnet-1",
+  protocol: "v4",
+  castToken: "devnet",
+  resolver: null,
+  indexer: "https://idx.devnet.verana.network",
+  playground: "https://playground.devnet.verana.network",
+  vocabulary: { ecosystem: "Ecosystem", participant: "Participant" },
+};
+
+describe("assertTrust on the v4 indexer", () => {
+  afterEach(() => vi.unstubAllGlobals());
+
+  const answering = (body: unknown, status = 200): void => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(json(body, status)));
+  };
+
+  it("accepts the recorded devnet answer for the accredited issuer by its v4 ECS schema names", async () => {
+    answering(ACCREDITED_ISSUER_RESOLUTION);
+    const assertion = await assertTrust(new IndexerTrustClient("https://idx-1", "vna-devnet-1"), ACCREDITED_ISSUER_RESOLUTION.did, { q1: "TRUSTED", q2: true, q3: null }, DEVNET);
+    expect(assertion.problems).toEqual([]);
+    expect(assertion.ok).toBe(true);
+    expect(assertion.evidence.credentials).toEqual([
+      { ecsType: "ServiceCredential", result: "VALID" },
+      { ecsType: "OrganizationCredential", result: "VALID" },
+    ]);
+    expect(assertion.evidence.production).toBeNull();
+    expect(assertion.evidence.productionFlagProblem).toBeUndefined();
+    expect(assertion.evidence.indexer).toEqual({
+      registered: true,
+      unresolvableCredentialIds: ["https://demo-issuer-accredited.playground.devnet.verana.network/vt/schemas-8-jsc.json"],
+    });
+  });
+
+  it("accepts a DID the indexer does not know when UNTRUSTED is expected", async () => {
+    answering(UNTRUSTED_ISSUER_RESOLUTION, 404);
+    const did = "did:webvh:QmXpoZWmomGyTCQ2j4UUokXLHtuz11LnRsFWcBsaBddLXB:demo-issuer-untrusted.playground.devnet.verana.network";
+    const assertion = await assertTrust(new IndexerTrustClient("https://idx-2", "vna-devnet-1"), did, { q1: "UNTRUSTED", q2: null, q3: null }, DEVNET);
+    expect(assertion.problems).toEqual([]);
+    expect(assertion.evidence.indexer).toEqual({ registered: false, unresolvableCredentialIds: [] });
+  });
+
+  it("names the missing v4 owner credential", async () => {
+    answering({ ...ACCREDITED_ISSUER_RESOLUTION, ecsCredentials: ACCREDITED_ISSUER_RESOLUTION.ecsCredentials.filter((c) => c.ecsSchema === "ServiceCredential") });
+    const assertion = await assertTrust(new IndexerTrustClient("https://idx-3", "vna-devnet-1"), ACCREDITED_ISSUER_RESOLUTION.did, { q1: "TRUSTED", q2: true, q3: null }, DEVNET);
+    expect(assertion.problems).toEqual(["no VALID OrganizationCredential or PersonaCredential credential"]);
+  });
+
+  it("does not read v3 ECS type names as v4 ones", async () => {
+    answering({
+      ...ACCREDITED_ISSUER_RESOLUTION,
+      ecsCredentials: ACCREDITED_ISSUER_RESOLUTION.ecsCredentials.map((c) => ({ ...c, ecsSchema: c.ecsSchema === "ServiceCredential" ? "ECS-SERVICE" : "ECS-ORG" })),
+    });
+    const assertion = await assertTrust(new IndexerTrustClient("https://idx-4", "vna-devnet-1"), ACCREDITED_ISSUER_RESOLUTION.did, { q1: "TRUSTED", q2: true, q3: null }, DEVNET);
+    expect(assertion.problems).toEqual(["no VALID ServiceCredential credential", "no VALID OrganizationCredential or PersonaCredential credential"]);
+  });
+
+  it("refuses a TRUSTED verdict that says nothing about when it expires", async () => {
+    const { expiresAtTime: _expiresAtTime, ...withoutExpiry } = ACCREDITED_ISSUER_RESOLUTION;
+    answering(withoutExpiry);
+    const assertion = await assertTrust(new IndexerTrustClient("https://idx-5", "vna-devnet-1"), ACCREDITED_ISSUER_RESOLUTION.did, { q1: "TRUSTED", q2: true, q3: null }, DEVNET);
+    expect(assertion.problems).toEqual(["a TRUSTED verdict carries no expiresAt"]);
   });
 });

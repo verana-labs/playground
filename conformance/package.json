@@ -10,6 +10,8 @@
     "typecheck": "tsc --noEmit",
     "t1": "vitest run tier1",
     "t2": "vitest run tier2",
+    "t2:protocolsoup": "vitest run tier2/protocolsoup",
+    "t2-wwwallet": "vitest run tier2/wwwallet-journeys",
     "summary": "node bin/summary.mjs"
   },
   "dependencies": {
@@ -25,6 +27,7 @@
   "devDependencies": {
     "@types/js-yaml": "^4.0.9",
     "@types/node": "^22.13.5",
+    "playwright-core": "1.63.0",
     "typescript": "^5.7.3",
     "vitest": "^4.1.10"
   }

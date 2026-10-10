@@ -1,0 +1,7 @@
+{
+  "status": 400,
+  "body": {
+    "error": "invalid_request",
+    "error_description": "request object verification failed: validate request object x5c chain: verify certificate chain: x509: certificate signed by unknown authority"
+  }
+}

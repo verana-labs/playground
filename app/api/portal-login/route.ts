@@ -12,9 +12,10 @@ import { vtjscIdFor } from "@/app/lib/vtjsc";
 // OID4VP authorization request from the portal's ecs-badge policy.
 //
 // V4 (vs-agent v2): both rails name the badge VTJSC, which the ECS Ecosystem
-// controller publishes for its BadgeCredential schema. The request asks for
-// every attribute of the schema, and any authorized issuer of the badge
-// satisfies it. The portal decides after the presentation, as on V3.
+// controller publishes for its BadgeCredential schema. The DIDComm request
+// asks for every attribute of the schema, the OID4VC one for the claims the
+// portal shows, and any authorized issuer of the badge satisfies it. The
+// portal decides after the presentation, as on V3.
 
 export const dynamic = "force-dynamic";
 
@@ -37,7 +38,10 @@ async function requestV4(admin: string, oid4vc: boolean) {
     const request = await adminJson(`${admin}/v2/openid4vc/presentation-request`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ jsonSchemaCredentialId }),
+      body: JSON.stringify({
+        jsonSchemaCredentialId,
+        requestedClaims: [...BADGE_ATTRIBUTES, "photo"],
+      }),
     });
     const url = str(request, "url");
     if (!url) throw new Error("no url in response");

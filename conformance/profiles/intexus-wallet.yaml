@@ -13,9 +13,9 @@ builds:
   - kind: browser
     listed: true
     label: "INTEXUS-branded hosted instance of the Verana fork, scoped to the events demo"
-    obtain: https://intexus-wallet.eventos.playground.testnet.verana.network
+    obtain: https://intexus-wallet.eventos.playground.__NETWORK__.verana.network
     identity:
-      url: https://intexus-wallet.eventos.playground.testnet.verana.network
+      url: https://intexus-wallet.eventos.playground.__NETWORK__.verana.network
       repo: https://github.com/verana-labs/wallet-frontend
     platforms: [web]
     promises: "Same code as wwwallet with the INTEXUS brand; the wallet the Colombian tour uses"
@@ -24,3 +24,13 @@ quirks:
   locksOnBackground: false
   viewTree: browser
   notes: "Built by .github/workflows/wwwallet.yml with brand intexus. Do not change its deployment during the tour (17, 22 and 24 September 2026)"
+capabilities:
+  openid4vc:
+    grants: { pre-authorized_code: yes }
+    proofTypes: { jwt: yes }
+    formats: { dc+sd-jwt: yes }
+    queryLanguages: { dcql: yes }
+    clientIdPrefixes: { x509_hash: yes }
+    responseModes: { direct_post.jwt: yes }
+    sendsWalletAttestation: no
+    requiresMetadataKid: no

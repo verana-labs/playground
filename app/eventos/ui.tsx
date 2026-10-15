@@ -14,6 +14,9 @@ import {
 } from "lucide-react";
 import { withBase } from "../lib/base-path";
 import type { PersonalWallet } from "../lib/wallets";
+import { isStoreLink, type WalletLink } from "../lib/wallet-links";
+import { StoreBadges } from "../components/StoreBadges";
+import { BuildsHint } from "../components/WalletBuilds";
 import {
   EVENTO_SUBTITULO,
   EVENTO_TITULO,
@@ -80,6 +83,58 @@ export function WalletIcon({ w, size = 40 }: { w: PersonalWallet; size?: number 
   );
 }
 
+function Acciones({
+  wallet,
+  links,
+  acento,
+}: {
+  wallet: PersonalWallet;
+  links: WalletLink[];
+  acento: string;
+}) {
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      {links
+        .filter((l) => !isStoreLink(l))
+        .map((l) =>
+          l.kind === "web" ? (
+            <a
+              key={l.kind}
+              href={l.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-xl bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-200"
+            >
+              <ExternalLink className="h-4 w-4" aria-hidden />
+              Abrir la wallet web
+            </a>
+          ) : (
+            <a
+              key={l.kind}
+              href={l.url}
+              target={l.kind === "hosted" ? walletTabTarget(l.url) : "_blank"}
+              rel={l.kind === "hosted" ? undefined : "noopener noreferrer"}
+              className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
+              style={{ backgroundColor: acento }}
+            >
+              {wallet.browser ? (
+                <ExternalLink className="h-4 w-4" aria-hidden />
+              ) : (
+                <Download className="h-4 w-4" aria-hidden />
+              )}
+              {wallet.browser
+                ? "Abrir la wallet web"
+                : wallet.verana_builtin
+                  ? "Obtener la wallet"
+                  : "Descargar el APK"}
+            </a>
+          ),
+        )}
+      <StoreBadges links={links} lang="es" />
+    </div>
+  );
+}
+
 /** Wallet picker + install panel: every integrated personal wallet, with
  *  the same download options as the /personal-wallets page, in Spanish. A
  *  browser wallet (INTEXUS Wallet) has nothing to install: its main action
@@ -97,6 +152,8 @@ export function WalletPicker({
 }) {
   const wallet = wallets.find((w) => w.id === selectedId) ?? wallets[0];
   if (!wallet) return null;
+  const verana = wallet.links.filter((l) => l.trust_screen);
+  const plain = wallet.links.filter((l) => !l.trust_screen);
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
@@ -123,6 +180,7 @@ export function WalletPicker({
                 <span className="block truncate text-[11px] text-gray-500">
                   {w.vendor}
                 </span>
+                <BuildsHint links={w.links} lang="es" className="text-[10px]" />
               </span>
             </button>
           );
@@ -147,65 +205,34 @@ export function WalletPicker({
             ? `${wallet.name} es una wallet web: no hay nada que instalar. Ábrela en tu navegador, también desde tu teléfono, y crea tu cuenta con huella, rostro o PIN.`
             : wallet.verana_builtin
               ? `${wallet.name} es compatible con Verana de fábrica: instala la versión estándar desde los enlaces de abajo.`
-              : `Descarga la versión de ${wallet.name} integrada con Verana (compilación para la red de pruebas). Las versiones de tienda pueden no incluir la integración.`}
+              : !verana.length
+                ? `${wallet.name} no tiene la pantalla de confianza de Verana: sus versiones de tienda completan las demos tal como se publican, pero no consultan el registro, así que no rechazan los servicios no acreditados ni los no confiables.`
+                : verana.some((l) => l.kind === "download")
+                  ? `Descarga la versión de ${wallet.name} integrada con Verana (compilación para la red de pruebas). Las versiones de tienda pueden no incluir la integración.`
+                  : `Instala ${wallet.name} desde las tiendas: sus versiones publicadas incluyen la pantalla de confianza de Verana.`}
         </p>
-        <div className="mt-4 flex flex-wrap items-center gap-2">
-          <a
-            href={wallet.browser ? (wallet.hosted ?? wallet.download) : wallet.download}
-            target={
-              wallet.browser && wallet.hosted
-                ? walletTabTarget(wallet.hosted)
-                : "_blank"
+        {verana.length ? (
+          <div className="mt-4">
+            <Acciones wallet={wallet} links={verana} acento={acento} />
+          </div>
+        ) : null}
+        {plain.length ? (
+          <div
+            className={
+              verana.length ? "mt-4 border-t border-gray-100 pt-3" : "mt-4"
             }
-            rel={
-              wallet.browser && wallet.hosted ? undefined : "noopener noreferrer"
-            }
-            className="inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white transition hover:opacity-90"
-            style={{ backgroundColor: acento }}
           >
-            {wallet.browser ? (
-              <ExternalLink className="h-4 w-4" aria-hidden />
-            ) : (
-              <Download className="h-4 w-4" aria-hidden />
-            )}
-            {wallet.browser
-              ? "Abrir la wallet web"
-              : wallet.verana_builtin
-                ? "Obtener la wallet"
-                : "Descargar el APK"}
-          </a>
-          {wallet.playstore ? (
-            <a
-              href={wallet.playstore}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-200"
-            >
-              Google Play
-            </a>
-          ) : null}
-          {wallet.appstore ? (
-            <a
-              href={wallet.appstore}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-200"
-            >
-              App Store
-            </a>
-          ) : null}
-          {wallet.web ? (
-            <a
-              href={wallet.web}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-xl bg-gray-100 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-200"
-            >
-              <ExternalLink className="h-4 w-4" aria-hidden />
-              Abrir la wallet web
-            </a>
-          ) : null}
-        </div>
+            {verana.length ? (
+              <p className="mb-2 text-sm text-gray-600">
+                También funciona con la versión de tienda{" "}
+                <span className="text-gray-500">
+                  (sin la pantalla de confianza de Verana)
+                </span>
+              </p>
+            ) : null}
+            <Acciones wallet={wallet} links={plain} acento={acento} />
+          </div>
+        ) : null}
         {wallet.browser && wallet.hosted ? (
           <div className="mt-4">
             <HostedWalletQr

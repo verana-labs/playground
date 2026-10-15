@@ -1,13 +1,16 @@
 import { NextResponse } from "next/server";
 import { getDemoService } from "@/app/lib/demo-services";
 import { adminBase, adminJson, CAST_DOMAIN } from "@/app/lib/demo-admin";
+import { PROTOCOL } from "@/app/lib/network";
 
 // Status of an issuance flow started from an issuer demo card: the page
 // polls this to swap the single-use QR for a delivered/declined message once
 // the wallet has answered the offer. Proxies the issuer vs-agent's admin API
 // on either rail: DIDComm credential exchanges (default,
 // GET /v1/credential-exchanges/{id}) or OID4VCI issuance sessions
-// (?rail=oid4vc, GET /v1/oid4vc/offers/{id}). Untrusted minters (the badge
+// (?rail=oid4vc, GET /v1/oid4vc/offers/{id}). On V4 (vs-agent v2) the paths
+// are /v2/didcomm/credential-exchanges/{id} and
+// /v2/openid4vc/credential-exchanges/{id}. Untrusted minters (the badge
 // impostor, the untrusted issuer) count too.
 
 export const dynamic = "force-dynamic";
@@ -33,20 +36,29 @@ export async function GET(
   try {
     if (rail === "oid4vc") {
       const body = await adminJson(
-        `${adminBase(serviceId)}/v1/oid4vc/offers/${encodeURIComponent(credentialExchangeId)}`,
+        PROTOCOL === "v4"
+          ? `${adminBase(serviceId)}/v2/openid4vc/credential-exchanges/${encodeURIComponent(credentialExchangeId)}`
+          : `${adminBase(serviceId)}/v1/oid4vc/offers/${encodeURIComponent(credentialExchangeId)}`,
       );
-      const record = (body ?? {}) as { state?: unknown; error?: unknown };
+      const record = (body ?? {}) as {
+        state?: unknown;
+        error?: unknown;
+        errorMessage?: unknown;
+      };
       const state = typeof record.state === "string" ? record.state : null;
+      const error = record.errorMessage ?? record.error;
       return NextResponse.json({
         state,
         done: state === "Completed" || state === "CredentialsPartiallyIssued",
         declined: state === "Error",
-        error: typeof record.error === "string" ? record.error : null,
+        error: typeof error === "string" ? error : null,
       });
     }
 
     const body = await adminJson(
-      `${adminBase(serviceId)}/v1/credential-exchanges/${encodeURIComponent(credentialExchangeId)}`,
+      PROTOCOL === "v4"
+        ? `${adminBase(serviceId)}/v2/didcomm/credential-exchanges/${encodeURIComponent(credentialExchangeId)}`
+        : `${adminBase(serviceId)}/v1/credential-exchanges/${encodeURIComponent(credentialExchangeId)}`,
     );
     const record = (body ?? {}) as { state?: unknown; error?: unknown };
     const state = typeof record.state === "string" ? record.state : null;

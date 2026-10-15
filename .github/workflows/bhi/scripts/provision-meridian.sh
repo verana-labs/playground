@@ -1,53 +1,39 @@
 #!/usr/bin/env bash
-# Provision Meridian Technologies (demo) - the Verified Employer: ECS creds,
-# the Verified Employer credential issued by Orchestrating Identity under
-# BHI's Recruitment Trust Network (reusable KYB: the validating provider
-# identifies Meridian by the ECS-Organization already on its DID), and
-# self-created VERIFIER permissions on the three candidate schemas
-# (verification is OPEN). That is what stands behind the "Apply with
-# Verifiable Credentials" flag: a resolvable credential chain.
+# Provision Meridian Technologies (demo) (bhi-08) on Verana V4, the Verified
+# Employer:
+#   1. The ECS credentials: the ECS-Organization credential from ecs-org-issuer
+#      and the self-issued ECS-Service credential.
+#   2. A HOLDER entry on the VerifiedEmployerCredential schema of the
+#      Institute. The Verified Employer ISSUER entry of Orchestrating Identity
+#      validates it, and its agent issues the credential with the VE_* claims
+#      of config.env.
+#   3. A VERIFIER entry on each candidate schema (RightToWork, Employment,
+#      Qualification). The VERIFIER_GRANTOR entries of Orchestrating Identity
+#      validate them.
+# Steps 2 and 3 need the second pass of bhi-01 (step=provision after bhi-06).
+# OID4VC_ROLE in config.env turns on the OpenID4VC rail.
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
-source "${CAST_DIR}/scripts/lib.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
-start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_OID" 3101
-API="http://localhost:3100"
-OID_API="http://localhost:3101"
+bhi_start_agent
 
-AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "Meridian DID: $AGENT_DID"
+# 1. ECS credentials
+provision_ecs_standalone 3100
 
-obtain_ecs_org_credential "$API" "$OID_API" "$AGENT_DID"
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
+# 2. Verified Employer, issued by Orchestrating Identity
+VE_CS_ID=$(bhi_require_schema "$INSTITUTE_HOST" "$TITLE_VE" "bhi-04")
+OID_VE_ISSUER_ID=$(bhi_require_participant "$VE_CS_ID" "$PP_IDX_ROLE_ISSUER" "$OID_HOST" \
+  "bhi-01 again with step=provision")
+VE_CLAIMS=$(jq -n \
+  --arg name "$VE_COMPANY_NAME" \
+  --arg reg "$VE_COMPANY_REGISTRY_ID" \
+  --arg date "$VE_VERIFIED_DATE" \
+  '{companyName: $name, companyRegistryId: $reg, verifiedDate: $date}')
+bhi_join_under_agent "$VE_CS_ID" "$PP_ROLE_HOLDER" "$VSOA_HOLDER" "$OID_VE_ISSUER_ID" "$R_OID" "$VE_CLAIMS"
 
-# Verified Employer, issued by OID under the Recruitment Trust Network
-VE_SCHEMA_ID=$(discover_ecs_vtjsc "https://${INSTITUTE_HOST}" "$VE_SCHEMA_BASE_ID" | sed -n '2p')
-[ -n "$VE_SCHEMA_ID" ] || { err "Could not discover the Verified Employer schema from https://${INSTITUTE_HOST} - run bhi-04 first"; exit 1; }
-VE_JSC_URL=$(get_jsc_url "$OID_API" "$VE_SCHEMA_ID")
-[ -n "$VE_JSC_URL" ] || VE_JSC_URL="https://${OID_HOST}/vt/schemas-${VE_SCHEMA_BASE_ID}-jsc.json"
+# 3. VERIFIER entries, validated by Orchestrating Identity
+provision_candidate_verifier "$OID_HOST" "$R_OID" "bhi-01"
 
-if [ "${FORCE_REFRESH:-false}" != "true" ] && has_linked_vp "https://${INGRESS_HOST}" "$VE_SCHEMA_BASE_ID"; then
-  ok "Meridian already presents its Verified Employer credential - skipping"
-else
-  VE_CLAIMS=$(jq -n \
-    --arg id "$AGENT_DID" \
-    --arg name "$VE_COMPANY_NAME" \
-    --arg reg "$VE_COMPANY_REGISTRY_ID" \
-    --arg date "$VE_VERIFIED_DATE" \
-    '{id: $id, companyName: $name, companyRegistryId: $reg, verifiedDate: $date}')
-  issue_remote_and_link "$OID_API" "$API" "$VE_SCHEMA_BASE_ID" "$VE_JSC_URL" "$AGENT_DID" "$VE_CLAIMS"
-fi
-
-# VERIFIER permissions on the candidate schemas (verification OPEN)
-for pair in "${NORTHBANK_HOST}:${RTW_SCHEMA_BASE_ID}" "${NORTHBANK_HOST}:${EMP_SCHEMA_BASE_ID}" "${CALEDONIAN_HOST}:${QUAL_SCHEMA_BASE_ID}"; do
-  host="${pair%%:*}"; base="${pair##*:}"
-  cs_id=$(discover_ecs_vtjsc "https://${host}" "$base" | sed -n '2p')
-  [ -n "$cs_id" ] || { err "Could not discover the ${base} schema from https://${host}"; exit 1; }
-  ensure_open_perm "$cs_id" verifier "$AGENT_DID"
-done
-
-ok "Meridian provisioned: a Verified Employer that may ask for exactly what it verifies."
+ok "Meridian provisioned: a Verified Employer that may ask for exactly what it verifies"

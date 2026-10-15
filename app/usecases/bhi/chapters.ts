@@ -8,6 +8,7 @@
 // was unlisted while the OID-Verana agreement was pending.
 
 import type { Chapter } from "../../components/ChapterNav";
+import { NETWORK } from "../../lib/network";
 
 export const CHAPTERS_NAV: Chapter[] = [
   {
@@ -44,7 +45,7 @@ export const CHAPTERS_NAV: Chapter[] = [
     title: "Run the demos",
     short: "The demos",
     intro:
-      "Get your credentials, apply for a job, and watch a fake employer fail. Everything runs on the Verana testnet; participation is free.",
+      `Get your credentials, apply for a job, and watch a fake employer fail. Everything runs on the Verana ${NETWORK}; participation is free.`,
   },
 ];
 

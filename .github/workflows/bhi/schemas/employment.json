@@ -1,5 +1,5 @@
 {
-  "$id": "https://northbank.bhi.playground.testnet.verana.network/schemas/employment.json",
+  "$id": "https://northbank.bhi.playground.__NETWORK__.verana.network/schemas/employment.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "EmploymentCredential",
   "description": "One employment relationship, established from HMRC payroll records by a certified DVS provider under the DUAA 2025 information gateway (demo). One credential per employment; the five-year history is the set of these in a wallet. For demonstration only.",

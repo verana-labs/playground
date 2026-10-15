@@ -623,20 +623,26 @@ export function Section2() {
                       </span>{" "}
                       {e.why}
                     </p>
-                    <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3">
-                      <DidBadge
-                        did={e.did}
-                        className="min-w-0 flex-1 text-[11px] text-gray-400"
-                      />
-                      <a
-                        href={e.veranaUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="shrink-0 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
-                      >
-                        Open in Verana <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
-                      </a>
-                    </div>
+                    {e.did || e.veranaUrl ? (
+                      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-3">
+                        {e.did ? (
+                          <DidBadge
+                            did={e.did}
+                            className="min-w-0 flex-1 text-[11px] text-gray-400"
+                          />
+                        ) : null}
+                        {e.veranaUrl ? (
+                          <a
+                            href={e.veranaUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="shrink-0 rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                          >
+                            Open in Verana <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
+                          </a>
+                        ) : null}
+                      </div>
+                    ) : null}
                   </div>
                 );
               })}
@@ -675,10 +681,12 @@ export function Section2() {
                 {ECOSYSTEM_BUILD.card.why}
               </p>
               <div className="mt-4 space-y-2 border-t border-gray-100 pt-3">
-                <DidBadge
-                  did={ECOSYSTEM_BUILD.card.did}
-                  className="flex text-[11px] text-gray-400"
-                />
+                {ECOSYSTEM_BUILD.card.did ? (
+                  <DidBadge
+                    did={ECOSYSTEM_BUILD.card.did}
+                    className="flex text-[11px] text-gray-400"
+                  />
+                ) : null}
                 <div className="flex flex-wrap items-center gap-2">
                   <a
                     href={withBase(`/usecases/vesta/journey#need-${ECOSYSTEM_BUILD.card.need}`)}
@@ -686,14 +694,16 @@ export function Section2() {
                   >
                     → Marc&apos;s journey · Vesta creates its own ecosystem
                   </a>
-                  <a
-                    href={ECOSYSTEM_BUILD.card.veranaUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
-                  >
-                    Open in Verana <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
-                  </a>
+                  {ECOSYSTEM_BUILD.card.veranaUrl ? (
+                    <a
+                      href={ECOSYSTEM_BUILD.card.veranaUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-full bg-violet-50 px-2.5 py-1 text-xs font-medium text-violet-700 hover:bg-violet-100"
+                    >
+                      Open in Verana <ExternalLink className="inline h-3 w-3 align-[-1px]" aria-hidden />
+                    </a>
+                  ) : null}
                 </div>
               </div>
             </div>

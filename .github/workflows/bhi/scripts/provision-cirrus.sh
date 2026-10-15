@@ -1,31 +1,30 @@
 #!/usr/bin/env bash
-# Provision Cirrus Certification (demo) - the SECOND Qualification issuer:
-# ECS creds plus an ISSUER permission on the Qualification schema owned by
-# Caledonian's registry (the NormaCert precedent: same controller account
-# validates the permission). One credential per qualification, from any
-# number of institutions - David's "multiple qualifications" answer, live.
+# Provision Cirrus Certification (demo) (bhi-07) on Verana V4, the second
+# Qualification issuer:
+#   1. The ECS credentials: the ECS-Organization credential from ecs-org-issuer
+#      and the self-issued ECS-Service credential.
+#   2. An ISSUER entry on the QualificationCredential schema of Caledonian
+#      (bhi-06). The root entry is the validator, so the operator validates
+#      the entry with the Corporation of Caledonian.
+#   3. The AnonCreds credential definition on the VTJSC that Caledonian
+#      publishes (DIDComm rail). OID4VC_ROLE in config.env turns on the
+#      OpenID4VC rail.
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
-source "${CAST_DIR}/scripts/lib.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
-start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_OID" 3101
-API="http://localhost:3100"
-OID_API="http://localhost:3101"
+bhi_start_agent
 
-AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "Cirrus DID: $AGENT_DID"
+# 1. ECS credentials
+provision_ecs_standalone 3100
 
-obtain_ecs_org_credential "$API" "$OID_API" "$AGENT_DID"
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
+# 2. The ISSUER entry on the Qualification schema of Caledonian
+QUAL_CS_ID=$(bhi_require_schema "$CALEDONIAN_HOST" "$TITLE_QUAL" "bhi-06")
+ISSUER_ID=$(join_under_root "$QUAL_CS_ID" "$PP_ROLE_ISSUER" "$VSOA_ISSUER" caledonian)
 
-QUAL_SCHEMA_ID=$(discover_ecs_vtjsc "https://${CALEDONIAN_HOST}" "$QUAL_SCHEMA_BASE_ID" | sed -n '2p')
-[ -n "$QUAL_SCHEMA_ID" ] || { err "Could not discover the Qualification schema from https://${CALEDONIAN_HOST} - run bhi-06 first"; exit 1; }
-ensure_validated_issuer_perm "$QUAL_SCHEMA_ID" "$AGENT_DID"
-QUAL_JSC_URL=$(ensure_jsc "$API" "$QUAL_SCHEMA_BASE_ID" "$QUAL_SCHEMA_ID")
-ensure_anoncreds_credential_type "$API" "Qualification" "1.0" "$QUAL_JSC_URL"
+# 3. The credential definition on the VTJSC of Caledonian
+VTJSC_ID=$(bhi_vtjsc_id "$CALEDONIAN_HOST" "$QUAL_CS_ID")
+ensure_credential_definition "$API" "$VTJSC_ID"
 
-ok "Cirrus provisioned: second accredited Qualification issuer."
+ok "Cirrus provisioned: second Qualification issuer (CS=$QUAL_CS_ID, ISSUER=$ISSUER_ID)"

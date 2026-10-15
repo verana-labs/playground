@@ -1,41 +1,42 @@
 #!/usr/bin/env bash
-# Provision Northbank Identity (demo) - the certified DVS issuer of the
-# candidate credentials: ECS-Organization from Orchestrating Identity,
-# self-issued ECS-Service, and its registry with the Right to Work schema
-# (exactly one credential per person) and the Employment schema (one
-# credential per employment relationship; HMRC is the data source under the
-# DUAA 2025 gateway, never the issuer). Issuance governed, verification
-# OPEN. Also creates the AnonCreds credential types for the DIDComm rail.
+# Provision Northbank Identity (demo) (bhi-05) on Verana V4, the certified DVS
+# issuer of the candidate credentials:
+#   1. The ECS credentials: the ECS-Organization credential from ecs-org-issuer
+#      and the self-issued ECS-Service credential.
+#   2. An Ecosystem controlled by the DID of Northbank, with two schemas and
+#      their root entries: RightToWorkCredential (one credential for each
+#      person) and EmploymentCredential (one credential for each employment).
+#      Issuer onboarding by the Ecosystem, verifier onboarding through a
+#      GRANTOR (the certified DVS providers), holders PERMISSIONLESS (personal
+#      wallets).
+#   3. The ISSUER entries of Northbank on the two schemas.
+#   4. The AnonCreds credential definitions on the VTJSCs of the two schemas
+#      (DIDComm rail). OID4VC_ROLE in config.env turns on the OpenID4VC rail.
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
-source "${CAST_DIR}/scripts/lib.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
-start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_OID" 3101
-API="http://localhost:3100"
-OID_API="http://localhost:3101"
+bhi_start_agent
 
-AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "Northbank DID: $AGENT_DID"
+# 1. ECS credentials
+provision_ecs_standalone 3100
 
-obtain_ecs_org_credential "$API" "$OID_API" "$AGENT_DID"
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
+# 2. The Ecosystem and the two schemas
+ECOSYSTEM_ID=$(ensure_ecosystem "$AGENT_DID")
+for FILE in right-to-work.json employment.json; do
+  CS_JSON=$(bhi_schema_json "$FILE")
+  CS_ID=$(ensure_credential_schema "$ECOSYSTEM_ID" "$CS_JSON" \
+    "$ONBOARDING_MODE_ECOSYSTEM" "$ONBOARDING_MODE_GRANTOR" "$HOLDER_MODE_PERMISSIONLESS")
+  bhi_ensure_root "$CS_ID" "$AGENT_DID" > /dev/null
 
-TR_ID=$(ensure_trust_registry "$AGENT_DID" "https://${INGRESS_HOST}" "$EGF_DOC_URL")
+  # 3. The own ISSUER entry
+  join_under_root "$CS_ID" "$PP_ROLE_ISSUER" "$VSOA_ISSUER" northbank > /dev/null
 
-RTW_JSON=$(jq -c '.' "${CAST_DIR}/schemas/${RTW_SCHEMA_FILE}")
-RTW_CS_ID=$(ensure_schema_with_root "$TR_ID" "$RTW_JSON" "$AGENT_DID")
-ensure_validated_issuer_perm "$RTW_CS_ID" "$AGENT_DID"
-RTW_JSC_URL=$(ensure_jsc "$API" "$RTW_SCHEMA_BASE_ID" "$RTW_CS_ID")
-ensure_anoncreds_credential_type "$API" "RightToWork" "1.0" "$RTW_JSC_URL"
+  # 4. The credential definition on the own VTJSC
+  VTJSC_ID=$(bhi_vtjsc_id "$INGRESS_HOST" "$CS_ID")
+  ensure_credential_definition "$API" "$VTJSC_ID"
+  ok "$(echo "$CS_JSON" | jq -r '.title'): CS=$CS_ID VTJSC=$VTJSC_ID"
+done
 
-EMP_JSON=$(jq -c '.' "${CAST_DIR}/schemas/${EMP_SCHEMA_FILE}")
-EMP_CS_ID=$(ensure_schema_with_root "$TR_ID" "$EMP_JSON" "$AGENT_DID")
-ensure_validated_issuer_perm "$EMP_CS_ID" "$AGENT_DID"
-EMP_JSC_URL=$(ensure_jsc "$API" "$EMP_SCHEMA_BASE_ID" "$EMP_CS_ID")
-ensure_anoncreds_credential_type "$API" "Employment" "1.0" "$EMP_JSC_URL"
-
-ok "Northbank provisioned: TR=$TR_ID, RTW CS=$RTW_CS_ID, Employment CS=$EMP_CS_ID."
+ok "Northbank provisioned: Ecosystem=$ECOSYSTEM_ID"

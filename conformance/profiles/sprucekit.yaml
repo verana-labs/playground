@@ -1,0 +1,41 @@
+id: sprucekit
+rails: [openid4vc-sdjwt]
+openid4vc:
+  library: "spruceid/sprucekit-mobile: the mobile-sdk-rs Rust core (spruceid/oid4vci-rs, spruceid/openid4vp) through UniFFI in the Kotlin and Swift showcase apps"
+  proxy: "@openid4vc/openid4vci, @openid4vc/openid4vp, @sd-jwt/sd-jwt-vc"
+  vciDrafts: [v1]
+  offerSchemes: [openid-credential-offer]
+  requestSchemes: [openid4vp, mdoc-openid4vp]
+  asDiscovery: [oauth-authorization-server]
+  presentation: { query: dcql, clientId: x509_hash, responseMode: direct_post.jwt }
+  demoParams: signer=x5c
+builds:
+  - kind: store
+    listed: true
+    label: "SpruceKit Showcase on Google Play and the App Store"
+    obtain:
+      - https://play.google.com/store/apps/details?id=com.spruceid.mobilesdkexample
+      - https://apps.apple.com/app/sprucekit-showcase/id6599845610
+    identity:
+      package: com.spruceid.mobilesdkexample
+      appStoreId: "6599845610"
+      bundle: com.spruceid.mobile
+      version: "1.19.0"
+    platforms: [android, ios]
+    presumptive: [ios]
+    promises: "No Verana trust screen: it shows no trust information about the services and nothing is checked against the registry, so the unaccredited and untrusted services are not refused. All six demos complete: issues the DemoCredential and presents it on DCQL to an x509_hash verifier with an encrypted direct_post.jwt response (device-tested 2026-10-06 on devnet, Android, Play version 1.19.0)"
+quirks:
+  actsOnLinkOnlyAtColdStart: false
+  locksOnBackground: false
+  viewTree: readable
+  notes: "Shows the credential under its raw vct URL because our Type Metadata has no display yet (fix in progress). Link schemes as registered by the Play build's manifest. Only the offer and request links of the default mint were exercised; the view tree and the locking behaviour have not been characterised"
+capabilities:
+  openid4vc:
+    grants: { pre-authorized_code: yes }
+    proofTypes: { jwt: yes }
+    formats: { dc+sd-jwt: yes }
+    queryLanguages: { dcql: yes }
+    clientIdPrefixes: { x509_hash: yes }
+    responseModes: { direct_post.jwt: yes }
+    sendsWalletAttestation: no
+    requiresMetadataKid: no

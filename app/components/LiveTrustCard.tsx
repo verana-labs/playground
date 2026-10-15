@@ -2,6 +2,7 @@
 import { withBase } from "../lib/base-path";
 
 import { useEffect, useState } from "react";
+import { NETWORK } from "../lib/network";
 import TrustCard, { type TrustCardData, type TrustCardCredential } from "./TrustCard";
 
 // The Vesta-journey trust card ("chain" design: DID → Service check →
@@ -80,8 +81,8 @@ function toTrustCardData(
     others,
     accreditations,
     resolvedNote: body.pot.evaluatedAt
-      ? `Resolved live against the testnet · ${body.pot.evaluatedAt}`
-      : "Resolved live against the testnet",
+      ? `Resolved live against the ${NETWORK} · ${body.pot.evaluatedAt}`
+      : `Resolved live against the ${NETWORK}`,
   };
 }
 

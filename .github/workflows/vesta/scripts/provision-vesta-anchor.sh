@@ -1,33 +1,38 @@
 #!/usr/bin/env bash
-# Provision the Vesta Appliances anchor: ECS-Organization issued by Helvetia
-# (org-to-org via Admin APIs), self-issued ECS-Service, and ECS-Badge issuer
-# capability (permission + VTJSC) for employee badges.
+# Provision the Vesta Appliances anchor on Verana V4:
+#   1. The ECS credentials of a standalone organization (ecs-org-issuer issues
+#      the ECS Organization credential, the agent issues its own ECS Service
+#      credential, and later the ECS Service credentials of its delegated
+#      sub-services vesta-portal and vesta-repair-network).
+#   2. The ECS Badge issuer steps: an OPEN ISSUER entry on the BadgeCredential
+#      schema and an AnonCreds credential definition. When the ECS Ecosystem
+#      has no BadgeCredential schema, the script logs a warning and skips them.
+#   3. A HOLDER entry on the ISO 9001-style (demo) schema. NormaCert validates
+#      the onboarding request, sets the ISO_* claims and issues the credential.
+# CAUTION: step 3 needs the ISO Ecosystem (vesta-04) and the ISSUER entry of
+# NormaCert (vesta-05). Run vesta-04 and vesta-05 before this script.
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
-start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_HELVETIA" 3101
-API="http://localhost:3100"
-HELVETIA_API="http://localhost:3101"
+open_agent
 
-AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "Vesta anchor DID: $AGENT_DID"
+# 1. ECS credentials
+provision_ecs_standalone "$PF_PORT_AGENT"
 
-# ECS-Organization — issued by Helvetia
-obtain_ecs_org_credential "$API" "$HELVETIA_API" "$AGENT_DID"
+# 2. ECS Badge issuer (employee badges)
+provision_badge_issuer
 
-# ECS-Service — self-issued
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
+# 3. ISO 9001-style (demo) credential, issued by NormaCert
+ISO_CS=$(find_cast_schema_id iso-certification "$ISO_SCHEMA_TITLE") \
+  || { err "No ${ISO_SCHEMA_TITLE} schema. Run vesta-04 (ISO Certification) first."; exit 1; }
+ISO_CLAIMS=$(jq -n \
+  --arg num "${ISO_CERT_NUMBER:?ISO_CERT_NUMBER is not set}" \
+  --arg std "${ISO_STANDARD:?ISO_STANDARD is not set}" \
+  --arg scope "${ISO_SCOPE:?ISO_SCOPE is not set}" \
+  --arg until "${ISO_VALID_UNTIL:?ISO_VALID_UNTIL is not set}" \
+  '{certificateNumber: $num, standard: $std, scope: $scope, validUntil: $until}')
+hold_credential_from "$ISO_CS" normacert "$ISO_CLAIMS"
 
-# ECS-Badge issuer capability (schema is issuer-mode OPEN)
-BADGE_ID=$(discover_ecs_badge_schema_id)
-ensure_open_perm "$BADGE_ID" issuer "$AGENT_DID"
-BADGE_JSC_URL=$(ensure_jsc "$API" "badge" "$BADGE_ID")
-
-# AnonCreds credential type so the agent can mint badge offers to wallets
-ensure_anoncreds_credential_type "$API" "ECS-Badge" "1.0" "$BADGE_JSC_URL"
-
-ok "Vesta anchor provisioned: verifiable organization + badge issuer."
+ok "Vesta anchor provisioned: ECS credentials, badge issuer, ISO 9001-style (demo) credential."

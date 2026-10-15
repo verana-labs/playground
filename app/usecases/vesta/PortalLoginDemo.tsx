@@ -6,12 +6,14 @@ import QRCode from "qrcode";
 import { BadgeCheck, Lock, RefreshCw, ShieldX } from "lucide-react";
 import type { PersonalWallet } from "../../lib/wallets";
 import { useSelectedWallet } from "./DemoWalletFlow";
+import { VESTA_CAST } from "../../lib/vesta-cast";
 
 // Chapter-4 demo 2: a mimicked Vesta Portal login window. Sign in with an
 // ECS-Badge: the portal requests a badge presentation, shows the presented
 // credential, and decides from the badge ISSUER's chain - Vesta employee,
 // Authorized Repairer partner employee, or access denied. The decision is
-// computed live by /api/portal-login/[id] against the network resolver.
+// computed live by /api/portal-login/[id] against the trust resolution of
+// the network (V3: the trust resolver; V4: the indexer).
 
 type Claim = { name: string; value: string };
 
@@ -212,9 +214,7 @@ export default function PortalLoginDemo({
         </span>
         <span className="ml-2 flex min-w-0 flex-1 items-center gap-1.5 rounded-lg bg-white px-3 py-1 text-xs text-gray-500 ring-1 ring-gray-200">
           <Lock className="h-3 w-3 shrink-0 text-emerald-600" aria-hidden />
-          <span className="truncate">
-            portal.vesta.playground.testnet.verana.network
-          </span>
+          <span className="truncate">{VESTA_CAST.portal.host}</span>
         </span>
       </div>
 

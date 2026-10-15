@@ -5,9 +5,10 @@
 // Minister's checklist. Rendering machinery is shared with the other use
 // cases (app/components/scene-graph.ts / StoryDiagram.tsx).
 
-import { VERANDIA_CAST } from "../../lib/verandia-cast";
+import { displayDid, VERANDIA_CAST } from "../../lib/verandia-cast";
 import { VESTA_CAST } from "../../lib/vesta-cast";
 import { shortDid } from "../../lib/did";
+import { NETWORK, NETWORK_CONFIG, PROTOCOL, networkHost } from "../../lib/network";
 import type {
   Accreditation,
   NodeCredential,
@@ -32,7 +33,20 @@ export const STAGES = [
 export type Stage = (typeof STAGES)[number];
 
 const sceneDid = (did: string) =>
-  shortDid(did).replace(/\.verandia\.playground\.testnet\.verana\.network$/, "…");
+  shortDid(did).replace(/\.verandia\.playground\.[a-z]+\.verana\.network$/, "…");
+
+// V4 (devnet): the live cast has no Helvetia and no step 3.2 on chain. The
+// organization issuer of the ECS Ecosystem takes the place of the Helvetia
+// node, and issues the ECS-Organization credential of every Verandian
+// organization. The testnet (V3) graph does not change.
+const V4 = PROTOCOL === "v4";
+const ECS_ORG_ISSUER = V4 ? "ECS Organization issuer" : "Helvetia Trust Services (demo)";
+/** The issuer of the ECS-Organization credentials that the Business Registry
+ *  issues in the V3 story. */
+const BR_ORG_ISSUER = V4 ? ECS_ORG_ISSUER : "National Business Registry (demo)";
+/** V4: drop the elements that show the Business Registry as an ECS-Org
+ *  issuer (story step 3.2), because that is not on chain. */
+const V4_DROPPED = new Set(["e-ecs-br", "b-br-issuer", "e-br-cr", "e-br-bank"]);
 
 const NODES: SceneNode[] = [
   // ---- the Republic's institutions (baseline, gray)
@@ -46,13 +60,13 @@ const NODES: SceneNode[] = [
     appears: "3.0",
     label: "National Business Registry",
     sub: "PDF extracts anyone can edit",
-    did: VERANDIA_CAST.businessRegistry.did,
+    did: displayDid(VERANDIA_CAST.businessRegistry),
     serviceType: "Company register service",
     operator: "National Business Registry (demo) · Republic of Verandia",
     verifiedAt: "3.1",
     toneByStage: { "3.1": "blue" },
     labelByStage: {
-      "3.1": { sub: sceneDid(VERANDIA_CAST.businessRegistry.did) },
+      "3.1": { sub: sceneDid(displayDid(VERANDIA_CAST.businessRegistry)) },
     },
   },
   {
@@ -64,7 +78,7 @@ const NODES: SceneNode[] = [
     appears: "3.0",
     label: "National Civil Registry",
     sub: "paper ID cards, office queues",
-    did: VERANDIA_CAST.civilRegistry.did,
+    did: displayDid(VERANDIA_CAST.civilRegistry),
     serviceType: "Civil registry service",
     operator: "National Civil Registry (demo) · Republic of Verandia",
     verifiedAt: "3.3",
@@ -82,7 +96,7 @@ const NODES: SceneNode[] = [
     appears: "3.0",
     label: "Tax Buro",
     sub: "password logins, phished accounts",
-    did: VERANDIA_CAST.taxBuro.did,
+    did: displayDid(VERANDIA_CAST.taxBuro),
     serviceType: "Tax portal service",
     operator: "Tax Buro (demo) · Republic of Verandia",
     verifiedAt: "3.7",
@@ -176,7 +190,7 @@ const NODES: SceneNode[] = [
     noteAlways: true,
     label: "QuickCash Loans (demo)",
     sub: "verifiable - but not an authorized verifier",
-    did: VERANDIA_CAST.quickcash.did,
+    did: displayDid(VERANDIA_CAST.quickcash),
     serviceType: "Consumer lending service (demo)",
     operator: "QuickCash Loans (demo)",
     verifiedAt: "3.8",
@@ -192,7 +206,7 @@ const NODES: SceneNode[] = [
     noteAlways: true,
     label: "Verana ECS Ecosystem",
     sub: "identity credentials - the green check",
-    did: VESTA_CAST.ecs.did,
+    did: NETWORK_CONFIG.ecsEcosystemDid,
     serviceType: "Trust registry service",
     operator: "The ECS Ecosystem operator",
     verifiedAt: "3.1",
@@ -204,11 +218,12 @@ const NODES: SceneNode[] = [
     icon: "stamp",
     tone: "blue",
     appears: "3.1",
-    label: "Helvetia Trust Services",
-    sub: "(demo) · accredited ECS-Org issuer",
-    did: VESTA_CAST.helvetia.did,
+    label: V4 ? "ECS Organization issuer" : "Helvetia Trust Services",
+    sub: V4 ? `Verana ${NETWORK} · ECS-Org issuer` : "(demo) · accredited ECS-Org issuer",
+    // V4: the did:web alias of ecs-org-issuer (its DID document is at that host).
+    did: V4 ? `did:web:${networkHost("ecs-org-issuer")}` : VESTA_CAST.helvetia.did,
     serviceType: "KYB issuance service",
-    operator: "Helvetia Trust Services (demo)",
+    operator: V4 ? "The ECS Ecosystem operator" : "Helvetia Trust Services (demo)",
     verifiedAt: "3.1",
   },
   {
@@ -221,7 +236,7 @@ const NODES: SceneNode[] = [
     noteAlways: true,
     label: "Verandia Citizen ID",
     sub: "issuance & verification governed",
-    did: VERANDIA_CAST.civilRegistry.did,
+    did: displayDid(VERANDIA_CAST.civilRegistry),
     serviceType: "Trust registry service",
     operator: "National Civil Registry (demo) · Republic of Verandia",
     verifiedAt: "3.3",
@@ -236,7 +251,7 @@ const NODES: SceneNode[] = [
     noteAlways: true,
     label: "Legal Representation",
     sub: "issuance governed · anyone verifies",
-    did: VERANDIA_CAST.businessRegistry.did,
+    did: displayDid(VERANDIA_CAST.businessRegistry),
     serviceType: "Trust registry service",
     operator: "National Business Registry (demo) · Republic of Verandia",
     verifiedAt: "3.6",
@@ -250,14 +265,14 @@ const NODES: SceneNode[] = [
     appears: "3.5",
     label: "Meridian Bank (demo)",
     sub: "a verifiable bank",
-    did: VERANDIA_CAST.meridianBank.did,
+    did: displayDid(VERANDIA_CAST.meridianBank),
     serviceType: "Online banking service (demo)",
     operator: "Meridian Bank (demo) · Republic of Verandia",
     verifiedAt: "3.5",
   },
 ];
 
-const EDGES: SceneEdge[] = [
+const ALL_EDGES: SceneEdge[] = [
   // Baseline - the civic world of §1
   { id: "e-br-tax", from: "businessRegistry", to: "taxBuro", appears: "3.0", label: "the Republic's institutions", tone: "gray", labelT: 0.55 },
   { id: "e-cr-aria", from: "civilRegistry", to: "aria", appears: "3.0", until: "3.4", label: "paper ID cards", tone: "gray", dashed: true, curve: 25, labelT: 0.45 },
@@ -293,7 +308,15 @@ const EDGES: SceneEdge[] = [
   { id: "e-fake-aria", from: "fakePortal", to: "aria", appears: "3.8", label: "fails Q1: nothing provable, refused", tone: "red", dashed: true, curve: -40, labelT: 0.3 },
 ];
 
-const BADGES: SceneBadge[] = [
+const EDGES = V4
+  ? [
+      ...ALL_EDGES.filter((e) => !V4_DROPPED.has(e.id)),
+      // The ECS Organization issuer issues the ECS-Org of the Civil Registry.
+      { id: "e-ecsorg-cr", from: "helvetia", to: "civilRegistry", appears: "3.3", label: "issues ECS-Org", tone: "emerald", labelT: 0.58 } satisfies SceneEdge,
+    ]
+  : ALL_EDGES;
+
+const ALL_BADGES: SceneBadge[] = [
   // Baseline - Aria cannot tell what is real
   { id: "b-question", node: "aria", dx: 44, dy: -24, text: "?", tone: "red", appears: "3.0", until: "3.7" },
   // Need 1 - the register becomes provable, then an issuer
@@ -313,6 +336,8 @@ const BADGES: SceneBadge[] = [
   { id: "b-no-quickcash", node: "quickcash", dx: 34, dy: -24, text: "✗ not authorized", tone: "red", appears: "3.8" },
   { id: "b-no-fake", node: "fakePortal", dx: 34, dy: -24, text: "✗", tone: "red", appears: "3.8" },
 ];
+
+const BADGES = ALL_BADGES.filter((b) => !V4 || !V4_DROPPED.has(b.id));
 
 const CREDENTIALS: Record<string, NodeCredential[]> = {
   ecs: [
@@ -342,7 +367,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Service",
       tone: "violet",
-      issuedBy: "Self-issued (controller: Helvetia Trust Services)",
+      issuedBy: `Self-issued (controller: ${V4 ? "the ECS Ecosystem operator" : "Helvetia Trust Services"})`,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.1",
     },
@@ -351,7 +376,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: ECS_ORG_ISSUER,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.1",
     },
@@ -367,10 +392,12 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "National Business Registry (demo)",
+      issuedBy: BR_ORG_ISSUER,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.3",
-      note: "The Republic dogfoods its own register: the state's institutions carry Business-Registry-issued Organization credentials.",
+      note: V4
+        ? `On the Verana ${NETWORK}, the ECS Ecosystem issues the Organization credentials of the Republic's institutions.`
+        : "The Republic dogfoods its own register: the state's institutions carry Business-Registry-issued Organization credentials.",
     },
     {
       name: "ECS-Service",
@@ -384,7 +411,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "National Business Registry (demo)",
+      issuedBy: BR_ORG_ISSUER,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.3",
     },
@@ -400,7 +427,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: ECS_ORG_ISSUER,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.6",
     },
@@ -416,7 +443,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "National Business Registry (demo)",
+      issuedBy: BR_ORG_ISSUER,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.7",
     },
@@ -432,7 +459,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "National Business Registry (demo)",
+      issuedBy: BR_ORG_ISSUER,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.5",
     },
@@ -448,7 +475,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "emerald",
-      issuedBy: "National Business Registry (demo)",
+      issuedBy: BR_ORG_ISSUER,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.8",
       note: "QuickCash is a registered, verifiable company - identity is not the problem.",
@@ -530,12 +557,16 @@ const ACCREDITATIONS: Record<string, Accreditation[]> = {
     },
   ],
   businessRegistry: [
-    {
-      role: "ISSUER",
-      schema: "ECS-Organization",
-      context: "Verana ECS Ecosystem · the national register as issuer",
-      appears: "3.2",
-    },
+    ...(V4
+      ? []
+      : [
+          {
+            role: "ISSUER",
+            schema: "ECS-Organization",
+            context: "Verana ECS Ecosystem · the national register as issuer",
+            appears: "3.2",
+          } satisfies Accreditation,
+        ]),
     {
       role: "ISSUER",
       schema: "Legal Representative",
@@ -583,7 +614,9 @@ const NODE_NOTES: Record<string, string> = {
   aria: "A person - holds credentials in a Personal Wallet rather than presenting service credentials.",
   tomas:
     "Tomás' Personal Wallet - his Citizen ID plus the Legal Representative credential that binds him to Solaris Bakery (demo).",
-  ecs: "The shared identity-card trust registry - and a verifiable service itself: it governs the essential credential schemas and accredits issuers, including Verandia's National Business Registry.",
+  ecs: V4
+    ? "The shared identity-card trust registry - and a verifiable service itself: it governs the essential credential schemas, and its organization issuer issues the Organization credentials of the Verandian organizations."
+    : "The shared identity-card trust registry - and a verifiable service itself: it governs the essential credential schemas and accredits issuers, including Verandia's National Business Registry.",
   citizenEco:
     "The Republic's own trust ecosystem for the Citizen ID - and a verifiable service itself. Issuance governed (only the Civil Registry issues) AND verification governed (relying parties must register): the eIDAS 2 relying-party rule, on-chain.",
   legalEco:
@@ -664,7 +697,9 @@ export const VERANDIA_SCENES: SceneGraph = {
     },
     "3.2": {
       nodes: ["businessRegistry"],
-      note: "the national register becomes an accredited ECS-Org issuer",
+      note: V4
+        ? `story only: on the Verana ${NETWORK}, the ECS Ecosystem keeps issuing the Business IDs`
+        : "the national register becomes an accredited ECS-Org issuer",
     },
     "3.3": {
       nodes: ["civilRegistry", "citizenEco"],

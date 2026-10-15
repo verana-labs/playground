@@ -1,7 +1,9 @@
 name: "Demo 08 · Untrusted Verifier (demo)"
 
-# Deploys the Untrusted Verifier (demo): deliberately unprovisioned (deploy-only, no credentials, no
-# permissions) but running the openid4vc image so Track B wallets have an untrusted counterparty.
+# Deploys the Untrusted Verifier (demo): deploy-only, no ECS credentials and no Participant entry, by
+# design. It makes DemoCredential presentation requests on both rails (vs-agent
+# AGENT_UNSAFE_SKIP_OWN_AUTHORIZATION, demo only), so that wallets can refuse a request from a
+# service they cannot trust-resolve.
 # Part of the Playground demo cast CI/CD — see .github/workflows/demo/README.md.
 
 on:
@@ -16,11 +18,6 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
-        required: false
-        type: boolean
-        default: false
       reset_identity:
         description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
         required: false
@@ -33,6 +30,5 @@ jobs:
     with:
       org: demo-verifier-untrusted
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
       reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

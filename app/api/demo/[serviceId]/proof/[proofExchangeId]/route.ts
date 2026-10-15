@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { getDemoService } from "@/app/lib/demo-services";
 import { adminBase, adminJson, CAST_DOMAIN } from "@/app/lib/demo-admin";
+import { PROTOCOL } from "@/app/lib/network";
 
 // Status of a presentation flow started from a verifier demo card (spec §4):
 // the page polls this to swap the QR for the PRESENTED CREDENTIAL once the
@@ -76,7 +77,9 @@ export async function GET(
   try {
     if (rail === "oid4vc") {
       const body = await adminJson(
-        `${adminBase(serviceId)}/v1/oid4vc/verifier/sessions/${encodeURIComponent(proofExchangeId)}`,
+        PROTOCOL === "v4"
+          ? `${adminBase(serviceId)}/v2/openid4vc/presentations/${encodeURIComponent(proofExchangeId)}`
+          : `${adminBase(serviceId)}/v1/oid4vc/verifier/sessions/${encodeURIComponent(proofExchangeId)}`,
       );
       const record = (body ?? {}) as Record<string, unknown>;
       const state = typeof record.state === "string" ? record.state : null;
@@ -90,7 +93,9 @@ export async function GET(
     }
 
     const body = await adminJson(
-      `${adminBase(serviceId)}/v1/presentations/${encodeURIComponent(proofExchangeId)}`,
+      PROTOCOL === "v4"
+        ? `${adminBase(serviceId)}/v2/didcomm/presentations/${encodeURIComponent(proofExchangeId)}`
+        : `${adminBase(serviceId)}/v1/presentations/${encodeURIComponent(proofExchangeId)}`,
     );
     const record = (body ?? {}) as {
       state?: unknown;

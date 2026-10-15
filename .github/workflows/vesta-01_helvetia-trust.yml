@@ -1,7 +1,10 @@
-name: "Vesta 01 · Helvetia Trust (KYB issuer)"
+name: "Vesta 01 · Helvetia Trust"
 
-# Deploys Helvetia Trust Services (demo) and bootstraps its ECS-Organization + ECS-Service.
-# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+# Deploys Helvetia Trust Services (demo), a standalone organization. It gets its
+# ECS Organization credential from ecs-org-issuer and issues its own ECS
+# Service credential.
+# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# see .github/workflows/vesta/README.md for the run order.
 
 on:
   workflow_dispatch:
@@ -15,8 +18,8 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
         required: false
         type: boolean
         default: false
@@ -27,5 +30,5 @@ jobs:
     with:
       org: helvetia-trust
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

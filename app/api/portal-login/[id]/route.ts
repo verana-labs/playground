@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
 import { adminBase, adminJson } from "@/app/lib/demo-admin";
 import { resolveTrust } from "@/app/lib/resolver";
-import { SCHEMA_IDS, VESTA_CAST } from "@/app/lib/vesta-cast";
+import { SCHEMA_IDS, VESTA_CAST, type VestaCastMember } from "@/app/lib/vesta-cast";
 import { didHost } from "@/app/lib/did";
 import { issuerDidFromRecord, toClaims, type Claim } from "@/app/lib/presentation";
 import { ENDPOINTS } from "@/app/lib/site";
+import { PROTOCOL } from "@/app/lib/network";
+import { serviceDid } from "@/app/lib/demo-services";
+import { holdsAuthorizedRepairerV4 } from "../authorized-repairer";
 
 // Status + access decision for a portal-login presentation (chapter-4 demo
 // 2). Once the wallet presents an ECS-Badge, the portal decides from the
@@ -15,23 +18,32 @@ import { ENDPOINTS } from "@/app/lib/site";
 //   - anything else                             -> access denied
 // This is the login policy of the story ([spec] portal: two rules cover the
 // whole network), executed against the live resolver.
+//
+// V4 (vs-agent v2): the agent reads the presentations at /v2/openid4vc and
+// /v2/didcomm, and the indexer gives the trust resolution and the
+// presentations of the issuer (holdsAuthorizedRepairerV4).
 
 export const dynamic = "force-dynamic";
 
 const PORTAL_ID = "vesta-portal";
 
+/** The DID of a cast member: the known DID, else (V4) the did:web alias of
+ *  its host. decide() finds the canonical did:webvh from the host. */
+const memberDid = (m: VestaCastMember) => m.did ?? `did:web:${m.host}`;
+
 /** Extract the badge issuer DID. Preferred: the credential definition id of
  *  the presented credential (its prefix IS the issuer DID on the did:webvh
  *  AnonCreds registry). Fallback: the demo badge numbers are prefixed by
- *  their issuer (VESTA- / ZENITH- / UMBRA-). */
+ *  their issuer (VESTA- / ZENITH- / UMBRA-). The V4 DIDComm record has no
+ *  credential definition id, so it always uses the fallback. */
 function extractIssuerDid(record: unknown, claims: Claim[]): string | null {
   const fromRecord = issuerDidFromRecord(record);
   if (fromRecord) return fromRecord;
 
   const badgeNumber = claims.find((c) => c.name === "badgeNumber")?.value ?? "";
-  if (badgeNumber.startsWith("VESTA-")) return VESTA_CAST.vesta.did;
-  if (badgeNumber.startsWith("ZENITH-")) return VESTA_CAST.zenith.did;
-  if (badgeNumber.startsWith("UMBRA-")) return VESTA_CAST.umbra.did;
+  if (badgeNumber.startsWith("VESTA-")) return memberDid(VESTA_CAST.vesta);
+  if (badgeNumber.startsWith("ZENITH-")) return memberDid(VESTA_CAST.zenith);
+  if (badgeNumber.startsWith("UMBRA-")) return memberDid(VESTA_CAST.umbra);
   return null;
 }
 
@@ -54,6 +66,9 @@ const first = (value: unknown): unknown =>
  *  network resolver does not surface non-ECS credentials in its
  *  resolution result, so the membership rule walks the chain itself. */
 async function holdsAuthorizedRepairer(host: string): Promise<boolean> {
+  // The schema id is known on testnet (V3) only.
+  const arSchemaId = SCHEMA_IDS.authorizedRepairer;
+  if (arSchemaId === undefined) return false;
   try {
     const doc = (await fetchJson(`https://${host}/.well-known/did.json`)) as {
       service?: Array<{ id?: string; type?: string; serviceEndpoint?: unknown }>;
@@ -94,7 +109,7 @@ async function holdsAuthorizedRepairer(host: string): Promise<boolean> {
     const ref = jscSubject?.jsonSchema?.$ref;
     if (
       typeof ref !== "string" ||
-      !ref.endsWith(`/js/${SCHEMA_IDS.authorizedRepairer}`)
+      !ref.endsWith(`/js/${arSchemaId}`)
     )
       return false;
 
@@ -126,11 +141,21 @@ async function decide(issuerDid: string | null): Promise<{
     return { decision: "employee" };
   if (!host) return { decision: "denied" };
 
+  const known: string | undefined = Object.values(VESTA_CAST).find(
+    (m: VestaCastMember) => m.host === host,
+  )?.did;
+  // V4: the indexer knows the did:webvh only, so find it from the host when
+  // the issuer DID is another form (the did:web alias).
   const canonical =
-    Object.values(VESTA_CAST).find((m) => m.host === host)?.did ?? issuerDid;
+    known ??
+    (PROTOCOL === "v4" && !issuerDid.startsWith("did:webvh:")
+      ? ((await serviceDid(host)) ?? issuerDid)
+      : issuerDid);
   const [pot, isAuthorizedRepairer] = await Promise.all([
     resolveTrust(canonical),
-    holdsAuthorizedRepairer(host),
+    PROTOCOL === "v4"
+      ? holdsAuthorizedRepairerV4(canonical, VESTA_CAST.repairNetwork.host)
+      : holdsAuthorizedRepairer(host),
   ]);
   if (pot.state === "TRUSTED" && isAuthorizedRepairer) {
     const org = pot.credentials.find((c) => c.ecsType === "ECS-ORG");
@@ -158,8 +183,11 @@ export async function GET(
       // `accepted` is the plugin's own Q2 verdict on the badge (issuer
       // TRUSTED_AUTHORIZED for the badge schema); the issuer DID comes from
       // the trust evidence.
+      // V4 (/v2/openid4vc/presentations/{id}) has the same fields.
       const body = await adminJson(
-        `${admin}/v1/oid4vc/verifier/sessions/${encodeURIComponent(id)}`,
+        PROTOCOL === "v4"
+          ? `${admin}/v2/openid4vc/presentations/${encodeURIComponent(id)}`
+          : `${admin}/v1/oid4vc/verifier/sessions/${encodeURIComponent(id)}`,
       );
       const record = (body ?? {}) as {
         state?: unknown;
@@ -197,11 +225,26 @@ export async function GET(
       });
     }
 
+    // V4: /v2/didcomm/presentations/{id} gives { state, claims, verified }.
     const body = await adminJson(
-      `${admin}/v1/presentations/${encodeURIComponent(id)}`,
+      PROTOCOL === "v4"
+        ? `${admin}/v2/didcomm/presentations/${encodeURIComponent(id)}`
+        : `${admin}/v1/presentations/${encodeURIComponent(id)}`,
     );
     const record = (body ?? {}) as Record<string, unknown>;
     const state = typeof record.state === "string" ? record.state : null;
+    // V4: the agent stops the exchange (abandoned) when the presented badge
+    // fails its trust decision. That badge never grants access.
+    if (PROTOCOL === "v4" && (state === "abandoned" || state === "declined")) {
+      const claims = toClaims(record.claims);
+      return NextResponse.json({
+        done: true,
+        verified: false,
+        claims,
+        issuerDid: extractIssuerDid(record, claims),
+        decision: "denied",
+      });
+    }
     if (state !== "done") return NextResponse.json({ done: false, state });
     const claims = toClaims(record.claims);
     const issuerDid = extractIssuerDid(record, claims);

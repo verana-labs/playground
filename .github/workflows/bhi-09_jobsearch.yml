@@ -1,8 +1,11 @@
 name: "BHI 09 · JobSearch (recognised verifier via the second grantor)"
 
-# Deploys JobSearch (demo): ECS-Organization from Trustworthy Verification
-# Services (the openness argument), the Recognised RecTech Provider
-# credential from BHI, and VERIFIER permissions on the candidate schemas.
+# Creates the Corporation of JobSearch (demo), deploys its agent, onboards it
+# with the devnet ECS Ecosystem, gets the Recognised RecTech Provider
+# credential from the Institute, and gets VERIFIER entries on the three
+# candidate schemas, validated by Trustworthy Verification Services (the
+# openness argument). Run it after the second pass of bhi-03.
+# Verana V4 (devnet): select the v4 branch.
 # Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
 
 on:
@@ -17,8 +20,8 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
         required: false
         type: boolean
         default: false
@@ -29,5 +32,5 @@ jobs:
     with:
       org: jobsearch
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

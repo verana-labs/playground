@@ -8,10 +8,13 @@ import {
   effectivePresentation,
   getWalletProfile,
   listWalletProfiles,
-  listedBuild,
+  listedBuilds,
+  obtainUrls,
   WalletProfileSchema,
 } from "./wallet-profiles";
 import { WalletsFileSchema } from "./wallets";
+import { walletLinks } from "./wallet-links";
+import { NETWORK } from "./network";
 
 const device = { activity: ".Main", unlock: "passcode", secret: "123456", coldStart: false };
 
@@ -33,8 +36,8 @@ const valid = {
       kind: "fork",
       listed: true,
       label: "fork apk",
-      obtain: "https://example.org/app.apk",
-      identity: { package: "org.example", version: "1.0.0", repo: "https://example.org/repo", ref: "verana-2026-09-01" },
+      obtain: "https://github.com/example/wallet/releases/download/verana-2026-09-01/app.apk",
+      identity: { package: "org.example", version: "1.0.0", repo: "https://github.com/example/wallet", ref: "verana-2026-09-01" },
       platforms: ["android"],
       promises: "everything",
       device,
@@ -53,7 +56,21 @@ const valid = {
     },
   ],
   quirks: { actsOnLinkOnlyAtColdStart: false, locksOnBackground: false, viewTree: "readable" },
+  capabilities: {
+    openid4vc: {
+      grants: { "pre-authorized_code": "yes" },
+      proofTypes: { jwt: "yes" },
+      formats: { "dc+sd-jwt": "yes" },
+      queryLanguages: { dcql: "yes" },
+      clientIdPrefixes: { x509_hash: "yes", did: "unknown" },
+      responseModes: { "direct_post.jwt": "yes" },
+      sendsWalletAttestation: "no",
+      requiresMetadataKid: "unknown",
+    },
+  },
 };
+
+const SHA = "e6992fccc6540ae297e20082ccc80e0c8cda0e5d";
 
 describe("WalletProfileSchema", () => {
   it("accepts a complete profile", () => {
@@ -69,11 +86,20 @@ describe("WalletProfileSchema", () => {
     expect(WalletProfileSchema.safeParse({ ...valid, rails: ["anoncreds"] }).success).toBe(false);
   });
 
-  it("requires exactly one listed build", () => {
+  it("requires at least one listed build, and allows several", () => {
     const none = { ...valid, builds: valid.builds.map((b) => ({ ...b, listed: false })) };
     expect(WalletProfileSchema.safeParse(none).success).toBe(false);
     const two = { ...valid, builds: valid.builds.map((b) => ({ ...b, listed: true })) };
-    expect(WalletProfileSchema.safeParse(two).success).toBe(false);
+    expect(WalletProfileSchema.safeParse(two).success).toBe(true);
+  });
+
+  it("lets a build be obtained from one store per platform", () => {
+    const stores = ["https://play.google.com/store/apps/details?id=org.example", "https://apps.apple.com/app/example/id1"];
+    const identity = { ...valid.builds[1].identity, appStoreId: "1", bundle: "org.example.ios" };
+    const both = { ...valid, builds: [valid.builds[0], { ...valid.builds[1], obtain: stores, identity }] };
+    expect(obtainUrls(WalletProfileSchema.parse(both).builds[1])).toEqual(stores);
+    const empty = { ...valid, builds: [valid.builds[0], { ...valid.builds[1], obtain: [] }] };
+    expect(WalletProfileSchema.safeParse(empty).success).toBe(false);
   });
 
   it("rejects a presumptive platform that is not declared", () => {
@@ -96,11 +122,9 @@ describe("WalletProfileSchema", () => {
     expect(WalletProfileSchema.safeParse(didWithSigner).success).toBe(false);
   });
 
-  it("requires an android build to carry a package and a device block, and a browser build a url", () => {
-    const noPackage = { ...valid, builds: [{ ...valid.builds[0], identity: { version: "1", repo: "https://example.org/repo", ref: "v1" } }] };
+  it("requires an android build to carry a package, and a browser build a url", () => {
+    const noPackage = { ...valid, builds: [{ ...valid.builds[0], identity: { version: "1", repo: "https://github.com/example/wallet", ref: SHA } }] };
     expect(WalletProfileSchema.safeParse(noPackage).success).toBe(false);
-    const storeWithoutDevice = { ...valid, builds: [valid.builds[0], { ...valid.builds[1], device: undefined }] };
-    expect(WalletProfileSchema.safeParse(storeWithoutDevice).success).toBe(false);
     const browser = {
       ...valid,
       builds: [{ ...valid.builds[0], kind: "browser", platforms: ["web"], identity: { package: "x", version: "1" }, device: undefined }],
@@ -113,8 +137,12 @@ describe("WalletProfileSchema", () => {
     expect(WalletProfileSchema.safeParse(branch).success).toBe(false);
     const main = { ...valid, builds: [{ ...valid.builds[0], identity: { ...valid.builds[0].identity, ref: "main" } }, valid.builds[1]] };
     expect(WalletProfileSchema.safeParse(main).success).toBe(false);
-    const sha = { ...valid, builds: [{ ...valid.builds[0], identity: { ...valid.builds[0].identity, ref: "e6992fccc654" } }, valid.builds[1]] };
+    const sha = { ...valid, builds: [{ ...valid.builds[0], identity: { ...valid.builds[0].identity, ref: SHA } }, valid.builds[1]] };
     expect(WalletProfileSchema.safeParse(sha).success).toBe(true);
+    const shortSha = { ...valid, builds: [{ ...valid.builds[0], identity: { ...valid.builds[0].identity, ref: SHA.slice(0, 12) } }, valid.builds[1]] };
+    expect(WalletProfileSchema.safeParse(shortSha).success).toBe(false);
+    const otherTag = { ...valid, builds: [{ ...valid.builds[0], identity: { ...valid.builds[0].identity, ref: "verana-2026-10-02" } }, valid.builds[1]] };
+    expect(WalletProfileSchema.safeParse(otherTag).success).toBe(false);
     const noRef = { ...valid, builds: [{ ...valid.builds[0], identity: { package: "org.example", version: "1.0.0" } }, valid.builds[1]] };
     expect(WalletProfileSchema.safeParse(noRef).success).toBe(false);
   });
@@ -132,9 +160,58 @@ describe("WalletProfileSchema", () => {
     expect(WalletProfileSchema.safeParse(bad).success).toBe(false);
   });
 
+  it("lets an android build leave out the device block", () => {
+    const storeWithoutDevice = { ...valid, builds: [valid.builds[0], { ...valid.builds[1], device: undefined }] };
+    expect(WalletProfileSchema.safeParse(storeWithoutDevice).success).toBe(true);
+  });
+
   it("rejects a browser build that carries a device block", () => {
-    const browser = { ...valid, builds: [{ ...valid.builds[0], kind: "browser", platforms: ["web"], identity: { url: "https://example.org", repo: "https://example.org/repo", ref: "v1" } }] };
+    const browser = { ...valid, builds: [{ ...valid.builds[0], kind: "browser", platforms: ["web"], identity: { url: "https://example.org", repo: "https://github.com/example/wallet", ref: SHA } }] };
     expect(WalletProfileSchema.safeParse(browser).success).toBe(false);
+  });
+
+  it("takes a tag with a slash from the release the build is obtained from", () => {
+    const publisher = {
+      ...valid.builds[0],
+      obtain: "https://github.com/example/wallet/releases/tag/Wallet/Demo_Version%3D1.2-Demo_Build%3D3",
+      identity: { ...valid.builds[0].identity, ref: "Wallet/Demo_Version=1.2-Demo_Build=3" },
+    };
+    expect(WalletProfileSchema.safeParse({ ...valid, builds: [publisher] }).success).toBe(true);
+  });
+
+  it("requires canonical store links that name the declared app ids", () => {
+    const withStore = (obtain: string, identity: Record<string, string>) => ({
+      ...valid,
+      builds: [valid.builds[0], { ...valid.builds[1], obtain, identity: { version: "2.0.0", ...identity } }],
+    });
+    const ios = { package: "org.example", appStoreId: "6474701855", bundle: "org.example.ios" };
+    expect(WalletProfileSchema.safeParse(withStore("https://apps.apple.com/app/example/id6474701855", ios)).success).toBe(true);
+    expect(WalletProfileSchema.safeParse(withStore("https://apps.apple.com/cl/app/example/id6474701855", ios)).success).toBe(false);
+    expect(WalletProfileSchema.safeParse(withStore("https://apps.apple.com/app/example/id1", ios)).success).toBe(false);
+    expect(WalletProfileSchema.safeParse(withStore("https://apps.apple.com/app/example/id6474701855", { package: "org.example", appStoreId: "6474701855" })).success).toBe(false);
+    expect(WalletProfileSchema.safeParse(withStore("https://play.google.com/store/apps/details?id=org.other", { package: "org.example" })).success).toBe(false);
+    expect(WalletProfileSchema.safeParse(withStore("https://play.google.com/store/apps/details?id=org.example&hl=fr", { package: "org.example" })).success).toBe(false);
+  });
+
+  it("requires the capabilities of every rail the profile declares, and only those", () => {
+    const without = Object.fromEntries(Object.entries(valid).filter(([key]) => key !== "capabilities"));
+    expect(WalletProfileSchema.safeParse(without).success).toBe(false);
+    const extra = { ...valid, capabilities: { ...valid.capabilities, didcomm: { versions: { v2: "yes" } } } };
+    expect(WalletProfileSchema.safeParse(extra).success).toBe(false);
+    const typo = { ...valid, capabilities: { openid4vc: { ...valid.capabilities.openid4vc, queryLanguage: { dcql: "yes" } } } };
+    expect(WalletProfileSchema.safeParse(typo).success).toBe(false);
+    const badValue = { ...valid, capabilities: { openid4vc: { ...valid.capabilities.openid4vc, formats: { "dc+sd-jwt": "maybe" } } } };
+    expect(WalletProfileSchema.safeParse(badValue).success).toBe(false);
+  });
+
+  it("rejects capabilities that refuse the rail the listing mints", () => {
+    const refusing = {
+      ...valid,
+      capabilities: { openid4vc: { ...valid.capabilities.openid4vc, clientIdPrefixes: { x509_hash: "no" } } },
+    };
+    const result = WalletProfileSchema.safeParse(refusing);
+    expect(result.success).toBe(false);
+    expect(JSON.stringify(result.error?.issues)).toContain("x509_hash");
   });
 
   it("rejects query=pe on the dcql rail", () => {
@@ -146,8 +223,9 @@ describe("WalletProfileSchema", () => {
 describe("profile helpers", () => {
   const profile = WalletProfileSchema.parse(valid);
 
-  it("finds the listed build", () => {
-    expect(listedBuild(profile).kind).toBe("fork");
+  it("finds the listed builds", () => {
+    expect(listedBuilds(profile).map((b) => b.kind)).toEqual(["fork"]);
+    expect(obtainUrls(listedBuilds(profile)[0])).toEqual(["https://github.com/example/wallet/releases/download/verana-2026-09-01/app.apk"]);
   });
 
   it("lets a build override the request rail and the mint parameters", () => {
@@ -162,6 +240,7 @@ describe("profile helpers", () => {
       ...valid,
       rails: ["anoncreds", "openid4vc-sdjwt"],
       didcomm: { library: "credo", proxy: "credo", invitationSchemes: ["didcomm"], demoParams: "" },
+      capabilities: { ...valid.capabilities, didcomm: { versions: { v1: "yes" } } },
     });
     expect(effectiveDemoParams(dual, dual.builds[0], "anoncreds")).toBe("");
     expect(effectiveDemoParams(dual, dual.builds[0], "openid4vc-sdjwt")).toBe("signer=x5c");
@@ -189,6 +268,16 @@ describe("listWalletProfiles", () => {
     expect(() => listWalletProfiles(dir)).toThrow(/wrong\.yaml/);
   });
 
+  it("resolves the network placeholder of the hosts this repo deploys", () => {
+    const hosted = {
+      ...valid,
+      id: "a",
+      builds: [{ kind: "browser", listed: true, label: "hosted", obtain: "https://a.__NETWORK__.verana.network", identity: { url: "https://a.__NETWORK__.verana.network" }, platforms: ["web"], promises: "x" }],
+    };
+    fs.writeFileSync(path.join(dir, "a.yaml"), JSON.stringify(hosted));
+    expect(listWalletProfiles(dir, "devnet")[0]?.builds[0]?.obtain).toBe("https://a.devnet.verana.network");
+  });
+
   it("finds one profile by id", () => {
     fs.writeFileSync(path.join(dir, "a.yaml"), JSON.stringify({ ...valid, id: "a" }));
     expect(getWalletProfile("a", dir)?.id).toBe("a");
@@ -197,8 +286,12 @@ describe("listWalletProfiles", () => {
 });
 
 describe("profiles match the listing", () => {
+  // Resolve the __NETWORK__ placeholder as loadPersonalWallets does.
   const listing = WalletsFileSchema.parse(
-    yaml.load(fs.readFileSync(path.join(process.cwd(), "personal-wallets.yaml"), "utf8")),
+    yaml.load(
+      fs.readFileSync(path.join(process.cwd(), "personal-wallets.yaml"), "utf8")
+        .replaceAll("__NETWORK__", NETWORK),
+    ),
   ).wallets;
   const visible = listing.filter((w) => !w.hidden);
   const profiles = listWalletProfiles();
@@ -213,18 +306,32 @@ describe("profiles match the listing", () => {
       expect([...(byId.get(w.id)?.rails ?? [])].sort(), w.id).toEqual([...w.formats].sort());
   });
 
-  it("the listed build is the one the listing links to", () => {
+  it("the listed builds are the ones the listing links to, and the other way round", () => {
     for (const w of visible) {
-      const build = listedBuild(byId.get(w.id)!);
-      expect(build.obtain, w.id).toBe(w.browser ? w.hosted : w.download);
+      const listed = listedBuilds(byId.get(w.id)!).flatMap(obtainUrls).sort();
+      const links = walletLinks(w).map((l) => l.url).sort();
+      expect(links, w.id).toEqual(listed);
+    }
+  });
+
+  it("a linked build runs on the platform of its link", () => {
+    const platform = { hosted: "web", web: "web", download: "android", playstore: "android", appstore: "ios" } as const;
+    for (const w of visible) {
+      const builds = listedBuilds(byId.get(w.id)!);
+      for (const link of walletLinks(w)) {
+        const build = builds.find((b) => obtainUrls(b).includes(link.url));
+        expect(build?.platforms, `${w.id} ${link.kind}`).toContain(platform[link.kind]);
+      }
     }
   });
 
   it("the listing mints with the listed build's parameters", () => {
     for (const w of visible) {
       const profile = byId.get(w.id)!;
-      const expected = effectiveDemoParams(profile, listedBuild(profile)).split("&").filter(Boolean).sort();
-      expect((w.demoParams ?? "").split("&").filter(Boolean).sort(), w.id).toEqual(expected);
+      for (const build of listedBuilds(profile)) {
+        const expected = effectiveDemoParams(profile, build).split("&").filter(Boolean).sort();
+        expect((w.demoParams ?? "").split("&").filter(Boolean).sort(), `${w.id} ${build.label}`).toEqual(expected);
+      }
     }
   });
 });

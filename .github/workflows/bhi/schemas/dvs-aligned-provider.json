@@ -1,5 +1,5 @@
 {
-  "$id": "https://orchestrating-identity.bhi.playground.testnet.verana.network/schemas/dvs-aligned-provider.json",
+  "$id": "https://orchestrating-identity.bhi.playground.__NETWORK__.verana.network/schemas/dvs-aligned-provider.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "DVSAlignedProviderCredential",
   "description": "Mirrors an organisation's presence on the UK DVS register (demo): eligibility is register status and nothing else. This ecosystem mirrors the register, does not constitute it, and is neither operated by nor endorsed by OfDIA. For demonstration only.",

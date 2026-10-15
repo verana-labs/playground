@@ -3,8 +3,9 @@
 import { useEffect, useState } from "react";
 import { ArrowLeftRight, BadgeCheck, TriangleAlert, X } from "lucide-react";
 import { Chip } from "../../components/ui";
-import { ENDPOINTS } from "../../lib/site";
-import { CEXA_CAST, CEXA_KYC_SCHEMA_ID } from "../../lib/cexa-cast";
+import { PROTOCOL } from "../../lib/network";
+import { CEXA_CAST, type CexaMember } from "../../lib/cexa-cast";
+import { readCounterparty, type Counterparty } from "./counterparty";
 
 // The Travel Rule counterparty proof of one CEXA service, rendered just
 // below its Proof-of-Trust card: the CEXA-VerifiedCounterparty credential
@@ -13,24 +14,21 @@ import { CEXA_CAST, CEXA_KYC_SCHEMA_ID } from "../../lib/cexa-cast";
 // directory. Members show both in green; DarkPool, a real and verifiable
 // exchange outside the Association, shows both in red - which is the
 // lesson: trust is not membership, membership is not authorization.
+// The data comes from ./counterparty.ts, on the protocol of the network.
 
 type CexaServiceId = "aurum" | "borealis" | "novara" | "darkpool";
 
-const SERVICES: Record<CexaServiceId, { host: string; did: string }> = {
+const SERVICES: Record<CexaServiceId, CexaMember> = {
   aurum: CEXA_CAST.aurum,
   borealis: CEXA_CAST.borealis,
   novara: CEXA_CAST.novara,
   darkpool: CEXA_CAST.darkpool,
 };
 
-type Membership =
-  | { kind: "member"; issuerDid: string; claims: Record<string, string> }
-  | { kind: "outsider" };
-
 type FetchState =
   | { status: "loading" }
   | { status: "error" }
-  | { status: "ok"; membership: Membership; accreditedVerifier: boolean | null };
+  | ({ status: "ok" } & Counterparty);
 
 const CLAIM_ROWS: { key: string; label: string }[] = [
   { key: "legalName", label: "Legal name" },
@@ -40,62 +38,6 @@ const CLAIM_ROWS: { key: string; label: string }[] = [
   { key: "vaspCategory", label: "Category" },
   { key: "complianceContact", label: "Compliance contact" },
 ];
-
-async function readMembership(host: string): Promise<Membership> {
-  const didDoc = await fetch(`https://${host}/.well-known/did.json`).then((r) => {
-    if (!r.ok) throw new Error(`did.json ${r.status}`);
-    return r.json();
-  });
-  const services: { id?: string; type?: string; serviceEndpoint?: string | string[] }[] =
-    didDoc?.service ?? [];
-  const vpService = services.find(
-    (s) =>
-      s.type === "LinkedVerifiablePresentation" &&
-      s.id?.endsWith("cexa-verified-counterparty-c-vp"),
-  );
-  const endpoint = Array.isArray(vpService?.serviceEndpoint)
-    ? vpService?.serviceEndpoint[0]
-    : vpService?.serviceEndpoint;
-  // The DID document resolved fine and simply carries no counterparty
-  // credential: the definitive not-a-member answer, not an error.
-  if (!endpoint) return { kind: "outsider" };
-  const vp = await fetch(endpoint).then((r) => {
-    if (!r.ok) throw new Error(`linked VP ${r.status}`);
-    return r.json();
-  });
-  const vc = Array.isArray(vp?.verifiableCredential)
-    ? vp.verifiableCredential[0]
-    : vp?.verifiableCredential;
-  const issuer = typeof vc?.issuer === "string" ? vc.issuer : vc?.issuer?.id;
-  const subject = vc?.credentialSubject ?? {};
-  if (!issuer) throw new Error("credential has no issuer");
-  const claims: Record<string, string> = {};
-  for (const { key } of CLAIM_ROWS) {
-    if (typeof subject[key] === "string" && subject[key]) claims[key] = subject[key];
-  }
-  return { kind: "member", issuerDid: issuer, claims };
-}
-
-/** Live check against the indexer: does this DID hold an ACTIVE VERIFIER
- *  permission on the CEXA-Kyc schema? Returns null when the indexer is
- *  unreachable (shown as "could not check", never as a verdict). */
-async function readVerifierAccreditation(did: string): Promise<boolean | null> {
-  try {
-    const body = await fetch(
-      `${ENDPOINTS.indexer}/verana/perm/v1/list?schema_id=${CEXA_KYC_SCHEMA_ID}`,
-    ).then((r) => {
-      if (!r.ok) throw new Error(`${r.status}`);
-      return r.json();
-    });
-    const perms: { type?: string; did?: string; perm_state?: string }[] =
-      body?.permissions ?? [];
-    return perms.some(
-      (p) => p.type === "VERIFIER" && p.did === did && p.perm_state === "ACTIVE",
-    );
-  } catch {
-    return null;
-  }
-}
 
 function RedLine({ children }: { children: React.ReactNode }) {
   return (
@@ -117,11 +59,8 @@ export default function CounterpartyCard({
   useEffect(() => {
     let alive = true;
     setState({ status: "loading" });
-    Promise.all([readMembership(service.host), readVerifierAccreditation(service.did)])
-      .then(
-        ([membership, accreditedVerifier]) =>
-          alive && setState({ status: "ok", membership, accreditedVerifier }),
-      )
+    readCounterparty(service, PROTOCOL)
+      .then((counterparty) => alive && setState({ status: "ok", ...counterparty }))
       .catch(() => alive && setState({ status: "error" }));
     return () => {
       alive = false;
@@ -131,7 +70,7 @@ export default function CounterpartyCard({
   const issuedByAssociation =
     state.status === "ok" &&
     state.membership.kind === "member" &&
-    state.membership.issuerDid === CEXA_CAST.association.did;
+    state.associationDids.includes(state.membership.issuerDid);
 
   return (
     <div

@@ -3,9 +3,15 @@
 // the employer, the job board, the candidate and the impostors, revealed
 // and transformed stage by stage. Real organisations (BHI, Orchestrating
 // Identity) appear as themselves; everyone else is fictional and labeled
-// (demo). Every deployed cast member carries its live did:webvh (bhi-cast),
-// so the trust cards resolve against the testnet; Northgate and HMRC stay
-// story-only (no agent, by design).
+// (demo). Every deployed cast member carries its DID (bhi-cast), so the
+// trust cards resolve against the network of the build; Northgate and HMRC
+// stay story-only (no agent, by design).
+//
+// V4 (devnet): ecs-org-issuer, the organization issuer of the Verana ECS
+// Ecosystem, issues every ECS-Organization credential of the cast, and
+// Orchestrating Identity holds no DVS-Aligned Provider credential of its
+// own (its ISSUER entry is the proof). The V4 values below show that; the
+// V3 (testnet) values stay as they were.
 //
 // The 3.3 stage is the one the source calls out as mattering most: two
 // grantor branches side by side, the visual form of the openness
@@ -17,7 +23,11 @@ import type {
   SceneEdge,
   SceneBadge,
 } from "../../components/scene-graph";
-import { BHI_CAST } from "../../lib/bhi-cast";
+import { BHI_CAST, bhiDisplayDid } from "../../lib/bhi-cast";
+import { NETWORK, PROTOCOL } from "../../lib/network";
+
+const V4 = PROTOCOL === "v4";
+const ECS_ORG_ISSUER = "The organization issuer of the Verana ECS Ecosystem";
 
 export const STAGES = [
   "3.0",
@@ -35,7 +45,7 @@ const NODES: SceneNode[] = [
   // ---- the protagonist
   {
     id: "bhi",
-    did: BHI_CAST.bhi.did,
+    did: bhiDisplayDid(BHI_CAST.bhi),
     x: 330,
     y: 450,
     r: 28,
@@ -55,7 +65,7 @@ const NODES: SceneNode[] = [
   // ---- the market, today
   {
     id: "meridian",
-    did: BHI_CAST.meridian.did,
+    did: bhiDisplayDid(BHI_CAST.meridian),
     x: 760,
     y: 330,
     icon: "building",
@@ -73,7 +83,7 @@ const NODES: SceneNode[] = [
   },
   {
     id: "jobsearch",
-    did: BHI_CAST.jobsearch.did,
+    did: bhiDisplayDid(BHI_CAST.jobsearch),
     x: 1060,
     y: 330,
     icon: "building",
@@ -107,7 +117,7 @@ const NODES: SceneNode[] = [
   // ---- the red world
   {
     id: "halcyon",
-    did: BHI_CAST.halcyon.did,
+    did: bhiDisplayDid(BHI_CAST.halcyon),
     x: 600,
     y: 620,
     icon: "ghost",
@@ -173,7 +183,7 @@ const NODES: SceneNode[] = [
   // ---- the two certified grantors (the openness argument)
   {
     id: "oid",
-    did: BHI_CAST.oid.did,
+    did: bhiDisplayDid(BHI_CAST.oid),
     x: 170,
     y: 260,
     icon: "stamp",
@@ -187,7 +197,7 @@ const NODES: SceneNode[] = [
   },
   {
     id: "tvs",
-    did: BHI_CAST.tvs.did,
+    did: bhiDisplayDid(BHI_CAST.tvs),
     x: 520,
     y: 260,
     icon: "stamp",
@@ -202,7 +212,7 @@ const NODES: SceneNode[] = [
   // ---- the candidate's issuers (build 4)
   {
     id: "caledonian",
-    did: BHI_CAST.caledonian.did,
+    did: bhiDisplayDid(BHI_CAST.caledonian),
     x: 650,
     y: 740,
     icon: "award",
@@ -214,7 +224,7 @@ const NODES: SceneNode[] = [
   },
   {
     id: "northbank",
-    did: BHI_CAST.northbank.did,
+    did: bhiDisplayDid(BHI_CAST.northbank),
     x: 950,
     y: 790,
     icon: "id",
@@ -226,7 +236,7 @@ const NODES: SceneNode[] = [
   },
   {
     id: "cirrus",
-    did: BHI_CAST.cirrus.did,
+    did: bhiDisplayDid(BHI_CAST.cirrus),
     x: 1200,
     y: 700,
     icon: "badge",
@@ -257,16 +267,18 @@ const EDGES: SceneEdge[] = [
   { id: "e-jobsearch-meridian-today", from: "jobsearch", to: "meridian", appears: "3.0", until: "3.5", label: "asserted CVs, verified from scratch", tone: "gray", dashed: true, curve: -25, labelT: 0.5 },
   { id: "e-alex-halcyon", from: "alex", to: "halcyon", appears: "3.0", until: "3.6", label: "passport scan into a scammer's inbox", tone: "red", dashed: true, curve: 20, labelT: 0.5 },
   // 3.1 - BHI's identity + its ecosystem
-  { id: "e-ecs-oid", from: "ecs", to: "oid", appears: "3.1", label: "accredits as ECS-Org issuer (DVS-certified)", tone: "violet", labelT: 0.4 },
+  { id: "e-ecs-oid", from: "ecs", to: "oid", appears: "3.1", label: V4 ? "ECS-Org (organization issuer)" : "accredits as ECS-Org issuer (DVS-certified)", tone: "violet", labelT: 0.4 },
   { id: "e-dvseco-oid", from: "dvsEco", to: "oid", appears: "3.1", label: "certified provider (grantor)", tone: "emerald", curve: 20, labelT: 0.55 },
-  { id: "e-oid-bhi", from: "oid", to: "bhi", appears: "3.1", label: "KYB + DVS register check: ECS-Org", tone: "emerald", curve: -20, labelT: 0.5 },
+  V4
+    ? { id: "e-oid-bhi", from: "ecs", to: "bhi", appears: "3.1", label: "ECS-Org (organization issuer)", tone: "violet", curve: -20, labelT: 0.5 }
+    : { id: "e-oid-bhi", from: "oid", to: "bhi", appears: "3.1", label: "KYB + DVS register check: ECS-Org", tone: "emerald", curve: -20, labelT: 0.5 },
   { id: "e-bhi-rtn", from: "bhi", to: "rtn", appears: "3.1", label: "creates and governs (EGF published)", tone: "blue", curve: -20, labelT: 0.78 },
   // 3.2 - the verifiable employer
-  { id: "e-oid-meridian", from: "oid", to: "meridian", appears: "3.2", label: "KYB: ECS-Org (reusable)", tone: "emerald", curve: -45, labelT: 0.45 },
+  { id: "e-oid-meridian", from: "oid", to: "meridian", appears: "3.2", label: V4 ? "Verified Employer + verifier onboarding" : "KYB: ECS-Org (reusable)", tone: "emerald", curve: -45, labelT: 0.45 },
   { id: "e-rtn-meridian", from: "rtn", to: "meridian", appears: "3.2", label: "Verified Employer, via a certified grantor", tone: "blue", labelT: 0.5 },
   // 3.3 - the recognised verifier, under the SECOND grantor
   { id: "e-dvseco-tvs", from: "dvsEco", to: "tvs", appears: "3.3", label: "certified provider (grantor)", tone: "emerald", curve: -20, labelT: 0.55 },
-  { id: "e-tvs-jobsearch", from: "tvs", to: "jobsearch", appears: "3.3", label: "KYB + verifier onboarding", tone: "emerald", curve: -60, labelT: 0.45 },
+  { id: "e-tvs-jobsearch", from: "tvs", to: "jobsearch", appears: "3.3", label: V4 ? "verifier onboarding" : "KYB + verifier onboarding", tone: "emerald", curve: -60, labelT: 0.45 },
   { id: "e-rtn-jobsearch", from: "rtn", to: "jobsearch", appears: "3.3", label: "Recognised RecTech Provider + VERIFIER entries", tone: "blue", curve: -15, labelT: 0.5 },
   // 3.4 - the candidate's wallet
   { id: "e-caledonian-alex", from: "caledonian", to: "alex", appears: "3.4", label: "degree, over DIDComm", tone: "emerald", curve: 15, labelT: 0.5 },
@@ -303,7 +315,7 @@ export const BHI_SCENES: SceneGraph = {
       {
         name: "ECS-Organization",
         tone: "emerald",
-        issuedBy: "Orchestrating Identity (KYB + DVS register check)",
+        issuedBy: V4 ? ECS_ORG_ISSUER : "Orchestrating Identity (KYB + DVS register check)",
         ecosystem: "Verana ECS Ecosystem",
         appears: "3.1",
       },
@@ -323,13 +335,17 @@ export const BHI_SCENES: SceneGraph = {
         ecosystem: "Verana ECS Ecosystem",
         appears: "3.1",
       },
-      {
-        name: "DVS-Aligned Provider",
-        tone: "emerald",
-        issuedBy: "Orchestrating Identity, as operator (eligibility: DVS register status, nothing else)",
-        ecosystem: "DVS-Aligned Provider Ecosystem (demo)",
-        appears: "3.1",
-      },
+      ...(V4
+        ? []
+        : [
+            {
+              name: "DVS-Aligned Provider",
+              tone: "emerald" as const,
+              issuedBy: "Orchestrating Identity, as operator (eligibility: DVS register status, nothing else)",
+              ecosystem: "DVS-Aligned Provider Ecosystem (demo)",
+              appears: "3.1",
+            },
+          ]),
     ],
     tvs: [
       {
@@ -351,7 +367,7 @@ export const BHI_SCENES: SceneGraph = {
       {
         name: "ECS-Organization",
         tone: "emerald",
-        issuedBy: "Orchestrating Identity (reusable KYB)",
+        issuedBy: V4 ? ECS_ORG_ISSUER : "Orchestrating Identity (reusable KYB)",
         ecosystem: "Verana ECS Ecosystem",
         appears: "3.2",
       },
@@ -374,10 +390,12 @@ export const BHI_SCENES: SceneGraph = {
       {
         name: "ECS-Organization",
         tone: "emerald",
-        issuedBy: "Trustworthy Verification Services (demo)",
+        issuedBy: V4 ? ECS_ORG_ISSUER : "Trustworthy Verification Services (demo)",
         ecosystem: "Verana ECS Ecosystem",
         appears: "3.3",
-        note: "Onboarded by the SECOND grantor: nothing the candidate sees depends on which certified provider did the onboarding.",
+        note: V4
+          ? "Onboarded as a verifier by the SECOND grantor: nothing the candidate sees depends on which certified provider did the onboarding."
+          : "Onboarded by the SECOND grantor: nothing the candidate sees depends on which certified provider did the onboarding.",
       },
       {
         name: "ECS-Service",
@@ -429,7 +447,7 @@ export const BHI_SCENES: SceneGraph = {
       {
         name: "ECS-Organization",
         tone: "emerald",
-        issuedBy: "A certified DVS provider",
+        issuedBy: V4 ? ECS_ORG_ISSUER : "A certified DVS provider",
         ecosystem: "Verana ECS Ecosystem",
         appears: "3.6",
         note: "Verifiable is not the same as authorised: Halcyon holds no Verified Employer credential, so the wallet refuses its requests.",
@@ -453,12 +471,19 @@ export const BHI_SCENES: SceneGraph = {
       },
     ],
     oid: [
-      {
-        role: "ISSUER",
-        schema: "ECS-Organization",
-        context: "Verana ECS Ecosystem (accredited by the Verana Council; criterion: UK DVS certification)",
-        appears: "3.1",
-      },
+      V4
+        ? {
+            role: "ISSUER",
+            schema: "DVS-Aligned Provider",
+            context: "DVS-Aligned Provider Ecosystem (demo), as operator",
+            appears: "3.1",
+          }
+        : {
+            role: "ISSUER",
+            schema: "ECS-Organization",
+            context: "Verana ECS Ecosystem (accredited by the Verana Council; criterion: UK DVS certification)",
+            appears: "3.1",
+          },
       {
         role: "ISSUER",
         schema: "Verified Employer",
@@ -466,14 +491,16 @@ export const BHI_SCENES: SceneGraph = {
         appears: "3.2",
       },
     ],
-    tvs: [
-      {
-        role: "ISSUER",
-        schema: "ECS-Organization",
-        context: "Verana ECS Ecosystem (accredited by the Verana Council; criterion: UK DVS certification)",
-        appears: "3.3",
-      },
-    ],
+    tvs: V4
+      ? []
+      : [
+          {
+            role: "ISSUER",
+            schema: "ECS-Organization",
+            context: "Verana ECS Ecosystem (accredited by the Verana Council; criterion: UK DVS certification)",
+            appears: "3.3",
+          },
+        ],
     jobsearch: [
       {
         role: "VERIFIER",
@@ -585,5 +612,5 @@ export const BHI_SCENES: SceneGraph = {
     },
   },
   verifiedNote:
-    "This organisation runs a live verifiable service on the Verana testnet (the deployed BHI cast): resolve it yourself in chapter 4.",
+    `This organisation runs a live verifiable service on the Verana ${NETWORK} (the deployed BHI cast): resolve it yourself in chapter 4.`,
 };

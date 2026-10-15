@@ -1,29 +1,22 @@
 #!/usr/bin/env bash
-# Provision a Vesta subsidiary (Iberia / Nordics): ECS-Organization from
-# Helvetia, self-issued ECS-Service, ISSUER accreditation on the Authorized
-# Repairer schema of the Vesta Repair Network, and its own VTJSC so it can
-# issue Authorized Repairer credentials to partners.
+# Provision a Vesta subsidiary (Iberia or Nordics) on Verana V4:
+#   1. The ECS credentials of a standalone organization.
+#   2. An ISSUER entry on the AuthorizedRepairerCredential schema. The
+#      operator validates it with the Corporation of the Vesta Repair Network
+#      Ecosystem (vesta).
+# A partner gets its Authorized Repairer credential from a subsidiary: the
+# partner sends the onboarding request, and the subsidiary agent validates it.
+# CAUTION: run vesta-06 (Vesta Repair Network) before this script.
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
-start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_HELVETIA" 3101
-API="http://localhost:3100"
-HELVETIA_API="http://localhost:3101"
+open_agent
+provision_ecs_standalone "$PF_PORT_AGENT"
 
-AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "Subsidiary DID: $AGENT_DID"
+AR_CS=$(find_cast_schema_id vesta-repair-network "$AR_SCHEMA_TITLE") \
+  || { err "No ${AR_SCHEMA_TITLE} schema. Run vesta-06 (Vesta Repair Network) first."; exit 1; }
+ISSUER_ID=$(join_under_root "$AR_CS" "$PP_ROLE_ISSUER" "$VSOA_ISSUER" vesta)
 
-obtain_ecs_org_credential "$API" "$HELVETIA_API" "$AGENT_DID"
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
-
-# ISSUER accreditation on Authorized Repairer (ecosystem-governed)
-AR_SCHEMA_ID=$(discover_ecs_vtjsc "https://${REPAIR_NETWORK_HOST}" "$AR_SCHEMA_BASE_ID" | sed -n '2p')
-[ -n "$AR_SCHEMA_ID" ] || { err "Could not discover the Authorized Repairer schema from https://${REPAIR_NETWORK_HOST} — run vesta-06 first"; exit 1; }
-ensure_validated_issuer_perm "$AR_SCHEMA_ID" "$AGENT_DID"
-ensure_jsc "$API" "$AR_SCHEMA_BASE_ID" "$AR_SCHEMA_ID" > /dev/null
-
-ok "Subsidiary provisioned: accredited Authorized Repairer issuer."
+ok "${RELEASE_NAME} provisioned: ISSUER participant $ISSUER_ID on schema $AR_CS."

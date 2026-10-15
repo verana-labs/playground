@@ -1,49 +1,43 @@
 #!/usr/bin/env bash
-# Provision Orchestrating Identity: ECS-Organization from Helvetia Trust
-# (the vesta cast's accredited KYB issuer), self-issued ECS-Service, and the
-# DVS-Aligned Provider Ecosystem (demo) - a registry that mirrors the OfDIA
-# DVS register (it does not constitute it): eligibility is register status
-# and nothing else. OID is its operator and first credentialed provider. Its
-# own ISSUER accreditation on ECS-Organization (the Verana Council decision:
-# DVS certification is the accreditation criterion) is granted separately by
-# the bhi-02 workflow.
+# Provision Orchestrating Identity (bhi-01) on Verana V4:
+#   1. The ECS credentials: the ECS-Organization credential from ecs-org-issuer
+#      and the self-issued ECS-Service credential.
+#   2. The DVS-Aligned Provider Ecosystem (demo), controlled by the DID of
+#      Orchestrating Identity, with the DVSAlignedProviderCredential schema
+#      and its root entry. Issuer onboarding by the Ecosystem, verifier
+#      onboarding OPEN, holders onboard through an issuer.
+#   3. The ISSUER entry of Orchestrating Identity on that schema. This entry
+#      validates the HOLDER entries of the other certified providers (TVS).
+#   4. The Verified Employer branch (provision_ve_issuer_branch, cast.sh),
+#      when the Institute Ecosystem exists (bhi-04).
+#   5. The VERIFIER_GRANTOR entries on the candidate schemas
+#      (provision_verifier_grantor_branches, cast.sh), when the Northbank and
+#      Caledonian Ecosystems exist (bhi-05, bhi-06).
+# Steps 4 and 5 need workflows that run later. Run this workflow again with
+# step=provision after bhi-06. Each step is idempotent.
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
-source "${CAST_DIR}/scripts/lib.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
-start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_HELVETIA" 3101
-API="http://localhost:3100"
-HELVETIA_API="http://localhost:3101"
+bhi_start_agent
 
-AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "Orchestrating Identity DID: $AGENT_DID"
+# 1. ECS credentials
+provision_ecs_standalone 3100
 
-obtain_ecs_org_credential "$API" "$HELVETIA_API" "$AGENT_DID"
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
+# 2. DVS-Aligned Provider Ecosystem (demo)
+DVS_JSON=$(bhi_schema_json "dvs-aligned-provider.json")
+ECOSYSTEM_ID=$(ensure_ecosystem "$AGENT_DID")
+DVS_CS_ID=$(ensure_credential_schema "$ECOSYSTEM_ID" "$DVS_JSON" \
+  "$ONBOARDING_MODE_ECOSYSTEM" "$ONBOARDING_MODE_OPEN" "$HOLDER_MODE_ISSUER_OP")
+bhi_ensure_root "$DVS_CS_ID" "$AGENT_DID" > /dev/null
 
-# DVS-Aligned Provider Ecosystem (demo): registry + schema + root + VTJSC
-SCHEMA_JSON=$(jq -c '.' "${CAST_DIR}/schemas/${SCHEMA_FILE}")
-TR_ID=$(ensure_trust_registry "$AGENT_DID" "https://${INGRESS_HOST}" "$EGF_DOC_URL")
-CS_ID=$(ensure_schema_with_root "$TR_ID" "$SCHEMA_JSON" "$AGENT_DID")
-ensure_validated_issuer_perm "$CS_ID" "$AGENT_DID"
-DVS_JSC_URL=$(ensure_jsc "$API" "$CUSTOM_SCHEMA_BASE_ID" "$CS_ID")
+# 3. The own ISSUER entry. Orchestrating Identity has no DVS-Aligned Provider
+# credential of its own: this entry is the proof of its role.
+DVS_ISSUER_ID=$(join_under_root "$DVS_CS_ID" "$PP_ROLE_ISSUER" "$VSOA_ISSUER" oid)
 
-# OID is itself a certified provider: self-issue its DVS-Aligned Provider
-# credential and present it as a linked VP.
-if [ "${FORCE_REFRESH:-false}" != "true" ] && has_linked_vp "https://${INGRESS_HOST}" "$CUSTOM_SCHEMA_BASE_ID"; then
-  ok "Orchestrating Identity already presents its DVS-Aligned Provider credential - skipping"
-else
-  DVS_CLAIMS=$(jq -n \
-    --arg id "$AGENT_DID" \
-    --arg name "$DVS_PROVIDER_NAME" \
-    --arg status "$DVS_REGISTER_STATUS" \
-    --arg checked "$DVS_CHECKED_DATE" \
-    '{id: $id, providerName: $name, registerStatus: $status, lastCheckedDate: $checked}')
-  issue_remote_and_link "$API" "$API" "$CUSTOM_SCHEMA_BASE_ID" "$DVS_JSC_URL" "$AGENT_DID" "$DVS_CLAIMS"
-fi
+# 4. and 5. The grantor branches
+provision_ve_issuer_branch
+provision_verifier_grantor_branches
 
-ok "Orchestrating Identity provisioned: TR=$TR_ID, CS=$CS_ID. Next: run 'BHI 02' to accredit it as ECS-Organization issuer."
+ok "Orchestrating Identity provisioned: Ecosystem=$ECOSYSTEM_ID, DVS CS=$DVS_CS_ID, ISSUER=$DVS_ISSUER_ID"

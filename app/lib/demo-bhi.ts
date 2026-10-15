@@ -17,7 +17,7 @@ export const DEFAULT_APPLICANT: DemoApplicant = {
   surname: "Chen",
 };
 
-/** Visitor-supplied names reach a real testnet credential: keep them short
+/** Visitor-supplied names reach a real credential on the Verana network: keep them short
  *  and name-shaped (letters, spaces, hyphens, apostrophes, dots), falling
  *  back to the default persona. */
 export function sanitizeApplicantName(

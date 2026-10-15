@@ -1,0 +1,41 @@
+id: credenco
+rails: [openid4vc-sdjwt]
+openid4vc:
+  library: "Credenco's own OpenID4VC and SD-JWT VC stack, closed source"
+  proxy: "@openid4vc/openid4vci, @openid4vc/openid4vp, @sd-jwt/sd-jwt-vc"
+  vciDrafts: [v1]
+  offerSchemes: [openid-credential-offer, haip-vci]
+  requestSchemes: [openid4vp, openid, haip-vp]
+  asDiscovery: [oauth-authorization-server]
+  presentation: { query: dcql, clientId: x509_hash, responseMode: direct_post.jwt }
+  demoParams: signer=x5c
+builds:
+  - kind: store
+    listed: true
+    label: "Credenco Wallet on Google Play and the App Store"
+    obtain:
+      - https://play.google.com/store/apps/details?id=com.credenco.wallet
+      - https://apps.apple.com/app/credenco-wallet/id6753174105
+    identity:
+      package: com.credenco.wallet
+      appStoreId: "6753174105"
+      bundle: com.credenco.insigne.wallet
+      version: "1.0.226"
+    platforms: [android, ios]
+    presumptive: [ios]
+    promises: "No Verana trust screen: its own generic \"Do you trust this issuer?\" and \"Do you trust this party?\" prompts look the same for every service and nothing is checked against the registry, so the unaccredited and untrusted services are not refused. All six demos complete: issues the DemoCredential and presents it on DCQL to an x509_hash verifier with an encrypted direct_post.jwt response (device-tested 2026-10-06 on devnet, Android, Play version 1.0.226)"
+quirks:
+  actsOnLinkOnlyAtColdStart: false
+  locksOnBackground: false
+  viewTree: readable
+  notes: "Asks its own trust question before every offer and request, and its PIN before sharing. Link schemes as registered by the Play build's manifest. Only the offer and request links of the default mint were exercised; the view tree and the locking behaviour have not been characterised"
+capabilities:
+  openid4vc:
+    grants: { pre-authorized_code: yes }
+    proofTypes: { jwt: yes }
+    formats: { dc+sd-jwt: yes }
+    queryLanguages: { dcql: yes }
+    clientIdPrefixes: { x509_hash: yes }
+    responseModes: { direct_post.jwt: yes }
+    sendsWalletAttestation: no
+    requiresMetadataKid: no

@@ -25,7 +25,8 @@ on:
         type: boolean
 
 env:
-  NETWORK: testnet
+  # The branch selects the network: v4 deploys to devnet, other branches to testnet.
+  NETWORK: ${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
   VERANAD_VERSION: v0.9.5
 
 jobs:
@@ -38,9 +39,17 @@ jobs:
     # GitHub keeps only ONE queued run per group — start workflows one at a
     # time rather than firing several at once.
     concurrency:
-      group: vesta-cast
+      group: vesta-cast-${{ github.ref_name == 'v4' && 'devnet' || 'testnet' }}
       cancel-in-progress: false
     steps:
+      # This cast still uses the Verana V3 model, which only testnet runs. On the
+      # v4 branch it would deploy V3 agents into the devnet namespace.
+      - name: Check network protocol
+        if: env.NETWORK != 'testnet'
+        run: |
+          echo "::error::This cast uses Verana V3, which devnet does not run. Run it from the main branch."
+          exit 1
+
       - name: Checkout
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
 

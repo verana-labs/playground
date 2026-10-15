@@ -1,25 +1,18 @@
 #!/usr/bin/env bash
-# Provision Helvetia Trust Services (demo): bootstrap ECS-Organization from
-# the ECS trust registry, self-issue ECS-Service. The ISSUER accreditation on
-# the ECS-Organization schema is granted separately by vesta-02 (it requires
-# the ECS ecosystem account).
+# Provision Helvetia Trust Services (demo) on Verana V4. Helvetia is an
+# ordinary standalone organization of the cast:
+#   1. An ISSUER entry on the ECS Service schema (OPEN). The agent issues its
+#      own ECS Service credential.
+#   2. A HOLDER entry on the ECS Organization schema. ecs-org-issuer validates
+#      the onboarding request and issues the ECS Organization credential.
+# On V4, Helvetia is not an ECS Organization issuer: ecs-org-issuer issues the
+# ECS Organization credential of every standalone organization of the cast.
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
-start_port_forward "$RELEASE_NAME" 3100
-API="http://localhost:3100"
+open_agent
+provision_ecs_standalone "$PF_PORT_AGENT"
 
-AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "Helvetia DID: $AGENT_DID"
-
-# ECS-Organization — bootstrapped from the ECS trust registry's Admin API
-obtain_ecs_org_credential "$API" "$ECS_TR_ADMIN_API" "$AGENT_DID"
-
-# ECS-Service — self-issued (ISSUER permission on the ECS-Service schema is
-# OPEN, so the account creates it directly)
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
-
-ok "Helvetia provisioned. Next: run 'Vesta 02' to accredit it as ECS-Organization issuer."
+ok "Helvetia Trust Services provisioned: ECS Organization and ECS Service credentials."

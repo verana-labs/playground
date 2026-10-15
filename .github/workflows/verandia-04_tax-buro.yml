@@ -1,8 +1,10 @@
 name: "Verandia 04 · Tax Buro (relying party)"
 
-# Deploys the Republic's tax portal with a VERIFIER registration on the Verandia
-# Citizen ID and an open VERIFIER permission on Legal Representative.
-# Part of the Verandia cast CI/CD — see .github/workflows/verandia/README.md.
+# Deploys the tax portal of the Republic (demo): its Corporation, its ECS
+# credentials, a VERIFIER entry on the Verandia Citizen ID (validated by the
+# Civil Registry Corporation) and an OPEN VERIFIER entry on the Legal
+# Representative schema. Requires verandia-01 and verandia-03.
+# Part of the Verandia cast CI/CD (Verana V4, devnet) — see .github/workflows/verandia/README.md.
 
 on:
   workflow_dispatch:
@@ -16,8 +18,8 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
         required: false
         type: boolean
         default: false
@@ -28,5 +30,5 @@ jobs:
     with:
       org: tax-buro
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

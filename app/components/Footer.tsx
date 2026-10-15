@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LINKS, ENDPOINTS } from "../lib/site";
+import { NETWORK, PROTOCOL } from "../lib/network";
 
 const COLUMNS: {
   title: string;
@@ -29,7 +30,7 @@ const COLUMNS: {
     title: "Network",
     links: [
       { label: "Network frontend", href: ENDPOINTS.frontend, ext: true },
-      { label: "Trust Resolver API", href: `${ENDPOINTS.resolver}/docs`, ext: true },
+      { label: PROTOCOL === "v4" ? "Indexer API" : "Trust Resolver API", href: ENDPOINTS.resolverDocs, ext: true },
       { label: "Faucet", href: ENDPOINTS.faucet, ext: true },
       { label: "Verifiable Trust spec", href: LINKS.vtSpec, ext: true },
       { label: "VPR spec", href: LINKS.vprSpec, ext: true },
@@ -94,7 +95,7 @@ export default function Footer() {
             · Content CC BY-SA 4.0 · Code Apache-2.0
           </p>
           <p className="max-w-xl">
-            Everything here runs on the Verana <strong>testnet</strong>. All demo
+            Everything here runs on the Verana <strong>{NETWORK}</strong>. All demo
             entities are fictional and labeled (demo).
           </p>
         </div>

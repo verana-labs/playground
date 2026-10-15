@@ -2,7 +2,7 @@ name: ci
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, v4]
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -26,6 +26,9 @@ jobs:
       - run: npm run typecheck
         working-directory: conformance
       - run: npm run test:lib
+        working-directory: conformance
+      - if: always() && hashFiles('conformance/results/wallet-verdicts.md') != ''
+        run: cat results/wallet-verdicts.md >> "$GITHUB_STEP_SUMMARY"
         working-directory: conformance
 
   conformance-t1:

@@ -1,8 +1,11 @@
 name: "Verandia 01 · National Business Registry (register)"
 
-# Deploys the National Business Registry (demo), bootstraps its ECS-Organization +
-# ECS-Service and creates the Legal Representation ecosystem.
-# Part of the Verandia cast CI/CD — see .github/workflows/verandia/README.md.
+# Deploys the National Business Registry (demo): its Corporation, its ECS
+# credentials (ECS Organization from ecs-org-issuer), the Legal Representation
+# Ecosystem with the Legal Representative schema (issuers onboard through the
+# Ecosystem, verifiers are OPEN), its own ISSUER entry and the AnonCreds
+# credential definition. Run it first.
+# Part of the Verandia cast CI/CD (Verana V4, devnet) — see .github/workflows/verandia/README.md.
 
 on:
   workflow_dispatch:
@@ -16,8 +19,8 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
         required: false
         type: boolean
         default: false
@@ -28,5 +31,5 @@ jobs:
     with:
       org: business-registry
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

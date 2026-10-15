@@ -1,27 +1,33 @@
 // Single source of truth for site identity, endpoints, and outbound links.
 // Spec: verana-labs/verana-spec → playground/spec.md
 
-export const SITE_URL = "https://playground.testnet.verana.network";
+import { NETWORK, NETWORK_CONFIG, PROTOCOL, networkHost } from "./network";
+
+export const SITE_URL = `https://${networkHost("playground")}`;
 export const SITE_NAME = "Verana Playground";
 export const SITE_TAGLINE = "Try the open trust layer. Live.";
 export const SITE_DESCRIPTION =
-  "The Verana Playground: understand the Verana concepts through the Vesta Appliances story, and try the integrated personal and business wallets - everything live on the Verana testnet, nothing simulated.";
+  `The Verana Playground: understand the Verana concepts through the Vesta Appliances story, and try the integrated personal and business wallets - everything live on the Verana ${NETWORK}, nothing simulated.`;
 
-/** Testnet endpoints (playground/README.md - shared reference). */
+/** Endpoints of the network (playground/README.md - shared reference). */
 export const ENDPOINTS = {
-  rpc: "https://rpc.testnet.verana.network",
-  api: "https://api.testnet.verana.network",
-  indexer: "https://idx.testnet.verana.network",
-  resolver: "https://resolver.testnet.verana.network",
-  frontend: "https://app.testnet.verana.network",
-  faucet: "https://faucet-vs.testnet.verana.network",
+  rpc: `https://${networkHost("rpc")}`,
+  api: `https://${networkHost("api")}`,
+  indexer: `https://${networkHost("idx")}`,
+  // On V4 the indexer resolves trust; there is no separate resolver.
+  resolver: `https://${networkHost(PROTOCOL === "v4" ? "idx" : "resolver")}`,
+  resolverDocs:
+    PROTOCOL === "v4"
+      ? `https://${networkHost("idx")}/openapi.json`
+      : `https://${networkHost("resolver")}/docs`,
+  frontend: `https://${networkHost("app")}`,
+  faucet: `https://${networkHost(PROTOCOL === "v4" ? "faucet" : "faucet-vs")}`,
 } as const;
 
-/** The Verana testnet ECS Ecosystem trust registry (the trust anchor). */
-export const ECS_ECOSYSTEM_DID =
-  "did:webvh:QmcTCdA8z7cs7BwCKyrrJrTTmvff3wmxSn7WUZtP2iAM7T:ecs-trust-registry.testnet.verana.network";
+/** The ECS Ecosystem of the network (the trust anchor). */
+export const ECS_ECOSYSTEM_DID = NETWORK_CONFIG.ecsEcosystemDid;
 
-export const NETWORK_NAME = "TESTNET";
+export const NETWORK_NAME = NETWORK_CONFIG.label;
 export const NETWORK_PRODUCTION = false;
 
 export const LINKS = {

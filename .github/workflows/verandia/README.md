@@ -1,91 +1,132 @@
 # Verandia cast CI/CD
 
-Deploys and provisions every verifiable service of the **Republic of Verandia
-use case** (spec: `verana-spec/playground/verandia/spec.md`, §5) on the Verana
-testnet, following the Vesta cast pattern: each participant is a separate
-vs-agent (Business Wallet), and every org-to-org exchange is provisioned by
-CI/CD driving the agents' Admin APIs. Personal-wallet flows (Citizen ID
-offers, portal logins, QuickCash's refused request) happen at runtime, not
-here.
+The verandia workflows deploy and provision each verifiable service of the
+**Republic of Verandia use case** (spec: `verana-spec/playground/verandia/spec.md`,
+§5). Each organization is a separate vs-agent (a Business Wallet). Personal
+wallet flows (Citizen ID offers, portal sign-ins, the refused QuickCash
+request) occur at run time, not in CI/CD.
 
-GitHub only picks up workflow files at the top level of `.github/workflows/`,
-so the numbered `verandia-*.yml` entry points live there while everything else
-(this directory) holds the per-org configs, schemas, OID4VC templates and
-provisioning scripts. Generic helpers are shared from the Vesta cast
-(`vesta/common.sh`) and the demo cast (`demo/scripts/render-oid4vc-config.sh`)
-— the demo-cast precedent; `scripts/lib.sh` adds the Verandia hosts and the
-governed-verification helpers the other casts never needed.
+This branch runs the cast on **Verana V4 (devnet)** with veranad v0.10.5 and
+vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md).
 
-## The cast and their domains
+GitHub reads workflow files only at the top level of `.github/workflows/`.
+Thus the numbered `verandia-*.yml` entry points are there, and this directory
+holds the cast library (`cast.sh`), the organization configurations, the
+schemas and the provisioning scripts. Each entry point calls
+`verandia-00_core.yml`, which calls the generic V4 core
+`v4-cast-00_core.yml` with `cast=verandia`. The generic V4 helpers are in
+`../v4/common.sh`.
 
-Orgs live at `<org>.verandia.playground.testnet.verana.network`.
+## The cast
 
-| # | Workflow | Org / service | What it gets |
+The organizations are at `<org>.verandia.playground.devnet.verana.network`.
+
+| # | Workflow | Release | What it gets |
 |---|---|---|---|
-| 01 | Business Registry | company register (demo) | ECS-Org (Helvetia) + ECS-Service + Legal Representation registry (issuance ECOSYSTEM, verification OPEN) + sole ISSUER on it |
-| 02 | ECS accreditations | — (on-chain only) | Business Registry: ISSUER on ECS-Organization (Business IDs) |
-| 03 | Civil Registry | identity authority (demo) | ECS-Org (Business Registry) + ECS-Service + Verandia Citizen ID registry (issuance AND verification ECOSYSTEM) + sole ISSUER on it |
-| 04 | Tax Buro | tax portal (demo) | ECS creds + validated VERIFIER on Citizen ID + open VERIFIER on Legal Representative |
-| 05 | Meridian Bank | verifiable bank (demo) | ECS creds + validated VERIFIER on Citizen ID + open VERIFIER on Legal Representative |
-| 06 | QuickCash Loans | the over-asking verifier (demo) | ECS creds only — deliberately NO Citizen ID VERIFIER permission |
+| 01 | Business Registry | `business-registry` | ECS credentials + Legal Representation Ecosystem (Legal Representative schema: issuers ECOSYSTEM, verifiers OPEN, holders PERMISSIONLESS) + root entry + its own ISSUER entry + credential definition |
+| 03 | Civil Registry | `civil-registry` | ECS credentials + Verandia Citizen ID Ecosystem (issuers ECOSYSTEM, verifiers ECOSYSTEM, holders PERMISSIONLESS) + root entry + its own ISSUER entry + credential definition |
+| 04 | Tax Buro | `tax-buro` | ECS credentials + VERIFIER on the Citizen ID (validated) + VERIFIER on the Legal Representative schema (OPEN) |
+| 05 | Meridian Bank | `meridian-bank` | ECS credentials + VERIFIER on the Citizen ID (validated) + VERIFIER on the Legal Representative schema (OPEN) |
+| 06 | QuickCash Loans | `quickcash` | ECS credentials only. By design, NO VERIFIER entry on the Citizen ID |
+
+There is no workflow 02. On V3 it made the Business Registry an ISSUER of the
+ECS Organization schema. On V4 this step is not on the chain (see below).
+
+## The V4 model
+
+- **Corporations.** Each organization has its own Corporation. The
+  `CORPORATION_KEY` of an organization (its `config.env`) is equal to its
+  release name, and its Corporation has the DID
+  `did:example:playground-verandia-<release>-<chain id>`. The first run of an
+  organization creates its Corporation. The operator account
+  (`PLAYGROUND_V4_MNEMONIC`) holds the OperatorAuthorization of each
+  Corporation and signs each transaction.
+- **Agent accounts.** Each agent has its own Verana account, the
+  `vs_operator` of its Participant entries (see `../v4/common.sh`).
+- **ECS credentials.** All the agents are standalone. `ecs-org-issuer` (the
+  ECS ecosystem of the network) issues the ECS Organization credential of
+  EACH organization, after a vt-flow onboarding process. Each agent issues
+  its own ECS Service credential. The Business Registry does not issue ECS
+  Organization credentials on V4: story step 3.2 is not on the chain.
+- **Verandia schemas.** Each registry controls one Ecosystem with one schema
+  and the root Participant entry. The registry also holds the only ISSUER
+  entry on its schema. The Corporation operator validates that entry, because
+  the root entry is its validator. The registry agent publishes the VTJSC, and
+  the script then creates the AnonCreds credential definition on that VTJSC.
+- **Relying parties.** The Corporation operator of the Civil Registry
+  validates the VERIFIER entries on the Citizen ID: this is the
+  relying-party register of the Republic. The VERIFIER entries on the Legal
+  Representative schema are OPEN. vs-agent v2 makes no presentation request
+  without an active VERIFIER entry, so the relying parties need that entry too.
+- **QuickCash.** Its `config.env` sets `UNSAFE_SKIP_OWN_AUTHORIZATION="true"`
+  (demo only, not in the spec): the agent makes the Citizen ID request
+  although it has no VERIFIER entry, and the wallets must refuse it.
+
+CAUTION: the root (ECOSYSTEM) entry and the ISSUER entry of a registry name
+the same DID on the same schema. The V4 casts did not use this before.
 
 ## Prerequisites
 
-Same repository secrets as the Vesta cast: `KUBECONFIG_VERANA_DEV`,
-`K8S_NAMESPACE`, `PLAYGROUND_MNEMONIC` (00), and `ECS_ECOSYSTEM_MNEMONIC`
-(02 only — must recover the ECS trust registry controller).
+The repository secrets and variables of the V4 casts: see
+[`docs/networks.md`](../../../docs/networks.md).
 
-**DNS + TLS.** A wildcard record must point at the cluster ingress:
-`*.verandia.playground.testnet.verana.network` (a single wildcard only matches
-one label, so the existing `*.playground…` record does not cover this zone).
-Certificates come from cert-manager (`letsencrypt-prod`) per host.
+**DNS and TLS.** A wildcard record must point to the cluster ingress:
+`*.verandia.playground.devnet.verana.network`. A wildcard matches one label
+only, so the `*.playground.devnet…` record does not cover this zone.
+cert-manager (`letsencrypt-prod`) issues a certificate for each host.
 
-**Cast logos.** The `config.env` files reference
-`public/images/cast/<org>.svg` on the `main` branch; provisioning downloads
-them into the credentials, so they must be on `main` before a provision run.
+**Cast logos.** The `config.env` files refer to
+`public/images/cast/<org>.svg` on the `main` branch. The credentials contain
+these URLs, so the files must be on `main` before a provision run.
 
 ## Run order
 
-First bootstrap: run **01 → 02 → 03 → 04 → 05 → 06** with step `all`. The
-numbering encodes the provisioning dependencies (02 needs the Business
-Registry's DID document; 03–06 need the register issuing ECS-Org; 04/05 need
-the schemas from 03 and 01). The relying parties (04–06) also pin the
-issuers' OID4VC signing fingerprints at deploy time, so 01 and 03 must
-already run the openid4vc image.
+Select the `v4` branch. Run the workflows **in order, one at a time**, with
+`step=all` (all runs serialize on one concurrency group):
 
-Every workflow is idempotent: permissions, registries, schemas and VTJSCs
-are looked up before they are created, and credentials are skipped when the
-DID document already presents the linked VP. Use `force_refresh` to re-issue
-credentials after changing claims in an org's `config.env`; the `step` input
-splits a run into `deploy` and `provision`.
+1. `verandia-01` (Business Registry). It creates the Legal Representative
+   schema.
+2. `verandia-03` (Civil Registry). It creates the Citizen ID schema.
+3. `verandia-04`, `verandia-05` and `verandia-06`, one after the other. The
+   relying parties need both schemas. QuickCash needs the Citizen ID schema
+   at run time, for its request.
 
-## OpenID4VC rail (SD-JWT for non-DIDComm wallets)
+Each workflow can run again: the scripts find the Corporations, the
+Ecosystems, the schemas and the Participant entries before they create them.
+The `step` input splits a run into `deploy` and `provision`.
+`reset_identity` deletes the storage of the agent, so the agent gets a new
+DID. Run it with `step=all`, and then provision again each organization that
+refers to the old DID.
 
-Every cast member carries an `OID4VC_ROLE`, and the role name selects the
-template under `oid4vc/`: `issuer-citizen-id` (Civil Registry),
-`issuer-legal-rep` (Business Registry) — each issuer advertises only the
-credential it is authorized to issue, per the governed-issuance story —
-`verifier` (Tax Buro, Meridian Bank; pins both issuers' fingerprints via
-`OID4VC_ISSUER_RELEASES`) and `verifier-overasking` (QuickCash: requests the
-FULL Citizen ID, portrait included, and pins no fingerprints — compliant
-wallets refuse before ever presenting). Credential configuration and policy
-ids (`verandia-citizen-id`, `verandia-legal-rep`) and the AnonCreds type names
-(`VerandiaCitizenID`, `LegalRepresentative`) are the workflow contract of
-`app/lib/verandia-cast.ts` and `/api/demo`.
+## Dual rail
 
-## What CI/CD deliberately does not do
+The Verandia credentials go over AnonCreds/DIDComm (Hologram) and over
+OpenID4VCI/OpenID4VP SD-JWT (the other personal wallets):
 
-- **QuickCash never gets a VERIFIER permission on the Verandia Citizen ID.**
-  It IS a verifiable company (ECS-Org from the register, self ECS-Service) —
-  the refusal path depends on exactly one missing link: no relying-party
-  registration, so every compliant wallet refuses its presentation request.
-- **Personal wallet flows** (Citizen ID issuance to visitors, tax/bank
-  logins) are runtime flows served by the deployed agents and the
-  playground demos — not provisioning.
+- Each organization has an `OID4VC_ROLE`, so it gets an empty
+  `openid4vc.config`. This turns on the OpenID4VC plugin with development
+  signing. The agent takes the credential types, the display name, the `vct`
+  and the trust decision from the VPR.
+- Each registry has an AnonCreds credential definition on the VTJSC of its
+  schema.
+- The app (`app/api/demo`, `app/api/verandia-login`) finds each VTJSC by the
+  host of the registry and the schema title (`app/lib/vtjsc.ts`):
+  `VerandiaCitizenIDCredential` and `LegalRepresentativeCredential`. These
+  titles are the contract between the workflows and the app.
+- A request that names only the VTJSC asks for every claim of the schema.
+  QuickCash makes such a request (the over-asking request). The Tax Buro and
+  Meridian Bank ask for a subset of the claims (`app/api/verandia-login`).
+
+## What CI/CD does not do
+
+- **QuickCash never gets a VERIFIER entry on the Verandia Citizen ID.** It IS
+  a verifiable company (ECS credentials), and the refusal depends on one
+  missing link only: no relying-party registration.
+- **Personal wallet flows** (Citizen ID offers to visitors, sign-ins at the
+  Tax Buro and the bank) are run-time flows of the deployed agents and the
+  playground demos.
 
 ## After a bootstrap
 
-`app/lib/verandia-cast.ts` still carries the `QmVerandiaCastPending…`
-placeholder DIDs. Once the cast is live, replace each DID with the real
-`did:webvh` value from `https://<host>/.well-known/did.jsonl` (state.id) —
-the provision logs also print the on-chain registry/schema ids.
+On devnet the app finds the agents by their hosts, so no DID changes in the
+app. On testnet (V3), `app/lib/verandia-cast.ts` keeps the testnet DIDs.

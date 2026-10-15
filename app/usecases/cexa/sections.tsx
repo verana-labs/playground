@@ -20,6 +20,7 @@ import { Container, Section, SectionHeading, Chip } from "../../components/ui";
 import { DidBadge } from "../../components/Did";
 import { listPersonalWallets } from "../../lib/wallets";
 import { CEXA_CAST, isPendingDid } from "../../lib/cexa-cast";
+import { NETWORK } from "../../lib/network";
 import LiveTrustCard from "../../components/LiveTrustCard";
 import { WalletChooser } from "../vesta/DemoWalletFlow";
 import { SubHeading, SubStepBlock } from "../story-blocks";
@@ -338,10 +339,23 @@ export function Section2() {
             <span className="font-semibold text-gray-900">Why it matters: </span>
             {SOLUTION.ecosystem.why}
           </p>
-          <DidBadge
-            did={SOLUTION.ecosystem.did}
-            className="mt-4 flex text-xs text-violet-700"
-          />
+          {SOLUTION.ecosystem.did ? (
+            <DidBadge
+              did={SOLUTION.ecosystem.did}
+              className="mt-4 flex text-xs text-violet-700"
+            />
+          ) : (
+            // Devnet: the app knows the DID only at run time, so the card
+            // links to the DID document of the Association.
+            <a
+              href={`https://${CEXA_CAST.association.host}/.well-known/did.json`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-4 flex break-all font-mono text-xs text-violet-700 hover:underline"
+            >
+              {CEXA_CAST.association.host}
+            </a>
+          )}
         </div>
         <p className="mt-4 flex items-start gap-2.5 text-sm text-gray-400">
           <Landmark className="mt-0.5 h-4 w-4 shrink-0" aria-hidden />
@@ -517,8 +531,8 @@ function DemoComing() {
     <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-6 text-center">
       <Chip tone="pending">demo coming</Chip>
       <p className="mt-2 text-sm leading-relaxed text-gray-500">
-        The CEXA cast is being prepared for the Verana testnet - this demo goes
-        live with it.
+        The CEXA cast is being prepared for the Verana {NETWORK} - this demo
+        goes live with it.
       </p>
     </div>
   );

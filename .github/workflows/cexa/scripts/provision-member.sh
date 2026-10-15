@@ -1,62 +1,65 @@
 #!/usr/bin/env bash
-# Provision a CEXA member (Aurum, Borealis, Novara — exchanges and banks run
-# the exact same script: the sector line does not exist in the framework).
-#
-# Every member brings its own identity: ECS-Organization from Helvetia (an
-# accredited issuer of the Verana ECS Ecosystem — being a Verifiable Service
-# is an EGF entry requirement, not a membership perk) and a self-issued
-# ECS-Service. Then, per MEMBER_ROLES from the org's config.env:
-#   issuer   -> validated ISSUER permission on CEXA-Kyc + AnonCreds cred def
-#               (schema resolved from the association anchor);
-#   verifier -> validated VERIFIER permission on CEXA-Kyc (verification is
-#               governed: only members may ask).
-# Finally the Association issues the member's CEXA-VerifiedCounterparty
-# credential, published on the member's DID as a Linked VP (EGF section 10).
+# Provision a CEXA member on Verana V4: Aurum, Novara and Borealis. Exchanges
+# and banks use the same script: the EGF has one membership class.
+#   1. The ECS credentials of the member (standalone agent): the ECS
+#      Organization credential from ecs-org-issuer and the self-issued ECS
+#      Service credential. Each member is a Verifiable Service before it
+#      joins (EGF section 4).
+#   2. The CEXAKycCredential Participant entries of MEMBER_ROLES (config.env).
+#      The Corporation operator of the Association validates each entry
+#      against the root entry of the schema:
+#        issuer   — ISSUER entry, and an AnonCreds credential definition
+#                   that refers to the VTJSC of the Association;
+#        verifier — VERIFIER entry (verification of CEXAKycCredential is
+#                   governed: only members can ask for it).
+#   3. The CEXAVerifiedCounterpartyCredential of the member: a HOLDER entry,
+#      validated by the ISSUER entry of the Association. The Association agent
+#      issues the credential with the CP_* claims of config.env, and the
+#      member agent publishes it as a Linked VP on its DID (EGF section 10).
+# The workflow has already deployed the agent with its own account (AGENT_ADDR)
+# and the Corporation of the member (CORPORATION_ID, CORPORATION).
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
-source "${DEMO_DIR}/scripts/lib.sh"
-source "${CAST_DIR}/scripts/lib.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
 start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_HELVETIA" 3101
-start_port_forward "$R_ASSOCIATION" 3102
 API="http://localhost:3100"
-HELVETIA_API="http://localhost:3101"
-ASSOCIATION_API="http://localhost:3102"
 
 AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
+[ -n "$AGENT_DID" ] || { err "Could not read the agent DID"; exit 1; }
 ok "${SERVICE_NAME} DID: $AGENT_DID"
 
-# The entry requirement: a Verifiable Service in its own right
-obtain_ecs_org_credential "$API" "$HELVETIA_API" "$AGENT_DID"
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
+# CAUTION: do the CEXA steps only when cexa-01 is complete. Find the CEXA
+# schemas first, so that the script stops before it changes the chain.
+ASSOCIATION_DID=$(association_did)
+KYC_CS_ID=$(find_cexa_schema "$ASSOCIATION_DID" "$KYC_TITLE")
+CP_CS_ID=$(find_cexa_schema "$ASSOCIATION_DID" "$COUNTERPARTY_TITLE")
+CP_ISSUER_ID=$(find_active_participant "$CP_CS_ID" "$PP_IDX_ROLE_ISSUER" "$ASSOCIATION_DID") \
+  || { err "The Association has no active ISSUER entry on the counterparty schema. Run cexa-01 first."; exit 1; }
+CP_CLAIMS=$(counterparty_claims)
+ok "CEXA schemas: ${KYC_TITLE}=$KYC_CS_ID ${COUNTERPARTY_TITLE}=$CP_CS_ID (Association ISSUER participant $CP_ISSUER_ID)"
 
-# Discover the CEXA-Kyc schema from the association anchor
-KYC_JSC_URL=$(discover_ecs_vtjsc "https://${ASSOCIATION_HOST}" "$KYC_SCHEMA_BASE_ID" | sed -n '1p')
-KYC_CS_ID=$(discover_ecs_vtjsc "https://${ASSOCIATION_HOST}" "$KYC_SCHEMA_BASE_ID" | sed -n '2p')
-[ -n "$KYC_CS_ID" ] || { err "Could not discover the CEXA-Kyc schema from https://${ASSOCIATION_HOST} — run cexa-01 first"; exit 1; }
+# 1. ECS credentials
+provision_ecs_standalone 3100
 
-case " ${MEMBER_ROLES} " in
+# 2. CEXAKycCredential Participant entries
+case " ${MEMBER_ROLES:-} " in
   *" issuer "*)
-    ensure_validated_issuer_perm "$KYC_CS_ID" "$AGENT_DID"
-    # AnonCreds cred def for the DIDComm rail: the anonCredsSchema resolves
-    # from the anchor (its registrant), per the demo-cast precedent.
-    ASSOCIATION_DID=$(get_webvh_did_from_host "$ASSOCIATION_HOST")
-    [ -n "$ASSOCIATION_DID" ] || { err "Could not read the association DID from ${ASSOCIATION_HOST}"; exit 1; }
-    ensure_credential_type "$API" "$KYC_JSC_URL" "$ASSOCIATION_DID"
+    join_under_root "$KYC_CS_ID" "$PP_ROLE_ISSUER" "$VSOA_ISSUER" "$R_ASSOCIATION" > /dev/null
+    # AnonCreds credential definition for the DIDComm rail. The agent takes
+    # the AnonCreds schema from the Association, the issuer of the VTJSC.
+    KYC_VTJSC_ID=$(wait_vtjsc_credential_id "https://${ASSOCIATION_HOST}" "$KYC_CS_ID")
+    ensure_credential_definition "$API" "$KYC_VTJSC_ID"
     ;;
 esac
-
-case " ${MEMBER_ROLES} " in
+case " ${MEMBER_ROLES:-} " in
   *" verifier "*)
-    ensure_validated_verifier_perm "$KYC_CS_ID" "$AGENT_DID"
+    join_under_root "$KYC_CS_ID" "$PP_ROLE_VERIFIER" "$VSOA_VERIFIER" "$R_ASSOCIATION" > /dev/null
     ;;
 esac
 
-# The Travel Rule identity, issued by the Association, linked on this DID
-ensure_counterparty_credential "$API" "$ASSOCIATION_API" "$AGENT_DID"
+# 3. CEXAVerifiedCounterpartyCredential, issued by the Association agent
+join_under_agent "$CP_CS_ID" "$PP_ROLE_HOLDER" "$VSOA_HOLDER" "$CP_ISSUER_ID" "$R_ASSOCIATION" "$CP_CLAIMS"
 
-ok "${SERVICE_NAME} provisioned (MEMBER_ROLES=${MEMBER_ROLES})"
+ok "${SERVICE_NAME} provisioned (MEMBER_ROLES=${MEMBER_ROLES:-none})"

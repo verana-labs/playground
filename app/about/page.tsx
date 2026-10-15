@@ -25,7 +25,7 @@ export default function About() {
             Everything runs against the public <strong>Verana testnet</strong>:
             registry entries, DIDs, credentials, and trust resolutions are real
             protocol operations, reproducible by anyone through the{" "}
-            <a href={`${ENDPOINTS.resolver}/docs`} target="_blank" rel="noopener noreferrer">
+            <a href={ENDPOINTS.resolverDocs} target="_blank" rel="noopener noreferrer">
               public resolver
             </a>{" "}
             and the{" "}

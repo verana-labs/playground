@@ -1,26 +1,19 @@
 #!/usr/bin/env bash
-# Provision the Vesta Portal (demo): delegated ECS-Service issued by the
-# Vesta anchor (inherits Vesta's ECS-Organization) and a VERIFIER permission
-# on the ECS-Badge schema so it can request badge presentations at login.
+# Provision the Vesta Portal (demo) on Verana V4. The agent is a delegated
+# sub-service of the Vesta anchor:
+#   1. A HOLDER entry on the ECS Service schema. The Vesta anchor validates
+#      the onboarding request and issues the ECS Service credential.
+#   2. An OPEN VERIFIER entry on the BadgeCredential schema of the ECS
+#      Ecosystem, for the badge login. When the ECS Ecosystem has no
+#      BadgeCredential schema, the script logs a warning and skips this step.
+# CAUTION: run vesta-03 (Vesta anchor) before this script.
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
-start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_VESTA" 3101
-API="http://localhost:3100"
-VESTA_API="http://localhost:3101"
+open_agent
+provision_ecs_delegated vesta "$(cast_host vesta)"
+provision_badge_verifier
 
-AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "Portal DID: $AGENT_DID"
-
-# Delegated ECS-Service — issued by the Vesta anchor
-obtain_service_credential "$API" "$VESTA_API" "$AGENT_DID" delegated
-
-# VERIFIER permission on ECS-Badge (verifier mode is OPEN)
-BADGE_ID=$(discover_ecs_badge_schema_id)
-ensure_open_perm "$BADGE_ID" verifier "$AGENT_DID"
-
-ok "Vesta Portal provisioned: delegated service + ECS-Badge verifier."
+ok "Vesta Portal provisioned: delegated service and badge verifier."

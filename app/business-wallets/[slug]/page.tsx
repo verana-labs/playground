@@ -50,7 +50,9 @@ export default async function CloudWalletPlayground({
   const { slug } = await params;
   const w = getIntegration(slug);
   if (!w || w.kind !== "business-wallet") notFound();
-  const pickers = listPersonalWallets();
+  const pickers = listPersonalWallets().filter((p) =>
+    p.links.some((l) => l.trust_screen),
+  );
   // The standing service this business wallet hosts, named by its descriptor
   // (spec §5.3). Unknown ids fall through to the Placeholder branch.
   const demoService = w.demo_service ? getDemoService(w.demo_service) : undefined;
@@ -156,7 +158,7 @@ export default async function CloudWalletPlayground({
                     </a>
                     {" · "}
                     <a
-                      href={`${ENDPOINTS.resolver}/docs`}
+                      href={ENDPOINTS.resolverDocs}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-violet-600 hover:underline"
@@ -273,7 +275,7 @@ export default async function CloudWalletPlayground({
                     </li>
                     <li>
                       <a
-                        href={`${ENDPOINTS.resolver}/docs`}
+                        href={ENDPOINTS.resolverDocs}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="font-medium text-violet-600 hover:underline"

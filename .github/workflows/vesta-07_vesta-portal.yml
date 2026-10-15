@@ -1,7 +1,11 @@
 name: "Vesta 07 · Vesta Portal (login)"
 
-# Deploys the login portal (delegated service) with a VERIFIER permission on ECS-Badge.
-# Part of the Vesta cast CI/CD — see .github/workflows/vesta/README.md.
+# Deploys the login portal, a delegated sub-service of Vesta: ECS Service
+# credential from the Vesta anchor and an OPEN VERIFIER entry on the ECS
+# Badge schema.
+# CAUTION: needs vesta-03 first.
+# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# see .github/workflows/vesta/README.md for the run order.
 
 on:
   workflow_dispatch:
@@ -15,8 +19,8 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
         required: false
         type: boolean
         default: false
@@ -27,5 +31,5 @@ jobs:
     with:
       org: vesta-portal
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

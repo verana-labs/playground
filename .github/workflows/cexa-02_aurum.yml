@@ -1,8 +1,10 @@
 name: "CEXA 02 · Aurum Exchange (ISSUER + VERIFIER)"
 
-# Deploys Aurum Exchange (demo): own ECS-Organization from Helvetia, validated ISSUER and
-# VERIFIER permissions on CEXA-Kyc, cred def, CEXA-VerifiedCounterparty from the Association. Requires cexa-01.
-# Part of the CEXA cast CI/CD — see .github/workflows/cexa/README.md.
+# Deploys Aurum Exchange (demo): its Corporation, its ECS credentials (ecs-org-issuer and
+# self-issued), validated ISSUER and VERIFIER entries on the CEXAKycCredential, an AnonCreds
+# credential definition, and a HOLDER entry with the CEXAVerifiedCounterpartyCredential from the
+# Association. Requires cexa-01.
+# Part of the CEXA cast CI/CD (Verana V4, devnet) — see .github/workflows/cexa/README.md.
 
 on:
   workflow_dispatch:
@@ -16,8 +18,8 @@ on:
           - provision
           - all
         default: all
-      force_refresh:
-        description: "Re-issue credentials even when already linked"
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
         required: false
         type: boolean
         default: false
@@ -28,5 +30,5 @@ jobs:
     with:
       org: aurum
       step: ${{ inputs.step }}
-      force_refresh: ${{ inputs.force_refresh }}
+      reset_identity: ${{ inputs.reset_identity }}
     secrets: inherit

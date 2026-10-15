@@ -9,7 +9,7 @@
 // Types and rendering machinery live in app/components/scene-graph.ts /
 // StoryDiagram.tsx, shared with the other use cases.
 
-import { VESTA_CAST } from "../../lib/vesta-cast";
+import { ECS_ORG_ISSUER, VESTA_CAST } from "../../lib/vesta-cast";
 import { shortDid } from "../../lib/did";
 import type {
   Accreditation,
@@ -34,6 +34,12 @@ export const STAGES = [
 
 export type Stage = (typeof STAGES)[number];
 
+// The subtitle of the Vesta node once its DID exists: the short DID when the
+// build knows it (testnet), else the host of its DID document (devnet).
+const VESTA_ID_SUB = VESTA_CAST.vesta.did
+  ? shortDid(VESTA_CAST.vesta.did)
+  : VESTA_CAST.vesta.host;
+
 const NODES: SceneNode[] = [
   {
     id: "vesta",
@@ -53,11 +59,11 @@ const NODES: SceneNode[] = [
     labelByStage: {
       "3.1": {
         label: "Unverifiable Organization",
-        sub: shortDid(VESTA_CAST.vesta.did),
+        sub: VESTA_ID_SUB,
       },
       "3.2": {
         label: "Vesta Appliances",
-        sub: shortDid(VESTA_CAST.vesta.did),
+        sub: VESTA_ID_SUB,
       },
     },
   },
@@ -221,11 +227,11 @@ const NODES: SceneNode[] = [
     icon: "stamp",
     tone: "blue",
     appears: "3.2",
-    label: "Helvetia Trust Services",
-    sub: "(demo) · accredited ECS-Org issuer",
-    did: VESTA_CAST.helvetia.did,
+    label: ECS_ORG_ISSUER.label,
+    sub: ECS_ORG_ISSUER.sub,
+    did: ECS_ORG_ISSUER.member.did,
     serviceType: "KYB issuance service",
-    operator: "Helvetia Trust Services (demo)",
+    operator: ECS_ORG_ISSUER.operator,
     verifiedAt: "3.2",
   },
   {
@@ -407,7 +413,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: ECS_ORG_ISSUER.name,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.7",
       note: "Vesta's own Organization credential - the network is operated by Vesta Appliances.",
@@ -424,7 +430,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: ECS_ORG_ISSUER.name,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.2",
     },
@@ -454,7 +460,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Service",
       tone: "violet",
-      issuedBy: "Self-issued (controller: Helvetia Trust Services)",
+      issuedBy: `Self-issued (controller: ${ECS_ORG_ISSUER.label})`,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.2",
     },
@@ -463,7 +469,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: ECS_ORG_ISSUER.name,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.7",
     },
@@ -493,7 +499,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: ECS_ORG_ISSUER.name,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.5",
       inherited: true,
@@ -513,7 +519,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: ECS_ORG_ISSUER.name,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.7",
     },
@@ -529,7 +535,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "blue",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: ECS_ORG_ISSUER.name,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.7",
     },
@@ -598,7 +604,7 @@ const CREDENTIALS: Record<string, NodeCredential[]> = {
     {
       name: "ECS-Organization",
       tone: "emerald",
-      issuedBy: "Helvetia Trust Services (demo)",
+      issuedBy: ECS_ORG_ISSUER.name,
       ecosystem: "Verana ECS Ecosystem",
       appears: "3.8",
       note: "Umbra is a certified organization - identity is not the problem.",

@@ -4,6 +4,7 @@ import { Wallet } from "lucide-react";
 import { listPersonalWallets } from "../lib/wallets";
 import { listComingSoon } from "../lib/coming-soon";
 import PersonalWalletsPlayground from "./PersonalWalletsPlayground";
+import { NETWORK } from "../lib/network";
 
 // The single personal-wallets playground (spec §4, simplified): one page for
 // all wallets, generated from personal-wallets.yaml. The visitor picks a wallet in
@@ -14,7 +15,7 @@ import PersonalWalletsPlayground from "./PersonalWalletsPlayground";
 export const metadata: Metadata = {
   title: "Personal wallets",
   description:
-    "One playground for every integrated personal wallet: pick your wallet, run the six DemoCredential scenarios against the Verana testnet with live trust resolution.",
+    `One playground for every integrated personal wallet: pick your wallet, run the six DemoCredential scenarios against the Verana ${NETWORK} with live trust resolution.`,
 };
 
 export default function PersonalWallets() {

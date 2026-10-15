@@ -1,28 +1,17 @@
 #!/usr/bin/env bash
-# Provision the ISO Certification Ecosystem (demo): verifiable registry
-# service (ECS-Organization from Helvetia + self-issued ECS-Service) owning a
-# trust registry with the ISO 9001-style (demo) schema.
+# Provision the ISO Certification Ecosystem (demo) on Verana V4:
+#   1. The ECS credentials of a standalone organization.
+#   2. The ISO Certification Ecosystem: the agent DID controls it. It has one
+#      schema, ISO9001DemoCredential (SCHEMA_FILE): issuers join through the
+#      Ecosystem, verifiers are OPEN, and a holder gets a HOLDER entry from an
+#      issuer. The script also creates the root Participant entry.
 set -eo pipefail
-source "${VESTA_DIR}/common.sh"
+source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-testnet}"
+set_network_vars "${NETWORK:-devnet}"
 
-start_port_forward "$RELEASE_NAME" 3100
-start_port_forward "$R_HELVETIA" 3101
-API="http://localhost:3100"
-HELVETIA_API="http://localhost:3101"
+open_agent
+provision_ecs_standalone "$PF_PORT_AGENT"
+provision_cast_ecosystem
 
-AGENT_DID=$(get_agent_did "$API")
-[ -n "$AGENT_DID" ] || { err "Could not read agent DID"; exit 1; }
-ok "ISO registry DID: $AGENT_DID"
-
-obtain_ecs_org_credential "$API" "$HELVETIA_API" "$AGENT_DID"
-obtain_service_credential "$API" "$API" "$AGENT_DID" self
-
-# Trust registry + ISO 9001-style (demo) schema + root permission + VTJSC
-SCHEMA_JSON=$(jq -c '.' "${VESTA_DIR}/schemas/${SCHEMA_FILE}")
-TR_ID=$(ensure_trust_registry "$AGENT_DID" "https://${INGRESS_HOST}" "$EGF_DOC_URL")
-CS_ID=$(ensure_schema_with_root "$TR_ID" "$SCHEMA_JSON" "$AGENT_DID")
-ensure_jsc "$API" "$CUSTOM_SCHEMA_BASE_ID" "$CS_ID" > /dev/null
-
-ok "ISO Certification Ecosystem provisioned: TR=$TR_ID, CS=$CS_ID"
+ok "ISO Certification Ecosystem provisioned."

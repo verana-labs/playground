@@ -104,7 +104,7 @@ splits a run into `deploy` and `provision`. A change to the OID4VC templates
 credentials) or to the image tag only needs step `deploy`: the config is
 re-rendered into the Helm values and the pod is restarted.
 
-All cast runs share the `vesta-cast` concurrency group (one signing account
+All cast runs share the `vesta-cast-<network>` concurrency group (one signing account
 across every playground cast): start workflows one at a time.
 
 ## After a bootstrap

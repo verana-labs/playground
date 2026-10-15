@@ -24,6 +24,7 @@ import LiveTrustCard from "../../components/LiveTrustCard";
 import { listPersonalWallets } from "../../lib/wallets";
 import { isPendingDid, VERANDIA_CAST } from "../../lib/verandia-cast";
 import { LINKS } from "../../lib/site";
+import { NETWORK } from "../../lib/network";
 import { WalletChooser } from "../vesta/DemoWalletFlow";
 import { SubHeading, SubStepBlock } from "../story-blocks";
 import { VERANDIA_SCENES } from "./scenes";
@@ -617,8 +618,8 @@ function DemoComing() {
     <div className="mx-auto mt-6 max-w-xl rounded-2xl border border-dashed border-gray-300 bg-gray-50 px-5 py-6 text-center">
       <Chip tone="pending">demo coming</Chip>
       <p className="mt-2 text-sm leading-relaxed text-gray-500">
-        The Verandia cast is being deployed on the Verana testnet - this demo
-        goes live with it.
+        The Verandia cast is being deployed on the Verana {NETWORK} - this
+        demo goes live with it.
       </p>
     </div>
   );

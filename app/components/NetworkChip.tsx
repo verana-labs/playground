@@ -2,8 +2,9 @@
 import { withBase } from "../lib/base-path";
 
 import { useEffect, useState } from "react";
+import { NETWORK } from "../lib/network";
 
-// Persistent network status chip: a glowing LED and the word "Testnet".
+// Persistent network status chip: a glowing LED and the network name.
 // The LED reflects the live resolver status from /api/status (green OK,
 // red down, gray while checking); real or absent, never faked.
 export default function NetworkChip() {
@@ -27,7 +28,7 @@ export default function NetworkChip() {
   return (
     <span
       className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600"
-      title={`Everything on this site runs against the Verana testnet${
+      title={`Everything on this site runs against the Verana ${NETWORK}${
         resolver === "down" ? " (resolver unreachable right now)" : ""
       }`}
     >
@@ -41,7 +42,7 @@ export default function NetworkChip() {
               : "bg-gray-300"
         }`}
       />
-      Testnet
+      {NETWORK.charAt(0).toUpperCase() + NETWORK.slice(1)}
     </span>
   );
 }

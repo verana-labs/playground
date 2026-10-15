@@ -1,4 +1,5 @@
 import { ENDPOINTS } from "./site";
+import { PROTOCOL } from "./network";
 
 export type TrustState = "TRUSTED" | "UNTRUSTED" | "UNVERIFIED";
 export type PotCredential = { ecsType?: string; result?: string; issuedBy?: string;
@@ -12,6 +13,7 @@ export type PotResolution = {
 };
 
 const RESOLVER = process.env.RESOLVER_URL ?? ENDPOINTS.resolver;
+const INDEXER = process.env.INDEXER_URL ?? ENDPOINTS.indexer;
 
 const unverified = (did: string): PotResolution =>
   ({ state: "UNVERIFIED", did, credentials: [], failedCredentials: [] });
@@ -54,11 +56,77 @@ function mapBody(did: string, body: unknown): PotResolution {
   };
 }
 
+// V4: the indexer resolves trust. An ECS schema title maps to the V3 ECS type,
+// so the trust cards read one shape on both protocols.
+const ECS_TYPES: Record<string, string> = {
+  ServiceCredential: "ECS-SERVICE",
+  OrganizationCredential: "ECS-ORG",
+  PersonaCredential: "ECS-PERSONA",
+  UserAgentCredential: "ECS-UA",
+};
+
+type V4EcsCredential = {
+  ecsSchema?: string;
+  id?: string;
+  credentialSchemaId?: number;
+  credentialSubject?: Record<string, unknown>;
+};
+
+export function mapV4Body(did: string, body: unknown): PotResolution {
+  if (typeof body !== "object" || body === null) return unverified(did);
+  const b = body as Record<string, unknown>;
+  if (b.did !== did || typeof b.trusted !== "boolean") return unverified(did);
+  const status = b.trusted ? "TRUSTED" : "UNTRUSTED";
+  const credentials = Array.isArray(b.ecsCredentials)
+    ? (b.ecsCredentials as V4EcsCredential[]).map((c) => ({
+        ecsType: (c.ecsSchema && ECS_TYPES[c.ecsSchema]) ?? c.ecsSchema,
+        // The indexer lists only the credentials it accepted.
+        result: "VALID",
+        // The credential id is "<issuer DID>#<uuid>".
+        issuedBy: c.id?.split("#")[0],
+        schema: { id: c.credentialSchemaId },
+        claims: c.credentialSubject ?? {},
+      }))
+    : [];
+  return {
+    state: status,
+    did,
+    trustStatus: status,
+    evaluatedAt: typeof b.evaluatedAtTime === "string" ? b.evaluatedAtTime : undefined,
+    evaluatedAtBlock: typeof b.evaluatedAtBlock === "number" ? b.evaluatedAtBlock : undefined,
+    expiresAt: typeof b.expiresAtTime === "string" ? b.expiresAtTime : undefined,
+    credentials,
+    failedCredentials: [],
+  };
+}
+
+async function resolveTrustV4(did: string, timeoutMs: number): Promise<PotResolution> {
+  try {
+    const res = await fetch(`${INDEXER}/v4/verifiable-trust/resolve`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ did, ecsCredentials: true, participations: true }),
+      signal: AbortSignal.timeout(timeoutMs),
+      next: { revalidate: 60 },
+    });
+    // The indexer knows only the DIDs of the VPR. A DID that is not in the
+    // VPR is not trusted.
+    if (res.status === 404) {
+      return { ...unverified(did), state: "UNTRUSTED", trustStatus: "UNTRUSTED" };
+    }
+    if (!res.ok) return unverified(did);
+    return mapV4Body(did, await res.json());
+  } catch {
+    return unverified(did);
+  }
+}
+
 export async function resolveTrust(
   did: string,
   opts?: { timeoutMs?: number },
 ): Promise<PotResolution> {
   const timeoutMs = opts?.timeoutMs ?? 15_000;
+  if (PROTOCOL === "v4") return resolveTrustV4(did, timeoutMs);
   try {
     let res = await fetchResolve(did, timeoutMs);
     if (res.status === 404) {

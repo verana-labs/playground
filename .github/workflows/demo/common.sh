@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# common.sh — The demo cast on Verana V4 (devnet)
+# common.sh — The demo cast on Verana V4
 # =============================================================================
 #
 # The generic V4 helpers are in .github/workflows/v4/common.sh. This file adds
@@ -17,7 +17,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../v4/common.sh"
 R_ANCHOR="playground-demo"
 
 # Public hosts: <release>.playground.<network>.verana.network
-cast_zone() { echo "playground.${NETWORK:-devnet}.verana.network"; }
+cast_zone() { echo "playground.${NETWORK:-testnet}.verana.network"; }
 ANCHOR_HOST="${R_ANCHOR}.$(cast_zone)"
 
 # The demo cast has one Corporation: the Playground Organization (demo) owns

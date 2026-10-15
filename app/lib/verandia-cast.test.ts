@@ -13,27 +13,26 @@ afterEach(() => {
 });
 
 describe("verandia-cast", () => {
-  it("keeps the testnet hosts and DIDs on testnet (V3)", async () => {
-    const { VERANDIA_CAST, displayDid, VERANDIA_CITIZEN_ID_JSC } = await load("testnet");
-    expect(VERANDIA_CAST.civilRegistry.host).toBe(
-      "civil-registry.verandia.playground.testnet.verana.network",
+  it("uses the testnet hosts and no DIDs on testnet (V4)", async () => {
+    const { VERANDIA_CAST, displayDid, isPendingDid, VERANDIA_CITIZEN_ID_JSC } = await load("testnet");
+    for (const member of Object.values(VERANDIA_CAST)) {
+      expect(member.host).toMatch(/\.verandia\.playground\.testnet\.verana\.network$/);
+      expect(member.did).toBeUndefined();
+      expect(isPendingDid(member.did)).toBe(false);
+    }
+    expect(displayDid(VERANDIA_CAST.businessRegistry)).toBe(
+      "did:web:business-registry.verandia.playground.testnet.verana.network",
     );
-    expect(VERANDIA_CAST.civilRegistry.did).toMatch(
-      /^did:webvh:Qm\w+:civil-registry\.verandia\.playground\.testnet\.verana\.network$/,
-    );
-    expect(displayDid(VERANDIA_CAST.civilRegistry)).toBe(VERANDIA_CAST.civilRegistry.did);
     expect(VERANDIA_CITIZEN_ID_JSC).toBe(
       "https://civil-registry.verandia.playground.testnet.verana.network/vt/schemas-verandia-citizen-id-jsc.json",
     );
   });
 
-  it("uses the devnet hosts and no DIDs on devnet (V4)", async () => {
-    const { VERANDIA_CAST, displayDid, isPendingDid } = await load("devnet");
-    for (const member of Object.values(VERANDIA_CAST)) {
-      expect(member.host).toMatch(/\.verandia\.playground\.devnet\.verana\.network$/);
-      expect(member.did).toBeUndefined();
-      expect(isPendingDid(member.did)).toBe(false);
-    }
+  it("uses the devnet hosts on devnet", async () => {
+    const { VERANDIA_CAST, displayDid } = await load("devnet");
+    expect(VERANDIA_CAST.civilRegistry.host).toBe(
+      "civil-registry.verandia.playground.devnet.verana.network",
+    );
     expect(displayDid(VERANDIA_CAST.businessRegistry)).toBe(
       "did:web:business-registry.verandia.playground.devnet.verana.network",
     );

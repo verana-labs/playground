@@ -4,7 +4,7 @@ name: "Vesta 07 · Vesta Portal (login)"
 # credential from the Vesta anchor and an OPEN VERIFIER entry on the ECS
 # Badge schema.
 # CAUTION: needs vesta-03 first.
-# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# Verana V4 (testnet): run it from the main branch. Part of the Vesta cast CI/CD;
 # see .github/workflows/vesta/README.md for the run order.
 
 on:

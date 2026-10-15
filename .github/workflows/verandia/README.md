@@ -6,8 +6,8 @@ The verandia workflows deploy and provision each verifiable service of the
 wallet flows (Citizen ID offers, portal sign-ins, the refused QuickCash
 request) occur at run time, not in CI/CD.
 
-This branch runs the cast on **Verana V4 (devnet)** with veranad v0.10.5 and
-vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md).
+The `main` branch runs the cast on **Verana V4 (testnet)** with veranad v0.10.5
+and vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md).
 
 GitHub reads workflow files only at the top level of `.github/workflows/`.
 Thus the numbered `verandia-*.yml` entry points are there, and this directory
@@ -19,7 +19,7 @@ schemas and the provisioning scripts. Each entry point calls
 
 ## The cast
 
-The organizations are at `<org>.verandia.playground.devnet.verana.network`.
+The organizations are at `<org>.verandia.playground.testnet.verana.network`.
 
 | # | Workflow | Release | What it gets |
 |---|---|---|---|
@@ -39,7 +39,7 @@ ECS Organization schema. On V4 this step is not on the chain (see below).
   release name, and its Corporation has the DID
   `did:example:playground-verandia-<release>-<chain id>`. The first run of an
   organization creates its Corporation. The operator account
-  (`PLAYGROUND_V4_MNEMONIC`) holds the OperatorAuthorization of each
+  (`PLAYGROUND_MNEMONIC`) holds the OperatorAuthorization of each
   Corporation and signs each transaction.
 - **Agent accounts.** Each agent has its own Verana account, the
   `vs_operator` of its Participant entries (see `../v4/common.sh`).
@@ -71,8 +71,8 @@ The repository secrets and variables of the V4 casts: see
 [`docs/networks.md`](../../../docs/networks.md).
 
 **DNS and TLS.** A wildcard record must point to the cluster ingress:
-`*.verandia.playground.devnet.verana.network`. A wildcard matches one label
-only, so the `*.playground.devnet…` record does not cover this zone.
+`*.verandia.playground.testnet.verana.network`. A wildcard matches one label
+only, so the `*.playground.testnet…` record does not cover this zone.
 cert-manager (`letsencrypt-prod`) issues a certificate for each host.
 
 **Cast logos.** The `config.env` files refer to
@@ -81,7 +81,7 @@ these URLs, so the files must be on `main` before a provision run.
 
 ## Run order
 
-Select the `v4` branch. Run the workflows **in order, one at a time**, with
+Run the workflows **in order, one at a time**, with
 `step=all` (all runs serialize on one concurrency group):
 
 1. `verandia-01` (Business Registry). It creates the Legal Representative
@@ -128,5 +128,4 @@ OpenID4VCI/OpenID4VP SD-JWT (the other personal wallets):
 
 ## After a bootstrap
 
-On devnet the app finds the agents by their hosts, so no DID changes in the
-app. On testnet (V3), `app/lib/verandia-cast.ts` keeps the testnet DIDs.
+The app finds the agents by their hosts, so no DID changes in the app.

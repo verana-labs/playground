@@ -3,7 +3,7 @@ name: "Vesta 09 · Zenith Repairs"
 # Deploys Zenith: ECS credentials, the Authorized Repairer credential from
 # Vesta Iberia, and ECS Badge issuer.
 # CAUTION: the provision step needs vesta-08 (Vesta Iberia) first.
-# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# Verana V4 (testnet): run it from the main branch. Part of the Vesta cast CI/CD;
 # see .github/workflows/vesta/README.md for the run order.
 
 on:

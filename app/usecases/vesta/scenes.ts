@@ -35,7 +35,7 @@ export const STAGES = [
 export type Stage = (typeof STAGES)[number];
 
 // The subtitle of the Vesta node once its DID exists: the short DID when the
-// build knows it (testnet), else the host of its DID document (devnet).
+// build knows it, else the host of its DID document (V4).
 const VESTA_ID_SUB = VESTA_CAST.vesta.did
   ? shortDid(VESTA_CAST.vesta.did)
   : VESTA_CAST.vesta.host;

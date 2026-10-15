@@ -11,7 +11,7 @@
 set -eo pipefail
 source "${CAST_DIR}/common.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-devnet}"
+set_network_vars "${NETWORK:-testnet}"
 
 start_port_forward "$RELEASE_NAME" 3100
 API="http://localhost:3100"

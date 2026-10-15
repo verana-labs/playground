@@ -16,7 +16,7 @@
 set -eo pipefail
 source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-devnet}"
+set_network_vars "${NETWORK:-testnet}"
 
 bhi_start_agent
 

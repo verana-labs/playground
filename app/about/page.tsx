@@ -26,7 +26,7 @@ export default function About() {
             registry entries, DIDs, credentials, and trust resolutions are real
             protocol operations, reproducible by anyone through the{" "}
             <a href={ENDPOINTS.resolverDocs} target="_blank" rel="noopener noreferrer">
-              public resolver
+              public indexer
             </a>{" "}
             and the{" "}
             <a href={ENDPOINTS.frontend} target="_blank" rel="noopener noreferrer">
@@ -48,11 +48,11 @@ export default function About() {
           </p>
           <h2>Protocol version</h2>
           <p>
-            The playground targets Verifiable Trust / VPR <strong>v3</strong> - 
+            The playground targets Verifiable Trust / VPR <strong>v4</strong> -
             what runs on testnet today (
             <a href={LINKS.vtSpec} target="_blank" rel="noopener noreferrer">VT spec</a>,{" "}
             <a href={LINKS.vprSpec} target="_blank" rel="noopener noreferrer">VPR spec</a>
-            ). Badge flows run over AnonCreds/DIDComm for now; OpenID4VC follows.
+            ). The demos run over OpenID4VC and over AnonCreds/DIDComm.
           </p>
           <h2>Who operates it</h2>
           <p>

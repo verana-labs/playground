@@ -10,7 +10,7 @@
 # in v3); on-chain objects are created with veranad.
 #
 # Expected environment (exported by the vesta-00_core workflow):
-#   NETWORK     testnet | devnet
+#   NETWORK     testnet (V3 library; no network runs V3 anymore)
 #   NAMESPACE   Kubernetes namespace holding the cast's vs-agents
 #   USER_ACC    veranad key name (recovered from mnemonic)
 #   VESTA_DIR   absolute path of .github/workflows/vesta

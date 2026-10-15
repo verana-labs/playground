@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# common.sh — Shared helpers for the playground casts on Verana V4 (devnet)
+# common.sh — Shared helpers for the playground casts on Verana V4
 # =============================================================================
 #
 # Ported from verana-labs/verana-demos common/common.sh (branch
@@ -21,11 +21,14 @@
 #     the agent sends the onboarding request, and the validator validates it.
 #
 # Expected environment (exported by the core workflow):
-#   NETWORK          devnet
+#   NETWORK          testnet
 #   NAMESPACE        Kubernetes namespace of the cast agents
 #   USER_ACC         veranad key name of the Corporation operator
 #   CAST             the cast directory name (demo, vesta, verandia, cexa, bhi)
 #   CORPORATION_KEY  the organization of this agent (config.env)
+#   ECS_KUBECONFIG   optional: the kubeconfig of the chain cluster, where
+#                    ecs-org-issuer runs (ECS_NAMESPACE). Empty: the same
+#                    cluster as the cast.
 #
 # =============================================================================
 
@@ -62,9 +65,30 @@ EGF_DOC_URL="${EGF_DOC_URL:-https://verana-labs.github.io/governance-docs/EGF/ex
 # ---------------------------------------------------------------------------
 
 set_network_vars() {
-  local network="${1:-devnet}"
+  local network="${1:-testnet}"
 
   case "$network" in
+    testnet)
+      CHAIN_ID="${CHAIN_ID:-vna-testnet-1}"
+      NODE_RPC="${NODE_RPC:-https://rpc.testnet.verana.network}"
+      # The chain minimum is 0.0025uvna. A transaction uses less than 400000
+      # gas, so it costs less than TX_FEE_MAX.
+      GAS_PRICES="${GAS_PRICES:-0.01uvna}"
+      TX_FEE_MAX="${TX_FEE_MAX:-10000}"
+      # The Corporation pays the fees of the agent through a fee grant, so the
+      # agent account needs funds only to exist on the chain.
+      AGENT_FUNDS="${AGENT_FUNDS:-1000uvna}"
+      # The faucet needs a wallet signature (ADR-036), for example from the Verana Frontend.
+      FAUCET_URL="https://faucet.testnet.verana.network"
+      INDEXER_URL="${INDEXER_URL:-https://idx.testnet.verana.network}"
+      # The shared ECS Ecosystem (verana-deploy scripts/ecs-ecosystem).
+      ECS_ECOSYSTEM_DID="${ECS_ECOSYSTEM_DID:-did:webvh:QmVEcKodsZWNhMx6UT7Sq4V8JBrcvohdJTutG6q88WQPhQ:ecs-ecosystem.testnet.verana.network}"
+      # The service that holds the ISSUER entry on the ECS Organization
+      # schema. It lives in the chain namespace, not in the cast namespace.
+      ECS_ORG_ISSUER_PUBLIC_URL="${ECS_ORG_ISSUER_PUBLIC_URL:-https://ecs-org-issuer.testnet.verana.network}"
+      ECS_NAMESPACE="${ECS_NAMESPACE:-vna-testnet-1}"
+      ECS_ORG_ISSUER_RELEASE="${ECS_ORG_ISSUER_RELEASE:-ecs-org-issuer}"
+      ;;
     devnet)
       CHAIN_ID="${CHAIN_ID:-vna-devnet-1}"
       NODE_RPC="${NODE_RPC:-https://rpc.devnet.verana.network}"
@@ -87,7 +111,7 @@ set_network_vars() {
       ECS_ORG_ISSUER_RELEASE="${ECS_ORG_ISSUER_RELEASE:-ecs-org-issuer}"
       ;;
     *)
-      err "Network '$network' is not supported by the V4 casts. Use 'devnet'."
+      err "Network '$network' is not supported by the V4 casts. Use 'testnet'."
       exit 1
       ;;
   esac
@@ -143,14 +167,20 @@ readonly PP_IDX_ROLE_ECOSYSTEM="ECOSYSTEM"
 
 PF_PIDS=""
 
-# Start a port-forward and wait until the Admin API answers.
+# Start a port-forward and wait until the Admin API answers. A release in the
+# chain namespace (ECS_NAMESPACE) lives on the chain cluster: the port-forward
+# uses ECS_KUBECONFIG when it is set.
 # Usage: start_port_forward <release> <local_port> [namespace]
 start_port_forward() {
   local release=$1
   local local_port=$2
   local namespace="${3:-$NAMESPACE}"
+  local kubeconfig_opts=()
 
-  kubectl port-forward -n "$namespace" "svc/${release}" "${local_port}:3000" >/dev/null 2>&1 &
+  if [ "$namespace" = "${ECS_NAMESPACE:-}" ] && [ -n "${ECS_KUBECONFIG:-}" ]; then
+    kubeconfig_opts=(--kubeconfig "$ECS_KUBECONFIG")
+  fi
+  kubectl "${kubeconfig_opts[@]}" port-forward -n "$namespace" "svc/${release}" "${local_port}:3000" >/dev/null 2>&1 &
   PF_PIDS="$PF_PIDS ${local_port}:$!"
 
   local i=0

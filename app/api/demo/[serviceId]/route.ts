@@ -396,7 +396,7 @@ export async function GET(
   // presentation_definition, which is what Altme needs.
   const queryLanguage =
     search.get("query") === "pe" ? "presentation_exchange" : undefined;
-  // devnet's vs-agent v2 signs with x5c by default; ?signer=x5c only matters on testnet, whose config sets requestSigner "did".
+  // vs-agent v2 signs with x5c by default; ?signer=x5c only mattered on V3, whose config set requestSigner "did".
   const requestSigner = search.get("signer") === "x5c" ? "x5c" : undefined;
   const applicant = applicantFromParams(search);
   const registered = CREDENTIALS[credentialId];

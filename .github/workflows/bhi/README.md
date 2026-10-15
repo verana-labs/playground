@@ -8,9 +8,8 @@ chain and the Admin APIs of the agents. Personal-wallet flows (credential
 offers, job applications, the refused request of Halcyon) happen at run
 time, not here.
 
-This branch runs the cast on **Verana V4 (devnet)** with veranad v0.10.5 and
-vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md). The
-testnet cast (Verana V3) stays on the `main` branch.
+The `main` branch runs the cast on **Verana V4 (testnet)** with veranad v0.10.5
+and vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md).
 
 GitHub reads workflow files only at the top level of `.github/workflows/`.
 The numbered `bhi-*.yml` entry points are there. This directory has the
@@ -25,7 +24,7 @@ label (demo).
 
 ## The cast and their domains
 
-The agents are at `<org>.bhi.playground.devnet.verana.network` (the anchor
+The agents are at `<org>.bhi.playground.testnet.verana.network` (the anchor
 at `institute.…`). The host of Meridian is `meridian.…`, but its Helm
 release is `meridian-tech`, because the verandia cast has the release
 `meridian-bank`.
@@ -53,7 +52,7 @@ ECS-Organization credential.
   in `config.env`) are `oid`, `tvs`, `institute`, `northbank`, `caledonian`,
   `cirrus`, `meridian`, `jobsearch` and `halcyon`. The first `deploy` or
   `all` run of an organization creates its Corporation. The operator
-  account (`PLAYGROUND_V4_MNEMONIC`) holds the OperatorAuthorization of
+  account (`PLAYGROUND_MNEMONIC`) holds the OperatorAuthorization of
   each Corporation and signs every transaction.
 - **Agent accounts.** Each agent has its own Verana account, the
   `vs_operator` of its Participant entries (see `../v4/common.sh`).
@@ -94,11 +93,11 @@ ECS-Organization credential.
 Secrets and variables: see [`docs/networks.md`](../../../docs/networks.md).
 
 **DNS + TLS.** A wildcard record must point at the cluster ingress:
-`*.bhi.playground.devnet.verana.network`. A wildcard matches one label
-only, so the record `*.playground.devnet…` does not cover this zone.
+`*.bhi.playground.testnet.verana.network`. A wildcard matches one label
+only, so the record `*.playground.testnet…` does not cover this zone.
 cert-manager (`letsencrypt-prod`) gets a certificate for each host.
 
-**The devnet ECS Ecosystem must be live**, with `ecs-org-issuer` in the
+**The testnet ECS Ecosystem must be live**, with `ecs-org-issuer` in the
 chain namespace.
 
 **Cast logos.** The `config.env` files refer to
@@ -114,7 +113,7 @@ Companies House number and DVS certification scope of OID
 
 ## Running
 
-Select the `v4` branch. Run the workflows **in this order, one at a time**
+Run the workflows **in this order, one at a time**
 (all runs serialize on the `vesta-cast-<network>` concurrency group, and
 GitHub keeps only one queued run in a group):
 
@@ -165,6 +164,5 @@ the template of the partner; treat the current claim sets as draft.
 
 ## After a bootstrap
 
-On devnet, `app/lib/bhi-cast.ts` gives no DIDs: the app finds each DID from
-its host. The testnet values in that file are the live `did:webvh` values of
-the V3 cast.
+The app finds each DID from its host, so `app/lib/bhi-cast.ts` gives no
+DIDs.

@@ -1,4 +1,4 @@
-network: devnet-v4
+network: testnet-v4
 offer:
   openid4vc:
     grants: [pre-authorized_code]

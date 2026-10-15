@@ -5,8 +5,8 @@ name: "CEXA 01 · Crypto Exchange Association (Ecosystem)"
 # Association (demo)" with the CEXAKycCredential schema (governed on both sides) and the
 # CEXAVerifiedCounterpartyCredential schema, their root Participant entries, and the ISSUER entry
 # of the Association on the counterparty schema. The chain keeps the digest of the EGF document:
-# run Deploy Playground for devnet first, so that /cexa/cexa-egf-v4.md answers.
-# Part of the CEXA cast CI/CD (Verana V4, devnet) — see .github/workflows/cexa/README.md.
+# run Deploy Playground first, so that /cexa/cexa-egf-v4.md answers.
+# Part of the CEXA cast CI/CD (Verana V4, testnet) — see .github/workflows/cexa/README.md.
 
 on:
   workflow_dispatch:

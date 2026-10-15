@@ -2,7 +2,7 @@ name: "Vesta 10 · Umbra Repairs (impostor)"
 
 # Deploys the impostor: ECS credentials and ECS Badge issuer, but never an
 # Authorized Repairer credential. The Vesta portal refuses its badges.
-# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# Verana V4 (testnet): run it from the main branch. Part of the Vesta cast CI/CD;
 # see .github/workflows/vesta/README.md for the run order.
 
 on:

@@ -1,6 +1,6 @@
 name: "Demo 01 · Playground Demo"
 
-# Creates the cast Corporation, deploys the Playground Demo anchor, onboards it with the devnet ECS ecosystem, and creates the Playground Ecosystem (demo) + DemoCredential schema + root participant.
+# Creates the cast Corporation, deploys the Playground Demo anchor, onboards it with the testnet ECS ecosystem, and creates the Playground Ecosystem (demo) + DemoCredential schema + root participant.
 # Part of the Playground demo cast CI/CD — see .github/workflows/demo/README.md.
 
 on:

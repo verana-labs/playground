@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# cast.sh — The BHI cast on Verana V4 (devnet)
+# cast.sh — The BHI cast on Verana V4
 # =============================================================================
 #
 # The generic V4 helpers are in .github/workflows/v4/common.sh. This file adds
@@ -36,7 +36,7 @@ R_JOBSEARCH="jobsearch"
 R_HALCYON="halcyon"
 
 # Public hosts: <org>.bhi.playground.<network>.verana.network
-bhi_zone() { echo "bhi.playground.${NETWORK:-devnet}.verana.network"; }
+bhi_zone() { echo "bhi.playground.${NETWORK:-testnet}.verana.network"; }
 
 # The public host of a release.
 # Usage: bhi_host_of <release>

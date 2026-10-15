@@ -86,7 +86,7 @@ describe("expectedTrust", () => {
 });
 
 const NETWORK: Network = {
-  id: "testnet-v3",
+  id: "fixture-v3",
   vpr: "vna-testnet-1",
   protocol: "v3",
   production: false,

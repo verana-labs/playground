@@ -2,10 +2,10 @@
 // the CEXA-VerifiedCounterparty credential that the DID document of the
 // service links, and the VERIFIER entry of the service on CEXA-Kyc.
 //
-// V3 (testnet): the member links the credential as a Linked VP whose id ends
+// V3 (the old protocol): the member links the credential as a Linked VP whose id ends
 // with "cexa-verified-counterparty-c-vp". The indexer lists the permissions
 // of the fixed CEXA-Kyc schema id (app/lib/cexa-cast.ts).
-// V4 (devnet): the schema ids are known only at run time. The Association
+// V4: the schema ids are known only at run time. The Association
 // publishes one Linked VP "#vpr-schemas-<id>-vtjsc-vp" for each schema of its
 // Ecosystem, and the indexer gives the JSON Schema title of each id (the same
 // method as app/lib/vtjsc.ts). The member links the credential as the Linked
@@ -114,7 +114,7 @@ export function membershipFromPresentation(vp: unknown): Membership {
   return { kind: "member", issuerDid: issuer, claims };
 }
 
-// ---------------------------------------------------------------- V3 (testnet)
+// ---------------------------------------------------------------- V3 (old protocol)
 
 async function readMembershipV3(host: string): Promise<Membership> {
   const endpoint = linkedVpEndpoint(
@@ -153,7 +153,7 @@ async function readCounterpartyV3(member: { host: string; did?: string }): Promi
   return { membership, accreditedVerifier, associationDids: association ? [association] : [] };
 }
 
-// ----------------------------------------------------------------- V4 (devnet)
+// ------------------------------------------------------------------------- V4
 
 type CexaRegistry = {
   kycSchemaId: string;

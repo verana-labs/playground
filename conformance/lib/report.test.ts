@@ -4,7 +4,7 @@ import { threadId } from "node:worker_threads";
 import { describe, expect, inject, it } from "vitest";
 import { check, CheckFailed, CellSchema, record, type Cell } from "./report";
 
-const base = { tier: "t1" as const, check: "report-test", clause: "CONF-OUT-1", network: "testnet-v3", service: "unit" };
+const base = { tier: "t1" as const, check: "report-test", clause: "CONF-OUT-1", network: "testnet-v4", service: "unit" };
 
 function lastCell(): Cell {
   const file = path.join(inject("runDir"), `cells-${process.pid}-${threadId}.jsonl`);

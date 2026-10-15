@@ -45,7 +45,7 @@ const claim = (claims: Claim[], name: string) =>
 
 /** AnonCreds fallback when the record carries no resolvable issuer DID: the
  *  demo claim sets are recognizable by their registry-stamped values. V3 only:
- *  the DIDs are known on testnet. */
+ *  the build knew the DIDs. On V4 the cast has no fixed DID. */
 function fallbackIssuerDid(mode: string, claims: Claim[]): string | null {
   if (mode === "company") {
     return claim(claims, "companyRegistryId")?.startsWith("VD-REG")

@@ -8,7 +8,7 @@ Proves, on every change, which listed wallets work against the deployed playgrou
 - Every profile declares `capabilities`: what its listed build takes (grant types, proof types, formats, query
   languages, client id prefixes, response modes, wallet attestation, DIDComm versions), each `yes`, `no` or
   `unknown`, filled from what the profile and the device results state.
-- `devnet-services.yaml` what the devnet services offer and their known gaps, each with a re-check date.
+- `testnet-services.yaml` what the cast services on testnet offer and their known gaps, each with a re-check date.
   `lib/verdicts.test.ts` compares every listed wallet's capabilities with it on every PR, fails when a
   recommended or compatible wallet will not work or is not established, and CI puts the verdict table in the job
   summary.
@@ -17,7 +17,7 @@ Proves, on every change, which listed wallets work against the deployed playgrou
   a repository root or a releases index as a build, a short sha), a store link that is not canonical or names
   another app, and a host hard-coded to one network instead of `__NETWORK__`. `lib/listing-refs.live.test.ts`
   checks the pins against GitHub and the stores (not in CI).
-- `networks.yaml` the networks a run can target. `CONFORMANCE_NETWORK=testnet-v3` selects one; by
+- `networks.yaml` the networks a run can target. `CONFORMANCE_NETWORK=testnet-v4` selects one; by
   default every testable network runs and the others are reported as not yet testable.
 - `tier1/` (planned, next PR) contract checks: what a wallet fetches, asserted without running a wallet.
 - `tier2/` headless OpenID4VCI/OpenID4VP flows with the wallets' own libraries, asserting the resolver inputs of

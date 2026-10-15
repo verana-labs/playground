@@ -4,11 +4,10 @@ The workflows deploy and provision each verifiable service of the **Vesta
 Appliances use case** (spec: `verana-spec/playground/verana-explained/spec.md`,
 section 5). Each participant is a separate vs-agent (Business Wallet).
 
-This branch runs the cast on **Verana V4 (devnet)** with veranad v0.10.5 and
-vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md). The
+The `main` branch runs the cast on **Verana V4 (testnet)** with veranad v0.10.5
+and vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md). The
 `vesta-00_core.yml` wrapper calls the generic V4 core
-(`v4-cast-00_core.yml`) with `cast=vesta`. A run from another branch stops
-with an error, because only devnet runs Verana V4.
+(`v4-cast-00_core.yml`) with `cast=vesta`.
 
 GitHub reads workflow files only at the top level of `.github/workflows/`.
 The numbered `vesta-*.yml` entry points are there. This directory holds the
@@ -34,8 +33,8 @@ it. Do not change it for the vesta cast.
 
 ## The cast and their hosts
 
-The organizations are at `<org>.playground.devnet.verana.network`. The
-sub-services of Vesta are at `<service>.vesta.playground.devnet.verana.network`.
+The organizations are at `<org>.playground.testnet.verana.network`. The
+sub-services of Vesta are at `<service>.vesta.playground.testnet.verana.network`.
 
 | # | Workflow | Release | Corporation | Agent mode | What it gets |
 |---|---|---|---|---|---|
@@ -50,7 +49,7 @@ sub-services of Vesta are at `<service>.vesta.playground.devnet.verana.network`.
 | 10 | Umbra Repairs | `umbra` | `umbra` | standalone | ECS credentials, ECS Badge issuer, OpenID4VC issuer, never an Authorized Repairer |
 
 On V4 there is no `vesta-02` workflow. Helvetia is not an ECS Organization
-issuer: `ecs-org-issuer` (the ECS Ecosystem of devnet) issues the ECS
+issuer: `ecs-org-issuer` (the ECS Ecosystem of testnet) issues the ECS
 Organization credential of each standalone organization.
 
 ## The V4 model
@@ -60,7 +59,7 @@ Organization credential of each standalone organization.
   `did:example:playground-vesta-<key>-<chain id>`. The first deploy of an
   organization creates it. A delegated sub-service uses the Corporation of its
   parent, so the `vesta` Corporation owns the Repair Network Ecosystem. The
-  operator account (`PLAYGROUND_V4_MNEMONIC`) operates each Corporation and
+  operator account (`PLAYGROUND_MNEMONIC`) operates each Corporation and
   signs each transaction.
 - **Agent accounts.** Each agent has its own Verana account, the
   `vs_operator` of its Participant entries. The core workflow keeps its
@@ -86,9 +85,9 @@ Organization credential of each standalone organization.
 - **ECS Badge.** The badge schema (`BadgeCredential`) belongs to the ECS
   Ecosystem. Vesta, Zenith and Umbra get an OPEN ISSUER entry and an AnonCreds
   credential definition on the badge VTJSC. The portal gets an OPEN VERIFIER
-  entry. CAUTION: the devnet ECS Ecosystem does not have this schema yet. The
-  badge steps then log a warning and do nothing. When the schema exists, run
-  03, 07, 09 and 10 again with `step=provision`.
+  entry. When the ECS Ecosystem does not have this schema, the badge steps
+  log a warning and do nothing. Run 03, 07, 09 and 10 again with
+  `step=provision` when the schema exists.
 
 ## Prerequisites
 
@@ -97,24 +96,25 @@ Organization credential of each standalone organization.
 | Secret | Notes |
 |---|---|
 | `KUBECONFIG_VERANA_DEV` | the cluster of the cast |
-| `K8S_NAMESPACE_V4` | the namespace of the devnet agents |
-| `PLAYGROUND_V4_MNEMONIC` | the operator account of the cast Corporations |
+| `KUBECONFIG_VERANA_TESTNET` | the chain cluster, for the port-forward to `ecs-org-issuer` |
+| `K8S_NAMESPACE` | the namespace of the testnet agents |
+| `PLAYGROUND_MNEMONIC` | the operator account of the cast Corporations |
 
 The operator account keeps a float of 1 VNA in each Corporation
 (`CORPORATION_FUNDS` in `v4-cast-00_core.yml`). Each run fills the float again
 when it is less than half. The agents spend it on their fees. The cast has
 eight Corporations, so the first bootstrap needs about 8 VNA. Get funds from
-the devnet faucet before the first bootstrap.
+the testnet faucet before the first bootstrap.
 
 **DNS and TLS.** Wildcard records must point at the cluster ingress:
-`*.playground.devnet.verana.network` **and**
-`*.vesta.playground.devnet.verana.network`. A wildcard matches one label
+`*.playground.testnet.verana.network` **and**
+`*.vesta.playground.testnet.verana.network`. A wildcard matches one label
 only, and the portal and repair-network hosts are one level deeper.
 cert-manager (`letsencrypt-prod`) issues a certificate for each host.
 
 ## Run order
 
-Select the `v4` branch. Run each workflow with `step=all`, one at a time
+Run each workflow with `step=all`, one at a time
 (all runs use the same operator account and one concurrency group):
 
 1. `vesta-01` Helvetia Trust (no dependency).
@@ -159,6 +159,6 @@ badges fail at the portal on the membership rule only.
 
 ## After a bootstrap
 
-On devnet, the app finds the DID of each cast member from its host
+The app finds the DID of each cast member from its host
 (`https://<host>/.well-known/did.json`), so no DID value must change in the
-app. The testnet DIDs in `app/lib/vesta-cast.ts` apply to the V3 build only.
+app.

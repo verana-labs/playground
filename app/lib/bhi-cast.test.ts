@@ -13,26 +13,21 @@ afterEach(() => {
 });
 
 describe("BHI cast", () => {
-  it("keeps the V3 hosts and the live did:webvh values on testnet", async () => {
-    const { BHI_CAST, bhiDisplayDid } = await load();
-    for (const member of Object.values(BHI_CAST)) {
-      expect(member.host).toMatch(/\.bhi\.playground\.testnet\.verana\.network$/);
-      expect(member.did).toMatch(/^did:webvh:Qm/);
-      expect(member.did?.endsWith(`:${member.host}`)).toBe(true);
-      expect(bhiDisplayDid(member)).toBe(member.did);
-    }
-    expect(BHI_CAST.meridian.host).toBe("meridian.bhi.playground.testnet.verana.network");
-  });
-
-  it("uses the devnet hosts and no static DIDs on devnet", async () => {
-    vi.stubEnv("NEXT_PUBLIC_VERANA_NETWORK", "devnet");
+  it("uses the testnet hosts and no static DIDs on testnet (V4)", async () => {
     const { BHI_CAST, bhiDisplayDid, BHI_QUALIFICATION_JSC } = await load();
     for (const member of Object.values(BHI_CAST)) {
-      expect(member.host).toMatch(/\.bhi\.playground\.devnet\.verana\.network$/);
+      expect(member.host).toMatch(/\.bhi\.playground\.testnet\.verana\.network$/);
       expect(member.did).toBeUndefined();
       expect(bhiDisplayDid(member)).toBe(`did:web:${member.host}`);
     }
+    expect(BHI_CAST.meridian.host).toBe("meridian.bhi.playground.testnet.verana.network");
+    expect(BHI_QUALIFICATION_JSC).toContain("caledonian.bhi.playground.testnet.verana.network");
+  });
+
+  it("uses the devnet hosts on devnet", async () => {
+    vi.stubEnv("NEXT_PUBLIC_VERANA_NETWORK", "devnet");
+    const { BHI_CAST, bhiDisplayDid } = await load();
     expect(BHI_CAST.bhi.host).toBe("institute.bhi.playground.devnet.verana.network");
-    expect(BHI_QUALIFICATION_JSC).toContain("caledonian.bhi.playground.devnet.verana.network");
+    expect(bhiDisplayDid(BHI_CAST.bhi)).toBe("did:web:institute.bhi.playground.devnet.verana.network");
   });
 });

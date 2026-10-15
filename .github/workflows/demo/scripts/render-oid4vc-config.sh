@@ -6,7 +6,7 @@
 # Expected environment:
 #   OID4VC_ROLE            issuer | verifier (which template to render)
 #   SERVICE_NAME           display/common name of this service
-#   NETWORK                testnet | devnet
+#   NETWORK                testnet
 #   NAMESPACE              k8s namespace of the cast (verifier role only)
 #   CAST_DIR               absolute path of the cast dir (.../demo or .../vesta)
 #   OID4VC_ISSUER_RELEASES space-separated issuer release names whose signing

@@ -4,7 +4,7 @@ name: "Vesta 03 · Vesta Appliances anchor"
 # ecs-org-issuer, self-issued ECS Service), ECS Badge issuer, and the ISO
 # 9001-style (demo) credential from NormaCert.
 # CAUTION: the provision step needs vesta-04 and vesta-05 first.
-# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# Verana V4 (testnet): run it from the main branch. Part of the Vesta cast CI/CD;
 # see .github/workflows/vesta/README.md for the run order.
 
 on:

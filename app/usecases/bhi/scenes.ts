@@ -7,11 +7,11 @@
 // trust cards resolve against the network of the build; Northgate and HMRC
 // stay story-only (no agent, by design).
 //
-// V4 (devnet): ecs-org-issuer, the organization issuer of the Verana ECS
+// V4: ecs-org-issuer, the organization issuer of the Verana ECS
 // Ecosystem, issues every ECS-Organization credential of the cast, and
 // Orchestrating Identity holds no DVS-Aligned Provider credential of its
 // own (its ISSUER entry is the proof). The V4 values below show that; the
-// V3 (testnet) values stay as they were.
+// V3 values (the old protocol) stay as they were.
 //
 // The 3.3 stage is the one the source calls out as mattering most: two
 // grantor branches side by side, the visual form of the openness

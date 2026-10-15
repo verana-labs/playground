@@ -4,7 +4,7 @@ name: "Vesta 06 · Vesta Repair Network"
 # Service credential from the Vesta anchor, the Ecosystem, the Authorized
 # Repairer schema and its root Participant entry.
 # CAUTION: needs vesta-03 first.
-# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# Verana V4 (testnet): run it from the main branch. Part of the Vesta cast CI/CD;
 # see .github/workflows/vesta/README.md for the run order.
 
 on:

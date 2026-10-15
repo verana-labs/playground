@@ -5,7 +5,7 @@
 // Fee numbers come from app/lib/cexa-cast.ts (the EGF fee schedule) and are
 // calibrated against public IDV list pricing (~1.85 USD per full check with
 // AML screening). Payment mechanics follow VPR v4; the trust deposit story
-// follows tokenomics Model C. On testnet (V3) and devnet (V4) everything
+// follows tokenomics Model C. On V3 and on V4 everything
 // money-related is a written, simulated preview: the cast sets no fees on
 // chain. Text that names the network or links to the Verana app depends on
 // NETWORK and PROTOCOL (app/lib/network.ts).
@@ -28,19 +28,20 @@ import {
   cexaSchemaUrl,
 } from "../../lib/cexa-cast";
 
-const isTestnet = NETWORK === "testnet";
+/** V3 is the old protocol. No network runs it anymore. */
+const isV3 = PROTOCOL === "v3";
 
 /** A link to the Verana app, or nothing when the id is not known. */
 const appLink = (label: string, id: number | undefined, url: (id: number) => string) =>
   id === undefined ? [] : [{ label, href: url(id) }];
 
-/** The DID of the Association, shown in step 3.1. On devnet the DID is known
+/** The DID of the Association, shown in step 3.1. On V4 the DID is known
  *  only at run time, so the step shows the URL of the DID document. */
 const ASSOCIATION_DID_CODE = CEXA_CAST.association.did
   ? {
       label: "The DID of the Crypto Exchange Association (demo)",
       value: CEXA_CAST.association.did,
-      note: "Placeholder until the CEXA cast deploys on the Verana testnet - then resolvable like every other cast DID.",
+      note: `Placeholder until the CEXA cast deploys on the Verana ${NETWORK} - then resolvable like every other cast DID.`,
     }
   : {
       label: "The DID document of the Crypto Exchange Association (demo)",
@@ -314,11 +315,11 @@ export const JOURNEY: {
           title: "Founding the Association on Verana",
           kind: "watch",
           story:
-            `The Association deploys a vs-agent, an open source Business Wallet natively integrated with the public Verana infrastructure. ${CEXA_ECS_ORG_ISSUER}, an accredited ECS-Organization issuer, verifies the legal entity and issues its Organization credential; the Association self-issues its Service credential - the first green check. Then it creates its ${isTestnet ? "trust registry" : "Ecosystem"}: the CEXA-Kyc schema, governed on BOTH sides (only accredited members issue, only accredited members verify), the CEXA-VerifiedCounterparty schema for Travel Rule identities, the EGF document anchored by digest, and the fee schedule.`,
+            `The Association deploys a vs-agent, an open source Business Wallet natively integrated with the public Verana infrastructure. ${CEXA_ECS_ORG_ISSUER}, an accredited ECS-Organization issuer, verifies the legal entity and issues its Organization credential; the Association self-issues its Service credential - the first green check. Then it creates its ${isV3 ? "trust registry" : "Ecosystem"}: the CEXA-Kyc schema, governed on BOTH sides (only accredited members issue, only accredited members verify), the CEXA-VerifiedCounterparty schema for Travel Rule identities, the EGF document anchored by digest, and the fee schedule.`,
           code: ASSOCIATION_DID_CODE,
           points: [
             "Governed verification is the unusual choice, and the point: asking a wallet for a KYC credential is a privileged, paid act - so the relying side is permissioned too.",
-            `The Association issues exactly what it governs: CEXA-VerifiedCounterparty identities and CEXA-Kyc accreditations. ECS-Organization credentials stay where they belong - with the accredited issuers of the Verana ECS Ecosystem, like ${isTestnet ? "Helvetia" : CEXA_ECS_ORG_ISSUER}.`,
+            `The Association issues exactly what it governs: CEXA-VerifiedCounterparty identities and CEXA-Kyc accreditations. ECS-Organization credentials stay where they belong - with the accredited issuers of the Verana ECS Ecosystem, like ${isV3 ? "Helvetia" : CEXA_ECS_ORG_ISSUER}.`,
             "A word on the schemas themselves: they are highly simplified for the demo. A production framework would version them, carry far richer claim sets and jurisdictional variants, and evolve them through EGF amendments - the registry, governance, fees and permissions work identically either way.",
           ],
           underHood: [
@@ -501,7 +502,7 @@ export const JOURNEY: {
           title: "DarkPool is real - and still refused",
           kind: "watch",
           story:
-            `DarkPool Exchange (demo) is not a fake. It is a genuine, verifiable exchange: Organization credential from ${isTestnet ? "Helvetia" : CEXA_ECS_ORG_ISSUER}, Service credential, green check. It just never joined the Association - and that is exactly the lesson. When it asks Alice's wallet for her CEXA-Kyc credential, the wallet trust-resolves it (TRUSTED), then checks its authorization and refuses: verification of this schema is governed, and DarkPool holds no VERIFIER accreditation. And when a member's Travel Rule desk checks DarkPool as a counterparty, the check stops in red at the first line: no CEXA-VerifiedCounterparty on its DID.`,
+            `DarkPool Exchange (demo) is not a fake. It is a genuine, verifiable exchange: Organization credential from ${isV3 ? "Helvetia" : CEXA_ECS_ORG_ISSUER}, Service credential, green check. It just never joined the Association - and that is exactly the lesson. When it asks Alice's wallet for her CEXA-Kyc credential, the wallet trust-resolves it (TRUSTED), then checks its authorization and refuses: verification of this schema is governed, and DarkPool holds no VERIFIER accreditation. And when a member's Travel Rule desk checks DarkPool as a counterparty, the check stops in red at the first line: no CEXA-VerifiedCounterparty on its DID.`,
           points: [
             "Trust is not membership, and membership is not authorization: a perfectly legitimate exchange still cannot ask for the credential or pass the counterparty check.",
             "This fails politely and legibly: the wallet can SAY why it refused (not an accredited verifier), and the counterparty card can SHOW what is missing - far more instructive than a silent UNTRUSTED.",
@@ -566,11 +567,11 @@ export const MONEY = {
   title: "The money: who pays whom",
   intro:
     `Three flows carry the whole business model: yearly dues, free issuance, and the paid reuse - plus one deliberate non-flow, the free counterparty check. Every amount below is an agreed, framework-governed value (who sets what is the first table on this page), and the fee amounts are examples: the split mechanism reads the same for any framework's schedule. ${
-      isTestnet
-        ? "On the current testnet these panels are a simulated preview: they switch to live chain data - real sessions, real beneficiary queries, real deposits - with the next network upgrade."
+      isV3
+        ? `On the Verana ${NETWORK} these panels are a simulated preview: they switch to live chain data - real sessions, real beneficiary queries, real deposits - with the next network upgrade.`
         : `On the Verana ${NETWORK} these panels are a simulated preview: the CEXA cast sets no fees on chain yet.`
     }`,
-  simulatedChip: isTestnet
+  simulatedChip: isV3
     ? "simulated preview · goes live with the next network upgrade"
     : "simulated preview · no fees on chain yet",
   flows: [
@@ -749,8 +750,8 @@ export const DEMOS = {
   title: "Run the demos",
   intro:
     `Download one of the integrated personal wallets to run the demos - every wallet shows the same verdicts, the same way. ${
-      isTestnet
-        ? "The CEXA cast is being prepared for the Verana testnet; each demo below activates as its services deploy."
+      isV3
+        ? `The CEXA cast is being prepared for the Verana ${NETWORK}; each demo below activates as its services deploy.`
         : `The CEXA cast runs on the Verana ${NETWORK}; each demo below works when its service is deployed.`
     }`,
   verifyRule:
@@ -823,7 +824,7 @@ export const DEMOS = {
 export const CLOSING = {
   title: "What ships next",
   pendingLabel: "in preparation",
-  body: isTestnet
-    ? "The CEXA cast deploys on the Verana testnet next: live DIDs behind every trust card, live QR demos on both rails, the Borealis and Novara sign-ins with the simulated re-binding step, and the live counterparty lookup against member DIDs. When the next network upgrade lands, the money panels stop simulating: real sessions, real beneficiary splits, real trust scores - the same numbers you read in chapter 4, on chain. The corporate act - CEXA-Kyb for business accounts, where the bank members care most - follows."
+  body: isV3
+    ? `The CEXA cast deploys on the Verana ${NETWORK} next: live DIDs behind every trust card, live QR demos on both rails, the Borealis and Novara sign-ins with the simulated re-binding step, and the live counterparty lookup against member DIDs. When the next network upgrade lands, the money panels stop simulating: real sessions, real beneficiary splits, real trust scores - the same numbers you read in chapter 4, on chain. The corporate act - CEXA-Kyb for business accounts, where the bank members care most - follows.`
     : `The CEXA cast runs on the Verana ${NETWORK}: live trust cards, live QR demos on both rails, the Borealis and Novara sign-ins with the simulated re-binding step, and the live counterparty lookup against member DIDs. Next, the cast sets its fee schedule on chain, and the money panels stop simulating: real sessions, real beneficiary splits, real trust scores - the same numbers you read in chapter 4. The corporate act - CEXA-Kyb for business accounts, where the bank members care most - follows.`,
 };

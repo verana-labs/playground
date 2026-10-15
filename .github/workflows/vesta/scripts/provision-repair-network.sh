@@ -13,7 +13,7 @@
 set -eo pipefail
 source "${CAST_DIR}/cast.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-devnet}"
+set_network_vars "${NETWORK:-testnet}"
 
 open_agent
 provision_ecs_delegated vesta "$(cast_host vesta)"

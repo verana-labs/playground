@@ -46,13 +46,13 @@ npm run build      # production build (standalone output)
 
 ## Networks
 
-The `main` branch deploys to testnet (Verana V3). The `v4` branch deploys to
-devnet (Verana V4). See [docs/networks.md](./docs/networks.md).
+The `main` branch deploys to testnet (Verana V4). See
+[docs/networks.md](./docs/networks.md).
 
 ## Related
 
-- Demo services (v3 examples; dedicated Vesta cast pending): [`verana-labs/verana-demos`](https://github.com/verana-labs/verana-demos)
-- Trust Resolver: `https://resolver.testnet.verana.network/docs`
+- Demo services (examples): [`verana-labs/verana-demos`](https://github.com/verana-labs/verana-demos)
+- Indexer (trust resolution): `https://idx.testnet.verana.network`
 - Network frontend: `https://app.testnet.verana.network`
 
 ## License

@@ -66,7 +66,7 @@ const first = (value: unknown): unknown =>
  *  network resolver does not surface non-ECS credentials in its
  *  resolution result, so the membership rule walks the chain itself. */
 async function holdsAuthorizedRepairer(host: string): Promise<boolean> {
-  // The schema id is known on testnet (V3) only.
+  // The schema id was known on V3 only. On V4 SCHEMA_IDS is empty.
   const arSchemaId = SCHEMA_IDS.authorizedRepairer;
   if (arSchemaId === undefined) return false;
   try {

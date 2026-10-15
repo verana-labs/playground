@@ -1,10 +1,10 @@
 name: "BHI 06 · Caledonian University (Qualification ecosystem)"
 
 # Creates the Corporation of Caledonian University (demo), deploys its agent,
-# onboards it with the devnet ECS Ecosystem, and creates its Ecosystem with
+# onboards it with the testnet ECS Ecosystem, and creates its Ecosystem with
 # the Qualification schema (verifiers through a GRANTOR), its ISSUER entry,
 # the AnonCreds credential definition and the OpenID4VC issuer rail.
-# Verana V4 (devnet): select the v4 branch.
+# Verana V4 (testnet): run it from the main branch.
 # Part of the BHI cast CI/CD — see .github/workflows/bhi/README.md.
 
 on:

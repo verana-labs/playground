@@ -2,12 +2,8 @@
 // deployed and provisioned by the vesta-* workflows
 // (.github/workflows/vesta/README.md).
 //
-// Testnet (V3): the did:webvh values below are the live DIDs. A did:webvh
-// SCID changes only when an agent is created again from scratch; refresh a
-// value from the last entry of https://<host>/.well-known/did.jsonl (state.id).
-//
-// Devnet (V4): the cast members have no fixed DID here. A caller finds the
-// DID from the host (see serviceDidFor in demo-services.ts).
+// The build knows no DID of a cast member: a caller finds the DID from the
+// host at run time (see serviceDidFor in demo-services.ts).
 
 import { ENDPOINTS } from "./site";
 import { NETWORK_CONFIG, PROTOCOL, networkHost } from "./network";
@@ -18,62 +14,35 @@ export type CastMember = {
   did: string;
 };
 
-/** A Vesta cast member. On V4 the DID is not known at build time. */
+/** A Vesta cast member. `did` is set only when the build knows a fixed
+ *  DID (the ECS Ecosystem); on V4 the agents have none at build time. */
 export type VestaCastMember = {
   host: string;
   did?: string;
 };
 
+/** V3 is the old protocol. No network runs it anymore; the switches stay
+ *  for reference. */
 const V3 = PROTOCOL === "v3";
 
 const ZONE = networkHost("playground");
 
-/** The testnet DID on V3, and no DID on V4. */
-const testnetDid = (did: string): string | undefined => (V3 ? did : undefined);
-
 const ECS_DID = NETWORK_CONFIG.ecsEcosystemDid;
 
+/** A cast member without a fixed DID. */
+const member = (host: string): VestaCastMember => ({ host });
+
 export const VESTA_CAST = {
-  helvetia: {
-    host: `helvetia-trust.${ZONE}`,
-    did: testnetDid("did:webvh:QmYZq8Q1puVDZ3GrNnmp8GfySbXJQvShHfdqXRDnGGMcis:helvetia-trust.playground.testnet.verana.network"),
-  },
-  vesta: {
-    host: `vesta.${ZONE}`,
-    did: testnetDid("did:webvh:QmVdceDZTiP34oz168Yjtm7PHFLb7g9hbWgQEFzfmV8r7S:vesta.playground.testnet.verana.network"),
-  },
-  portal: {
-    host: `portal.vesta.${ZONE}`,
-    did: testnetDid("did:webvh:QmccwmWukyccMmpV95zscKPqWKR3QbwXNaK91rzhLhGqS2:portal.vesta.playground.testnet.verana.network"),
-  },
-  repairNetwork: {
-    host: `repair-network.vesta.${ZONE}`,
-    did: testnetDid("did:webvh:QmQsRhCr3FWepkKSrSFNSeacZ4ZquTSV9myoeZL6kJgQpp:repair-network.vesta.playground.testnet.verana.network"),
-  },
-  iso: {
-    host: `iso-certification.${ZONE}`,
-    did: testnetDid("did:webvh:QmSYiWtR5H8M5D26G7y4KaxbbXv5ANfhxkcMYNHGcfWLtd:iso-certification.playground.testnet.verana.network"),
-  },
-  normacert: {
-    host: `normacert.${ZONE}`,
-    did: testnetDid("did:webvh:QmTyozr73CTL8JRaV49cE8X5nQhhCjMMvyrsPEiVn7iVbL:normacert.playground.testnet.verana.network"),
-  },
-  iberia: {
-    host: `vesta-iberia.${ZONE}`,
-    did: testnetDid("did:webvh:Qmdkh28Vdj2uQWtTBuPbiwVNYz9Lh2eqQfpMavoknrParX:vesta-iberia.playground.testnet.verana.network"),
-  },
-  nordics: {
-    host: `vesta-nordics.${ZONE}`,
-    did: testnetDid("did:webvh:Qme6Siyj5ASTR7rMtx7B7RMkeKVTntDFmBzuTJj2CbK29M:vesta-nordics.playground.testnet.verana.network"),
-  },
-  zenith: {
-    host: `zenith.${ZONE}`,
-    did: testnetDid("did:webvh:QmccFRC56Mo4ACAH99h8KzRzoapTtMKJ1rqeEPs6sJxSqN:zenith.playground.testnet.verana.network"),
-  },
-  umbra: {
-    host: `umbra.${ZONE}`,
-    did: testnetDid("did:webvh:QmPFgCVbJ1hNWXgCNcQia2hLT4eZ3916zsULhu5jaSKuPF:umbra.playground.testnet.verana.network"),
-  },
+  helvetia: member(`helvetia-trust.${ZONE}`),
+  vesta: member(`vesta.${ZONE}`),
+  portal: member(`portal.vesta.${ZONE}`),
+  repairNetwork: member(`repair-network.vesta.${ZONE}`),
+  iso: member(`iso-certification.${ZONE}`),
+  normacert: member(`normacert.${ZONE}`),
+  iberia: member(`vesta-iberia.${ZONE}`),
+  nordics: member(`vesta-nordics.${ZONE}`),
+  zenith: member(`zenith.${ZONE}`),
+  umbra: member(`umbra.${ZONE}`),
   // The ECS Ecosystem (the trust anchor) of the network. Its controller host
   // is the last segment of its DID.
   ecs: {
@@ -83,9 +52,9 @@ export const VESTA_CAST = {
 } as const satisfies Record<string, VestaCastMember>;
 
 /** The service that issues the ECS Organization credentials of the cast.
- *  V3: Helvetia Trust Services (demo), an accredited ECS-Org issuer of the
- *  cast. V4: ecs-org-issuer, the organization issuer of the ECS Ecosystem;
- *  Helvetia stays an ordinary cast member. */
+ *  V4: ecs-org-issuer, the organization issuer of the ECS Ecosystem;
+ *  Helvetia stays an ordinary cast member. V3 (the old protocol): Helvetia
+ *  Trust Services (demo), an accredited ECS-Org issuer of the cast. */
 export const ECS_ORG_ISSUER: {
   /** Full name, as an "issued by" value. */
   name: string;
@@ -123,25 +92,15 @@ type SchemaKey =
   | "iso9001Demo"
   | "authorizedRepairer";
 
-/** Credential schema ids. Testnet only (indexer: /verana/cs/v1/get/<id>);
- *  on devnet the ids are not known at build time, so the map is empty. */
-export const SCHEMA_IDS: Partial<Record<SchemaKey, number>> = V3
-  ? {
-      ecsOrganization: 168,
-      ecsService: 170,
-      ecsBadge: 250,
-      iso9001Demo: 251,
-      authorizedRepairer: 252,
-    }
-  : {};
+/** Credential schema ids. On V4 the ids are not known at build time, so the
+ *  map is empty: the app finds a schema by its title (app/lib/vtjsc.ts). */
+export const SCHEMA_IDS: Partial<Record<SchemaKey, number>> = {};
 
 type TrustRegistryKey = "ecs" | "iso" | "repairNetwork";
 
-/** Trust registry (V4: Ecosystem) ids. Testnet only (indexer:
- *  /verana/tr/v1/get/<id>); on devnet the map is empty. */
-export const TRUST_REGISTRY_IDS: Partial<Record<TrustRegistryKey, number>> = V3
-  ? { ecs: 89, iso: 187, repairNetwork: 188 }
-  : {};
+/** Trust registry (V4: Ecosystem) ids. On V4 the ids are not known at build
+ *  time, so the map is empty. */
+export const TRUST_REGISTRY_IDS: Partial<Record<TrustRegistryKey, number>> = {};
 
 export const didDocUrl = (m: VestaCastMember) =>
   `https://${m.host}/.well-known/did.json`;

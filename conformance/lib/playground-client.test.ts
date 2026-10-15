@@ -3,7 +3,7 @@ import { listNetworks } from "./network";
 import { issuanceState, mintIssuance, mintPresentation, presentationState } from "./playground-client";
 import type { CastService } from "./cast-services";
 
-const testnet = listNetworks().find((n) => n.id === "testnet-v3")!;
+const testnet = listNetworks().find((n) => n.id === "testnet-v4")!;
 const issuer: CastService = { cast: "demo", org: "x", id: "demo-issuer-accredited", host: "h", pinnedTag: "t", oid4vcRole: "issuer", demoPerm: "issuer", issuerId: "demo-did", configPath: "p" };
 const verifier: CastService = { ...issuer, id: "evento-costa-rica", oid4vcRole: "verifier", issuerId: null };
 const json = (body: unknown, status = 200): Response => new Response(JSON.stringify(body), { status });

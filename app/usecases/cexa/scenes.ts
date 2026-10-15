@@ -8,7 +8,7 @@
 
 import { CEXA_CAST, CEXA_ECS_ORG_ISSUER, type CexaMember } from "../../lib/cexa-cast";
 import { shortDid } from "../../lib/did";
-import { NETWORK } from "../../lib/network";
+import { NETWORK, PROTOCOL } from "../../lib/network";
 import type {
   Accreditation,
   NodeCredential,
@@ -33,8 +33,8 @@ export const STAGES = [
 
 export type Stage = (typeof STAGES)[number];
 
-/** The short label of a member: its short DID on testnet. On devnet the DID
- *  is known only at run time, so the label is the host. */
+/** The short label of a member: its short DID when the build knows it. On
+ *  V4 the DID is known only at run time, so the label is the host. */
 const sceneDid = (member: CexaMember) =>
   (member.did ? shortDid(member.did) : member.host).replace(
     `.cexa.playground.${NETWORK}.verana.network`,
@@ -592,7 +592,7 @@ export const CEXA_SCENES: SceneGraph = {
     },
   },
   verifiedNote:
-    NETWORK === "testnet"
-      ? "Trust cards go live against the Verana testnet resolver once the CEXA cast deploys - the DIDs above are placeholders today."
+    PROTOCOL === "v3"
+      ? `Trust cards go live against the Verana ${NETWORK} resolver once the CEXA cast deploys - the DIDs above are placeholders today.`
       : `Trust cards resolve live against the Verana ${NETWORK} indexer when the CEXA cast is deployed.`,
 };

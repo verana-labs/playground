@@ -2,7 +2,7 @@ name: "Vesta 04 · ISO Certification Ecosystem (demo)"
 
 # Deploys the ISO Certification Ecosystem (demo): ECS credentials, the
 # Ecosystem, the ISO 9001-style (demo) schema and its root Participant entry.
-# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# Verana V4 (testnet): run it from the main branch. Part of the Vesta cast CI/CD;
 # see .github/workflows/vesta/README.md for the run order.
 
 on:

@@ -35,10 +35,10 @@ export type Stage = (typeof STAGES)[number];
 const sceneDid = (did: string) =>
   shortDid(did).replace(/\.verandia\.playground\.[a-z]+\.verana\.network$/, "…");
 
-// V4 (devnet): the live cast has no Helvetia and no step 3.2 on chain. The
+// V4: the live cast has no Helvetia and no step 3.2 on chain. The
 // organization issuer of the ECS Ecosystem takes the place of the Helvetia
 // node, and issues the ECS-Organization credential of every Verandian
-// organization. The testnet (V3) graph does not change.
+// organization. The V3 graph (the old protocol) does not change.
 const V4 = PROTOCOL === "v4";
 const ECS_ORG_ISSUER = V4 ? "ECS Organization issuer" : "Helvetia Trust Services (demo)";
 /** The issuer of the ECS-Organization credentials that the Business Registry

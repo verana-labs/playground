@@ -183,6 +183,10 @@ spec:
               value: "false"
             - name: WEBAUTHN_RPID
               value: "${HOST}"
+            # The Verana trust checks (Verifiable Trust V4). The indexer and
+            # playground URLs default to the hosts of this network.
+            - name: VERANA_NETWORK
+              value: "${NETWORK}"
             - name: OPENID4VCI_PROOF_TYPE_PRECEDENCE
               value: "jwt"
             - name: OPENID4VP_SAN_DNS_CHECK

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# cast.sh — The vesta cast on Verana V4 (devnet)
+# cast.sh — The vesta cast on Verana V4
 # =============================================================================
 #
 # The generic V4 helpers are in .github/workflows/v4/common.sh. This file adds
@@ -25,7 +25,7 @@ source "$(dirname "${BASH_SOURCE[0]}")/../v4/common.sh"
 # ---------------------------------------------------------------------------
 
 # The DNS zone of the cast: playground.<network>.verana.network.
-cast_zone() { echo "playground.${NETWORK:-devnet}.verana.network"; }
+cast_zone() { echo "playground.${NETWORK:-testnet}.verana.network"; }
 
 # The public host of a release of the cast. The delegated sub-services of
 # Vesta are in the zone of Vesta: <service>.vesta.playground.<network>...
@@ -60,7 +60,7 @@ BADGE_SCHEMA_TITLE="BadgeCredential"
 # Read a schema file of the cast as compact JSON, with the network in its $id.
 # Usage: read_cast_schema <file>
 read_cast_schema() {
-  sed "s/__NETWORK__/${NETWORK:-devnet}/g" "${CAST_DIR}/schemas/$1" | jq -c '.'
+  sed "s/__NETWORK__/${NETWORK:-testnet}/g" "${CAST_DIR}/schemas/$1" | jq -c '.'
 }
 
 # Find a schema of the Ecosystem that a release of the cast controls.
@@ -71,8 +71,8 @@ find_cast_schema_id() {
   find_schema_of "$did" "$2"
 }
 
-# Find the BadgeCredential schema of the ECS Ecosystem. The devnet ECS
-# Ecosystem does not have this schema yet, so a missing schema is a warning
+# Find the BadgeCredential schema of the ECS Ecosystem. The ECS Ecosystem of
+# the network may not have this schema yet, so a missing schema is a warning
 # and not an error: the caller skips the badge steps.
 # Usage: find_badge_schema_id
 find_badge_schema_id() {

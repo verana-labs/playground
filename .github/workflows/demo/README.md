@@ -4,8 +4,8 @@ The shared demo services of the **user-wallet playground pages** (spec §4 —
 [verana-spec → playground/spec.md](https://github.com/verana-labs/verana-spec/blob/main/playground/spec.md)):
 one cast, six scenarios, identical on every wallet page.
 
-This branch runs the cast on **Verana V4 (devnet)** with veranad v0.10.5 and
-vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md).
+The `main` branch runs the cast on **Verana V4 (testnet)** with veranad v0.10.5
+and vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md).
 
 The **Playground Organization (demo)** is a Corporation on the chain. The
 anchor VS **Playground Demo** controls the **Playground Ecosystem (demo)** and
@@ -28,7 +28,7 @@ Four trusted services are its delegated sub-services:
 
 - **Corporation.** `demo-01` creates the Corporation with the DID
   `did:example:playground-demo-<chain id>`. The other members find it by this
-  DID. The operator account (`PLAYGROUND_V4_MNEMONIC`) holds its
+  DID. The operator account (`PLAYGROUND_MNEMONIC`) holds its
   OperatorAuthorization and signs every transaction.
 - **Agent accounts.** Each agent has its own Verana account, the
   `vs_operator` of its Participant entries. The workflow creates the mnemonic
@@ -49,8 +49,8 @@ Four trusted services are its delegated sub-services:
 ## Running
 
 Each numbered workflow is a `workflow_dispatch` that calls
-`demo-00_core.yml` with `step` = `deploy` | `provision` | `all`. Select the
-`v4` branch. Run them **in order, one at a time** (all runs serialize on the
+`demo-00_core.yml` with `step` = `deploy` | `provision` | `all`. Run them
+**in order, one at a time** (all runs serialize on the
 `vesta-cast-<network>` concurrency group):
 
 1. `demo-01` with `step=all`: Corporation, anchor agent, ECS onboarding,

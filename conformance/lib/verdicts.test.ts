@@ -3,12 +3,12 @@ import { describe, expect, it } from "vitest";
 import { listWalletProfiles, WalletProfileSchema } from "../../app/lib/wallet-profiles";
 import { parseListing, readListingText } from "./listing-gate";
 import { profilesDir } from "./profiles-dir";
-import { readDevnetServices, renderVerdicts, ServicesSchema, walletVerdicts, type Services } from "./verdicts";
+import { readCastServices, renderVerdicts, ServicesSchema, walletVerdicts, type Services } from "./verdicts";
 
 const today = new Date().toISOString().slice(0, 10);
 
 const services: Services = ServicesSchema.parse({
-  network: "devnet-v4",
+  network: "testnet-v4",
   offer: {
     openid4vc: {
       grants: ["pre-authorized_code"],
@@ -59,14 +59,14 @@ const wallet = (caps: Record<string, unknown>, demoParams = "signer=x5c", query 
 const verdictOf = (caps: Record<string, unknown>, demoParams?: string, query?: string) => walletVerdicts([wallet(caps, demoParams, query)], services)[0];
 
 describe("walletVerdicts", () => {
-  it("says works when every dimension meets what devnet offers", () => {
+  it("says works when every dimension meets what the services offer", () => {
     expect(verdictOf({})).toMatchObject({ verdict: "works", reasons: [] });
   });
 
   it("says will not work when nothing the wallet takes is offered", () => {
     expect(verdictOf({ formats: { mso_mdoc: "yes", "dc+sd-jwt": "no" } })).toMatchObject({
       verdict: "will not work",
-      reasons: ["formats: it takes mso_mdoc, devnet offers dc+sd-jwt"],
+      reasons: ["formats: it takes mso_mdoc, the services offer dc+sd-jwt"],
     });
   });
 
@@ -76,7 +76,7 @@ describe("walletVerdicts", () => {
     expect(verdictOf({ sendsWalletAttestation: "yes" })?.reasons).toEqual(["known gap haip"]);
   });
 
-  it("says unknown when the capability devnet needs is not established", () => {
+  it("says unknown when the capability the services need is not established", () => {
     expect(verdictOf({ grants: {} })).toMatchObject({ verdict: "unknown" });
     expect(verdictOf({ sendsWalletAttestation: "unknown" })).toMatchObject({ verdict: "unknown" });
   });
@@ -91,21 +91,21 @@ describe("walletVerdicts", () => {
   });
 });
 
-describe("the listed wallets on devnet", () => {
-  const devnet = readDevnetServices();
+describe("the listed wallets on testnet", () => {
+  const services = readCastServices();
   const listing = parseListing(readListingText());
   const statusOf = (id: string) => listing.find((w) => w.id === id)?.status ?? "testing";
   const order = ["recommended", "compatible", "testing"];
-  const rows = walletVerdicts(listWalletProfiles(profilesDir()), devnet)
+  const rows = walletVerdicts(listWalletProfiles(profilesDir()), services)
     .map((r) => ({ ...r, status: statusOf(r.wallet) }))
     .sort((a, b) => order.indexOf(a.status) - order.indexOf(b.status));
 
   it("writes the verdict table for the job summary", () => {
     fs.mkdirSync(new URL("../results/", import.meta.url), { recursive: true });
-    fs.writeFileSync(new URL("../results/wallet-verdicts.md", import.meta.url), renderVerdicts(devnet, rows));
+    fs.writeFileSync(new URL("../results/wallet-verdicts.md", import.meta.url), renderVerdicts(services, rows));
   });
 
-  it("list a wallet as recommended or compatible only when devnet can serve it", () => {
+  it("list a wallet as recommended or compatible only when the services can serve it", () => {
     const contradicted = rows
       .filter((r) => r.status !== "testing" && (r.verdict === "will not work" || r.verdict === "unknown"))
       .map((r) => `${r.wallet} (${r.status}) ${r.verdict}: ${r.reasons.join("; ")}`);
@@ -113,7 +113,7 @@ describe("the listed wallets on devnet", () => {
   });
 
   it("carry no service gap past its re-check date", () => {
-    const expired = devnet.gaps.filter((g) => g.expires < today).map((g) => `${g.id} expired ${g.expires}`);
-    expect(expired, "re-check conformance/devnet-services.yaml: drop the gap if fixed, or push the date").toEqual([]);
+    const expired = services.gaps.filter((g) => g.expires < today).map((g) => `${g.id} expired ${g.expires}`);
+    expect(expired, "re-check conformance/testnet-services.yaml: drop the gap if fixed, or push the date").toEqual([]);
   });
 });

@@ -7,36 +7,39 @@ const ok = (body: unknown) =>
 
 afterEach(() => vi.unstubAllGlobals());
 
+// The build runs V4 (every network does), so resolveTrust asks the indexer.
 describe("resolveTrust", () => {
-  it("maps TRUSTED with credentials", async () => {
-    vi.stubGlobal("fetch", vi.fn(() =>
-      ok({ did: DID, trustStatus: "TRUSTED", credentials: [
-        { ecsType: "ECS-SERVICE", result: "VALID", claims: { name: "Svc" } }] })));
+  it("posts the DID to the indexer and maps a trusted body", async () => {
+    const fetchMock = vi.fn<(url: string) => Promise<Response>>(() =>
+      ok({ did: DID, trusted: true, ecsCredentials: [
+        { ecsSchema: "ServiceCredential", credentialSchemaId: 5, id: `${DID}#a`,
+          credentialSubject: { name: "Svc" } }] }));
+    vi.stubGlobal("fetch", fetchMock);
     const r = await resolveTrust(DID);
     expect(r.state).toBe("TRUSTED");
     expect(r.credentials[0].claims.name).toBe("Svc");
+    expect(String(fetchMock.mock.calls[0][0])).toContain("/v4/verifiable-trust/resolve");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it("maps PARTIAL to the untrusted state", async () => {
-    vi.stubGlobal("fetch", vi.fn(() => ok({ did: DID, trustStatus: "PARTIAL", credentials: [] })));
+  it("maps trusted=false to the untrusted state", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => ok({ did: DID, trusted: false })));
     expect((await resolveTrust(DID)).state).toBe("UNTRUSTED");
   });
 
-  it("maps an unknown trustStatus to UNVERIFIED, not a false negative", async () => {
-    vi.stubGlobal("fetch", vi.fn(() => ok({ did: DID, trustStatus: "PENDING" })));
+  it("maps a body with no verdict to UNVERIFIED, not a false negative", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => ok({ did: DID })));
     expect((await resolveTrust(DID)).state).toBe("UNVERIFIED");
   });
 
-  it("404 triggers refresh then one re-poll, then UNVERIFIED", async () => {
-    const fetchMock = vi.fn()
-      .mockResolvedValueOnce(new Response("{}", { status: 404 }))
-      .mockResolvedValueOnce(new Response("{}", { status: 200 })) // refresh accepted
-      .mockResolvedValueOnce(new Response("{}", { status: 404 }));
-    vi.stubGlobal("fetch", fetchMock);
-    const r = await resolveTrust(DID);
-    expect(r.state).toBe("UNVERIFIED");
-    expect(fetchMock).toHaveBeenCalledTimes(3);
-    expect(String(fetchMock.mock.calls[1][0])).toContain("/v1/trust/refresh");
+  it("maps 404 (the DID is not in the VPR) to UNTRUSTED", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(new Response("{}", { status: 404 }))));
+    expect((await resolveTrust(DID)).state).toBe("UNTRUSTED");
+  });
+
+  it("maps another error status to UNVERIFIED", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => Promise.resolve(new Response("{}", { status: 500 }))));
+    expect((await resolveTrust(DID)).state).toBe("UNVERIFIED");
   });
 
   it("network error maps to UNVERIFIED, never UNTRUSTED", async () => {
@@ -45,7 +48,7 @@ describe("resolveTrust", () => {
   });
 
   it("mismatched did in body is UNVERIFIED", async () => {
-    vi.stubGlobal("fetch", vi.fn(() => ok({ did: "did:web:other", trustStatus: "TRUSTED" })));
+    vi.stubGlobal("fetch", vi.fn(() => ok({ did: "did:web:other", trusted: true })));
     expect((await resolveTrust(DID)).state).toBe("UNVERIFIED");
   });
 });

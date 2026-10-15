@@ -5,14 +5,14 @@ Association (demo) use case (`/usecases/cexa`, unlisted): reusable KYC for
 exchanges and banks, and a Travel Rule counterparty proof. Each organization
 has one vs-agent on the zone `cexa.playground.<network>.verana.network`.
 
-This branch runs the cast on **Verana V4 (devnet)** with veranad v0.10.5 and
-vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md).
+The `main` branch runs the cast on **Verana V4 (testnet)** with veranad v0.10.5
+and vs-agent v2. See [`docs/networks.md`](../../../docs/networks.md).
 
 ## The cast
 
 Each organization has its own Corporation, and each agent is standalone.
 Every agent gets its ECS Organization credential from `ecs-org-issuer` (the
-organization issuer of the devnet ECS Ecosystem) and issues its own ECS
+organization issuer of the testnet ECS Ecosystem) and issues its own ECS
 Service credential.
 
 | Workflow | Release | Role | CEXA entries |
@@ -36,7 +36,7 @@ The two schemas (`schemas/`) of the Ecosystem "Crypto Exchange Association
 - **Corporations.** The first run of an organization creates its Corporation
   with the DID `did:example:playground-cexa-<release>-<chain id>`. The other
   scripts find it by this DID. The operator account
-  (`PLAYGROUND_V4_MNEMONIC`) holds the OperatorAuthorization of each
+  (`PLAYGROUND_MNEMONIC`) holds the OperatorAuthorization of each
   Corporation and signs every transaction.
 - **ISSUER and VERIFIER entries.** A member starts the onboarding process
   with its own Corporation. The operator validates the entry with the
@@ -59,20 +59,20 @@ The two schemas (`schemas/`) of the Ecosystem "Crypto Exchange Association
 
 ## Before the first run
 
-1. Run **Deploy Playground** for devnet. The URL of the EGF document must
+1. Run **Deploy Playground**. The URL of the EGF document must
    answer before `cexa-01` runs, because the workflow computes its digest.
 2. Make sure that the DNS has the wildcard record
-   `*.cexa.playground.devnet.verana.network`, with the same target as the
+   `*.cexa.playground.testnet.verana.network`, with the same target as the
    other playground hosts. The ingress of each agent gets its TLS
-   certificate for `<release>.cexa.playground.devnet.verana.network`.
+   certificate for `<release>.cexa.playground.testnet.verana.network`.
 3. Fund the operator account. Plan about 1 VNA for each organization (see
    [`docs/networks.md`](../../../docs/networks.md)).
 
 ## Run order
 
 Each numbered workflow is a `workflow_dispatch` that calls
-`cexa-00_core.yml` with `step` = `deploy` | `provision` | `all`. Select the
-`v4` branch. Run the workflows **in order, one at a time**. All casts sign
+`cexa-00_core.yml` with `step` = `deploy` | `provision` | `all`. Run the
+workflows **in order, one at a time**. All casts sign
 with the same operator account, so all runs share the concurrency group
 `vesta-cast-<network>`.
 
@@ -82,9 +82,7 @@ with the same operator account, so all runs share the concurrency group
 3. `cexa-04` with `step=all`: the verifier member.
 4. `cexa-05` with `step=all`: the outsider (ECS credentials only).
 
-The app finds the DIDs and the schema ids at run time on devnet. To link the
-use case pages to the Verana app, put the ids of the Ecosystem and of the two
-schemas in `DEVNET_IDS` in `app/lib/cexa-cast.ts`.
+The app finds the DIDs and the schema ids at run time.
 
 ## Dual rail
 

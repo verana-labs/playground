@@ -185,25 +185,25 @@ describe("readCounterparty on V4", () => {
   });
 });
 
-describe("readCounterparty on V3", () => {
-  it("keeps the testnet perm query and the fixed Association DID", async () => {
+describe("readCounterparty on V3 (the old protocol)", () => {
+  it("reads the Linked VP and the perm query of the fixed schema id", async () => {
     const did = "did:webvh:QmM:member";
+    const association = "did:webvh:QmAssoc:association";
     serve({
       [`https://${MEMBER}/.well-known/did.json`]: {
         id: did,
         service: [vp(`${did}#cexa-verified-counterparty-c-vp`)],
       },
       [`https://x/${did}#cexa-verified-counterparty-c-vp.json`]: {
-        verifiableCredential: { issuer: CEXA_CAST.association.did, credentialSubject: {} },
-      },
-      [`${ENDPOINTS.indexer}/verana/perm/v1/list?schema_id=261`]: {
-        permissions: [{ type: "VERIFIER", did, perm_state: "ACTIVE" }],
+        verifiableCredential: { issuer: association, credentialSubject: {} },
       },
     });
 
     const result = await readCounterparty({ host: MEMBER, did }, "v3");
-    expect(result.membership).toEqual({ kind: "member", issuerDid: CEXA_CAST.association.did, claims: {} });
-    expect(result.accreditedVerifier).toBe(true);
-    expect(result.associationDids).toEqual([CEXA_CAST.association.did]);
+    expect(result.membership).toEqual({ kind: "member", issuerDid: association, claims: {} });
+    // The schema id is not known at build time, so the verifier check is null.
+    expect(result.accreditedVerifier).toBeNull();
+    // The build carries no Association DID.
+    expect(result.associationDids).toEqual([]);
   });
 });

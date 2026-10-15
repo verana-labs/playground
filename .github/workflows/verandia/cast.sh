@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # =============================================================================
-# cast.sh — The verandia cast on Verana V4 (devnet)
+# cast.sh — The verandia cast on Verana V4
 # =============================================================================
 #
 # The generic V4 helpers are in .github/workflows/v4/common.sh. This file adds
@@ -18,7 +18,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../v4/common.sh"
 
 # Public hosts: <release>.verandia.playground.<network>.verana.network
-cast_zone() { echo "verandia.playground.${NETWORK:-devnet}.verana.network"; }
+cast_zone() { echo "verandia.playground.${NETWORK:-testnet}.verana.network"; }
 cast_host() { echo "$1.$(cast_zone)"; }
 
 # The two registries: their release names, which are also their Corporation keys.

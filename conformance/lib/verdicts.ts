@@ -60,8 +60,8 @@ export const ServicesSchema = z.strictObject({
 export type Services = z.infer<typeof ServicesSchema>;
 export type ServiceGap = Services["gaps"][number];
 
-export const readDevnetServices = (): Services =>
-  ServicesSchema.parse(yaml.load(fs.readFileSync(new URL("../devnet-services.yaml", import.meta.url), "utf8"), { schema: yaml.JSON_SCHEMA }));
+export const readCastServices = (): Services =>
+  ServicesSchema.parse(yaml.load(fs.readFileSync(new URL("../testnet-services.yaml", import.meta.url), "utf8"), { schema: yaml.JSON_SCHEMA }));
 
 export const VERDICTS = ["works", "works with known issues", "unknown", "will not work"] as const;
 export type Verdict = (typeof VERDICTS)[number];
@@ -87,7 +87,7 @@ function negotiate(
   if (offered.some((v) => (support[v] ?? "unknown") === "unknown"))
     return { verdict: "unknown", reason: `${dimension}: whether it takes ${offered.join(" or ")} is not established` };
   const known = Object.entries(support).flatMap(([v, s]) => (s === "yes" ? [v] : []));
-  return { verdict: "will not work", reason: `${dimension}: it takes ${known.join(", ") || "nothing known"}, devnet offers ${offered.join(", ") || "none of it"}` };
+  return { verdict: "will not work", reason: `${dimension}: it takes ${known.join(", ") || "nothing known"}, the services offer ${offered.join(", ") || "none of it"}` };
 }
 
 function openId4VcOutcomes(profile: WalletProfile, build: WalletBuild, services: Services, gaps: ServiceGap[]): Outcome[] {
@@ -138,7 +138,7 @@ export function renderVerdicts(services: Services, rows: (WalletVerdict & { stat
   const lines = [
     `## Listed wallets on ${services.network}`,
     "",
-    "Static verdict: the capabilities each profile declares against what the devnet services offer and their known gaps (`conformance/devnet-services.yaml`).",
+    "Static verdict: the capabilities each profile declares against what the cast services offer and their known gaps (`conformance/testnet-services.yaml`).",
     "",
     "| wallet | status | rail | verdict | why |",
     "| --- | --- | --- | --- | --- |",

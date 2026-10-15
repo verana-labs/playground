@@ -3,7 +3,7 @@ name: "Vesta 01 · Helvetia Trust"
 # Deploys Helvetia Trust Services (demo), a standalone organization. It gets its
 # ECS Organization credential from ecs-org-issuer and issues its own ECS
 # Service credential.
-# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# Verana V4 (testnet): run it from the main branch. Part of the Vesta cast CI/CD;
 # see .github/workflows/vesta/README.md for the run order.
 
 on:

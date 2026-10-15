@@ -2,8 +2,9 @@
 // Source of truth: verana-spec → playground/verana-explained/spec.md (0.5).
 // §1 is a marketing-style company article (no protocol vocabulary);
 // §2 is the solution section (CTO quote + pillars + ecosystem choices); §3–§5 are the technical build with the
-// progressive scene graph. Protocol facts target v3; the network-specific
-// values (DIDs, ids, endpoints, the ECS-Org issuer) follow the build network.
+// progressive scene graph. The PROTOCOL switches give the facts of the live
+// protocol (V4; V3 is the old one); the network-specific values (DIDs, ids,
+// endpoints, the ECS-Org issuer) follow the build network.
 // Reproduce recipes
 // follow the current verana-frontend UX: ecosystem → credential schema →
 // Participants tree → Join from the branch you want to join under.
@@ -32,9 +33,8 @@ const resolveRecipe =
     ? `Resolve it: POST ${ENDPOINTS.resolver}/v4/verifiable-trust/resolve {"did": "<your-did>"} → not trusted. That's the starting line.`
     : `Resolve it: ${ENDPOINTS.resolver}/v1/trust/resolve?did=<your-did> → UNTRUSTED. That's the starting line.`;
 
-// Deep link to a credential schema in the Verana app (testnet: its public
-// participants tree). The ids are known on testnet only (SCHEMA_IDS), so the
-// link is absent on devnet.
+// Deep link to a credential schema in the Verana app. The ids are not known
+// at build time on V4 (SCHEMA_IDS is empty), so the link is absent.
 const schemaLink = (label: string, schemaId: number | undefined) => {
   const href = credentialSchemaUrl(schemaId);
   return href ? [{ label, href }] : [];

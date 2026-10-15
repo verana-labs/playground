@@ -7,7 +7,7 @@
 set -eo pipefail
 source "${CAST_DIR}/common.sh"
 trap stop_port_forwards EXIT
-set_network_vars "${NETWORK:-devnet}"
+set_network_vars "${NETWORK:-testnet}"
 
 if [ "${DEMO_CREDDEF:-false}" != "true" ]; then
   ok "${SERVICE_NAME}: nothing to provision"

@@ -1,6 +1,6 @@
-#!/usr/bin/env bash
+  #!/usr/bin/env bash
 # =============================================================================
-# cast.sh — The cexa cast on Verana V4 (devnet)
+# cast.sh — The cexa cast on Verana V4
 # =============================================================================
 #
 # The generic V4 helpers are in .github/workflows/v4/common.sh. This file adds
@@ -18,7 +18,7 @@
 source "$(dirname "${BASH_SOURCE[0]}")/../v4/common.sh"
 
 # Public hosts: <release>.cexa.playground.<network>.verana.network
-cast_zone() { echo "cexa.playground.${NETWORK:-devnet}.verana.network"; }
+cast_zone() { echo "cexa.playground.${NETWORK:-testnet}.verana.network"; }
 cast_host() { echo "$1.$(cast_zone)"; }
 
 # The Corporation DID of an organization. This value does not use CAST, so a
@@ -40,7 +40,7 @@ COUNTERPARTY_TITLE="CEXAVerifiedCounterpartyCredential"
 # The schema JSON of a file in schemas/, with the network in its $id.
 # Usage: cexa_schema_json <file>
 cexa_schema_json() {
-  sed "s/__NETWORK__/${NETWORK:-devnet}/g" "${CAST_DIR}/schemas/$1" | jq -c '.'
+  sed "s/__NETWORK__/${NETWORK:-testnet}/g" "${CAST_DIR}/schemas/$1" | jq -c '.'
 }
 
 # The DID of the Association agent, from its did:webvh log.

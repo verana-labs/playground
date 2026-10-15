@@ -28,10 +28,10 @@ describe("demo services", () => {
     expect(getDemoService("nope")).toBeUndefined();
   });
 
-  it("carries the live Vesta cast DIDs so resolution needs no discovery fetch", () => {
+  it("carries the Vesta cast hosts and no fixed DID (the app finds the DID from the host)", () => {
     for (const id of ["vesta", "helvetia-trust", "vesta-portal", "zenith", "umbra"]) {
       const s = getDemoService(id);
-      expect(s?.did).toMatch(/^did:webvh:Qm/);
+      expect(s?.did).toBeUndefined();
       expect(s?.host).toContain("playground.testnet.verana.network");
     }
     expect(getDemoService("vesta")?.appUrl).toBe(
@@ -39,13 +39,13 @@ describe("demo services", () => {
     );
   });
 
-  it("carries the live BHI cast DIDs, including meridian-tech's shorter host", () => {
+  it("carries the BHI cast hosts, including meridian-tech's shorter host, and no fixed DID", () => {
     for (const id of [
       "institute", "orchestrating-identity", "tvs", "northbank",
       "caledonian", "cirrus", "meridian-tech", "jobsearch", "halcyon",
     ]) {
       const s = getDemoService(id);
-      expect(s?.did).toMatch(/^did:webvh:Qm/);
+      expect(s?.did).toBeUndefined();
       expect(s?.host).toContain("bhi.playground.testnet.verana.network");
     }
     expect(getDemoService("meridian-tech")?.host).toBe(

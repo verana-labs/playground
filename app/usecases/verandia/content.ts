@@ -2,8 +2,8 @@
 // Source of truth: verana-spec → playground/verandia/spec.md (0.1).
 // §1 is a civic article (no protocol vocabulary); §2 is the solution
 // (Minister quote + pillars + ecosystem choices); §3 is the technical build
-// with the progressive scene graph; §4 the demos. Protocol facts target v3;
-// on V4 (devnet) the `V4` switches give the V4 facts of the live cast: each
+// with the progressive scene graph; §4 the demos. The `V4` switches give the
+// V4 facts of the live cast (V3 is the old protocol; no network runs it): each
 // organization gets its ECS-Organization credential from the organization
 // issuer of the ECS Ecosystem, and story step 3.2 is not on chain.
 // Reproduce recipes follow the current verana-frontend UX.
@@ -283,7 +283,7 @@ export const JOURNEY: {
             value: displayDid(VERANDIA_CAST.businessRegistry),
             note: V4
               ? `The deployed register on the Verana ${NETWORK} (the did:web alias of its did:webvh) - resolve it yourself with the indexer at ${resolver}.`
-              : "The live DID of the deployed register on the Verana testnet - resolve it yourself at resolver.testnet.verana.network.",
+              : `The live DID of the deployed register on the Verana ${NETWORK} - resolve it yourself with the trust resolver at ${resolver}.`,
           },
           underHood: [
             "The vs-agent generates the DID (did:webvh recommended) and publishes its DID Document with a DIDComm endpoint at https://<host>/.well-known/did.json.",

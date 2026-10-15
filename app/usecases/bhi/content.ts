@@ -25,9 +25,9 @@
 //  3. [AGREEMENT] Resolved 2026-09-23: the use case is listed publicly
 //     (nav, sitemap, indexable) per Verana's decision. It had been
 //     unlisted + noindex while the OID-Verana agreement was pending.
-//  4. [CAST] The cast is DEPLOYED on the testnet (2026-09-02 bootstrap;
-//     bhi-* workflows, one vs-agent per participant; the v4 branch deploys
-//     it on the devnet, see .github/workflows/bhi/README.md) and chapter 4 demos
+//  4. [CAST] The cast is DEPLOYED on the testnet (first bootstrap on
+//     2026-09-02; bhi-* workflows, one vs-agent per participant, see
+//     .github/workflows/bhi/README.md) and chapter 4 demos
 //     1-3 run live against it; demos 4-5 (revocation, directory) are
 //     follow-ups. Hosts remain our proposal, pending OID confirmation.
 //     Claim sets follow the partner review of 2026-08-20 (see SCHEMAS):
@@ -46,7 +46,7 @@ import type {
 } from "../story-blocks";
 
 /** How to resolve a DID on the network of the build: the trust resolver on
- *  V3 (testnet), the indexer on V4 (devnet). */
+ *  V3, the indexer on V4. */
 const RESOLVE_STEP =
   PROTOCOL === "v4"
     ? `Resolve it: POST {"did": "<your-did>"} to ${ENDPOINTS.indexer}/v4/verifiable-trust/resolve. The indexer does not know your DID yet, so it is UNTRUSTED. That is the starting line.`

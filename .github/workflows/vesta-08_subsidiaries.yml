@@ -3,7 +3,7 @@ name: "Vesta 08 · Subsidiaries (Iberia + Nordics)"
 # Deploys the two Vesta subsidiaries: ECS credentials and an ISSUER entry on
 # the Authorized Repairer schema of the Vesta Repair Network.
 # CAUTION: the provision step needs vesta-06 first.
-# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# Verana V4 (testnet): run it from the main branch. Part of the Vesta cast CI/CD;
 # see .github/workflows/vesta/README.md for the run order.
 
 on:

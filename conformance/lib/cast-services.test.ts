@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { inScope, issuerMetadataUrls, listCastServices, scopedCasts } from "./cast-services";
 import { listNetworks } from "./network";
 
-const testnet = listNetworks().find((n) => n.id === "testnet-v3")!;
+const testnet = listNetworks().find((n) => n.id === "testnet-v4")!;
 
 function fixture(dir: string): void {
   const cast = path.join(dir, "demo");

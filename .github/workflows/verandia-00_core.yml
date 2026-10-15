@@ -1,7 +1,7 @@
 name: "Verandia 00 · Core (reusable)"
 
-# Reusable deploy + provision pipeline for one member of the verandia cast. On
-# the v4 branch the cast uses Verana V4 (devnet): this wrapper calls the
+# Reusable deploy + provision pipeline for one member of the verandia cast. The
+# cast uses Verana V4 (testnet): this wrapper calls the
 # generic V4 core (v4-cast-00_core.yml) with cast=verandia. It keeps the inputs
 # of the verandia-0X workflows. force_refresh has no effect on V4: the agents
 # get their credentials through onboarding processes, not by a re-issue.

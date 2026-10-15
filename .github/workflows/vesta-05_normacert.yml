@@ -3,7 +3,7 @@ name: "Vesta 05 · NormaCert (demo)"
 # Deploys NormaCert: ECS credentials and an ISSUER entry on the ISO 9001-style
 # (demo) schema. NormaCert issues the certificate to Vesta when vesta-03 runs.
 # CAUTION: the provision step needs vesta-04 first.
-# Verana V4 (devnet): run it from the v4 branch. Part of the Vesta cast CI/CD;
+# Verana V4 (testnet): run it from the main branch. Part of the Vesta cast CI/CD;
 # see .github/workflows/vesta/README.md for the run order.
 
 on:

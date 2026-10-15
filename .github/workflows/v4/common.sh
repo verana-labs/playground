@@ -240,11 +240,22 @@ fetch_did_from_log() {
 
 # Extract a value from the events of a transaction.
 # Usage: extract_tx_event <tx_hash> <event_type> <attr_key>
+# The RPC endpoint can answer from a node that has not indexed the
+# transaction yet, so the query tries again a few times.
 extract_tx_event() {
-  veranad q tx "$1" --node "$NODE_RPC" --output json 2>/dev/null \
-    | jq -r --arg t "$2" --arg k "$3" \
-      '.events[] | select(.type == $t) | .attributes[] | select(.key == $k) | .value' \
-    | tr -d '"' | head -1
+  local value i
+  for i in 1 2 3 4 5 6; do
+    value=$(veranad q tx "$1" --node "$NODE_RPC" --output json 2>/dev/null \
+      | jq -r --arg t "$2" --arg k "$3" \
+        '.events[] | select(.type == $t) | .attributes[] | select(.key == $k) | .value' \
+      | tr -d '"' | head -1)
+    if [ -n "$value" ]; then
+      echo "$value"
+      return 0
+    fi
+    sleep 3
+  done
+  return 1
 }
 
 # Extract the JSON line from the veranad output (the output can start with a
@@ -874,6 +885,28 @@ ensure_self_issued_service_credential() {
 # it is known: the step then reads only the flow of that entry.
 # Usage: complete_onboarding <validator_admin_api> <applicant_did> [claims_json] [applicant_participant_id]
 complete_onboarding() {
+  local applicant_participant_id="${4:-}"
+  local attempt state i
+  for attempt in 1 2 3; do
+    validate_onboarding_once "$@" || return 1
+    # The validator agent sends the validation transaction after the call.
+    # That transaction can fail (the flow then goes to VALIDATION_TX_FAILED),
+    # so wait for the entry and validate the flow again when it stays PENDING.
+    [ "$FLOW_SUBMISSION" = "AGENT" ] && [ -n "$applicant_participant_id" ] || return 0
+    for i in $(seq 1 18); do
+      state=$(veranad query pp get-participant "$applicant_participant_id" --node "$NODE_RPC" --output json 2>/dev/null \
+        | jq -r '.participant.op_state // empty')
+      [ "$state" = "VALIDATED" ] && { ok "Participant $applicant_participant_id is VALIDATED"; return 0; }
+      sleep 5
+    done
+    warn "Participant $applicant_participant_id is still ${state:-unknown} after 90 seconds. Validating the flow again (attempt $attempt of 3)..."
+  done
+  err "The validator did not validate participant $applicant_participant_id"
+  return 1
+}
+
+# One pass of complete_onboarding: find the flow and validate it.
+validate_onboarding_once() {
   local admin_api=$1
   local peer_did=$2
   local claims_json="${3:-}"

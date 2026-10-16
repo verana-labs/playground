@@ -85,7 +85,7 @@ for (const network of testableNetworks()) {
       async () => {
         const { presented, state } = await runRailWithRetry(parties, "");
         expect(presented.query).toBe("dcql");
-        expect(presented.clientId).toContain("did:webvh:");
+        expect(presented.clientId.startsWith("x509_hash:")).toBe(true);
         expect(state.verified).toBe(true);
       },
       180_000,

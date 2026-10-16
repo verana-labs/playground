@@ -1,5 +1,5 @@
 import { describe, it } from "vitest";
-import { effectiveDemoParams, effectivePresentation, listWalletProfiles, type WalletBuild, type WalletProfile } from "../../app/lib/wallet-profiles";
+import { effectiveDemoParams, effectivePresentation, listWalletProfiles, targetsNetwork, type WalletBuild, type WalletProfile } from "../../app/lib/wallet-profiles";
 import { inScope, listCastServices, type CastService } from "../lib/cast-services";
 import { incompatibilityFor } from "../lib/incompatibility";
 import { clientIdMatches, fetchAuthorizationRequest, fetchCredentialOffer, fetchOobInvitation, parseWalletLink } from "../lib/links";
@@ -8,6 +8,7 @@ import { mintIssuance, mintPresentation, type Mint, type Rail } from "../lib/pla
 import { profilesDir } from "../lib/profiles-dir";
 import { check, type Verdict } from "../lib/report";
 import { listScenarios, serviceFor, type Scenario } from "../lib/scenarios";
+import type { Network } from "../lib/network";
 import { describeNetworks } from "../lib/suite";
 
 const profiles = listWalletProfiles(profilesDir());
@@ -15,14 +16,14 @@ const scenarios = listScenarios();
 
 type Target = { profile: WalletProfile; build: WalletBuild; rail: Rail; scenario: Scenario; service: CastService };
 
-function targets(services: CastService[]): Target[] {
+function targets(network: Network, services: CastService[]): Target[] {
   const out: Target[] = [];
   for (const profile of profiles)
     for (const rail of profile.rails)
       for (const scenario of scenarios) {
         const service = services.find((s) => s.id === serviceFor(scenario, rail));
         if (!service || !inScope(service)) continue;
-        for (const build of profile.builds) out.push({ profile, build, rail, scenario, service });
+        for (const build of profile.builds.filter((b) => targetsNetwork(b, network.id))) out.push({ profile, build, rail, scenario, service });
       }
   return out;
 }
@@ -84,7 +85,7 @@ async function checkInvitation(t: Target, mint: Mint): Promise<string[]> {
 
 describeNetworks("offer and request links [CONF-T1-4]", (network) => {
   describe.skipIf(!mintsEnabled())("live mints (CONFORMANCE_MINTS=1)", () => {
-    for (const t of targets(listCastServices(network))) {
+    for (const t of targets(network, listCastServices(network))) {
       const base = { tier: "t1" as const, check: `link:${t.scenario.kind}`, clause: "CONF-T1-4", network: network.id, cast: t.service.cast, service: t.service.id, wallet: t.profile.id, build: t.build.kind, scenario: t.scenario.id };
       it.concurrent(`${t.profile.id}/${t.build.kind} ${t.scenario.id} on ${t.service.id}`, () =>
         check(base, async (): Promise<Verdict> => {

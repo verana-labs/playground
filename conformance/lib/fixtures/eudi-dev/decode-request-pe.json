@@ -1,0 +1,166 @@
+{
+  "client_id": "w5dHa_PtVP97vV49-BwLFaKg-n021dOB3abj9W-DTYc",
+  "nonce": "bkfZBG4xHmyAAaJWFQWY4-trYZ9W0PIlHWixmYrwLEY",
+  "request_object": {
+    "header": {
+      "alg": "ES256",
+      "typ": "oauth-authz-req+jwt",
+      "x5c": [
+        "MIICsjCCAlmgAwIBAgIQKzutWB9L3gaxg9nOHwfx0TAKBggqhkjOPQQDAjBNMUswSQYDVQQDE0JkZW1vLXZlcmlmaWVyLWFjY3JlZGl0ZWQucGxheWdyb3VuZC5kZXZuZXQudmVyYW5hLm5ldHdvcmsgdmVyaWZpZXIwHhcNMjYxMDAxMTU1NTAxWhcNMjcxMDAxMTU1NjAxWjBNMUswSQYDVQQDE0JkZW1vLXZlcmlmaWVyLWFjY3JlZGl0ZWQucGxheWdyb3VuZC5kZXZuZXQudmVyYW5hLm5ldHdvcmsgdmVyaWZpZXIwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNCAARex6qpcJ8dxTQj/+3eccx1Cib9Lbu2bIFKf5BZh4MtLMggkdmFrMKjdMC8XW9EijbTXOBc44P7vlEqOroz5vNxo4IBGTCCARUwHQYDVR0OBBYEFMO81Y5VTikBL6PiF4bvUVZKuIvkMAsGA1UdDwQEAwIHgDAfBgNVHSMEGDAWgBTDvNWOVU4pAS+j4heG71FWSriL5DCBugYDVR0RBIGyMIGvhnJkaWQ6d2Vidmg6UW1VWFZLNTlkVGJLY1VpU3NiTEdBQnJqYXFoQmlubTJ0dTllVllqQVg1d2JFQTpkZW1vLXZlcmlmaWVyLWFjY3JlZGl0ZWQucGxheWdyb3VuZC5kZXZuZXQudmVyYW5hLm5ldHdvcmuCOWRlbW8tdmVyaWZpZXItYWNjcmVkaXRlZC5wbGF5Z3JvdW5kLmRldm5ldC52ZXJhbmEubmV0d29yazAJBgNVHRMEAjAAMAoGCCqGSM49BAMCA0cAMEQCIFTvvf65wvzzm0938qEMUFa/q4HEKwoP6Y667ic1z3rtAiAA9Zq+w2p4iaEAOpQ/KLL8wTEQbISEw3hxsKkT/nT1Xg=="
+      ]
+    },
+    "payload": {
+      "aud": "https://self-issued.me/v2",
+      "client_id": "w5dHa_PtVP97vV49-BwLFaKg-n021dOB3abj9W-DTYc",
+      "client_id_scheme": "x509_hash",
+      "client_metadata": {
+        "client_name": "Accredited Verifier (demo)",
+        "logo_uri": "https://raw.githubusercontent.com/verana-labs/playground/main/public/images/cast/demo-verifier.svg",
+        "vp_formats": {
+          "dc+sd-jwt": {
+            "kb-jwt_alg_values": [
+              "ES256",
+              "ES384",
+              "EdDSA",
+              "Ed25519",
+              "ES256K"
+            ],
+            "sd-jwt_alg_values": [
+              "ES256",
+              "ES384",
+              "EdDSA",
+              "Ed25519",
+              "ES256K"
+            ]
+          },
+          "jwt_vc": {
+            "alg": [
+              "ES256",
+              "ES384",
+              "EdDSA",
+              "Ed25519",
+              "ES256K"
+            ]
+          },
+          "jwt_vc_json": {
+            "alg": [
+              "ES256",
+              "ES384",
+              "EdDSA",
+              "Ed25519",
+              "ES256K"
+            ]
+          },
+          "jwt_vp": {
+            "alg": [
+              "ES256",
+              "ES384",
+              "EdDSA",
+              "Ed25519",
+              "ES256K"
+            ]
+          },
+          "jwt_vp_json": {
+            "alg": [
+              "ES256",
+              "ES384",
+              "EdDSA",
+              "Ed25519",
+              "ES256K"
+            ]
+          },
+          "ldp_vc": {
+            "proof_type": [
+              "Ed25519Signature2018",
+              "Ed25519Signature2020"
+            ]
+          },
+          "ldp_vp": {
+            "proof_type": [
+              "Ed25519Signature2018",
+              "Ed25519Signature2020"
+            ]
+          },
+          "mso_mdoc": {
+            "alg": [
+              "ES256",
+              "ES384",
+              "EdDSA"
+            ]
+          },
+          "vc+sd-jwt": {
+            "kb-jwt_alg_values": [
+              "ES256",
+              "ES384",
+              "EdDSA",
+              "Ed25519",
+              "ES256K"
+            ],
+            "sd-jwt_alg_values": [
+              "ES256",
+              "ES384",
+              "EdDSA",
+              "Ed25519",
+              "ES256K"
+            ]
+          }
+        }
+      },
+      "exp": 1790952678,
+      "iat": 1790952378,
+      "nonce": "bkfZBG4xHmyAAaJWFQWY4-trYZ9W0PIlHWixmYrwLEY",
+      "presentation_definition": {
+        "format": {
+          "vc+sd-jwt": {
+            "kb-jwt_alg_values": [
+              "ES256"
+            ],
+            "sd-jwt_alg_values": [
+              "ES256"
+            ]
+          }
+        },
+        "id": "cs-8-presentation-exchange",
+        "input_descriptors": [
+          {
+            "constraints": {
+              "fields": [
+                {
+                  "filter": {
+                    "const": "https://playground-demo.playground.devnet.verana.network/vt/vct/8",
+                    "pattern": "https://playground-demo\\.playground\\.devnet\\.verana\\.network/vt/vct/8",
+                    "type": "string"
+                  },
+                  "path": [
+                    "$.vct"
+                  ]
+                },
+                {
+                  "path": [
+                    "$.demoId"
+                  ]
+                },
+                {
+                  "path": [
+                    "$.name"
+                  ]
+                }
+              ],
+              "limit_disclosure": "preferred"
+            },
+            "id": "cs-8"
+          }
+        ]
+      },
+      "response_mode": "direct_post",
+      "response_type": "vp_token",
+      "response_uri": "https://demo-verifier-accredited.playground.devnet.verana.network/oid4vp/verifier/authorize?session=f60953c3-477e-41c6-8b03-1a2acee4d749",
+      "state": "aGnmQm1YimFBpvbTyiEzxEkq-3HGxkDJxvIx_n6lpvM"
+    }
+  },
+  "response_mode": "direct_post",
+  "response_type": "vp_token",
+  "response_uri": "https://demo-verifier-accredited.playground.devnet.verana.network/oid4vp/verifier/authorize?session=f60953c3-477e-41c6-8b03-1a2acee4d749",
+  "state": "aGnmQm1YimFBpvbTyiEzxEkq-3HGxkDJxvIx_n6lpvM",
+  "type": "OID4VP Authorization Request"
+}

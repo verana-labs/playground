@@ -1,0 +1,13 @@
+{
+  "app_version": "v2.1.0-dev.7",
+  "environment": {
+    "network": {
+      "chain_id": "vna-testnet-1",
+      "rpc_endpoint": "https://rpc.testnet.verana.network/",
+      "lcd_endpoint": "https://api.testnet.verana.network",
+      "cosmos_sdk_version": "v0.54.4",
+      "node_version": "v0.10.6",
+      "app_name": "verana-indexer"
+    }
+  }
+}

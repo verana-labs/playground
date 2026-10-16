@@ -3,7 +3,7 @@ import { inScope, listCastServices } from "../lib/cast-services";
 import { fetchJson } from "../lib/http";
 import { fetchIssuerMetadata, vctDocumentUrl } from "../lib/issuer-metadata";
 import { fetchOobInvitation } from "../lib/links";
-import { issuanceParamsFor, mintsEnabled } from "../lib/mints";
+import { issuanceParamsFor, mintsEnabled, presentationParamsFor } from "../lib/mints";
 import { mintIssuance, mintPresentation } from "../lib/playground-client";
 import { check } from "../lib/report";
 import { listScenarios } from "../lib/scenarios";
@@ -71,11 +71,19 @@ describeNetworks("human-visible strings [CONF-T1-7]", (network) => {
         check({ tier: "t1", check: "strings:invitation-label", clause: "CONF-T1-7", network: network.id, cast: service.cast, service: service.id }, async () => {
           const verifier = service.oid4vcRole === "verifier" || service.demoPerm === "verifier";
           const eventosVerifier = verifier && service.cast === "eventos";
+          const requested = presentationParamsFor(service);
+          if (verifier && !requested.credential && !eventosVerifier && service.cast !== "demo")
+            return { outcome: "not-testable", cause: "no scenario names the credential this verifier asks for, so there is no request to mint" };
+          const login = requested.login ?? (eventosVerifier ? { evento: service.id.replace(/^evento-/, ""), rol: "asistente" } : undefined);
           const mint = verifier
-            ? await mintPresentation(network, service, { format: "anoncreds", demoParams: "", login: eventosVerifier ? { evento: service.id.replace(/^evento-/, ""), rol: "asistente" } : undefined })
+            ? await mintPresentation(network, service, { format: "anoncreds", demoParams: "", credential: requested.credential, login })
             : await mintIssuance(network, service, { format: "anoncreds", demoParams: "", ...issuanceParamsFor(service) });
           if (mint.kind === "invitation") return { outcome: "unknown", cause: "plain invitation page, no label to read", evidence: { url: mint.url } };
           const invitation = await fetchOobInvitation(mint.url);
+          if (invitation.label === undefined)
+            return expectsUntrusted(service, scenarios)
+              ? { outcome: "works", evidence: { url: mint.url, expected: "an untrusted service holds no ECS credential to label its invitation" } }
+              : { outcome: "broken", cause: "the invitation carries no label", evidence: { url: mint.url } };
           const damage = scan("invitation", { label: invitation.label });
           return { outcome: damage.length ? "broken" : "works", cause: describeDamage(damage), evidence: { url: mint.url, label: invitation.label, damage } };
         }),

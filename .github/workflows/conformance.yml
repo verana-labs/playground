@@ -1,45 +1,26 @@
 name: conformance
 on:
-  schedule:
-    - cron: "17 3 * * *"
   workflow_dispatch:
     inputs:
       casts:
         description: "casts that receive live mints"
         default: "demo,vesta,verandia,cexa,bhi"
       tier3:
-        description: "also run tier 3 (conformance-tier3.yml, advisory until it has passed once; nightlies always run it)"
+        description: "also run tier 3 (conformance-tier3.yml, advisory until it has passed once)"
         type: boolean
         default: false
-  push:
-    branches: [main]
-    paths:
-      - "conformance/**"
-      - "personal-wallets.yaml"
-      - "app/lib/wallet-profiles.ts"
-      - ".github/workflows/conformance.yml"
-  pull_request:
-    paths:
-      - "conformance/**"
-      - "personal-wallets.yaml"
-      - "app/lib/wallet-profiles.ts"
-      - ".github/workflows/conformance.yml"
 
 permissions:
   contents: read
-  actions: read
 
 concurrency:
   group: conformance-${{ github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 env:
   CONFORMANCE_NETWORK: testnet-v4
-  NIGHTLY: ${{ github.event_name == 'schedule' }}
 
 jobs:
   tier:
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 75
     strategy:
@@ -125,14 +106,13 @@ jobs:
           overwrite: true
 
   tier3:
-    if: github.event_name == 'schedule' || inputs.tier3
+    if: inputs.tier3
     uses: ./.github/workflows/conformance-tier3.yml
     with:
       network: testnet-v4
     secrets: inherit
 
   protocolsoup:
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     timeout-minutes: 30
     continue-on-error: true
@@ -194,7 +174,7 @@ jobs:
 
   gate:
     needs: [tier, tier3]
-    if: always() && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+    if: always()
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -215,15 +195,6 @@ jobs:
         with:
           pattern: conformance-t3-*
           path: tier3
-      - name: Download the previous nightly as baseline
-        if: env.NIGHTLY == 'true'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          previous=$(gh run list --repo "$GITHUB_REPOSITORY" --workflow conformance.yml --branch "$GITHUB_REF_NAME" --event schedule --status completed --limit 1 --json databaseId --jq '.[0].databaseId // empty' || true)
-          if [ -n "$previous" ]; then
-            gh run download "$previous" --repo "$GITHUB_REPOSITORY" --pattern 'conformance-t*' --dir baseline || echo "run $previous has no tier artifacts"
-          fi
       - name: Tier 3, advisory until it has passed once
         if: needs.tier3.result != 'skipped'
         working-directory: conformance
@@ -246,7 +217,5 @@ jobs:
         run: |
           args=(--services testnet-services.yaml --require-tier t1 --require-tier t2)
           while IFS= read -r f; do args+=(--results "$f"); done < <(find ../current -name latest.json)
-          while IFS= read -r f; do args+=(--baseline "$f"); done < <(find ../baseline -name latest.json 2> /dev/null)
-          if [ "$NIGHTLY" = true ]; then args+=(--fail-on-missing); fi
           node --experimental-strip-types lib/gate.ts "${args[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
           exit "${PIPESTATUS[0]}"

@@ -6,7 +6,7 @@ they do. There are three layers. The first two run in GitHub Actions, the third 
 | Layer | When | What it proves | Where |
 |---|---|---|---|
 | CI | every pull request and push | the site builds, the listing is valid and pinned, the wallet profiles agree with what the services offer | `.github/workflows/ci.yml` |
-| Conformance | 03:17 UTC every day, by hand, and on pull requests that touch conformance, the listing or the profile schema | the contract checks plus live OpenID4VCI and OpenID4VP flows with a headless holder per listed wallet build and the reference holders, gated on the known gaps | `.github/workflows/conformance.yml` |
+| Conformance | by hand (Actions > conformance > Run workflow) before listing a new wallet build or rolling a new vs-agent image, never on a schedule, a pull request or a push | the contract checks plus live OpenID4VCI and OpenID4VP flows with a headless holder per listed wallet build and the reference holders, gated on the known gaps | `.github/workflows/conformance.yml` |
 | Device pass (Tier 3) | after a new wallet build, a new vs-agent image on the casts, or a chain reset | the real wallet shows the trust card, gates Add and Share on it, and the service sees the exchange complete | this document |
 
 The automated layers are described in detail in [`conformance/README.md`](../conformance/README.md), and the

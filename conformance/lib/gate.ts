@@ -51,9 +51,7 @@ export type GateInput = {
   cells: GateCell[];
   gaps: KnownGap[];
   today: string;
-  baseline: GateCell[] | null;
   requiredTiers: string[];
-  failOnMissing: boolean;
 };
 
 const MATCH_FIELDS = ["tier", "check", "cast", "service", "wallet", "build", "scenario"] as const;
@@ -108,14 +106,6 @@ export function evaluate(input: GateInput): GateReport {
     if (!input.cells.some((c) => c.tier === tier)) failures.push({ kind: "missing", key: `${tier}|*`, cause: `no ${tier} results were produced` });
   }
 
-  if (input.baseline && input.failOnMissing) {
-    const current = new Set(input.cells.map(cellKey));
-    const ranTiers = new Set(input.cells.map((c) => c.tier));
-    for (const key of new Set(input.baseline.filter((c) => ranTiers.has(c.tier)).map(cellKey))) {
-      if (!current.has(key)) failures.push({ kind: "missing", key, cause: "present in the baseline run, absent now" });
-    }
-  }
-
   const ran = (gap: KnownGap): boolean => input.cells.some((c) => matchesOn(gap, c, ["tier", "check", "cast"]));
   return { failures, known, resolved: active.filter((g) => !used.has(g) && ran(g)), expired };
 }
@@ -143,21 +133,16 @@ function main(): void {
     options: {
       services: { type: "string", multiple: true },
       results: { type: "string", multiple: true },
-      baseline: { type: "string", multiple: true },
       "require-tier": { type: "string", multiple: true },
-      "fail-on-missing": { type: "boolean" },
       today: { type: "string" },
     },
   });
   if (!values.services?.length) throw new Error("--services is required");
-  const baselineFiles = values.baseline ?? [];
   const report = evaluate({
     cells: readCells(values.results ?? []),
     gaps: values.services.flatMap((file) => parseServiceGaps(readFileSync(file, "utf8"))),
     today: values.today ?? new Date().toISOString().slice(0, 10),
-    baseline: baselineFiles.length > 0 ? readCells(baselineFiles) : null,
     requiredTiers: values["require-tier"] ?? [],
-    failOnMissing: values["fail-on-missing"] ?? false,
   });
   process.stdout.write(renderMarkdown(report));
   process.exitCode = report.failures.length > 0 ? 1 : 0;

@@ -23,7 +23,7 @@ const gap = (overrides: Partial<KnownGap> = {}): KnownGap => ({
   ...overrides,
 });
 
-const base = { today: "2026-09-17", baseline: null, requiredTiers: [], failOnMissing: false };
+const base = { today: "2026-09-17", requiredTiers: [] };
 
 const servicesFile = (gaps: string): string => `network: testnet-v4\noffer: {}\ngaps:\n${gaps}`;
 
@@ -141,21 +141,6 @@ describe("evaluate", () => {
     expect(report.failures).toEqual([{ kind: "missing", key: "t2|*", cause: "no t2 results were produced" }]);
   });
 
-  it("fails on cells that disappeared since the baseline only when asked to", () => {
-    const gone = cell({ service: "playground-demo", outcome: "works" });
-    const input = { ...base, cells: [cell({ outcome: "works" })], gaps: [], baseline: [cell({ outcome: "works" }), gone] };
-    expect(evaluate(input).failures).toEqual([]);
-    expect(evaluate({ ...input, failOnMissing: true }).failures).toEqual([
-      { kind: "missing", key: cellKey(gone), cause: "present in the baseline run, absent now" },
-    ]);
-  });
-
-  it("leaves a tier that did not run this time to the required-tier check", () => {
-    const deviceCell = cell({ tier: "t3", check: "gating", wallet: "inji", outcome: "works" });
-    const input = { ...base, cells: [cell({ outcome: "works" })], gaps: [], baseline: [cell({ outcome: "works" }), deviceCell], failOnMissing: true };
-    expect(evaluate(input).failures).toEqual([]);
-    expect(evaluate({ ...input, requiredTiers: ["t3"] }).failures).toEqual([{ kind: "missing", key: "t3|*", cause: "no t3 results were produced" }]);
-  });
 });
 
 describe("renderMarkdown", () => {

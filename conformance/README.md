@@ -26,7 +26,7 @@ Proves, on every change, which listed wallets work against the deployed playgrou
   the verdict. Behind `CONFORMANCE_MINTS=1`. See "Tier 2" below.
 - `tier3/` wallet apps on a cloud Android emulator: the QR of a freshly minted offer or request goes into the
   emulator's virtual camera, the wallet scans it with its own scanner, and the outcome is read from the service API.
-  It proves rendering and gating, nightly, one job per wallet and network. See "Tier 3" below. The device pass on a
+  It proves rendering and gating, one job per wallet and network, on dispatch only. See "Tier 3" below. The device pass on a
   physical phone stays by hand: see [`docs/testing.md`](../docs/testing.md).
 
 This directory is its own npm package so that the Tier 2 native dependencies never enter the site build.
@@ -55,19 +55,18 @@ serving and the detection of services that rolled during the run (on in every CI
 ## Gate
 
 CI never trusts a tier's exit code. `.github/workflows/conformance.yml` runs tier 1 and tier 2 in parallel against
-`testnet-v4` on the nightly schedule, on dispatch, on push to `main` and on same-repository pull requests that touch
-conformance, the wallet list or the profile schema. The tier 2 job installs the pinned eudi-dev release (checked
+`testnet-v4` only when dispatched by hand, typically before listing a new wallet build or rolling a new vs-agent
+image, never on a schedule, a push or a pull request, since tier 2 alone takes 30 to 40 minutes. The tier 2 job installs the pinned eudi-dev release (checked
 against its `checksums.txt`) and points `EUDI_DEV_BIN` at it. The `gate` job then merges the `latest.json` of every
 tier artifact and runs:
 
     node --experimental-strip-types lib/gate.ts --services testnet-services.yaml --results <latest.json>... --require-tier t1 --require-tier t2
 
-It fails on a `broken` or `unknown` cell that no active gap of `testnet-services.yaml` covers, on a required tier with
-no cells, and, on a nightly, on a cell of a tier that ran and that existed in the previous nightly and is gone. Tier 3
-runs on the nightlies and when dispatched with `tier3: true`, never on a push or a pull request. It is advisory until it
+It fails on a `broken` or `unknown` cell that no active gap of `testnet-services.yaml` covers and on a required tier with
+no cells. Tier 3 runs only when dispatched with `tier3: true`. It is advisory until it
 has passed once: the gate job reads the `conformance-t3-*` artifacts in a separate step that writes their verdict
 against `testnet-services.yaml` to the job summary and never fails, and the tier 3 jobs themselves do not fail the run.
-Once a nightly passes, the gate takes `conformance-t3-*` with the other tiers again.
+Once a run passes, the gate takes `conformance-t3-*` with the other tiers again.
 
 A gap covers live cells through `cells`, one matcher or a list (`tier` and `check` required, then `cast`, `service`,
 `wallet`, `build`, `scenario`, each a value or a list), on the network the file names. A gap with a `rail` also feeds

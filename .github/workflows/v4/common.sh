@@ -26,9 +26,6 @@
 #   USER_ACC         veranad key name of the Corporation operator
 #   CAST             the cast directory name (demo, vesta, verandia, cexa, bhi)
 #   CORPORATION_KEY  the organization of this agent (config.env)
-#   ECS_KUBECONFIG   optional: the kubeconfig of the chain cluster, where
-#                    ecs-org-issuer runs (ECS_NAMESPACE). Empty: the same
-#                    cluster as the cast.
 #
 # =============================================================================
 
@@ -167,20 +164,14 @@ readonly PP_IDX_ROLE_ECOSYSTEM="ECOSYSTEM"
 
 PF_PIDS=""
 
-# Start a port-forward and wait until the Admin API answers. A release in the
-# chain namespace (ECS_NAMESPACE) lives on the chain cluster: the port-forward
-# uses ECS_KUBECONFIG when it is set.
+# Start a port-forward and wait until the Admin API answers.
 # Usage: start_port_forward <release> <local_port> [namespace]
 start_port_forward() {
   local release=$1
   local local_port=$2
   local namespace="${3:-$NAMESPACE}"
-  local kubeconfig_opts=()
 
-  if [ "$namespace" = "${ECS_NAMESPACE:-}" ] && [ -n "${ECS_KUBECONFIG:-}" ]; then
-    kubeconfig_opts=(--kubeconfig "$ECS_KUBECONFIG")
-  fi
-  kubectl "${kubeconfig_opts[@]}" port-forward -n "$namespace" "svc/${release}" "${local_port}:3000" >/dev/null 2>&1 &
+  kubectl port-forward -n "$namespace" "svc/${release}" "${local_port}:3000" >/dev/null 2>&1 &
   PF_PIDS="$PF_PIDS ${local_port}:$!"
 
   local i=0

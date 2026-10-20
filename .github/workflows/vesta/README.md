@@ -95,8 +95,7 @@ Organization credential of each standalone organization.
 
 | Secret | Notes |
 |---|---|
-| `KUBECONFIG_VERANA_DEV` | the cluster of the cast |
-| `KUBECONFIG_VERANA_TESTNET` | the chain cluster, for the port-forward to `ecs-org-issuer` |
+| `KUBECONFIG_VERANA_TESTNET` | the cluster of the cast and of `ecs-org-issuer` |
 | `K8S_NAMESPACE` | the namespace of the testnet agents |
 | `PLAYGROUND_MNEMONIC` | the operator account of the cast Corporations |
 

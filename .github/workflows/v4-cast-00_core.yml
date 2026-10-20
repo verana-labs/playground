@@ -94,24 +94,8 @@ jobs:
         run: |
           mkdir -p ~/.kube
           cat > ~/.kube/config <<'KUBEEOF'
-          ${{ secrets.KUBECONFIG_VERANA_DEV }}
+          ${{ secrets.KUBECONFIG_VERANA_TESTNET }}
           KUBEEOF
-
-      # The chain services (ecs-org-issuer) run on another cluster. The
-      # onboarding step port-forwards to its Admin API with this kubeconfig.
-      # When the secret is empty, the step uses the main kubeconfig.
-      - name: Set up the kubeconfig of the chain cluster
-        env:
-          CHAIN_KUBECONFIG: ${{ secrets.KUBECONFIG_VERANA_TESTNET }}
-        run: |
-          if [ -n "$CHAIN_KUBECONFIG" ]; then
-            printf '%s\n' "$CHAIN_KUBECONFIG" > ~/.kube/chain-config
-            chmod 600 ~/.kube/chain-config
-            echo "ECS_KUBECONFIG=$HOME/.kube/chain-config" >> "$GITHUB_ENV"
-            echo "The chain cluster has its own kubeconfig"
-          else
-            echo "::warning::Secret KUBECONFIG_VERANA_TESTNET is empty. The port-forward to ecs-org-issuer uses the main kubeconfig."
-          fi
 
       - name: Install kubectl
         uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5.1.0

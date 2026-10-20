@@ -29,8 +29,7 @@ To deploy to another network by hand, set `NETWORK` in the workflow and add the 
 
 | Secret | Value |
 | --- | --- |
-| `KUBECONFIG_VERANA_DEV` | The kubeconfig of the cluster, as plain YAML (not base64). The workflows write it to `~/.kube/config` as is. |
-| `KUBECONFIG_VERANA_TESTNET` | The kubeconfig of the chain cluster, as plain YAML. The cast workflows use it only for the port-forward to the Admin API of `ecs-org-issuer` (namespace `vna-testnet-1`). It needs the permission to list services and to create port-forwards in that namespace. When it is empty, the workflows use `KUBECONFIG_VERANA_DEV` for that port-forward too. |
+| `KUBECONFIG_VERANA_TESTNET` | The kubeconfig of the testnet cluster, as plain YAML (not base64). The workflows write it to `~/.kube/config` as is. |
 | `K8S_NAMESPACE` | The Kubernetes namespace of the playground and of the cast agents. |
 | `PLAYGROUND_MNEMONIC` | The operator account of the casts. It must have funds (see below). |
 | `DOCKER_HUB_LOGIN`, `DOCKER_HUB_PWD` | The registry account of the images. |
@@ -39,7 +38,7 @@ To deploy to another network by hand, set `NETWORK` in the workflow and add the 
 
 Each deploy workflow and each core workflow stop at the "Check network secrets" step when `K8S_NAMESPACE` is empty.
 
-The chain services run on another cluster than the playground. Every standalone agent gets its ECS Organization credential through an onboarding flow that the workflow validates on the Admin API of `ecs-org-issuer`. The workflow port-forwards to it in `ECS_NAMESPACE` (`set_network_vars`, default `vna-testnet-1`) with `KUBECONFIG_VERANA_TESTNET`.
+The playground and the chain services run on the same cluster. Every standalone agent gets its ECS Organization credential through an onboarding flow that the workflow validates on the Admin API of `ecs-org-issuer`. The workflow port-forwards to it in `ECS_NAMESPACE` (`set_network_vars`, default `vna-testnet-1`). The kubeconfig user must have the permission to list services and to create port-forwards in that namespace.
 
 ## The app
 
@@ -87,7 +86,7 @@ The Use Case casts create one Corporation for each organization. `v4-cast-00_cor
 
 A new cluster starts with no namespace and no agent. Follow these steps:
 
-1. Set the secrets above. `KUBECONFIG_VERANA_DEV` points at the cluster of the playground, `KUBECONFIG_VERANA_TESTNET` at the chain cluster.
+1. Set the secrets above. `KUBECONFIG_VERANA_TESTNET` points at the cluster of the playground.
 2. Fund the operator account through the faucet.
 3. Push `main`. The deploy workflow builds the image and rolls out the playground.
 4. Run `demo-01` to `demo-08` one at a time, with `step: all`.

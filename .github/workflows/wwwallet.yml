@@ -139,7 +139,7 @@ jobs:
         run: |
           mkdir -p ~/.kube
           cat > ~/.kube/config <<'KUBEEOF'
-          ${{ secrets.KUBECONFIG_VERANA_DEV }}
+          ${{ secrets.KUBECONFIG_VERANA_TESTNET }}
           KUBEEOF
 
       - name: Install kubectl
@@ -181,7 +181,7 @@ jobs:
 
       - name: Ensure wwwallet secrets
         run: |
-          NAMESPACE="${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}"
+          NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
           if ! kubectl -n "$NAMESPACE" get secret "${RELEASE}-secrets" >/dev/null 2>&1; then
             kubectl -n "$NAMESPACE" create secret generic "${RELEASE}-secrets" \
               --from-literal=APP_SECRET="$(openssl rand -hex 32)" \
@@ -190,7 +190,7 @@ jobs:
 
       - name: Deploy wwWallet
         run: |
-          export NAMESPACE="${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}"
+          export NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
           export DEPLOY_TS="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
           # RELEASE, HOST, API_HOST, WALLET_NAME, WALLET_TAGLINE come from brand.env;
           # FRONTEND_IMAGE and BACKEND_IMAGE from the brand step.

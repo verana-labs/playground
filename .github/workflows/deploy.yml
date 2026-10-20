@@ -49,7 +49,7 @@ jobs:
         run: |
           mkdir -p ~/.kube
           cat > ~/.kube/config <<'KUBEEOF'
-          ${{ secrets.KUBECONFIG_VERANA_DEV }}
+          ${{ secrets.KUBECONFIG_VERANA_TESTNET }}
           KUBEEOF
 
       - name: Install kubectl
@@ -102,7 +102,7 @@ jobs:
       # -----------------------------------------------------------------------
       - name: Deploy Playground
         run: |
-          NAMESPACE="${{ secrets[format('K8S_NAMESPACE{0}', env.SECRET_SUFFIX)] }}"
+          NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
           APP_NAME="playground"
           IMAGE="veranalabs/playground:${{ github.sha }}"
           HOST="playground.${NETWORK}.verana.network"

@@ -1,0 +1,8 @@
+{
+  "networks": [
+    { "id": "net-a", "playground": "https://a.example", "testable": true },
+    { "id": "net-b", "playground": "https://b.example", "casts": ["demo"], "testable": true },
+    { "id": "net-c", "playground": null, "testable": false, "reason": "no playground yet" },
+    { "id": "net-d", "playground": "https://d.example", "casts": ["demo"], "testable": true }
+  ]
+}

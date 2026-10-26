@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, randomBytes, X509Certificate } from "node:crypto";
 import type { CallbackContext, Jwk, JwtSigner } from "@openid4vc/oauth2";
 import { clientAuthenticationAnonymous } from "@openid4vc/oauth2";
 import { CompactEncrypt, exportJWK, generateKeyPair, importJWK, importX509, jwtVerify, SignJWT, type CompactJWEHeaderParameters, type JWTHeaderParameters } from "jose";
@@ -14,6 +14,12 @@ export async function createHolderKey(): Promise<HolderKey> {
 function toPem(x5cEntry: string): string {
   const lines = x5cEntry.match(/.{1,64}/g) ?? [x5cEntry];
   return `-----BEGIN CERTIFICATE-----\n${lines.join("\n")}\n-----END CERTIFICATE-----`;
+}
+
+export function x509CertificateMetadata(x5cEntry: string): { sanDnsNames: string[]; sanUriNames: string[] } {
+  const names = (new X509Certificate(Buffer.from(x5cEntry, "base64")).subjectAltName ?? "").split(", ");
+  const withPrefix = (prefix: string) => names.filter((n) => n.startsWith(prefix)).map((n) => n.slice(prefix.length));
+  return { sanDnsNames: withPrefix("DNS:"), sanUriNames: withPrefix("URI:") };
 }
 
 const BASE58_ALPHABET = "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz";
@@ -134,7 +140,6 @@ export function callbacks(key: HolderKey): CallbackContext {
     decryptJwe: async () => {
       throw new Error("decryptJwe: the headless holder never receives encrypted payloads in this flow");
     },
-    // openid4vp checks this callback is present for every x509_* client id prefix, even x509_hash, which never calls it.
-    getX509CertificateMetadata: () => ({ sanDnsNames: [], sanUriNames: [] }),
+    getX509CertificateMetadata: x509CertificateMetadata,
   };
 }

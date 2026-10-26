@@ -74,7 +74,7 @@ for (const network of testableNetworks()) {
       async () => {
         const { presented, state } = await runRailWithRetry(parties, "query=pe");
         expect(presented.query).toBe("presentation_exchange");
-        expect(presented.clientId.startsWith("did:")).toBe(true);
+        expect(presented.clientId).toBe(parties.verifier.host);
         expect(state.verified).toBe(true);
       },
       180_000,

@@ -10,13 +10,6 @@ offer:
   anoncreds:
     didcommVersions: [v2]
 gaps:
-  - id: pe-x509-hash
-    rail: openid4vc-sdjwt
-    blocks: { queryLanguages: [presentation_exchange] }
-    cause: "Presentation Exchange requests signed with x5c go out with client_id_scheme x509_hash on draft 21, which the response endpoint rejects"
-    until: "vs-agent#791 signs that rail with an x509_san_dns client id"
-    reference: https://github.com/verana-labs/vs-agent/pull/791
-    expires: "2026-11-16"
   - id: decline-500
     rail: openid4vc-sdjwt
     cause: "A declined presentation (an access_denied error response) is answered 500 instead of 200"

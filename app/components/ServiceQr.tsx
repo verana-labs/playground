@@ -217,20 +217,42 @@ function OpenInWalletLink({
 const HOLOGRAM_PACKAGE = "io.twentysixty.mobileagent.m";
 const HOLOGRAM_PLAY_STORE = `https://play.google.com/store/apps/details?id=${HOLOGRAM_PACKAGE}`;
 
-export function hologramInvitationLink(appUrl: string, userAgent: string): string {
-  const encoded = btoa(appUrl).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-  if (!/Android/i.test(userAgent)) return `didcomm://invite?_url=${encoded}`;
-  return `intent://invite?_url=${encoded}#Intent;scheme=didcomm;package=${HOLOGRAM_PACKAGE};S.browser_fallback_url=${encodeURIComponent(HOLOGRAM_PLAY_STORE)};end`;
+function base64Url(value: string): string {
+  const binary = Array.from(new TextEncoder().encode(value), (b) => String.fromCharCode(b)).join("");
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+export function hologramInvitationLink(appUrl: string, userAgent: string): string | null {
+  const encoded = base64Url(appUrl);
+  if (/Android/i.test(userAgent)) {
+    return `intent://invite?_url=${encoded}#Intent;scheme=hologram-zone;package=${HOLOGRAM_PACKAGE};S.browser_fallback_url=${encodeURIComponent(HOLOGRAM_PLAY_STORE)};end`;
+  }
+  if (/iPhone|iPad|iPod/i.test(userAgent)) return `hologram-zone://invite?_url=${encoded}`;
+  return null;
 }
 
 function OpenInHologramLink({ appUrl }: { appUrl: string }) {
+  const href = hologramInvitationLink(appUrl, navigator.userAgent);
+  if (!href) return null;
   return (
     <a
-      href={hologramInvitationLink(appUrl, navigator.userAgent)}
-      className="inline-flex items-center gap-1.5 rounded-full bg-violet-600 px-3.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-violet-700"
+      href={href}
+      className="group inline-flex w-full max-w-xs items-center gap-3 rounded-2xl bg-gray-900 py-2 pl-2 pr-4 text-left text-white shadow-sm transition-colors hover:bg-gray-800"
     >
-      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-      Open in Hologram
+      {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized 5 kB wallet logo synced into public/ */}
+      <img
+        src={withBase("/wallets/hologram/logo.webp")}
+        alt=""
+        aria-hidden
+        width={36}
+        height={36}
+        className="h-9 w-9 shrink-0 rounded-xl bg-white object-contain"
+      />
+      <span className="flex min-w-0 flex-col leading-tight">
+        <span className="text-[11px] text-white/60">On this phone</span>
+        <span className="text-sm font-semibold">Open in Hologram</span>
+      </span>
+      <ExternalLink className="ml-auto h-4 w-4 shrink-0 text-white/60 transition-colors group-hover:text-white" aria-hidden />
     </a>
   );
 }

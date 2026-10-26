@@ -188,19 +188,31 @@ describe("ServiceQr", () => {
       <ServiceQr serviceId="demo-issuer-accredited" label="Accredited Issuer (demo)" walletId="hologram" />,
     );
 
-    const href = (await screen.findByRole("link", { name: "Open in Hologram" })).getAttribute("href") ?? "";
+    const href = (await screen.findByRole("link", { name: /Open in Hologram/ })).getAttribute("href") ?? "";
     const encoded = /_url=([^#]+)/.exec(href)?.[1] ?? "";
     expect(href.startsWith("intent://invite?_url=")).toBe(true);
-    expect(href).toContain("#Intent;scheme=didcomm;package=io.twentysixty.mobileagent.m;");
+    expect(href).toContain("#Intent;scheme=hologram-zone;package=io.twentysixty.mobileagent.m;");
     expect(href).toContain(`S.browser_fallback_url=${encodeURIComponent("https://play.google.com/store/apps/details?id=io.twentysixty.mobileagent.m")}`);
     expect(encoded).not.toMatch(/[+/=]/);
     expect(Buffer.from(encoded, "base64url").toString()).toBe(appUrl);
   });
 
-  it("falls back to the didcomm scheme off Android", () => {
-    expect(hologramInvitationLink("https://x.example/s?id=1", "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0)")).toBe(
-      `didcomm://invite?_url=${Buffer.from("https://x.example/s?id=1").toString("base64url")}`,
+  it("uses the hologram-zone scheme on iOS and offers nothing on desktop", () => {
+    const appUrl = "https://x.example/s?id=1";
+    expect(hologramInvitationLink(appUrl, "Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X)")).toBe(
+      `hologram-zone://invite?_url=${Buffer.from(appUrl).toString("base64url")}`,
     );
+    expect(hologramInvitationLink(appUrl, "Mozilla/5.0 (Macintosh; Intel Mac OS X 15_0) Chrome/156.0")).toBeNull();
+  });
+
+  it("shows no Hologram button on a desktop browser", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => ok({ kind: "invitation", url: "https://x.example/s?id=1" })));
+    vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/156.0");
+
+    render(<ServiceQr serviceId="demo-issuer-accredited" label="A" walletId="hologram" />);
+
+    expect(await screen.findByRole("img")).toBeDefined();
+    expect(screen.queryByRole("link", { name: /Open in Hologram/ })).toBeNull();
   });
 
   it("offers no Hologram link to other wallets or on the OpenID4VC rail", async () => {
@@ -213,11 +225,13 @@ describe("ServiceQr", () => {
       ),
     );
 
+    vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Mozilla/5.0 (Linux; Android 14; LLY-NX1) Chrome/156.0");
+
     render(<ServiceQr serviceId="demo-issuer-accredited" label="A" walletId="bcwallet" />);
     render(<ServiceQr serviceId="demo-issuer-accredited" label="B" format="openid4vc-sdjwt" walletId="hologram" />);
 
     expect(await screen.findAllByRole("img")).toHaveLength(2);
-    expect(screen.queryByRole("link", { name: "Open in Hologram" })).toBeNull();
+    expect(screen.queryByRole("link", { name: /Open in Hologram/ })).toBeNull();
   });
 
   it("does not call a completed exchange a delivery when the wallet was meant to refuse", async () => {

@@ -214,6 +214,27 @@ function OpenInWalletLink({
   );
 }
 
+const HOLOGRAM_PACKAGE = "io.twentysixty.mobileagent.m";
+const HOLOGRAM_PLAY_STORE = `https://play.google.com/store/apps/details?id=${HOLOGRAM_PACKAGE}`;
+
+export function hologramInvitationLink(appUrl: string, userAgent: string): string {
+  const encoded = btoa(appUrl).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  if (!/Android/i.test(userAgent)) return `didcomm://invite?_url=${encoded}`;
+  return `intent://invite?_url=${encoded}#Intent;scheme=didcomm;package=${HOLOGRAM_PACKAGE};S.browser_fallback_url=${encodeURIComponent(HOLOGRAM_PLAY_STORE)};end`;
+}
+
+function OpenInHologramLink({ appUrl }: { appUrl: string }) {
+  return (
+    <a
+      href={hologramInvitationLink(appUrl, navigator.userAgent)}
+      className="inline-flex items-center gap-1.5 rounded-full bg-violet-600 px-3.5 py-1.5 text-xs font-medium text-white transition-colors hover:bg-violet-700"
+    >
+      <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+      Open in Hologram
+    </a>
+  );
+}
+
 // Auto-reveals when scrolled into view: revealing fetches /api/demo/<id>,
 // which mints a fresh live action for this visitor - an OOB credential offer
 // (issuers) or OOB presentation request (verifiers), or the plain connection
@@ -225,6 +246,7 @@ export function ServiceQr({
   credential,
   demoParams,
   openInWallet,
+  walletId,
   bare = false,
   expect = "accept",
   onSettled,
@@ -238,6 +260,7 @@ export function ServiceQr({
    *  default one has to be minted its own. */
   demoParams?: string;
   openInWallet?: HostedWallet;
+  walletId?: string;
   /** Which credential the demo mints (default: the DemoCredential);
    *  "ecs-badge" mints the Vesta chapter-4 badge offer. */
   credential?: string;
@@ -408,6 +431,11 @@ export function ServiceQr({
     };
   }, [appUrl, attempt]);
 
+  const hologramLink =
+    walletId === "hologram" && rail === "didcomm" && appUrl ? (
+      <OpenInHologramLink appUrl={appUrl} />
+    ) : null;
+
   let content: React.ReactNode;
   if (credSettled && credStatus) {
     content = (
@@ -448,6 +476,7 @@ export function ServiceQr({
         {openInWallet && appUrl ? (
           <OpenInWalletLink wallet={openInWallet} appUrl={appUrl} />
         ) : null}
+        {hologramLink}
       </div>
     );
   } else {
@@ -469,6 +498,7 @@ export function ServiceQr({
           {openInWallet ? (
             <OpenInWalletLink wallet={openInWallet} appUrl={appUrl} />
           ) : null}
+          {hologramLink}
           <p className="text-center text-xs text-gray-500">
             Scan with your <strong className="font-semibold">wallet</strong> - a
             live, single-use out-of-band action from this service. Your wallet

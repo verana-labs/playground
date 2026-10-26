@@ -77,6 +77,7 @@ export default function VerandiaOffers({
                   format={format}
                   credential={o.credential}
                   demoParams={wallet.demoParams}
+                  walletId={wallet.id}
                   bare
                 />
               ) : (

@@ -85,6 +85,7 @@ export default function CcmPortalDemo({
                   format={format}
                   credential={credential}
                   demoParams={wallet.demoParams}
+                  walletId={wallet.id}
                   bare
                 />
               ) : (

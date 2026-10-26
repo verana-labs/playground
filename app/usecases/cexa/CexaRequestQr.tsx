@@ -48,6 +48,7 @@ export default function CexaRequestQr({
       format={format}
       credential={credential}
       demoParams={[wallet.demoParams, "action=request"].filter(Boolean).join("&")}
+      walletId={wallet.id}
     />
   );
 }

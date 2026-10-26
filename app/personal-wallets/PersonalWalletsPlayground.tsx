@@ -275,6 +275,7 @@ function ScenarioCard({
   demoParams,
   hosted,
   capture,
+  walletId,
   walletName,
   plainBuilds = false,
 }: {
@@ -284,6 +285,7 @@ function ScenarioCard({
   demoParams?: string;
   hosted?: string;
   capture?: { src: string; caption?: string; clip?: string };
+  walletId: string;
   walletName: string;
   plainBuilds?: boolean;
 }) {
@@ -339,6 +341,7 @@ function ScenarioCard({
             openInWallet={
               hosted ? { name: walletName, url: hosted } : undefined
             }
+            walletId={walletId}
           />
           <LiveTrustCard
             serviceId={s.serviceId}
@@ -655,6 +658,7 @@ export default function PersonalWalletsPlayground({
                 demoParams={wallet.demoParams}
                 hosted={wallet.hosted}
                 capture={wallet.captures[s.key as ScenarioKey]}
+                walletId={wallet.id}
                 walletName={wallet.name}
                 plainBuilds={wallet.links.some((l) => !l.trust_screen)}
               />
@@ -678,6 +682,7 @@ export default function PersonalWalletsPlayground({
                 demoParams={wallet.demoParams}
                 hosted={wallet.hosted}
                 capture={wallet.captures[s.key as ScenarioKey]}
+                walletId={wallet.id}
                 walletName={wallet.name}
                 plainBuilds={wallet.links.some((l) => !l.trust_screen)}
               />

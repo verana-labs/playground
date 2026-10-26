@@ -10,13 +10,6 @@ offer:
   anoncreds:
     didcommVersions: [v2]
 gaps:
-  - id: decline-500
-    rail: openid4vc-sdjwt
-    cause: "A declined presentation (an access_denied error response) is answered 500 instead of 200"
-    until: "vs-agent moves to Credo 0.8, which carries credo-ts#3010"
-    reference: https://github.com/openwallet-foundation/credo-ts/pull/3010
-    expires: "2026-11-16"
-    cells: { tier: t2, check: reference-holder-error-response }
   - id: haip-wallet-attestation
     rail: openid4vc-sdjwt
     blocks: { sendsWalletAttestation: "yes" }

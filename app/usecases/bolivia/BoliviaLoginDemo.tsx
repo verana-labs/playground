@@ -16,6 +16,7 @@ import {
 import type { PersonalWallet } from "../../lib/wallets";
 import { useSelectedWallet } from "../vesta/DemoWalletFlow";
 import { BOLIVIA_CAST } from "../../lib/bolivia-cast";
+import { OpenInHologramLink } from "../../components/ServiceQr";
 
 // Demos del capítulo 4: ventanas simuladas de los verificadores de Bolivia:
 // el portal tributario de Impuestos Nacionales (demo) y la banca en línea de
@@ -367,6 +368,11 @@ export default function BoliviaLoginDemo({
                     : "Cédula Digital"}{" "}
                   con {wallet?.name ?? "su wallet"}.
                 </p>
+                {wallet?.id === "hologram" && mint?.rail === "didcomm" ? (
+                  <div className="flex justify-center">
+                    <OpenInHologramLink appUrl={mint.url} lang="es" />
+                  </div>
+                ) : null}
                 <button
                   type="button"
                   onClick={reset}

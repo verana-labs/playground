@@ -1,6 +1,7 @@
 "use client";
 import { withBase } from "../lib/base-path";
 import { walletTabTarget } from "../lib/wallet-tab";
+import type { Lang } from "../lib/wallet-links";
 
 import { BadgeCheck, ExternalLink, RefreshCw, ShieldAlert } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -231,7 +232,12 @@ export function hologramInvitationLink(appUrl: string, userAgent: string): strin
   return null;
 }
 
-function OpenInHologramLink({ appUrl }: { appUrl: string }) {
+const HOLOGRAM_LABEL: Record<Lang, { hint: string; action: string }> = {
+  en: { hint: "On this phone", action: "Open in Hologram" },
+  es: { hint: "En este teléfono", action: "Abrir en Hologram" },
+};
+
+export function OpenInHologramLink({ appUrl, lang = "en" }: { appUrl: string; lang?: Lang }) {
   const href = hologramInvitationLink(appUrl, navigator.userAgent);
   if (!href) return null;
   return (
@@ -249,8 +255,8 @@ function OpenInHologramLink({ appUrl }: { appUrl: string }) {
         className="h-9 w-9 shrink-0 rounded-xl bg-white object-contain"
       />
       <span className="flex min-w-0 flex-col leading-tight">
-        <span className="text-[11px] text-white/60">On this phone</span>
-        <span className="text-sm font-semibold">Open in Hologram</span>
+        <span className="text-[11px] text-white/60">{HOLOGRAM_LABEL[lang].hint}</span>
+        <span className="text-sm font-semibold">{HOLOGRAM_LABEL[lang].action}</span>
       </span>
       <ExternalLink className="ml-auto h-4 w-4 shrink-0 text-white/60 transition-colors group-hover:text-white" aria-hidden />
     </a>

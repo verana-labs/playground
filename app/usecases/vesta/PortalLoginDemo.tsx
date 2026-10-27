@@ -7,6 +7,7 @@ import { BadgeCheck, Lock, RefreshCw, ShieldX } from "lucide-react";
 import type { PersonalWallet } from "../../lib/wallets";
 import { useSelectedWallet } from "./DemoWalletFlow";
 import { VESTA_CAST } from "../../lib/vesta-cast";
+import { OpenInHologramLink } from "../../components/ServiceQr";
 
 // Chapter-4 demo 2: a mimicked Vesta Portal login window. Sign in with an
 // ECS-Badge: the portal requests a badge presentation, shows the presented
@@ -288,6 +289,11 @@ export default function PortalLoginDemo({
                 <p className="text-xs text-gray-500">
                   Present your ECS-Badge with {wallet?.name ?? "your wallet"}.
                 </p>
+                {wallet?.id === "hologram" && mint?.rail === "didcomm" ? (
+                  <div className="flex justify-center">
+                    <OpenInHologramLink appUrl={mint.url} />
+                  </div>
+                ) : null}
               </div>
             )}
           </div>

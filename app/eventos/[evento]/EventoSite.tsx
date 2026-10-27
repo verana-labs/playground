@@ -295,6 +295,7 @@ function AccesoQr({
     <QrPanel
       qr={qr}
       url={mintResult.url}
+      rail={mintResult.rail}
       wallet={wallet}
       alt={`Código QR de acceso al evento de ${evento.pais}`}
       hint={

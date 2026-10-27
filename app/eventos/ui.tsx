@@ -16,6 +16,7 @@ import { withBase } from "../lib/base-path";
 import type { PersonalWallet } from "../lib/wallets";
 import { isStoreLink, type WalletLink } from "../lib/wallet-links";
 import { StoreBadges } from "../components/StoreBadges";
+import { OpenInHologramLink } from "../components/ServiceQr";
 import { BuildsHint } from "../components/WalletBuilds";
 import {
   EVENTO_SUBTITULO,
@@ -448,12 +449,14 @@ export function useMintedQr<T>({
 export function QrPanel({
   qr,
   url,
+  rail,
   wallet,
   alt,
   hint,
 }: {
   qr?: string;
   url: string;
+  rail: MintResult["rail"];
   wallet: PersonalWallet;
   alt: string;
   hint: string;
@@ -476,25 +479,29 @@ export function QrPanel({
       <p className="max-w-xs text-center text-xs leading-relaxed text-gray-500">
         {hint}
       </p>
-      <div className="flex flex-wrap justify-center gap-2">
-        <a
-          href={url}
-          className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:border-gray-400"
-        >
-          <Smartphone className="h-3.5 w-3.5" aria-hidden />
-          ¿Estás en tu teléfono? Abrir en la wallet
-        </a>
-        {hosted ? (
+      {wallet.id === "hologram" && rail === "didcomm" ? (
+        <OpenInHologramLink appUrl={url} lang="es" />
+      ) : (
+        <div className="flex flex-wrap justify-center gap-2">
           <a
-            href={hosted}
-            target={walletTabTarget(hosted)}
-            className="inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-gray-700"
+            href={url}
+            className="inline-flex items-center gap-1.5 rounded-full border border-gray-300 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition hover:border-gray-400"
           >
-            <ExternalLink className="h-3.5 w-3.5" aria-hidden />
-            Abrir en {wallet.name}
+            <Smartphone className="h-3.5 w-3.5" aria-hidden />
+            ¿Estás en tu teléfono? Abrir en la wallet
           </a>
-        ) : null}
-      </div>
+          {hosted ? (
+            <a
+              href={hosted}
+              target={walletTabTarget(hosted)}
+              className="inline-flex items-center gap-1.5 rounded-full bg-gray-900 px-3 py-1.5 text-xs font-medium text-white transition hover:bg-gray-700"
+            >
+              <ExternalLink className="h-3.5 w-3.5" aria-hidden />
+              Abrir en {wallet.name}
+            </a>
+          ) : null}
+        </div>
+      )}
     </div>
   );
 }

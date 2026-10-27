@@ -16,6 +16,7 @@ import {
 import type { PersonalWallet } from "../../lib/wallets";
 import { useSelectedWallet } from "../vesta/DemoWalletFlow";
 import { VERANDIA_CAST } from "../../lib/verandia-cast";
+import { OpenInHologramLink } from "../../components/ServiceQr";
 
 // Chapter-4 demos 3 and 4: mimicked relying-party windows for the Republic
 // of Verandia - the Tax Buro portal and the Meridian Bank online banking
@@ -362,6 +363,11 @@ export default function VerandiaLoginDemo({
                     : "Verandia Citizen ID"}{" "}
                   with {wallet?.name ?? "your wallet"}.
                 </p>
+                {wallet?.id === "hologram" && mint?.rail === "didcomm" ? (
+                  <div className="flex justify-center">
+                    <OpenInHologramLink appUrl={mint.url} />
+                  </div>
+                ) : null}
                 <button
                   type="button"
                   onClick={reset}

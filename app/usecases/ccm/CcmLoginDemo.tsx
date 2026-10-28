@@ -304,11 +304,7 @@ export default function CcmLoginDemo({ wallets }: { wallets: PersonalWallet[] })
                   Presente su credencial de Representación Legal con{" "}
                   {wallet?.name ?? "su wallet"}.
                 </p>
-                {wallet?.id === "hologram" && mint?.rail === "didcomm" ? (
-                  <div className="flex justify-center">
-                    <OpenInHologramLink appUrl={mint.url} lang="es" />
-                  </div>
-                ) : null}
+                <OpenInHologramLink walletId={wallet?.id} rail={mint?.rail} appUrl={mint?.url} lang="es" />
                 <button
                   type="button"
                   onClick={reset}

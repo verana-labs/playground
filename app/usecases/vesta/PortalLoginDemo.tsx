@@ -289,11 +289,7 @@ export default function PortalLoginDemo({
                 <p className="text-xs text-gray-500">
                   Present your ECS-Badge with {wallet?.name ?? "your wallet"}.
                 </p>
-                {wallet?.id === "hologram" && mint?.rail === "didcomm" ? (
-                  <div className="flex justify-center">
-                    <OpenInHologramLink appUrl={mint.url} />
-                  </div>
-                ) : null}
+                <OpenInHologramLink walletId={wallet?.id} rail={mint?.rail} appUrl={mint?.url} />
               </div>
             )}
           </div>

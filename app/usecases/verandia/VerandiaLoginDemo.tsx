@@ -363,11 +363,7 @@ export default function VerandiaLoginDemo({
                     : "Verandia Citizen ID"}{" "}
                   with {wallet?.name ?? "your wallet"}.
                 </p>
-                {wallet?.id === "hologram" && mint?.rail === "didcomm" ? (
-                  <div className="flex justify-center">
-                    <OpenInHologramLink appUrl={mint.url} />
-                  </div>
-                ) : null}
+                <OpenInHologramLink walletId={wallet?.id} rail={mint?.rail} appUrl={mint?.url} />
                 <button
                   type="button"
                   onClick={reset}

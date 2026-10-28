@@ -479,8 +479,8 @@ export function QrPanel({
       <p className="max-w-xs text-center text-xs leading-relaxed text-gray-500">
         {hint}
       </p>
-      {wallet.id === "hologram" && rail === "didcomm" ? (
-        <OpenInHologramLink appUrl={url} lang="es" />
+      {wallet.id === "hologram" ? (
+        <OpenInHologramLink walletId={wallet.id} rail={rail} appUrl={url} lang="es" />
       ) : (
         <div className="flex flex-wrap justify-center gap-2">
           <a

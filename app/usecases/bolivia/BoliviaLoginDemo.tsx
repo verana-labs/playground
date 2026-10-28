@@ -368,11 +368,7 @@ export default function BoliviaLoginDemo({
                     : "Cédula Digital"}{" "}
                   con {wallet?.name ?? "su wallet"}.
                 </p>
-                {wallet?.id === "hologram" && mint?.rail === "didcomm" ? (
-                  <div className="flex justify-center">
-                    <OpenInHologramLink appUrl={mint.url} lang="es" />
-                  </div>
-                ) : null}
+                <OpenInHologramLink walletId={wallet?.id} rail={mint?.rail} appUrl={mint?.url} lang="es" />
                 <button
                   type="button"
                   onClick={reset}

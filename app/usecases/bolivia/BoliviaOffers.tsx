@@ -76,6 +76,7 @@ export default function BoliviaOffers({
                   credential={o.credential}
                   demoParams={wallet.demoParams}
                   walletId={wallet.id}
+                  lang="es"
                   bare
                 />
               ) : (

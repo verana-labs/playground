@@ -234,6 +234,15 @@ describe("ServiceQr", () => {
     expect(screen.queryByRole("link", { name: /Open in Hologram/ })).toBeNull();
   });
 
+  it("labels the Hologram button in Spanish on the Spanish pages", async () => {
+    vi.stubGlobal("fetch", vi.fn(() => ok({ kind: "invitation", url: "https://x.example/s?id=1" })));
+    vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Mozilla/5.0 (Linux; Android 14; LLY-NX1) Chrome/156.0");
+
+    render(<ServiceQr serviceId="segip" label="SEGIP" walletId="hologram" lang="es" />);
+
+    expect(await screen.findByRole("link", { name: /Abrir en Hologram/ })).toBeDefined();
+  });
+
   it("does not call a completed exchange a delivery when the wallet was meant to refuse", async () => {
     vi.stubGlobal(
       "fetch",

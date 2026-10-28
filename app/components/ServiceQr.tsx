@@ -237,13 +237,24 @@ const HOLOGRAM_LABEL: Record<Lang, { hint: string; action: string }> = {
   es: { hint: "En este teléfono", action: "Abrir en Hologram" },
 };
 
-export function OpenInHologramLink({ appUrl, lang = "en" }: { appUrl: string; lang?: Lang }) {
+export function OpenInHologramLink({
+  walletId,
+  rail,
+  appUrl,
+  lang = "en",
+}: {
+  walletId?: string;
+  rail?: string;
+  appUrl?: string | null;
+  lang?: Lang;
+}) {
+  if (walletId !== "hologram" || rail !== "didcomm" || !appUrl) return null;
   const href = hologramInvitationLink(appUrl, navigator.userAgent);
   if (!href) return null;
   return (
     <a
       href={href}
-      className="group inline-flex w-full max-w-xs items-center gap-3 rounded-2xl bg-gray-900 py-2 pl-2 pr-4 text-left text-white shadow-sm transition-colors hover:bg-gray-800"
+      className="group mx-auto flex w-full max-w-xs items-center gap-3 rounded-2xl bg-gray-900 py-2 pl-2 pr-4 text-left text-white shadow-sm transition-colors hover:bg-gray-800"
     >
       {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized 5 kB wallet logo synced into public/ */}
       <img
@@ -275,6 +286,7 @@ export function ServiceQr({
   demoParams,
   openInWallet,
   walletId,
+  lang,
   bare = false,
   expect = "accept",
   onSettled,
@@ -289,6 +301,7 @@ export function ServiceQr({
   demoParams?: string;
   openInWallet?: HostedWallet;
   walletId?: string;
+  lang?: Lang;
   /** Which credential the demo mints (default: the DemoCredential);
    *  "ecs-badge" mints the Vesta chapter-4 badge offer. */
   credential?: string;
@@ -459,10 +472,7 @@ export function ServiceQr({
     };
   }, [appUrl, attempt]);
 
-  const hologramLink =
-    walletId === "hologram" && rail === "didcomm" && appUrl ? (
-      <OpenInHologramLink appUrl={appUrl} />
-    ) : null;
+  const hologramLink = <OpenInHologramLink walletId={walletId} rail={rail} appUrl={appUrl} lang={lang} />;
 
   let content: React.ReactNode;
   if (credSettled && credStatus) {

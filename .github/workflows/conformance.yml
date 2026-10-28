@@ -45,11 +45,11 @@ jobs:
             package-lock.json
             conformance/package-lock.json
       - name: Set up kubeconfig
+        env:
+          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG_VERANA_TESTNET }}
         run: |
           mkdir -p ~/.kube
-          cat > ~/.kube/config <<'KUBEEOF'
-          ${{ secrets.KUBECONFIG_VERANA_TESTNET }}
-          KUBEEOF
+          printf '%s\n' "$KUBECONFIG_DATA" > ~/.kube/config
           chmod 600 ~/.kube/config
       - name: Install the eudi-dev reference holder
         if: matrix.tier == 't2'
@@ -214,8 +214,15 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
       - name: Gate
         working-directory: conformance
+        env:
+          TIER_RESULT: ${{ needs.tier.result }}
         run: |
           args=(--services testnet-services.yaml --require-tier t1 --require-tier t2)
           while IFS= read -r f; do args+=(--results "$f"); done < <(find ../current -name latest.json)
           node --experimental-strip-types lib/gate.ts "${args[@]}" | tee -a "$GITHUB_STEP_SUMMARY"
-          exit "${PIPESTATUS[0]}"
+          status="${PIPESTATUS[0]}"
+          if [ "$TIER_RESULT" != "success" ]; then
+            echo "::error::A tier job ended in ${TIER_RESULT}, so its results may be partial or missing."
+            status=1
+          fi
+          exit "$status"

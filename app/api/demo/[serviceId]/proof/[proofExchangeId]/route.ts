@@ -86,6 +86,7 @@ export async function GET(
       const done = state === "ResponseVerified" || record.accepted === true;
       return NextResponse.json({
         state: done ? "done" : state,
+        declined: state === "Error",
         verified:
           record.cryptographicVerified === true || record.accepted === true,
         claims: sessionClaims(record),
@@ -101,9 +102,13 @@ export async function GET(
       state?: unknown;
       verified?: unknown;
       claims?: unknown;
+      errorMessage?: unknown;
     };
+    const state = typeof record.state === "string" ? record.state : null;
     return NextResponse.json({
-      state: typeof record.state === "string" ? record.state : null,
+      state,
+      declined: state === "abandoned" || state === "declined",
+      reason: typeof record.errorMessage === "string" ? record.errorMessage : null,
       verified: record.verified === true,
       claims: toClaims(record.claims),
     });

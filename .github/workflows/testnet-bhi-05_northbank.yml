@@ -1,0 +1,36 @@
+name: "Testnet · BHI 05 · Northbank Identity (DVS issuer)"
+
+# Creates the Corporation of Northbank Identity (demo), deploys its agent,
+# onboards it with the testnet ECS Ecosystem, and creates its Ecosystem with
+# the Right to Work and Employment schemas (verifiers through a GRANTOR),
+# its ISSUER entries, the AnonCreds credential definitions and the OpenID4VC
+# issuer rail.
+# Verana V4 (testnet): run it from the main branch.
+# Part of the BHI cast CI/CD — see deploy/bhi/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  northbank:
+    uses: ./.github/workflows/testnet-bhi-00_core.yml
+    with:
+      org: northbank
+      step: ${{ inputs.step }}
+      reset_identity: ${{ inputs.reset_identity }}
+    secrets: inherit

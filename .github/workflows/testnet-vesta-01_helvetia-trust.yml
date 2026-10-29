@@ -1,0 +1,34 @@
+name: "Testnet · Vesta 01 · Helvetia Trust"
+
+# Deploys Helvetia Trust Services (demo), a standalone organization. It gets its
+# ECS Organization credential from ecs-org-issuer and issues its own ECS
+# Service credential.
+# Verana V4 (testnet): run it from the main branch. Part of the Vesta cast CI/CD;
+# see deploy/vesta/README.md for the run order.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  helvetia-trust:
+    uses: ./.github/workflows/testnet-vesta-00_core.yml
+    with:
+      org: helvetia-trust
+      step: ${{ inputs.step }}
+      reset_identity: ${{ inputs.reset_identity }}
+    secrets: inherit

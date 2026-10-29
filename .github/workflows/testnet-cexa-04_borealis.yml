@@ -1,0 +1,34 @@
+name: "Testnet · CEXA 04 · Borealis Markets (VERIFIER)"
+
+# Deploys Borealis Markets (demo): its Corporation, its ECS credentials (ecs-org-issuer and
+# self-issued), a validated VERIFIER entry on the CEXAKycCredential, and a HOLDER entry with the
+# CEXAVerifiedCounterpartyCredential from the Association. Requires cexa-01. The OpenID4VC
+# verifier takes the trust decision from the VPR, so it does not need the issuer agents at deploy.
+# Part of the CEXA cast CI/CD (Verana V4, testnet) — see deploy/cexa/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  borealis:
+    uses: ./.github/workflows/testnet-cexa-00_core.yml
+    with:
+      org: borealis
+      step: ${{ inputs.step }}
+      reset_identity: ${{ inputs.reset_identity }}
+    secrets: inherit

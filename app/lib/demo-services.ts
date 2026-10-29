@@ -19,7 +19,7 @@ const invite = (host: string) => `https://${host}/invitation`;
 const castInvite = (slug: string) => `https://${slug}.${CAST}/invitation`;
 
 // The live Vesta cast (spec §5): one vs-agent per participant, deployed by
-// .github/workflows/vesta-*.
+// .github/workflows/testnet-vesta-*.
 export const DEMO_SERVICES: DemoService[] = [
   // Vesta is the organization anchor AND an ECS-Badge issuer; role "issuer"
   // lets /api/demo mint badge offers from it.
@@ -36,7 +36,7 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "zenith", label: "Zenith Repairs (demo)", host: VESTA_CAST.zenith.host, did: VESTA_CAST.zenith.did, appUrl: invite(VESTA_CAST.zenith.host), role: "issuer" },
   { id: "umbra", label: "Umbra Repairs", host: VESTA_CAST.umbra.host, did: VESTA_CAST.umbra.did, appUrl: invite(VESTA_CAST.umbra.host), role: "untrusted" },
   // The Verandia cast (spec: verana-spec → playground/verandia/spec.md §5),
-  // deployed by .github/workflows/verandia-*. DIDs come from host discovery
+  // deployed by .github/workflows/testnet-verandia-*. DIDs come from host discovery
   // until the placeholder values in verandia-cast.ts are replaced.
   { id: "civil-registry", label: "National Civil Registry (demo)", host: VERANDIA_CAST.civilRegistry.host, appUrl: invite(VERANDIA_CAST.civilRegistry.host), role: "issuer" },
   { id: "business-registry", label: "National Business Registry (demo)", host: VERANDIA_CAST.businessRegistry.host, appUrl: invite(VERANDIA_CAST.businessRegistry.host), role: "issuer" },
@@ -44,7 +44,7 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "meridian-bank", label: "Meridian Bank (demo)", host: VERANDIA_CAST.meridianBank.host, appUrl: invite(VERANDIA_CAST.meridianBank.host), role: "verifier" },
   { id: "quickcash", label: "QuickCash Loans (demo)", host: VERANDIA_CAST.quickcash.host, appUrl: invite(VERANDIA_CAST.quickcash.host), role: "verifier" },
   // The Bolivia cast (the Spanish public-sector story at /usecases/bolivia),
-  // deployed by .github/workflows/bolivia-*. Real institutions (demo); DIDs
+  // deployed by .github/workflows/dev-bolivia-*. Real institutions (demo); DIDs
   // come from host discovery until bolivia-cast.ts placeholders are replaced.
   { id: "segip", label: "SEGIP (demo)", host: BOLIVIA_CAST.segip.host, appUrl: invite(BOLIVIA_CAST.segip.host), role: "issuer" },
   { id: "seprec", label: "SEPREC (demo)", host: BOLIVIA_CAST.seprec.host, appUrl: invite(BOLIVIA_CAST.seprec.host), role: "issuer" },
@@ -52,7 +52,7 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "banco-union", label: "Banco Unión (demo)", host: BOLIVIA_CAST.bancoUnion.host, appUrl: invite(BOLIVIA_CAST.bancoUnion.host), role: "verifier" },
   { id: "prestamista", label: "Prestamista en línea (simulado)", host: BOLIVIA_CAST.prestamista.host, appUrl: invite(BOLIVIA_CAST.prestamista.host), role: "verifier" },
   // The BHI cast (the UK Verifiable Hiring story at /usecases/bhi), deployed
-  // by .github/workflows/bhi-*. Ids equal the Helm release names (the
+  // by .github/workflows/testnet-bhi-*. Ids equal the Helm release names (the
   // in-cluster admin API addresses); note meridian-tech vs the meridian.…
   // host, and the live did:webvh values in bhi-cast.ts.
   { id: "institute", label: "Better Hiring Institute", host: BHI_CAST.bhi.host, did: BHI_CAST.bhi.did, role: "anchor" },
@@ -65,12 +65,12 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "jobsearch", label: "JobSearch (demo)", host: BHI_CAST.jobsearch.host, did: BHI_CAST.jobsearch.did, appUrl: invite(BHI_CAST.jobsearch.host), role: "verifier" },
   { id: "halcyon", label: "Halcyon Talent (demo)", host: BHI_CAST.halcyon.host, did: BHI_CAST.halcyon.did, appUrl: invite(BHI_CAST.halcyon.host), role: "verifier" },
   // The CCM cast (the Colombian legal-representation story at /usecases/ccm),
-  // deployed by .github/workflows/ccm-*. Real institutions (demo); DIDs come
+  // deployed by .github/workflows/dev-ccm-*. Real institutions (demo); DIDs come
   // from host discovery until ccm-cast.ts placeholders are replaced.
   { id: "camara-medellin", label: "Cámara de Comercio de Medellín (demo)", host: CCM_CAST.camara.host, appUrl: invite(CCM_CAST.camara.host), role: "issuer" },
   { id: "bancolombia", label: "Bancolombia (demo)", host: CCM_CAST.bancolombia.host, appUrl: invite(CCM_CAST.bancolombia.host), role: "verifier" },
   // The events cast (the Spanish ticket-broker demo at /eventos), deployed
-  // by .github/workflows/eventos-*: Taquilla (demo) issues the boletos, the
+  // by .github/workflows/dev-eventos-*: Taquilla (demo) issues the boletos, the
   // three event services verify them. Ids equal the Helm release names
   // (evento- prefixed, unlike their hosts); the live did:webvh values are
   // in eventos-cast.ts.
@@ -79,7 +79,7 @@ export const DEMO_SERVICES: DemoService[] = [
   { id: "evento-guatemala", label: "Creando un mundo confiable: Guatemala", host: EVENTOS_CAST.guatemala.host, did: EVENTOS_CAST.guatemala.did, appUrl: invite(EVENTOS_CAST.guatemala.host), role: "verifier" },
   { id: "evento-panama", label: "Creando un mundo confiable: Panamá", host: EVENTOS_CAST.panama.host, did: EVENTOS_CAST.panama.did, appUrl: invite(EVENTOS_CAST.panama.host), role: "verifier" },
   // The CEXA cast (reusable KYC for exchanges and banks at /usecases/cexa,
-  // unlisted), deployed by .github/workflows/cexa-*. The DIDs come from host
+  // unlisted), deployed by .github/workflows/testnet-cexa-*. The DIDs come from host
   // discovery.
   { id: "cexa-association", label: "Crypto Exchange Association (demo)", host: CEXA_CAST.association.host, role: "anchor" },
   { id: "aurum", label: "Aurum Exchange (demo)", host: CEXA_CAST.aurum.host, appUrl: invite(CEXA_CAST.aurum.host), role: "issuer" },

@@ -8,7 +8,7 @@
 
 import type { CastMember } from "./vesta-cast";
 
-const ZONE = "ccm.playground.testnet.verana.network";
+const ZONE = "ccm.testnet.demos.verana.network";
 
 /** Base58-safe, unmistakably fake SCID - replaced when the agent deploys. */
 const PENDING = "QmCcmCastPending1111111111111111111111111111";

@@ -1,7 +1,7 @@
 // The BHI (Better Hiring Institute) cast - the UK Verifiable Hiring story at
 // /usecases/bhi, built with Orchestrating Identity (OID). One vs-agent
 // (Business Wallet) per participant, deployed and provisioned by the bhi-*
-// workflows (.github/workflows/bhi/README.md). Real organisations: Better
+// workflows (deploy/bhi/README.md). Real organisations: Better
 // Hiring Institute and Orchestrating Identity appear as themselves; every
 // other participant is fictional and always labeled (demo).
 //

@@ -27,7 +27,7 @@
 //     unlisted + noindex while the OID-Verana agreement was pending.
 //  4. [CAST] The cast is DEPLOYED on the testnet (first bootstrap on
 //     2026-09-02; bhi-* workflows, one vs-agent per participant, see
-//     .github/workflows/bhi/README.md) and chapter 4 demos
+//     deploy/bhi/README.md) and chapter 4 demos
 //     1-3 run live against it; demos 4-5 (revocation, directory) are
 //     follow-ups. Hosts remain our proposal, pending OID confirmation.
 //     Claim sets follow the partner review of 2026-08-20 (see SCHEMAS):

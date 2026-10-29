@@ -1,0 +1,34 @@
+name: "Testnet · Vesta 05 · NormaCert (demo)"
+
+# Deploys NormaCert: ECS credentials and an ISSUER entry on the ISO 9001-style
+# (demo) schema. NormaCert issues the certificate to Vesta when vesta-03 runs.
+# CAUTION: the provision step needs vesta-04 first.
+# Verana V4 (testnet): run it from the main branch. Part of the Vesta cast CI/CD;
+# see deploy/vesta/README.md for the run order.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  normacert:
+    uses: ./.github/workflows/testnet-vesta-00_core.yml
+    with:
+      org: normacert
+      step: ${{ inputs.step }}
+      reset_identity: ${{ inputs.reset_identity }}
+    secrets: inherit

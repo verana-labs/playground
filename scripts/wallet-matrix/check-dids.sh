@@ -6,7 +6,7 @@
 # and cannot be repaired by rolling the image. See README.md.
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-WF="${WORKFLOWS_DIR:-$HERE/../../.github/workflows}"
+WF="${WORKFLOWS_DIR:-$HERE/../../deploy}"
 
 python3 - "$WF" <<'PYEOF'
 import json,glob,re,subprocess,sys,os,concurrent.futures as cf

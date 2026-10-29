@@ -6,7 +6,7 @@
 
 import type { CastMember } from "./vesta-cast";
 
-const ZONE = "bolivia.playground.testnet.verana.network";
+const ZONE = "bolivia.testnet.demos.verana.network";
 
 /** Base58-safe, unmistakably fake SCID - replaced when the agent deploys. */
 const PENDING = "QmBoliviaCastPending111111111111111111111111";
@@ -14,23 +14,23 @@ const PENDING = "QmBoliviaCastPending111111111111111111111111";
 export const BOLIVIA_CAST = {
   seprec: {
     host: `seprec.${ZONE}`,
-    did: `did:webvh:QmQobDGzpx4mXBxoBXgt78DNWE1wFDs5MX8Brf5hpraitW:seprec.bolivia.playground.testnet.verana.network`,
+    did: `did:webvh:QmQobDGzpx4mXBxoBXgt78DNWE1wFDs5MX8Brf5hpraitW:seprec.bolivia.testnet.demos.verana.network`,
   },
   segip: {
     host: `segip.${ZONE}`,
-    did: `did:webvh:QmVoNiC8jSx4d225FAHoLEkAdFbS8oJbE9jAGkNXTeu7tv:segip.bolivia.playground.testnet.verana.network`,
+    did: `did:webvh:QmVoNiC8jSx4d225FAHoLEkAdFbS8oJbE9jAGkNXTeu7tv:segip.bolivia.testnet.demos.verana.network`,
   },
   impuestos: {
     host: `impuestos.${ZONE}`,
-    did: `did:webvh:QmYmtYTu9A6Q2YyzauaWfTmauAfRGB8oYxeubiABkHRmBU:impuestos.bolivia.playground.testnet.verana.network`,
+    did: `did:webvh:QmYmtYTu9A6Q2YyzauaWfTmauAfRGB8oYxeubiABkHRmBU:impuestos.bolivia.testnet.demos.verana.network`,
   },
   bancoUnion: {
     host: `banco-union.${ZONE}`,
-    did: `did:webvh:Qmb9jPbVyXsJRN8UwGJcxyq89RGAGcUi2pjmabg4kS1bVo:banco-union.bolivia.playground.testnet.verana.network`,
+    did: `did:webvh:Qmb9jPbVyXsJRN8UwGJcxyq89RGAGcUi2pjmabg4kS1bVo:banco-union.bolivia.testnet.demos.verana.network`,
   },
   prestamista: {
     host: `prestamista.${ZONE}`,
-    did: `did:webvh:QmckF3tqudnRMG9BZUS8cYkaCzVaw8aLEjLj8y7dJCn9m5:prestamista.bolivia.playground.testnet.verana.network`,
+    did: `did:webvh:QmckF3tqudnRMG9BZUS8cYkaCzVaw8aLEjLj8y7dJCn9m5:prestamista.bolivia.testnet.demos.verana.network`,
   },
 } as const satisfies Record<string, CastMember>;
 

@@ -1,0 +1,37 @@
+name: "Dev · INTEXUS Wallet"
+
+# Builds and deploys the INTEXUS Wallet of /eventos (personal-wallets.yaml
+# entry intexus-wallet) on the dev cluster. The wallet uses the testnet chain.
+# The steps are in wwwallet-00_core.yml. The brand is in
+# deploy/wwwallet/brands/intexus/.
+
+on:
+  workflow_dispatch:
+    inputs:
+      frontend_ref:
+        description: "verana-labs/wallet-frontend ref to build (empty = master)"
+        default: ""
+      backend_ref:
+        description: "wwWallet/wallet-backend-server ref to build"
+        default: "a92809bfa82ba2c23615b12f9307619b1e376cb0"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/dev-intexus-wallet.yml"
+      - ".github/workflows/wwwallet-00_core.yml"
+      - "deploy/wwwallet/manifests.yaml"
+      - "deploy/wwwallet/brands/intexus/**"
+
+concurrency:
+  group: deploy-wwwallet-intexus
+  cancel-in-progress: true
+
+jobs:
+  intexus:
+    uses: ./.github/workflows/wwwallet-00_core.yml
+    with:
+      brand: intexus
+      cluster: dev
+      frontend_ref: ${{ inputs.frontend_ref || '' }}
+      backend_ref: ${{ inputs.backend_ref || 'a92809bfa82ba2c23615b12f9307619b1e376cb0' }}
+    secrets: inherit

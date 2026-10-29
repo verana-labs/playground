@@ -1,0 +1,35 @@
+name: "Testnet · Vesta 07 · Vesta Portal (login)"
+
+# Deploys the login portal, a delegated sub-service of Vesta: ECS Service
+# credential from the Vesta anchor and an OPEN VERIFIER entry on the ECS
+# Badge schema.
+# CAUTION: needs vesta-03 first.
+# Verana V4 (testnet): run it from the main branch. Part of the Vesta cast CI/CD;
+# see deploy/vesta/README.md for the run order.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  vesta-portal:
+    uses: ./.github/workflows/testnet-vesta-00_core.yml
+    with:
+      org: vesta-portal
+      step: ${{ inputs.step }}
+      reset_identity: ${{ inputs.reset_identity }}
+    secrets: inherit

@@ -62,7 +62,7 @@ curl -X POST https://resolver.testnet.verana.network/v1/trust/refresh \
 
 Never conclude a cast is broken from a reading taken soon after a roll.
 
-**Cast version drift is the usual root cause.** Casts have sat on images from `.1` to `.35` simultaneously, and most wallet failures traced to a cast running older than the fix it needed rather than to the wallet. Check the tag in `.github/workflows/<cast>/deployment.template.yaml` before blaming a wallet.
+**Cast version drift is the usual root cause.** Casts have sat on images from `.1` to `.35` simultaneously, and most wallet failures traced to a cast running older than the fix it needed rather than to the wallet. Check the tag in `deploy/<cast>/deployment.template.yaml` before blaming a wallet.
 
 **A green workflow is not a deploy.** Check the run's conclusion, not that a waiter finished. A cast deploy also needs the Helm chart published at the same version; if the CD run's auxiliary image builds fail, the `helm` job is skipped and the chart is missing even though the agent image pushed fine.
 

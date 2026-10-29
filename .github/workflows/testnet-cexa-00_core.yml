@@ -1,0 +1,41 @@
+name: "Testnet · CEXA 00 · Core (reusable)"
+
+# Reusable deploy + provision pipeline for one member of the cexa cast. The
+# cast uses Verana V4 (testnet): this wrapper calls the
+# generic V4 core (testnet-cast-00_core.yml) with cast=cexa. It keeps the inputs
+# of the cexa-0X workflows. force_refresh has no effect on V4: the agents
+# get their credentials through onboarding processes, not by a re-issue.
+# See deploy/cexa/README.md.
+
+on:
+  workflow_call:
+    inputs:
+      org:
+        description: "Cast member — must match a directory under deploy/cexa/orgs/"
+        required: true
+        type: string
+      step:
+        description: "deploy | provision | all"
+        required: false
+        default: all
+        type: string
+      force_refresh:
+        description: "No effect on V4 (kept for the callers)"
+        required: false
+        default: false
+        type: boolean
+      reset_identity:
+        description: "DESTRUCTIVE - delete this org's statefulset and its volume so the agent boots with a brand new DID. Everything bound to the old DID has to be re-provisioned, so run with step=all."
+        required: false
+        default: false
+        type: boolean
+
+jobs:
+  core:
+    uses: ./.github/workflows/testnet-cast-00_core.yml
+    with:
+      cast: cexa
+      org: ${{ inputs.org }}
+      step: ${{ inputs.step }}
+      reset_identity: ${{ inputs.reset_identity }}
+    secrets: inherit

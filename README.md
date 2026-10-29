@@ -21,9 +21,13 @@ app/                     Next.js 15 (App Router) + Tailwind v4, verana.io design
   business-wallets/[slug]/  Per-business-wallet playground (identical template, spec §5)
   integrate/             Add your wallet (guidelines + PR process)
   eventos/               The events demo (Spanish, unlisted): the Taquilla ticket broker and
-                         three event landings, live against the eventos-* cast
+                         three event landings, live against the eventos cast
 integrations/            The integration registry: one folder per wallet with integration.yaml
                          (submitted by PR — this is how a wallet gets listed and gets its page)
+deploy/                  The files of the deploy workflows: one folder per service (casts, wwWallet)
+                         and the shared V4 helpers in lib/. See deploy/README.md for the tiers.
+.github/workflows/       testnet-*: the base services, on the testnet cluster
+                         dev-*:     the other services, on the dev cluster (testnet chain)
 ```
 
 ## Add your wallet

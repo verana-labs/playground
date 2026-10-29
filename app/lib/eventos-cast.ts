@@ -1,6 +1,6 @@
 // The events cast on the Verana testnet - one vs-agent (Business Wallet) per
 // participant, deployed and provisioned by the eventos-* workflows
-// (.github/workflows/eventos/README.md): Taquilla (demo), the fictional
+// (deploy/eventos/README.md): Taquilla (demo), the fictional
 // ticket broker that issues the boletos, and the three event services
 // (Costa Rica, Guatemala, Panamá) that verify them. DIDs below are the live
 // did:webvh values read from each host's did.jsonl log (state.id) after the
@@ -9,7 +9,7 @@
 
 import type { CastMember } from "./vesta-cast";
 
-const ZONE = "eventos.playground.testnet.verana.network";
+const ZONE = "eventos.testnet.demos.verana.network";
 
 export const EVENTOS_CAST = {
   taquilla: {

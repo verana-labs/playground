@@ -12,7 +12,7 @@ openid4vc:
 builds:
   - kind: browser
     listed: true
-    label: "Hosted Verana fork, built from verana-labs/wallet-frontend master by .github/workflows/wwwallet.yml"
+    label: "Hosted Verana fork, built from verana-labs/wallet-frontend master by .github/workflows/testnet-wwwallet.yml"
     obtain: https://wwwallet.playground.__NETWORK__.verana.network
     identity:
       url: https://wwwallet.playground.__NETWORK__.verana.network

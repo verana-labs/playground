@@ -16,7 +16,7 @@ export type CastService = {
   configPath: string;
 };
 
-const DEFAULT_WORKFLOWS_DIR = fileURLToPath(new URL("../../.github/workflows/", import.meta.url));
+const DEFAULT_DEPLOY_DIR = fileURLToPath(new URL("../../deploy/", import.meta.url));
 
 function parseEnv(text: string): Record<string, string> {
   const out: Record<string, string> = {};
@@ -30,7 +30,7 @@ function parseEnv(text: string): Record<string, string> {
 function templateTag(castDir: string, cast: string): string {
   // The V4 casts have no template of their own: they use the shared V4 template.
   const own = path.join(castDir, "deployment.template.yaml");
-  const file = fs.existsSync(own) ? own : path.join(castDir, "..", "v4", "deployment.template.yaml");
+  const file = fs.existsSync(own) ? own : path.join(castDir, "..", "lib", "deployment.template.yaml");
   const doc = yaml.load(fs.readFileSync(file, "utf8"), { schema: yaml.JSON_SCHEMA });
   const record = doc as { image?: { tag?: unknown }; chartVersion?: unknown };
   const tag = record.image?.tag ?? record.chartVersion;
@@ -57,7 +57,7 @@ function permOf(value: string | undefined): CastService["demoPerm"] {
   return value === "issuer" || value === "verifier" || value === "none" ? value : null;
 }
 
-export function listCastServices(network: Network, workflowsDir: string = DEFAULT_WORKFLOWS_DIR): CastService[] {
+export function listCastServices(network: Network, workflowsDir: string = DEFAULT_DEPLOY_DIR): CastService[] {
   const casts = fs
     .readdirSync(workflowsDir)
     .filter((d) => fs.existsSync(path.join(workflowsDir, d, "orgs")))

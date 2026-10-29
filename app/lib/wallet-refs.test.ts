@@ -62,4 +62,11 @@ describe("networkHosts", () => {
     ]);
     expect(networkHosts("https://wwwallet.playground.__NETWORK__.verana.network")).toEqual([]);
   });
+
+  it("finds the hosts of the dev cluster, which use the demos zone", () => {
+    expect(networkHosts("https://intexus-wallet.eventos.testnet.demos.verana.network")).toEqual([
+      "intexus-wallet.eventos.testnet.demos.verana.network",
+    ]);
+    expect(networkHosts("https://intexus-wallet.eventos.__NETWORK__.demos.verana.network")).toEqual([]);
+  });
 });

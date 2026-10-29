@@ -26,7 +26,7 @@ import { VERANDIA_CAST } from "@/app/lib/verandia-cast";
 //     schema, or when its issuer holds no active ISSUER entry for that schema
 //     ([VSA-VTI-FLOW-VERIFY]). The issuer mode of both Verandia schemas is
 //     ECOSYSTEM, and only the registry that controls the schema holds an
-//     ISSUER entry (.github/workflows/verandia/README.md). Thus a verified
+//     ISSUER entry (deploy/verandia/README.md). Thus a verified
 //     presentation of the requested schema comes from that registry, and the
 //     mode of the request gives the decision.
 

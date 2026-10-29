@@ -1,6 +1,6 @@
 // The CEXA cast - the Crypto Exchange Association (demo) and its members
 // (exchanges and banks: one membership, one fee schedule), deployed and
-// provisioned by the cexa-* workflows (.github/workflows/cexa/README.md).
+// provisioned by the cexa-* workflows (deploy/cexa/README.md).
 //
 // The build knows no DID: the app finds each agent by its host at run time.
 
@@ -45,7 +45,7 @@ export const isPendingDid = (did: string | undefined) =>
 export const CEXA_KYC_NAME = "CEXA-Kyc";
 export const CEXA_COUNTERPARTY_NAME = "CEXA-VerifiedCounterparty";
 
-/** V4: the JSON Schema titles of the two schemas (.github/workflows/cexa/cast.sh).
+/** V4: the JSON Schema titles of the two schemas (deploy/cexa/cast.sh).
  *  The app finds each schema id and VTJSC by its title (app/lib/vtjsc.ts). */
 export const CEXA_KYC_TITLE = "CEXAKycCredential";
 export const CEXA_COUNTERPARTY_TITLE = "CEXAVerifiedCounterpartyCredential";

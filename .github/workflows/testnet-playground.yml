@@ -1,0 +1,188 @@
+name: "Testnet · Playground"
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "app/**"
+      - "public/**"
+      - "personal-wallets.yaml"
+      - "wallets/**"
+      - "integrations/**"
+      - "scripts/**"
+      - "package.json"
+      - "package-lock.json"
+      - "Dockerfile"
+      - "next.config.ts"
+      - "postcss.config.mjs"
+      - "tsconfig.json"
+      - ".github/workflows/testnet-playground.yml"
+
+concurrency:
+  group: deploy-playground
+  cancel-in-progress: true
+
+env:
+  # The playground deploys to testnet only (see docs/networks.md).
+  NETWORK: testnet
+
+jobs:
+  deploy-playground:
+    name: Build and Deploy Playground
+    runs-on: ubuntu-latest
+    steps:
+      # Stop when the namespace secret is empty (see docs/networks.md).
+      - name: Check network secrets
+        env:
+          NAMESPACE_SECRET: ${{ secrets.K8S_NAMESPACE }}
+        run: |
+          if [ -z "$NAMESPACE_SECRET" ]; then
+            echo "::error::Secret K8S_NAMESPACE is not set (see docs/networks.md)."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+
+      - name: Set up kubeconfig
+        run: |
+          mkdir -p ~/.kube
+          cat > ~/.kube/config <<'KUBEEOF'
+          ${{ secrets.KUBECONFIG_VERANA_TESTNET }}
+          KUBEEOF
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@829323503d1be3d00ca8346e5391ca0b07a9ab0d # v5.1.0
+        with:
+          version: 'v1.29.9'
+
+      # A new network starts with no namespace. The kubeconfig user must have
+      # the permission to create one; otherwise create it once by hand.
+      - name: Ensure namespace
+        env:
+          NAMESPACE: ${{ secrets.K8S_NAMESPACE }}
+        run: |
+          if kubectl get namespace "$NAMESPACE" > /dev/null 2>&1; then
+            echo "Namespace exists"
+          else
+            kubectl create namespace "$NAMESPACE"
+          fi
+
+      # -----------------------------------------------------------------------
+      # BUILD: Docker image
+      # -----------------------------------------------------------------------
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+
+      - name: Log in to container registry
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_LOGIN }}
+          password: ${{ secrets.DOCKER_HUB_PWD }}
+
+      - name: Build and push Playground image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: .
+          push: true
+          # Only testnet moves the "latest" tag. Other networks use the network name.
+          # (A comment inside the block below would become a tag.)
+          tags: |
+            veranalabs/playground:${{ github.sha }}
+            veranalabs/playground:${{ env.NETWORK == 'testnet' && 'latest' || env.NETWORK }}
+          build-args: |
+            NEXT_PUBLIC_FIDES_USECASE_URL=${{ vars.NEXT_PUBLIC_FIDES_USECASE_URL }}
+            NEXT_PUBLIC_VERANA_NETWORK=${{ env.NETWORK }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # -----------------------------------------------------------------------
+      # DEPLOY: Kubernetes resources
+      # -----------------------------------------------------------------------
+      - name: Deploy Playground
+        run: |
+          NAMESPACE="${{ secrets.K8S_NAMESPACE }}"
+          APP_NAME="playground"
+          IMAGE="veranalabs/playground:${{ github.sha }}"
+          HOST="playground.${NETWORK}.verana.network"
+          PORT=3000
+
+          cat <<EOF | kubectl apply -f -
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: ${APP_NAME}
+            namespace: ${NAMESPACE}
+            labels:
+              app: ${APP_NAME}
+          spec:
+            replicas: 1
+            selector:
+              matchLabels:
+                app: ${APP_NAME}
+            template:
+              metadata:
+                labels:
+                  app: ${APP_NAME}
+                annotations:
+                  deploy-timestamp: "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+              spec:
+                containers:
+                  - name: playground
+                    image: ${IMAGE}
+                    imagePullPolicy: Always
+                    ports:
+                      - containerPort: ${PORT}
+          ---
+          apiVersion: v1
+          kind: Service
+          metadata:
+            name: ${APP_NAME}
+            namespace: ${NAMESPACE}
+          spec:
+            selector:
+              app: ${APP_NAME}
+            ports:
+              - port: ${PORT}
+                targetPort: ${PORT}
+          ---
+          apiVersion: networking.k8s.io/v1
+          kind: Ingress
+          metadata:
+            name: ${APP_NAME}
+            namespace: ${NAMESPACE}
+            annotations:
+              cert-manager.io/cluster-issuer: letsencrypt-prod
+              nginx.ingress.kubernetes.io/enable-cors: "true"
+          spec:
+            ingressClassName: nginx
+            tls:
+              - hosts:
+                  - ${HOST}
+                secretName: ${APP_NAME}-tls
+            rules:
+              - host: ${HOST}
+                http:
+                  paths:
+                    - path: /
+                      pathType: Prefix
+                      backend:
+                        service:
+                          name: ${APP_NAME}
+                          port:
+                            number: ${PORT}
+          EOF
+
+          kubectl rollout status deployment/"${APP_NAME}" -n "$NAMESPACE" --timeout=300s
+
+      # -----------------------------------------------------------------------
+      # SUMMARY
+      # -----------------------------------------------------------------------
+      - name: Summary
+        if: always()
+        run: |
+          echo "## Playground" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **URL:** https://playground.${NETWORK}.verana.network" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Image:** veranalabs/playground:${{ github.sha }}" >> "$GITHUB_STEP_SUMMARY"

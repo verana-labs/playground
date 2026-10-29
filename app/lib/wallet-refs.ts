@@ -90,6 +90,6 @@ export function parseStoreLink(url: string): StoreLink | null {
   return null;
 }
 
-const NETWORK_HOST = /[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:testnet|devnet)\.verana\.network/gi;
+const NETWORK_HOST = /[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:testnet|devnet)(?:\.demos)?\.verana\.network/gi;
 
 export const networkHosts = (text: string): string[] => text.match(NETWORK_HOST) ?? [];

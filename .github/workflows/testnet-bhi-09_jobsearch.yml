@@ -1,0 +1,36 @@
+name: "Testnet · BHI 09 · JobSearch (recognised verifier via the second grantor)"
+
+# Creates the Corporation of JobSearch (demo), deploys its agent, onboards it
+# with the testnet ECS Ecosystem, gets the Recognised RecTech Provider
+# credential from the Institute, and gets VERIFIER entries on the three
+# candidate schemas, validated by Trustworthy Verification Services (the
+# openness argument). Run it after the second pass of bhi-03.
+# Verana V4 (testnet): run it from the main branch.
+# Part of the BHI cast CI/CD — see deploy/bhi/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  jobsearch:
+    uses: ./.github/workflows/testnet-bhi-00_core.yml
+    with:
+      org: jobsearch
+      step: ${{ inputs.step }}
+      reset_identity: ${{ inputs.reset_identity }}
+    secrets: inherit

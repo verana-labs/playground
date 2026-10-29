@@ -1,6 +1,6 @@
 // The Verandia cast - one vs-agent (Business Wallet) per participant,
 // deployed and provisioned by the verandia-* workflows (spec: verana-spec →
-// playground/verandia/spec.md §5, .github/workflows/verandia/README.md).
+// playground/verandia/spec.md §5, deploy/verandia/README.md).
 //
 // The build knows no DID: the app finds each agent by its host at run time.
 
@@ -52,6 +52,6 @@ export const VERANDIA_CITIZEN_ID_JSC = `https://${VERANDIA_CAST.civilRegistry.ho
 export const VERANDIA_LEGAL_REP_JSC = `https://${VERANDIA_CAST.businessRegistry.host}/vt/schemas-legal-representative-jsc.json`;
 
 /** V4: the JSON Schema titles of the two Verandia schemas (workflow contract:
- *  .github/workflows/verandia/cast.sh). */
+ *  deploy/verandia/cast.sh). */
 export const VERANDIA_CITIZEN_ID_TITLE = "VerandiaCitizenIDCredential";
 export const VERANDIA_LEGAL_REP_TITLE = "LegalRepresentativeCredential";

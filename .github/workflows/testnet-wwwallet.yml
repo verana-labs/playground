@@ -1,0 +1,37 @@
+name: "Testnet · wwWallet"
+
+# Builds and deploys the default wwWallet instance (personal-wallets.yaml
+# entry wwwallet) on the testnet cluster. The wallet uses the testnet chain.
+# The steps are in wwwallet-00_core.yml. The brand is in
+# deploy/wwwallet/brands/wwwallet/.
+
+on:
+  workflow_dispatch:
+    inputs:
+      frontend_ref:
+        description: "verana-labs/wallet-frontend ref to build (empty = master)"
+        default: ""
+      backend_ref:
+        description: "wwWallet/wallet-backend-server ref to build"
+        default: "a92809bfa82ba2c23615b12f9307619b1e376cb0"
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/testnet-wwwallet.yml"
+      - ".github/workflows/wwwallet-00_core.yml"
+      - "deploy/wwwallet/manifests.yaml"
+      - "deploy/wwwallet/brands/wwwallet/**"
+
+concurrency:
+  group: deploy-wwwallet-wwwallet
+  cancel-in-progress: true
+
+jobs:
+  wwwallet:
+    uses: ./.github/workflows/wwwallet-00_core.yml
+    with:
+      brand: wwwallet
+      cluster: testnet
+      frontend_ref: ${{ inputs.frontend_ref || '' }}
+      backend_ref: ${{ inputs.backend_ref || 'a92809bfa82ba2c23615b12f9307619b1e376cb0' }}
+    secrets: inherit

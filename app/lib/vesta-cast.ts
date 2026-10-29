@@ -1,6 +1,6 @@
 // The live Vesta cast - one vs-agent (Business Wallet) per participant,
 // deployed and provisioned by the vesta-* workflows
-// (.github/workflows/vesta/README.md).
+// (deploy/vesta/README.md).
 //
 // The build knows no DID of a cast member: a caller finds the DID from the
 // host at run time (see serviceDidFor in demo-services.ts).

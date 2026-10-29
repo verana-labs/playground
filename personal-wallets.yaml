@@ -67,8 +67,9 @@
 wallets:
   # INTEXUS Wallet: the hosted wwWallet instance branded for the events demo
   # (/eventos and the three event landings). Same fork and commit as the
-  # wwwallet entry below, built and deployed by .github/workflows/wwwallet.yml
-  # (brand intexus, assets under .github/workflows/wwwallet/brands/intexus/).
+  # wwwallet entry below, built and deployed on the dev cluster by
+  # .github/workflows/dev-intexus-wallet.yml (brand intexus, assets under
+  # deploy/wwwallet/brands/intexus/).
   # scope keeps it out of the main playground; status recommended and its
   # place at the top of this file put it first in the Taquilla and event
   # pickers.
@@ -80,8 +81,8 @@ wallets:
     formats: [openid4vc-sdjwt]
     demoParams: signer=x5c
     browser: true
-    hosted: https://intexus-wallet.eventos.playground.__NETWORK__.verana.network
-    download: https://intexus-wallet.eventos.playground.__NETWORK__.verana.network
+    hosted: https://intexus-wallet.eventos.__NETWORK__.demos.verana.network
+    download: https://intexus-wallet.eventos.__NETWORK__.demos.verana.network
     repo: https://github.com/wwWallet/wallet-frontend
     fork: https://github.com/verana-labs/wallet-frontend
     license: BSD-2-Clause

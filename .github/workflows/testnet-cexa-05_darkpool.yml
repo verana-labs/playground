@@ -1,0 +1,35 @@
+name: "Testnet · CEXA 05 · DarkPool Exchange (outsider)"
+
+# Deploys DarkPool Exchange (demo), the outsider: a real, verifiable exchange (its own
+# Corporation, ECS credentials from ecs-org-issuer and self-issued) that did not join the
+# Association. It has no CEXA Participant entry and no CEXAVerifiedCounterpartyCredential. It asks
+# wallets for the CEXAKycCredential (UNSAFE_SKIP_OWN_AUTHORIZATION, demo only), and the wallet
+# must refuse. CAUTION: a DarkPool entry in a CEXA participant tree is an incident.
+# Part of the CEXA cast CI/CD (Verana V4, testnet) — see deploy/cexa/README.md.
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "Which step to run"
+        required: true
+        type: choice
+        options:
+          - deploy
+          - provision
+          - all
+        default: all
+      reset_identity:
+        description: "DESTRUCTIVE - wipe storage so the agent mints a new DID (use with step=all)"
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  darkpool:
+    uses: ./.github/workflows/testnet-cexa-00_core.yml
+    with:
+      org: darkpool
+      step: ${{ inputs.step }}
+      reset_identity: ${{ inputs.reset_identity }}
+    secrets: inherit

@@ -1,0 +1,45 @@
+{
+  "status": 400,
+  "body": {
+    "error": "wallet_import_failed",
+    "error_description": "validate issuer signature: credential issuer \"https://demo-issuer-accredited.playground.devnet.verana.network\" does not match credential_issuer \"https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer\"",
+    "_protocol_exchanges": [
+      {
+        "step": "GET /oid4vci/issuer/offers/31773c77-c8c7-424d-b598-ce58e7ff94ab",
+        "method": "GET",
+        "url": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer/offers/31773c77-c8c7-424d-b598-ce58e7ff94ab",
+        "response_status": 200
+      },
+      {
+        "step": "Fetch Credential Issuer Metadata",
+        "method": "GET",
+        "url": "https://demo-issuer-accredited.playground.devnet.verana.network/.well-known/openid-credential-issuer/oid4vci/issuer",
+        "response_status": 200
+      },
+      {
+        "step": "Fetch Authorization Server Metadata",
+        "method": "GET",
+        "url": "https://demo-issuer-accredited.playground.devnet.verana.network/.well-known/oauth-authorization-server/oid4vci/issuer",
+        "response_status": 200
+      },
+      {
+        "step": "Token Request",
+        "method": "POST",
+        "url": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer/token",
+        "response_status": 200
+      },
+      {
+        "step": "Nonce Request",
+        "method": "POST",
+        "url": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer/nonce",
+        "response_status": 200
+      },
+      {
+        "step": "Credential Request",
+        "method": "POST",
+        "url": "https://demo-issuer-accredited.playground.devnet.verana.network/oid4vci/issuer/credential",
+        "response_status": 200
+      }
+    ]
+  }
+}

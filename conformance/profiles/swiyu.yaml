@@ -12,6 +12,7 @@ openid4vc:
 builds:
   - kind: fork
     listed: true
+    signerSha256: "D0:8D:AC:18:16:05:5B:DF:3C:B5:FD:1C:E7:76:88:30:9B:AB:58:8A:3D:F5:0F:24:A0:CD:08:39:B7:39:75:C7"
     label: "Verana trust fork, universal debug APK"
     obtain: https://github.com/AirKyzzZ/eidch-android-wallet-swiyu-probe-verana/releases/download/verana-2026-10-02/swiyu-verana-universal-debug.apk
     identity:
@@ -26,6 +27,25 @@ builds:
       unlock: password
       secret: playground1
       coldStart: true
+      delivery: scan
+      onboard:
+        - tap: start
+        - tap: next
+        - tap: next
+        - tap: next
+        - tap: allow
+        - tap: create password
+        - type: secret
+        - tap: next
+        - type: secret
+        - tap: next
+        - tap: no thanks
+        - wait: 30
+      scan:
+        issue:
+          - tap: scan
+        present:
+          - tap: scan
   - kind: store
     label: "swiyu on Google Play"
     obtain: https://play.google.com/store/apps/details?id=ch.admin.foitt.swiyu

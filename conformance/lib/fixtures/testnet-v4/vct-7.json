@@ -1,0 +1,39 @@
+{
+  "vct": "https://playground-demo.playground.testnet.verana.network/vt/vct/7",
+  "name": "DemoCredential",
+  "description": "The single credential of the Playground Ecosystem (demo), issued instantly to playground visitors to demonstrate the verify-first loop. For demonstration only.",
+  "display": [
+    {
+      "locale": "en",
+      "name": "DemoCredential",
+      "description": "The single credential of the Playground Ecosystem (demo), issued instantly to playground visitors to demonstrate the verify-first loop. For demonstration only."
+    }
+  ],
+  "claims": [
+    {
+      "path": [
+        "demoId"
+      ],
+      "display": [
+        {
+          "locale": "en",
+          "label": "demoId"
+        }
+      ],
+      "sd": "always"
+    },
+    {
+      "path": [
+        "name"
+      ],
+      "display": [
+        {
+          "locale": "en",
+          "label": "name"
+        }
+      ],
+      "sd": "always"
+    }
+  ],
+  "relatedJsonSchemaCredentialId": "https://playground-demo.playground.testnet.verana.network/vt/schemas-7-jsc.json"
+}

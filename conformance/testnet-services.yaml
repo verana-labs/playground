@@ -10,19 +10,6 @@ offer:
   anoncreds:
     didcommVersions: [v2]
 gaps:
-  - id: pe-x509-hash
-    rail: openid4vc-sdjwt
-    blocks: { queryLanguages: [presentation_exchange] }
-    cause: "Presentation Exchange requests signed with x5c go out with client_id_scheme x509_hash on draft 21, which the response endpoint rejects"
-    until: "vs-agent#791 signs that rail with an x509_san_dns client id"
-    reference: https://github.com/verana-labs/vs-agent/pull/791
-    expires: "2026-11-16"
-  - id: decline-500
-    rail: openid4vc-sdjwt
-    cause: "A declined presentation (an access_denied error response) is answered 500 instead of 200"
-    until: "vs-agent moves to Credo 0.8, which carries credo-ts#3010"
-    reference: https://github.com/openwallet-foundation/credo-ts/pull/3010
-    expires: "2026-11-16"
   - id: haip-wallet-attestation
     rail: openid4vc-sdjwt
     blocks: { sendsWalletAttestation: "yes" }
@@ -30,9 +17,62 @@ gaps:
     until: "vs-agent#781 moves to a Credo that ignores unsolicited wallet attestations"
     reference: https://github.com/verana-labs/vs-agent/issues/781
     expires: "2026-11-16"
+    cells:
+      tier: t2
+      check: reference-holder-haip
+      service: [aurum, business-registry, caledonian, cirrus, civil-registry, demo-issuer-accredited, demo-issuer-unaccredited, demo-issuer-untrusted, northbank, novara, vesta, zenith]
   - id: metadata-x5c-without-kid
     rail: openid4vc-sdjwt
     blocks: { requiresMetadataKid: "yes" }
     cause: "Signed issuer metadata carries an x5c chain and no kid, which swiyu 1.18 and later refuse"
     until: "vs-agent signs the issuer metadata with a DID kid"
     expires: "2026-11-16"
+  - id: haip-self-signed-certificate
+    rail: openid4vc-sdjwt
+    cause: "The verifiers sign their request objects, and the issuers their credentials, with vs-agent's self-signed development certificate, which HAIP 1.0 §5 and §6.1.1 forbid, so a HAIP wallet refuses every x5c request"
+    until: "the casts sign with a certificate chain under a configured root"
+    reference: https://github.com/verana-labs/vs-agent/blob/main/packages/plugin-openid4vc/src/services/CertificateService.ts
+    expires: "2026-11-16"
+    cells: { tier: t2, check: reference-holder-haip, scenario: [bhi-employment@dcql+x5c, bhi-qualification@dcql+x5c, bhi-right-to-work@dcql+x5c, cexa-kyc@dcql+x5c, demo-credential@dcql+x5c, ecs-badge@dcql+x5c, verandia-citizen-id@dcql+x5c, verandia-legal-rep@dcql+x5c] }
+  - id: metadata-draft13-shape
+    rail: openid4vc-sdjwt
+    cause: "Issuer metadata carries display and claims only under the OID4VCI 1.0 credential_metadata, so a draft 13 wallet (Inji) finds no display or claims on the credential configuration"
+    until: "vs-agent also serves display and claims at the top level of each credential configuration"
+    reference: https://openid.net/specs/openid-4-verifiable-credential-issuance-1_0.html#name-credential-issuer-metadata-p
+    expires: "2026-11-16"
+    cells: { tier: t1, check: metadata-both-shapes, service: [aurum, business-registry, caledonian, cirrus, civil-registry, demo-issuer-accredited, northbank, novara, umbra, vesta, zenith] }
+  - id: metadata-empty-unaccredited
+    rail: openid4vc-sdjwt
+    cause: "The unaccredited and untrusted demo issuers list no credential configuration in their metadata, while they still mint offers"
+    until: "vs-agent lists the configurations it offers whether or not the issuer holds an ISSUER participant"
+    expires: "2026-11-16"
+    cells: { tier: t1, check: metadata-both-shapes, service: [demo-issuer-unaccredited, demo-issuer-untrusted] }
+  - id: bhi-employment-end-date
+    rail: openid4vc-sdjwt
+    cause: "The demo issues the current employment without endDate one time in three, and a request that asks for endDate then matches no credential"
+    until: "the bhi employment request asks only the claims every issued employment carries"
+    reference: https://github.com/verana-labs/playground/pull/329
+    expires: "2026-11-16"
+    cells: { tier: t2, check: [reference-holder-present, reference-holder-replay-presentation], scenario: [bhi-employment@dcql, bhi-employment@dcql+x5c] }
+  - id: umbra-invitation-fallback
+    cause: "app/api/demo/[serviceId]/route.ts answers every non-badge mint from umbra with its DIDComm invitation, even under format=oid4vc, so the deep matrix takes umbra for an issuer of every credential"
+    until: "the route answers unsupported for a credential an untrusted service does not mint"
+    reference: https://github.com/verana-labs/playground/blob/main/app/api/demo/%5BserviceId%5D/route.ts
+    expires: "2026-11-16"
+    cells: { tier: t2, check: [reference-holder-issue, reference-holder-haip, reference-holder-decode, reference-holder-replay-offer, reference-holder-validate], service: umbra }
+  - id: v3-cast-credentials
+    cause: "The bolivia, ccm and eventos credentials stay in the route registry, but their casts run Verana V3 and are not cast on testnet, so no verifier mints their requests"
+    until: "the V3 casts are ported to V4 or their credentials leave the registry"
+    reference: https://github.com/verana-labs/playground/blob/main/docs/networks.md
+    expires: "2026-11-16"
+    cells: { tier: t2, check: reference-holder-mint, scenario: [bolivia-cedula, bolivia-legal-rep, ccm-legal-rep, eventos-asistente, eventos-patrocinador] }
+  - id: bcwallet-https-invitation
+    cause: "The DIDComm mints answer with an https short link, and the bcwallet profile registers only the didcomm and bcwallet schemes, so a tapped link does not reach BC Wallet"
+    until: "a device pass shows whether BC Wallet resolves the https short link, and the profile or the link follows"
+    expires: "2026-11-16"
+    cells: { tier: t1, check: [link:issue, link:present], wallet: bcwallet }
+  - id: didcomm-plain-invitation
+    cause: "demo-untrusted answers with its plain connection invitation, which carries no request for tier 1 to check, and no tier drives a DIDComm connection yet"
+    until: "a DIDComm holder covers the connection scenarios"
+    expires: "2026-11-16"
+    cells: { tier: t1, check: [link:issue, link:present], service: demo-untrusted }

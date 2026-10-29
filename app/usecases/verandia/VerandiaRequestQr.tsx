@@ -40,6 +40,7 @@ export default function VerandiaRequestQr({
       format={format}
       credential={credential}
       demoParams={wallet.demoParams}
+      walletId={wallet.id}
     />
   );
 }

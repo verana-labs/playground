@@ -245,6 +245,7 @@ export function BadgeOffers({
                   label={o.org}
                   format={badgeFormat}
                   credential="ecs-badge"
+                  walletId={wallet.id}
                   bare
                 />
               ) : (

@@ -16,6 +16,7 @@ import {
 import type { PersonalWallet } from "../../lib/wallets";
 import { useSelectedWallet } from "../vesta/DemoWalletFlow";
 import { CCM_CAST } from "../../lib/ccm-cast";
+import { OpenInHologramLink } from "../../components/ServiceQr";
 
 // Demo 2 del capítulo 4: la ventanilla simulada de Bancolombia (demo). El
 // KYC personal ya ocurrió, presencial, con la cédula física; aquí el banco
@@ -303,6 +304,7 @@ export default function CcmLoginDemo({ wallets }: { wallets: PersonalWallet[] })
                   Presente su credencial de Representación Legal con{" "}
                   {wallet?.name ?? "su wallet"}.
                 </p>
+                <OpenInHologramLink walletId={wallet?.id} rail={mint?.rail} appUrl={mint?.url} lang="es" />
                 <button
                   type="button"
                   onClick={reset}

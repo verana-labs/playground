@@ -43,6 +43,8 @@ export default function BoliviaRequestQr({
       format={format}
       credential={credential}
       demoParams={wallet.demoParams}
+      walletId={wallet.id}
+      lang="es"
     />
   );
 }

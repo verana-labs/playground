@@ -420,6 +420,7 @@ function BoletoQr({
     <QrPanel
       qr={qr}
       url={mintResult.url}
+      rail={mintResult.rail}
       wallet={wallet}
       alt="Código QR de tu boleto"
       hint={`Escanea con ${wallet.name}: tu wallet verifica que Taquilla es un emisor de confianza y guarda tu boleto.`}

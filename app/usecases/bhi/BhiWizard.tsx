@@ -429,6 +429,7 @@ function CollectSection({
                       )}
                       bare
                       openInWallet={hostedFor(wallet)}
+                      walletId={wallet.id}
                       onSettled={(o: ServiceQrOutcome) => {
                         if (o.kind === "delivered") onTick(item.id);
                       }}
@@ -690,6 +691,7 @@ function MeridianFlow({
                   format={format}
                   credential={request.credential}
                   demoParams={wallet.demoParams}
+                  walletId={wallet.id}
                   bare
                   openInWallet={hostedFor(wallet)}
                   onSettled={(o: ServiceQrOutcome) => {
@@ -792,6 +794,7 @@ function HalcyonFlow({
               format={format}
               credential="bhi-right-to-work"
               demoParams={wallet.demoParams}
+              walletId={wallet.id}
               bare
               openInWallet={hostedFor(wallet)}
             />

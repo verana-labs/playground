@@ -76,6 +76,7 @@ export default function CexaOffers({
                   format={format}
                   credential={o.credential}
                   demoParams={wallet.demoParams}
+                  walletId={wallet.id}
                   bare
                 />
               ) : (

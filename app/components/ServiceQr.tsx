@@ -1,6 +1,7 @@
 "use client";
 import { withBase } from "../lib/base-path";
 import { walletTabTarget } from "../lib/wallet-tab";
+import type { Lang } from "../lib/wallet-links";
 
 import { BadgeCheck, ExternalLink, RefreshCw, ShieldAlert } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -214,6 +215,65 @@ function OpenInWalletLink({
   );
 }
 
+const HOLOGRAM_PACKAGE = "io.twentysixty.mobileagent.m";
+const HOLOGRAM_PLAY_STORE = `https://play.google.com/store/apps/details?id=${HOLOGRAM_PACKAGE}`;
+
+function base64Url(value: string): string {
+  const binary = Array.from(new TextEncoder().encode(value), (b) => String.fromCharCode(b)).join("");
+  return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+export function hologramInvitationLink(appUrl: string, userAgent: string): string | null {
+  const encoded = base64Url(appUrl);
+  if (/Android/i.test(userAgent)) {
+    return `intent://invite?_url=${encoded}#Intent;scheme=hologram-zone;package=${HOLOGRAM_PACKAGE};S.browser_fallback_url=${encodeURIComponent(HOLOGRAM_PLAY_STORE)};end`;
+  }
+  if (/iPhone|iPad|iPod/i.test(userAgent)) return `hologram-zone://invite?_url=${encoded}`;
+  return null;
+}
+
+const HOLOGRAM_LABEL: Record<Lang, { hint: string; action: string }> = {
+  en: { hint: "On this phone", action: "Open in Hologram" },
+  es: { hint: "En este teléfono", action: "Abrir en Hologram" },
+};
+
+export function OpenInHologramLink({
+  walletId,
+  rail,
+  appUrl,
+  lang = "en",
+}: {
+  walletId?: string;
+  rail?: string;
+  appUrl?: string | null;
+  lang?: Lang;
+}) {
+  if (walletId !== "hologram" || rail !== "didcomm" || !appUrl) return null;
+  const href = hologramInvitationLink(appUrl, navigator.userAgent);
+  if (!href) return null;
+  return (
+    <a
+      href={href}
+      className="group mx-auto flex w-full max-w-xs items-center gap-3 rounded-2xl bg-gray-900 py-2 pl-2 pr-4 text-left text-white shadow-sm transition-colors hover:bg-gray-800"
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element -- pre-optimized 5 kB wallet logo synced into public/ */}
+      <img
+        src={withBase("/wallets/hologram/logo.webp")}
+        alt=""
+        aria-hidden
+        width={36}
+        height={36}
+        className="h-9 w-9 shrink-0 rounded-xl bg-white object-contain"
+      />
+      <span className="flex min-w-0 flex-col leading-tight">
+        <span className="text-[11px] text-white/60">{HOLOGRAM_LABEL[lang].hint}</span>
+        <span className="text-sm font-semibold">{HOLOGRAM_LABEL[lang].action}</span>
+      </span>
+      <ExternalLink className="ml-auto h-4 w-4 shrink-0 text-white/60 transition-colors group-hover:text-white" aria-hidden />
+    </a>
+  );
+}
+
 // Auto-reveals when scrolled into view: revealing fetches /api/demo/<id>,
 // which mints a fresh live action for this visitor - an OOB credential offer
 // (issuers) or OOB presentation request (verifiers), or the plain connection
@@ -225,6 +285,8 @@ export function ServiceQr({
   credential,
   demoParams,
   openInWallet,
+  walletId,
+  lang,
   bare = false,
   expect = "accept",
   onSettled,
@@ -238,6 +300,8 @@ export function ServiceQr({
    *  default one has to be minted its own. */
   demoParams?: string;
   openInWallet?: HostedWallet;
+  walletId?: string;
+  lang?: Lang;
   /** Which credential the demo mints (default: the DemoCredential);
    *  "ecs-badge" mints the Vesta chapter-4 badge offer. */
   credential?: string;
@@ -408,6 +472,8 @@ export function ServiceQr({
     };
   }, [appUrl, attempt]);
 
+  const hologramLink = <OpenInHologramLink walletId={walletId} rail={rail} appUrl={appUrl} lang={lang} />;
+
   let content: React.ReactNode;
   if (credSettled && credStatus) {
     content = (
@@ -448,6 +514,7 @@ export function ServiceQr({
         {openInWallet && appUrl ? (
           <OpenInWalletLink wallet={openInWallet} appUrl={appUrl} />
         ) : null}
+        {hologramLink}
       </div>
     );
   } else {
@@ -469,6 +536,7 @@ export function ServiceQr({
           {openInWallet ? (
             <OpenInWalletLink wallet={openInWallet} appUrl={appUrl} />
           ) : null}
+          {hologramLink}
           <p className="text-center text-xs text-gray-500">
             Scan with your <strong className="font-semibold">wallet</strong> - a
             live, single-use out-of-band action from this service. Your wallet

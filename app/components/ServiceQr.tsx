@@ -32,6 +32,8 @@ type CredentialStatus = {
 
 type ProofStatus = {
   state?: string | null;
+  declined?: boolean;
+  reason?: string | null;
   verified?: boolean;
   claims?: { name: string; value: string }[];
 };
@@ -108,6 +110,27 @@ function IssuanceOutcome({
       <p className="mt-2 text-xs text-emerald-700/80">
         It is now in your wallet. Each QR is single-use - start over to mint
         a fresh offer.
+      </p>
+      <StartOverButton onClick={onRestart} />
+    </div>
+  );
+}
+
+function PresentationNotShared({
+  reason,
+  onRestart,
+}: {
+  reason?: string | null;
+  onRestart: () => void;
+}) {
+  return (
+    <div className="rounded-xl border border-gray-200 bg-gray-50 p-5 text-center">
+      <p className="text-sm font-semibold text-gray-700">
+        No credential was shared.
+      </p>
+      <p className="mt-1 text-xs text-gray-500">
+        The presentation was declined or stopped before the verifier got your
+        credential.{reason ? ` Reason given: ${reason}` : ""}
       </p>
       <StartOverButton onClick={onRestart} />
     </div>
@@ -389,7 +412,7 @@ export function ServiceQr({
 
   // Verifier flows: poll the presentation status so the QR flips into the
   // presented credential the moment the wallet shares it.
-  const presented = proof?.state === "done";
+  const presented = proof?.state === "done" || !!proof?.declined;
   useEffect(() => {
     if (!revealed || !proofId || presented) return;
     let alive = true;
@@ -400,6 +423,11 @@ export function ServiceQr({
         if (res.ok) {
           const body = (await res.json()) as ProofStatus;
           if (!alive) return;
+          if (body?.declined) {
+            setProof(body);
+            onSettledRef.current?.({ kind: "declined" });
+            return;
+          }
           if (body?.state === "done") {
             setProof(body);
             onSettledRef.current?.({
@@ -483,6 +511,8 @@ export function ServiceQr({
         onRestart={retry}
       />
     );
+  } else if (proof?.declined) {
+    content = <PresentationNotShared reason={proof.reason} onRestart={retry} />;
   } else if (proof && proof.state === "done") {
     content = (
       <PresentedCredential proof={proof} expect={expect} onRestart={retry} />

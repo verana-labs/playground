@@ -7,5 +7,3 @@ next-env.d.ts
 .DS_Store
 public/wallets/
 
-# Checkout of verana-labs/verana-deploy (cast definitions) made by CI
-verana-deploy/

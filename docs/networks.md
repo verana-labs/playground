@@ -43,5 +43,6 @@ The site reaches each cast agent's Admin API at `http://<release>:3000` in its n
 | Secret | Used by |
 | --- | --- |
 | `DOCKER_HUB_LOGIN`, `DOCKER_HUB_PWD` | The publishing workflows |
-| `KUBECONFIG_VERANA_TESTNET`, `K8S_NAMESPACE` | `conformance.yml` (reads the cluster) |
 | variable `NEXT_PUBLIC_FIDES_USECASE_URL` | The site image build (optional) |
+
+This repository holds no cluster credentials. The live conformance tiers run in verana-deploy (workflow **Playground Conformance**); see `conformance/README.md`. The old secrets `KUBECONFIG_VERANA_TESTNET`, `K8S_NAMESPACE` and `PLAYGROUND_MNEMONIC` can be deleted.

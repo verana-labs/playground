@@ -103,7 +103,7 @@ describe("listCastServices", () => {
   });
 
   // The real cast definitions, when a verana-deploy checkout is available
-  // (the conformance workflow makes one; locally set CONFORMANCE_CASTS_DIR).
+  // (verana-deploy sets CONFORMANCE_CASTS_DIR when it runs the live tiers).
   const realCasts =
     process.env.CONFORMANCE_CASTS_DIR ??
     path.join(path.dirname(new URL(import.meta.url).pathname), "..", "..", "verana-deploy", "playground", "casts");

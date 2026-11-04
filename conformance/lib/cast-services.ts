@@ -17,9 +17,9 @@ export type CastService = {
 };
 
 // The cast definitions live in verana-labs/verana-deploy (playground/casts/),
-// which deploys the playground. The conformance workflow checks that
-// repository out at verana-deploy/ in this repository; CONFORMANCE_CASTS_DIR
-// points elsewhere, for example at a local clone.
+// which deploys the playground and runs the live tiers (workflow "Playground
+// Conformance"): it sets CONFORMANCE_CASTS_DIR. Locally, point it at a clone,
+// or clone verana-deploy at verana-deploy/ in this repository.
 const DEFAULT_CASTS_DIR =
   process.env.CONFORMANCE_CASTS_DIR ??
   fileURLToPath(new URL("../../verana-deploy/playground/casts/", import.meta.url));
@@ -74,7 +74,7 @@ function permOf(value: string | undefined): CastService["demoPerm"] {
 export function listCastServices(network: Network, workflowsDir: string = DEFAULT_CASTS_DIR): CastService[] {
   if (!fs.existsSync(workflowsDir)) {
     throw new Error(
-      `No cast definitions at ${workflowsDir}: check out verana-labs/verana-deploy at verana-deploy/, or set CONFORMANCE_CASTS_DIR to its playground/casts/`,
+      `No cast definitions at ${workflowsDir}: set CONFORMANCE_CASTS_DIR to the playground/casts/ of verana-labs/verana-deploy`,
     );
   }
   const casts = fs

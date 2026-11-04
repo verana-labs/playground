@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/verana-labs/playground/compare/verana-playground-v0.2.0...verana-playground-v0.2.1) (2026-11-04)
+
+
+### Bug Fixes
+
+* sign V4 OpenID4VP requests with the service DID unless signer=x5c ([#339](https://github.com/verana-labs/playground/issues/339)) ([b4def3e](https://github.com/verana-labs/playground/commit/b4def3e9255ab83edea09d8cfd8f036fb99c4a73))
+
 ## [0.2.0](https://github.com/verana-labs/playground/compare/verana-playground-v0.1.0...verana-playground-v0.2.0) (2026-11-04)
 
 

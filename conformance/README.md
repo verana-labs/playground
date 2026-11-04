@@ -43,9 +43,17 @@ not read what it needed and says why) or `not-testable` (a network without resol
 sorted by code point, so `diff` between two `results.json` shows exactly what changed.
 
 Environment: `CONFORMANCE_NETWORK` selects one network; `CONFORMANCE_CASTS` limits the casts that receive
-live mints (default `demo,eventos`); `CONFORMANCE_MINTS=1` enables the checks that create sessions on the
-services (off in the per-change CI job, on nightly); `CONFORMANCE_K8S_NAMESPACE` enables the cluster read of
-the image tag actually serving and the detection of services that rolled during the run (nightly only).
+live mints (default `demo`); `CONFORMANCE_MINTS=1` enables the checks that create sessions on the
+services (off by default, on in the verana-deploy runs); `CONFORMANCE_K8S_NAMESPACE` enables the cluster read of
+the image tag actually serving and the detection of services that rolled during the run (verana-deploy runs only).
+
+**Where each part runs.** The static checks (`npm run test:lib`: wallet profiles, listing gate, verdict table)
+run in the CI of this repository on every change. The live tiers (`t1`, `t2`) check the deployed services,
+so they run in verana-labs/verana-deploy, which deploys the playground: its workflow **Playground
+Conformance** runs them nightly and after each **Playground Setup**, on the version of this repository it
+deploys, with its own cast definitions (`playground/casts/`, `CONFORMANCE_CASTS_DIR`), the vs-agent version
+it pins (`playground/versions.env`) and its cluster access. Locally, set `CONFORMANCE_CASTS_DIR` to the
+`playground/casts/` of a verana-deploy clone.
 
 ## Tier 2
 

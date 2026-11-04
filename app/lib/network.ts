@@ -26,14 +26,14 @@ const NETWORKS: Record<VeranaNetwork, NetworkConfig> = {
     label: "TESTNET",
     chainId: "vna-testnet-1",
     ecsEcosystemDid:
-      "did:webvh:QmVEcKodsZWNhMx6UT7Sq4V8JBrcvohdJTutG6q88WQPhQ:ecs-ecosystem.testnet.verana.network",
+      "did:webvh:QmaG8Zk91utJCRpHZ6ruVKwedNEWXUm1vnXvttf6pENZHM:council.testnet.verana.network",
   },
   devnet: {
     protocol: "v4",
     label: "DEVNET",
     chainId: "vna-devnet-1",
     ecsEcosystemDid:
-      "did:webvh:QmQueP3dCakEphRR694eYzZEhF53FvzPCPrdoHK3aMeFKh:ecs-ecosystem.devnet.verana.network",
+      "did:webvh:QmS9A72aycFgQV18yAQ5yByhFuuAw4CWmCMfskd8YzczwG:council.devnet.verana.network",
   },
 };
 

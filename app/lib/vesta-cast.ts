@@ -52,7 +52,7 @@ export const VESTA_CAST = {
 } as const satisfies Record<string, VestaCastMember>;
 
 /** The service that issues the ECS Organization credentials of the cast.
- *  V4: ecs-org-issuer, the organization issuer of the ECS Ecosystem;
+ *  V4: the Verana Council, controller of the ECS Ecosystem and its organization issuer;
  *  Helvetia stays an ordinary cast member. V3 (the old protocol): Helvetia
  *  Trust Services (demo), an accredited ECS-Org issuer of the cast. */
 export const ECS_ORG_ISSUER: {
@@ -77,12 +77,12 @@ export const ECS_ORG_ISSUER: {
       member: VESTA_CAST.helvetia,
     }
   : {
-      name: "ecs-org-issuer (ECS Ecosystem)",
-      label: "ecs-org-issuer",
+      name: "Verana Council (ECS Ecosystem)",
+      label: "Verana Council",
       sub: "the ECS Ecosystem's organization issuer",
-      described: "ecs-org-issuer, the accredited organization issuer of the ECS Ecosystem",
-      operator: "The ECS Ecosystem operator",
-      member: { host: networkHost("ecs-org-issuer") },
+      described: "the Verana Council, the accredited organization issuer of the ECS Ecosystem",
+      operator: "The Verana Council",
+      member: { host: networkHost("council") },
     };
 
 type SchemaKey =

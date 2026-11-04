@@ -1,0 +1,66 @@
+name: Publish Playground image
+
+# Builds and publishes the playground site image of each release:
+#   veranalabs/playground:<release tag>
+# release-please creates the release tag (release-please.yml). This repository
+# only builds the image: verana-labs/verana-deploy deploys it
+# (playground/versions.env pins the tag, workflow "Playground Setup").
+
+on:
+  # Called by release-please.yml when it creates a release.
+  workflow_call:
+    inputs:
+      tag:
+        description: "Release tag to build"
+        required: true
+        type: string
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to (re)build, for example v0.2.0"
+        required: true
+
+permissions:
+  contents: read
+
+env:
+  # The playground runs on testnet only; the network is built into the image.
+  NETWORK: testnet
+  TAG: ${{ inputs.tag }}
+
+jobs:
+  publish:
+    name: Build and publish the playground image
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+
+      - name: Log in to container registry
+        uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4.4.0
+        with:
+          username: ${{ secrets.DOCKER_HUB_LOGIN }}
+          password: ${{ secrets.DOCKER_HUB_PWD }}
+
+      - name: Build and push the playground image
+        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        with:
+          context: .
+          push: true
+          tags: veranalabs/playground:${{ env.TAG }}
+          build-args: |
+            NEXT_PUBLIC_FIDES_USECASE_URL=${{ vars.NEXT_PUBLIC_FIDES_USECASE_URL }}
+            NEXT_PUBLIC_VERANA_NETWORK=${{ env.NETWORK }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Summary
+        run: |
+          echo "## Playground ${TAG}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Image:** veranalabs/playground:${TAG}" >> "$GITHUB_STEP_SUMMARY"
+          echo "- **Deploy:** set PLAYGROUND_IMAGE in verana-deploy playground/versions.env" >> "$GITHUB_STEP_SUMMARY"

@@ -281,25 +281,53 @@ const CREDENTIALS: Record<string, CredentialKind> = {
   },
 };
 
+// Creating a credential definition generates its keys and publishes it, which
+// takes longer than an ordinary Admin API call.
+const CRED_DEF_CREATE_TIMEOUT_MS = 60_000;
+
+/** The credential definition of a VTJSC on an agent. vs-agent v2 names a
+ *  credential definition after the schema title, so match on the VTJSC only. */
+async function findCredDefId(admin: string, jscUrl: string): Promise<string | null> {
+  const list = await adminJson(`${admin}/v2/anoncreds/credential-definitions`);
+  const items = (list as { items?: unknown } | null)?.items;
+  const match = Array.isArray(items)
+    ? items.find(
+        (t) =>
+          t && typeof t === "object" &&
+          (t as { relatedJsonSchemaCredentialId?: unknown })
+            .relatedJsonSchemaCredentialId === jscUrl,
+      )
+    : undefined;
+  const id = (match as { id?: unknown } | undefined)?.id;
+  return typeof id === "string" ? id : null;
+}
+
+/** The credential definition id an offer needs. On V4 the site creates it
+ *  when the agent has none yet. */
 async function credDefId(
   admin: string,
   kind: CredentialKind,
 ): Promise<string | null> {
   if (PROTOCOL === "v4") {
-    // vs-agent v2 names a credential definition after the schema title, so
-    // match on the VTJSC only.
-    const list = await adminJson(`${admin}/v2/anoncreds/credential-definitions`);
-    const items = (list as { items?: unknown } | null)?.items;
-    const match = Array.isArray(items)
-      ? items.find(
-          (t) =>
-            t && typeof t === "object" &&
-            (t as { relatedJsonSchemaCredentialId?: unknown })
-              .relatedJsonSchemaCredentialId === kind.jscUrl,
-        )
-      : undefined;
-    const id = (match as { id?: unknown } | undefined)?.id;
-    return typeof id === "string" ? id : null;
+    const existing = await findCredDefId(admin, kind.jscUrl);
+    if (existing) return existing;
+    // CI/CD creates no credential definition: the site creates the one it
+    // needs the first time a service makes an offer. A concurrent request may
+    // create it first (HTTP 409), so look it up again.
+    const res = await fetch(`${admin}/v2/anoncreds/credential-definitions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ relatedJsonSchemaCredentialId: kind.jscUrl }),
+      signal: AbortSignal.timeout(CRED_DEF_CREATE_TIMEOUT_MS),
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const id = ((await res.json()) as { id?: unknown }).id;
+      if (typeof id === "string") return id;
+    } else if (res.status !== 409) {
+      throw new Error(`${admin}/v2/anoncreds/credential-definitions -> HTTP ${res.status}`);
+    }
+    return findCredDefId(admin, kind.jscUrl);
   }
   const types = await adminJson(`${admin}/v1/credential-types`);
   if (!Array.isArray(types)) return null;

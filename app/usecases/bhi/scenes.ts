@@ -7,7 +7,7 @@
 // trust cards resolve against the network of the build; Northgate and HMRC
 // stay story-only (no agent, by design).
 //
-// V4: ecs-org-issuer, the organization issuer of the Verana ECS
+// V4: the Verana Council, the organization issuer of the Verana ECS
 // Ecosystem, issues every ECS-Organization credential of the cast, and
 // Orchestrating Identity holds no DVS-Aligned Provider credential of its
 // own (its ISSUER entry is the proof). The V4 values below show that; the

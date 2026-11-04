@@ -69,7 +69,7 @@ export const CEXA_EGF_PATH =
 export const CEXA_EGF_URL = `https://${networkHost("playground")}${CEXA_EGF_PATH}`;
 
 /** The name of the issuer of the ECS-Organization credential of every cast
- *  member. On V4 each agent gets it from ecs-org-issuer, the organization
+ *  member. On V4 each agent gets it from the Verana Council, the organization
  *  issuer of the ECS Ecosystem. */
 export const CEXA_ECS_ORG_ISSUER =
   PROTOCOL === "v4"

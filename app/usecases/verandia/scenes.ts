@@ -220,10 +220,10 @@ const NODES: SceneNode[] = [
     appears: "3.1",
     label: V4 ? "ECS Organization issuer" : "Helvetia Trust Services",
     sub: V4 ? `Verana ${NETWORK} · ECS-Org issuer` : "(demo) · accredited ECS-Org issuer",
-    // V4: the did:web alias of ecs-org-issuer (its DID document is at that host).
-    did: V4 ? `did:web:${networkHost("ecs-org-issuer")}` : VESTA_CAST.helvetia.did,
+    // V4: the did:web alias of the Verana Council VS Agent (its DID document is at that host).
+    did: V4 ? `did:web:${networkHost("council")}` : VESTA_CAST.helvetia.did,
     serviceType: "KYB issuance service",
-    operator: V4 ? "The ECS Ecosystem operator" : "Helvetia Trust Services (demo)",
+    operator: V4 ? "The Verana Council" : "Helvetia Trust Services (demo)",
     verifiedAt: "3.1",
   },
   {

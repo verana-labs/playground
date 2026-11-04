@@ -424,7 +424,9 @@ export async function GET(
   // presentation_definition, which is what Altme needs.
   const queryLanguage =
     search.get("query") === "pe" ? "presentation_exchange" : undefined;
-  // vs-agent v2 signs with x5c by default; ?signer=x5c only mattered on V3, whose config set requestSigner "did".
+  // Without ?signer=x5c the service signs its OpenID4VP requests with its DID, the contract of the
+  // wallet profiles (app/lib/wallet-profiles.ts). vs-agent v2 signs with x5c unless asked for "did",
+  // so the V4 request names the signer; the V3 agents were configured to sign with their DID.
   const requestSigner = search.get("signer") === "x5c" ? "x5c" : undefined;
   const applicant = applicantFromParams(search);
   const registered = CREDENTIALS[credentialId];
@@ -515,7 +517,7 @@ export async function GET(
             jsonSchemaCredentialId: kind.jscUrl,
             requestedClaims: Object.keys(kind.oid4vcClaims(serviceId, applicant, search)),
             ...(queryLanguage ? { queryLanguage } : {}),
-            ...(requestSigner ? { requestSigner } : {}),
+            requestSigner: requestSigner ?? "did",
           }),
         });
         const url = str(request, "url");

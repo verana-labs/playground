@@ -16,7 +16,13 @@ export type CastService = {
   configPath: string;
 };
 
-const DEFAULT_WORKFLOWS_DIR = fileURLToPath(new URL("../../.github/workflows/", import.meta.url));
+// The cast definitions live in verana-labs/verana-deploy (playground/casts/),
+// which deploys the playground. The conformance workflow checks that
+// repository out at verana-deploy/ in this repository; CONFORMANCE_CASTS_DIR
+// points elsewhere, for example at a local clone.
+const DEFAULT_CASTS_DIR =
+  process.env.CONFORMANCE_CASTS_DIR ??
+  fileURLToPath(new URL("../../verana-deploy/playground/casts/", import.meta.url));
 
 function parseEnv(text: string): Record<string, string> {
   const out: Record<string, string> = {};
@@ -28,7 +34,15 @@ function parseEnv(text: string): Record<string, string> {
 }
 
 function templateTag(castDir: string, cast: string): string {
-  // The V4 casts have no template of their own: they use the shared V4 template.
+  // verana-deploy pins one vs-agent version for every cast agent
+  // (playground/versions.env, next to playground/casts/).
+  const versions = path.join(castDir, "..", "..", "versions.env");
+  if (fs.existsSync(versions)) {
+    const tag = parseEnv(fs.readFileSync(versions, "utf8")).VS_AGENT_VERSION;
+    if (!tag) throw new Error(`${versions} sets no VS_AGENT_VERSION`);
+    return tag;
+  }
+  // Otherwise a template of the cast, or the shared V4 template.
   const own = path.join(castDir, "deployment.template.yaml");
   const file = fs.existsSync(own) ? own : path.join(castDir, "..", "v4", "deployment.template.yaml");
   const doc = yaml.load(fs.readFileSync(file, "utf8"), { schema: yaml.JSON_SCHEMA });
@@ -57,7 +71,12 @@ function permOf(value: string | undefined): CastService["demoPerm"] {
   return value === "issuer" || value === "verifier" || value === "none" ? value : null;
 }
 
-export function listCastServices(network: Network, workflowsDir: string = DEFAULT_WORKFLOWS_DIR): CastService[] {
+export function listCastServices(network: Network, workflowsDir: string = DEFAULT_CASTS_DIR): CastService[] {
+  if (!fs.existsSync(workflowsDir)) {
+    throw new Error(
+      `No cast definitions at ${workflowsDir}: check out verana-labs/verana-deploy at verana-deploy/, or set CONFORMANCE_CASTS_DIR to its playground/casts/`,
+    );
+  }
   const casts = fs
     .readdirSync(workflowsDir)
     .filter((d) => fs.existsSync(path.join(workflowsDir, d, "orgs")))
@@ -90,7 +109,7 @@ export function listCastServices(network: Network, workflowsDir: string = DEFAUL
 }
 
 export function scopedCasts(): string[] {
-  return (process.env.CONFORMANCE_CASTS ?? "bhi,bolivia,cexa,demo,eventos,verandia,vesta")
+  return (process.env.CONFORMANCE_CASTS ?? "bhi,cexa,demo,verandia,vesta")
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);

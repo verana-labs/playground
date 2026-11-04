@@ -72,19 +72,46 @@ describe("listCastServices", () => {
   });
 
   it("scopes casts from the environment", () => {
-    expect(scopedCasts()).toEqual(["bhi", "bolivia", "cexa", "demo", "eventos", "verandia", "vesta"]);
+    expect(scopedCasts()).toEqual(["bhi", "cexa", "demo", "verandia", "vesta"]);
     process.env.CONFORMANCE_CASTS = "vesta, bhi";
     expect(scopedCasts()).toEqual(["vesta", "bhi"]);
     const [a] = listCastServices(testnet, dir);
     expect(inScope(a!)).toBe(false);
   });
 
-  it("reads the real repository and finds the demo and eventos casts", () => {
-    const services = listCastServices(testnet);
+  it("reads the verana-deploy layout: one vs-agent version for every cast", () => {
+    const root = fs.mkdtempSync(path.join(os.tmpdir(), "verana-deploy-"));
+    try {
+      const casts = path.join(root, "casts");
+      fs.mkdirSync(path.join(casts, "vesta", "orgs", "zenith"), { recursive: true });
+      fs.writeFileSync(path.join(root, "versions.env"), "VS_AGENT_VERSION=v2.0.0-dev.103\n");
+      fs.writeFileSync(
+        path.join(casts, "vesta", "orgs", "zenith", "config.env"),
+        'RELEASE_NAME="zenith"\nINGRESS_HOST="zenith.playground.__NETWORK__.verana.network"\nOID4VC_ROLE="issuer"\n',
+      );
+      const [zenith] = listCastServices(testnet, casts);
+      expect(zenith?.id).toBe("zenith");
+      expect(zenith?.cast).toBe("vesta");
+      expect(zenith?.pinnedTag).toBe("v2.0.0-dev.103");
+    } finally {
+      fs.rmSync(root, { recursive: true, force: true });
+    }
+  });
+
+  it("says where to find the cast definitions when they are missing", () => {
+    expect(() => listCastServices(testnet, path.join(dir, "missing"))).toThrow(/verana-deploy/);
+  });
+
+  // The real cast definitions, when a verana-deploy checkout is available
+  // (the conformance workflow makes one; locally set CONFORMANCE_CASTS_DIR).
+  const realCasts =
+    process.env.CONFORMANCE_CASTS_DIR ??
+    path.join(path.dirname(new URL(import.meta.url).pathname), "..", "..", "verana-deploy", "playground", "casts");
+  it.skipIf(!fs.existsSync(realCasts))("reads the real cast definitions of verana-deploy", () => {
+    const services = listCastServices(testnet, realCasts);
     const ids = services.map((s) => s.id);
-    expect(ids).toEqual(expect.arrayContaining(["demo-issuer-accredited", "demo-verifier-accredited", "taquilla", "evento-costa-rica"]));
-    expect(ids.length).toBeGreaterThanOrEqual(40);
-    expect(services.find((s) => s.id === "taquilla")?.issuerId).not.toBeNull();
+    expect(ids).toEqual(expect.arrayContaining(["demo-issuer-accredited", "demo-verifier-accredited", "vesta", "zenith"]));
+    expect(ids.length).toBeGreaterThanOrEqual(37);
     expect(services.filter((s) => s.oid4vcRole === "verifier").length).toBeGreaterThanOrEqual(12);
   });
 });

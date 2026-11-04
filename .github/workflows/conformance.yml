@@ -9,12 +9,22 @@ on:
         default: ""
       casts:
         description: "casts that receive live mints"
-        default: "demo,eventos"
+        default: "demo"
 jobs:
   tier1:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      # The cast definitions live in verana-labs/verana-deploy, which is
+      # private: VERANA_DEPLOY_READ_TOKEN is a read-only token on it
+      # (Contents: read). See conformance/lib/cast-services.ts.
+      - name: Checkout the cast definitions (verana-deploy)
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: verana-labs/verana-deploy
+          token: ${{ secrets.VERANA_DEPLOY_READ_TOKEN }}
+          path: verana-deploy
+          sparse-checkout: playground
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 22
@@ -38,7 +48,7 @@ jobs:
         env:
           CONFORMANCE_RUN_ID: nightly-${{ github.run_id }}-${{ github.run_attempt }}
           CONFORMANCE_NETWORK: ${{ inputs.network }}
-          CONFORMANCE_CASTS: ${{ inputs.casts || 'demo,eventos' }}
+          CONFORMANCE_CASTS: ${{ inputs.casts || 'demo' }}
           CONFORMANCE_MINTS: "1"
           CONFORMANCE_K8S_NAMESPACE: ${{ secrets.K8S_NAMESPACE }}
       - run: npm run t2
@@ -47,7 +57,7 @@ jobs:
         env:
           CONFORMANCE_RUN_ID: nightly-${{ github.run_id }}-${{ github.run_attempt }}
           CONFORMANCE_NETWORK: ${{ inputs.network }}
-          CONFORMANCE_CASTS: ${{ inputs.casts || 'demo,eventos' }}
+          CONFORMANCE_CASTS: ${{ inputs.casts || 'demo' }}
           CONFORMANCE_MINTS: "1"
           CONFORMANCE_K8S_NAMESPACE: ${{ secrets.K8S_NAMESPACE }}
       - if: always()

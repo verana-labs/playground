@@ -43,9 +43,14 @@ not read what it needed and says why) or `not-testable` (a network without resol
 sorted by code point, so `diff` between two `results.json` shows exactly what changed.
 
 Environment: `CONFORMANCE_NETWORK` selects one network; `CONFORMANCE_CASTS` limits the casts that receive
-live mints (default `demo,eventos`); `CONFORMANCE_MINTS=1` enables the checks that create sessions on the
+live mints (default `demo`); `CONFORMANCE_MINTS=1` enables the checks that create sessions on the
 services (off in the per-change CI job, on nightly); `CONFORMANCE_K8S_NAMESPACE` enables the cluster read of
 the image tag actually serving and the detection of services that rolled during the run (nightly only).
+
+The cast services come from the cast definitions of verana-labs/verana-deploy (`playground/casts/`, which
+deploys the playground) and the vs-agent version it pins (`playground/versions.env`). CI checks that
+repository out at `verana-deploy/` with the secret `VERANA_DEPLOY_READ_TOKEN` (read-only); locally, set
+`CONFORMANCE_CASTS_DIR` to the `playground/casts/` of a clone.
 
 ## Tier 2
 

@@ -67,9 +67,11 @@ export async function GET(
   const { serviceId, proofExchangeId } = await params;
   const rail = new URL(req.url).searchParams.get("rail") ?? "didcomm";
   const service = getDemoService(serviceId);
+  // A service that issues AND verifies (CEXA Novara) has the role "issuer" and
+  // mints presentation requests on ?action=request, so issuers count too.
   if (
     !service ||
-    (service.role !== "verifier" && service.role !== "untrusted") ||
+    service.role === "anchor" ||
     !service.host.endsWith(CAST_DOMAIN)
   )
     return NextResponse.json({ error: "unknown service" }, { status: 404 });

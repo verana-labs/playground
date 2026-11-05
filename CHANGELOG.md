@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/verana-labs/playground/compare/verana-playground-v0.2.1...verana-playground-v0.2.2) (2026-11-05)
+
+
+### Bug Fixes
+
+* poll the presentation status of services that issue and verify ([#341](https://github.com/verana-labs/playground/issues/341)) ([154abd6](https://github.com/verana-labs/playground/commit/154abd62186e42ed3791e152bf92e1f32f4dc6d2))
+
 ## [0.2.1](https://github.com/verana-labs/playground/compare/verana-playground-v0.2.0...verana-playground-v0.2.1) (2026-11-04)
 
 

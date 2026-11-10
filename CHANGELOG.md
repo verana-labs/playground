@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/verana-labs/playground/compare/verana-playground-v0.4.0...verana-playground-v0.5.0) (2026-11-10)
+
+
+### Features
+
+* run the directory searches of the Vesta and Verandia stories on the trust graph ([#347](https://github.com/verana-labs/playground/issues/347)) ([26d1ca2](https://github.com/verana-labs/playground/commit/26d1ca2beabe0062860d272d27f2da98168a6390))
+
 ## [0.4.0](https://github.com/verana-labs/playground/compare/verana-playground-v0.3.0...verana-playground-v0.4.0) (2026-11-10)
 
 

@@ -664,10 +664,20 @@ export const DEMOS = {
   directory: {
     title: "Search the directory of Authorized Repairers",
     intro:
-      "Discovery by proof: query the public registry for organizations by the credentials they present.",
+      "Discovery by proof: query the public registry for organizations by the credentials they present. Each search runs live on the Verana trust graph, which lists only services whose trust the network resolved.",
+    // The ids name the live queries of app/lib/trust-graph.ts.
     queries: [
-      "View all organizations that present an Authorized Repairer credential, and choose which company to contact for service.",
-      "Narrow it down: organizations that present an Authorized Repairer credential AND an ISO 9001 credential.",
+      {
+        id: "vesta-authorized-repairers",
+        text: "View all organizations that present an Authorized Repairer credential, and choose which company to contact for service.",
+        emptyNote: "No service holds an Authorized Repairer credential today.",
+      },
+      {
+        id: "vesta-repairers-iso9001",
+        text: "Narrow it down: organizations that present an Authorized Repairer credential AND an ISO 9001 credential.",
+        emptyNote:
+          "No service holds both credentials today. The searches below show how many hold each one.",
+      },
     ],
   },
 };
@@ -676,8 +686,9 @@ export const DEMOS = {
 
 export const CLOSING = {
   title: "Being found",
-  pendingLabel: "coming later",
-  body: "Everything Vesta published - the ECS credentials, the ISO 9001 certification, the Authorized Repairer credentials - is public, resolvable, and indexable. The Trust Graph turns that into discovery: only verified trust results are indexed, and people, search engines, and AI agents find services by what they prove, not what they claim: “ISO 9001-certified manufacturers”, “authorized Vesta repairers”. The full walkthrough ships later.",
+  statusLabel: "live on the trust graph",
+  body: "Everything Vesta published - the ECS credentials, the ISO 9001 certification, the Authorized Repairer credentials - is public, resolvable, and indexable. The Trust Graph turns that into discovery: only verified trust results are indexed, and people, search engines, and AI agents find services by what they prove, not what they claim: “ISO 9001-certified manufacturers”, “authorized Vesta repairers”. The directory searches above run on it.",
+  cta: "Search the whole trust graph",
 };
 
 /** The four sections, for home cards and in-page navigation. */

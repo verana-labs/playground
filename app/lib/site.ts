@@ -21,6 +21,10 @@ export const ENDPOINTS = {
       ? `https://${networkHost("idx")}/openapi.json`
       : `https://${networkHost("resolver")}/docs`,
   frontend: `https://${networkHost("app")}`,
+  // The Verana Graph (the trust graph: discovery over the indexed DIDs) and
+  // Verana Search, its web interface.
+  graph: `https://${networkHost("graph")}`,
+  search: `https://${networkHost("search")}`,
   faucet: `https://${networkHost(PROTOCOL === "v4" ? "faucet" : "faucet-vs")}`,
 } as const;
 

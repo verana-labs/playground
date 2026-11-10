@@ -1,6 +1,6 @@
 {
   "name": "verana-playground",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "private": true,
   "description": "The Verana Playground - try the open trust layer, live on testnet: the Verana Explained story and per-wallet playgrounds. https://playground.testnet.verana.network",
   "license": "Apache-2.0",

@@ -15,10 +15,7 @@
 #
 # Already integrated, so deliberately absent: Sphereon Edge Wallet, Hologram
 # Messaging, Procivis One Wallet, Altme, EUDI Wallet Reference Implementation,
-# Paradym Wallet, SWIYU Wallet, and the whole Inji server stack. integrations/
-# mosip-inji covers Inji Certify, Inji Web and Inji Verify in one entry, so
-# listing Inji Verifier again here would double-count it. Inji Wallet stays
-# below because that is the separate mobile holder, not Inji Web.
+# Paradym Wallet and SWIYU Wallet.
 
 personal:
   - id: eausweise
@@ -91,7 +88,7 @@ personal:
     logo: ./coming-soon/inji-wallet.png
     website: https://docs.mosip.io/inji
     repo: https://github.com/mosip/inji-wallet
-    note: The holder half of the MOSIP stack whose issuer side is already integrated.
+    note: The holder half of the MOSIP stack.
 
   - id: talao-wallet
     name: Talao Wallet

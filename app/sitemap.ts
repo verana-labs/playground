@@ -16,7 +16,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/business-wallets",
     "/integrate",
     "/about",
-    "/usecases/mosip",
     ...CHAPTERS_NAV.map((c) => c.href),
     ...VERANDIA_CHAPTERS.map((c) => c.href),
     ...CEXA_CHAPTERS.map((c) => c.href),

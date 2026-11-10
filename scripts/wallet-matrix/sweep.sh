@@ -3,7 +3,7 @@
 #   ./sweep.sh                        # everything in builds.json against everything in scenarios.json
 #   ./sweep.sh --build store          # only the builds a client would download
 #   ./sweep.sh --wallet paradym       # one wallet, both builds
-#   ./sweep.sh --suite eventos        # one suite
+#   ./sweep.sh --suite bhi            # one suite
 # Results land in results/<stamp>/, one text file per run plus summary.json.
 set -uo pipefail
 

@@ -12,7 +12,6 @@ const ScenarioSchema = z.object({
   service: z.union([z.string().min(1), z.object({ anoncreds: z.string().min(1), "openid4vc-sdjwt": z.string().min(1) })]),
   credential: z.string().min(1).optional(),
   params: z.record(z.string(), z.string()).optional(),
-  login: z.object({ evento: z.string().min(1), rol: z.string().min(1) }).optional(),
   needs: scenarioId.optional(),
 });
 export type Scenario = z.infer<typeof ScenarioSchema>;

@@ -179,7 +179,7 @@ run_one() {
   [ -n "$PARAMS" ] && qs="$qs&$PARAMS"
 
   local mint_url="$BASE/api/demo/$svc?$qs"
-  # Use-case logins (the eventos gates) live on their own route and take their own query.
+  # A login that lives on its own route takes its own query (the scenario's mint).
   [ -n "$mint" ] && [ "$mint" != "null" ] && mint_url="$BASE/$mint&format=$FMT${PARAMS:+&$PARAMS}"
   curl -sS -m 30 "$mint_url" -o /tmp/matrix-mint.json 2>/dev/null
   local url; url=$(q /tmp/matrix-mint.json url)

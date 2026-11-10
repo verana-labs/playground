@@ -51,9 +51,6 @@
 #                   testing, each in file order. A hidden wallet comes back
 #                   as testing by deleting its hidden line, or as compatible
 #                   by turning that line into status: compatible
-#   scope          use-case id (e.g. eventos): the wallet is left out of the
-#                   main playground, /personal-wallets and every general
-#                   picker, and only listed where that use case asks for it
 #   hidden          true          # keep the entry, icons and captures; drop it from the site until maintenance resumes
 #   captures        up to ONE screen capture per demo scenario (optional),
 #                   keyed by scenario id (issue-accredited,
@@ -65,28 +62,6 @@
 #                   conditions (speed, editing)
 
 wallets:
-  # INTEXUS Wallet: the hosted wwWallet instance branded for the events demo
-  # (/eventos and the three event landings). Same fork and commit as the
-  # wwwallet entry below, built and deployed by .github/workflows/wwwallet.yml
-  # (brand intexus, assets under .github/workflows/wwwallet/brands/intexus/).
-  # scope keeps it out of the main playground; status recommended and its
-  # place at the top of this file put it first in the Taquilla and event
-  # pickers.
-  - id: intexus-wallet
-    name: INTEXUS Wallet
-    vendor: INTEXUS
-    status: recommended
-    icon: ./intexus-wallet/logo.svg
-    formats: [openid4vc-sdjwt]
-    demoParams: signer=x5c
-    browser: true
-    hosted: https://intexus-wallet.eventos.playground.__NETWORK__.verana.network
-    download: https://intexus-wallet.eventos.playground.__NETWORK__.verana.network
-    repo: https://github.com/wwWallet/wallet-frontend
-    fork: https://github.com/verana-labs/wallet-frontend
-    license: BSD-2-Clause
-    scope: eventos
-    notes: "The INTEXUS-branded browser wallet of the events tour: a hosted instance of our wwWallet fork with the same Verana integration (trust card and gate on both consent moments). Nothing to install: it opens in the browser, on the phone too, and the account is a passkey."
   - id: hologram
     name: Hologram Messaging
     vendor: "2060"

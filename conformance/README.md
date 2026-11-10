@@ -61,7 +61,7 @@ it pins (`playground/versions.env`) and its cluster access. Locally, set `CONFOR
 headless holder (`@openid4vc/*`, `@sd-jwt/sd-jwt-vc`), once per listed wallet build on the `openid4vc-sdjwt` rail
 and canonical scenario, and asserts the resolver inputs a real wallet's accept/refuse verdict depends on: the Q1
 trust status by field, Q2 and Q3 from the issuer/verifier authorization endpoints, and the service's own exchange
-state (`done`, `verified`, and for eventos the `decision`). A scenario is `works` only when the protocol completes
+state (`done`, `verified`). A scenario is `works` only when the protocol completes
 and every resolver answer matches what the scenario expects; a flow that completes but disagrees with the
 resolver is `broken` with the resolver evidence as the cause, never weakened to pass.
 

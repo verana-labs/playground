@@ -59,9 +59,8 @@ describeNetworks("human-visible strings [CONF-T1-7]", (network) => {
       it.concurrent(`${service.cast}/${service.id} DIDComm invitation label reads cleanly`, () =>
         check({ tier: "t1", check: "strings:invitation-label", clause: "CONF-T1-7", network: network.id, cast: service.cast, service: service.id }, async () => {
           const verifier = service.oid4vcRole === "verifier" || service.demoPerm === "verifier";
-          const eventosVerifier = verifier && service.cast === "eventos";
           const mint = verifier
-            ? await mintPresentation(network, service, { format: "anoncreds", demoParams: "", login: eventosVerifier ? { evento: service.id.replace(/^evento-/, ""), rol: "asistente" } : undefined })
+            ? await mintPresentation(network, service, { format: "anoncreds", demoParams: "" })
             : await mintIssuance(network, service, { format: "anoncreds", demoParams: "", ...issuanceParamsFor(service) });
           if (mint.kind === "invitation") return { outcome: "unknown", cause: "plain invitation page, no label to read", evidence: { url: mint.url } };
           const invitation = await fetchOobInvitation(mint.url);

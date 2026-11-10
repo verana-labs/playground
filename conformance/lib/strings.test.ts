@@ -5,18 +5,18 @@ const cp = String.fromCodePoint;
 
 describe("encodingDamage", () => {
   it("flags go-style map serialisation, mojibake, replacement characters and unreplaced placeholders", () => {
-    expect(encodingDamage("map[Revolución del Contenido Empresarial:Costa Rica]")).toBe("map-serialisation");
-    expect(encodingDamage(`Taquilla Boleter${cp(0xc3)}${cp(0xad)}a`)).toBe("mojibake");
-    expect(encodingDamage(`Panam${cp(0xfffd)}`)).toBe("replacement-character");
+    expect(encodingDamage("map[Registro Civil Nacional:Verandia]")).toBe("map-serialisation");
+    expect(encodingDamage(`Revisi${cp(0xc3)}${cp(0xb3)}n t${cp(0xc3)}${cp(0xa9)}cnica`)).toBe("mojibake");
+    expect(encodingDamage(`Z${cp(0xfffd)}rich`)).toBe("replacement-character");
     expect(encodingDamage("__SERVICE_NAME__")).toBe("template-placeholder");
     expect(encodingDamage("[object Object]")).toBe("object-tostring");
     expect(encodingDamage("undefined")).toBe("undefined-literal");
   });
 
   it("accepts real text", () => {
-    expect(encodingDamage("Creando un mundo confiable: Costa Rica")).toBeNull();
-    expect(encodingDamage("Taquilla Boletería S.A.S. (demo)")).toBeNull();
-    expect(encodingDamage("Panamá")).toBeNull();
+    expect(encodingDamage("Registro Civil Nacional: Verandia")).toBeNull();
+    expect(encodingDamage("Revisión técnica S.A.S. (demo)")).toBeNull();
+    expect(encodingDamage("Zürich")).toBeNull();
   });
 });
 

@@ -1,10 +1,10 @@
 // The BHI (Better Hiring Institute) "Verifiable Hiring" use case, in four
 // chapters - full content in UK English. Source of truth: verana-spec →
 // playground/submission/oid-bhi.md (draft v4, provided by Orchestrating
-// Identity). Two rules inherited from the Bolivia/CCM stories: (1) REAL
-// organisations (BHI, Orchestrating Identity) appear as themselves; every
-// other participant is fictional and labeled (demo); (2) the candidate is
-// the story's only named person, per the source wireframes.
+// Identity). Two rules: (1) REAL organisations (BHI, Orchestrating
+// Identity) appear as themselves; every other participant is fictional and
+// labeled (demo); (2) the candidate is the story's only named person, per
+// the source wireframes.
 //
 // Vocabulary: this copy deliberately uses Verana v5 terms (Ecosystem,
 // Participant, onboarding modes), as the source does. The older use cases

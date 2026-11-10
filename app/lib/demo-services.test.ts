@@ -20,7 +20,7 @@ describe("demo services", () => {
       "demo-issuer-untrusted", "demo-verifier-untrusted", "demo-untrusted",
       "organization-vs", "issuer-chatbot-vs", "issuer-web-vs",
       "verifier-chatbot-vs", "verifier-web-vs",
-      "mosip-organization-vs", "unfold-organization-vs",
+      "unfold-organization-vs",
     ]);
     expect(getDemoService("nope")).toBeUndefined();
   });

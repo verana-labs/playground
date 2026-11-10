@@ -18,8 +18,8 @@ function refusedForAnUntrustedService(scenario: Scenario): boolean {
 
 export function expectedTrust(scenario: Scenario, service: CastService): TrustExpectation {
   if (isUntrustedService(service) || refusedForAnUntrustedService(scenario)) return { q1: "UNTRUSTED", q2: null, q3: null };
-  if (scenario.kind === "issue") return { q1: "TRUSTED", q2: service.id === "taquilla" ? true : scenario.expect === "accept", q3: null };
-  return { q1: "TRUSTED", q2: null, q3: service.id.startsWith("evento-") ? true : scenario.expect === "accept" };
+  if (scenario.kind === "issue") return { q1: "TRUSTED", q2: scenario.expect === "accept", q3: null };
+  return { q1: "TRUSTED", q2: null, q3: scenario.expect === "accept" };
 }
 
 const freshResolutions = new Map<string, Promise<TrustResolution | null>>();

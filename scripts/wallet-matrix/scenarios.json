@@ -42,43 +42,6 @@
     }
    ]
   },
-  "eventos": {
-   "page": "/eventos",
-   "scenarios": [
-    {
-     "id": "boleto-asistente",
-     "service": "taquilla",
-     "credential": "eventos-asistente",
-     "kind": "issue",
-     "expect": "accept",
-     "extra": "evento=costa-rica&nombre=Prueba%20Matrix"
-    },
-    {
-     "id": "boleto-patrocinador",
-     "service": "taquilla",
-     "credential": "eventos-patrocinador",
-     "kind": "issue",
-     "expect": "accept",
-     "extra": "evento=panama&organizacion=INTEXUS&lema=Beyond%20the%20content"
-    },
-    {
-     "id": "entrada-costa-rica",
-     "service": "",
-     "kind": "present",
-     "expect": "accept",
-     "mint": "api/eventos-login?evento=costa-rica&rol=asistente",
-     "state": "api/eventos-login/{id}?rail=didcomm&evento=costa-rica&rol=asistente"
-    },
-    {
-     "id": "entrada-otro-evento",
-     "service": "",
-     "kind": "present",
-     "expect": "refuse",
-     "mint": "api/eventos-login?evento=guatemala&rol=asistente",
-     "state": "api/eventos-login/{id}?rail=didcomm&evento=guatemala&rol=asistente"
-    }
-   ]
-  },
   "bhi": {
    "page": "/usecases/bhi/demos",
    "scenarios": [
@@ -140,31 +103,6 @@
      "kind": "present",
      "expect": "refuse",
      "note": "The point of the demo. Halcyon is a real verifiable company with no verifier permission."
-    }
-   ]
-  },
-  "bolivia": {
-   "page": "/usecases/bolivia",
-   "scenarios": [
-    {
-     "id": "cedula",
-     "service": "segip",
-     "credential": "bolivia-cedula",
-     "kind": "issue",
-     "expect": "accept"
-    },
-    {
-     "id": "legal-rep",
-     "service": "seprec",
-     "credential": "bolivia-legal-rep",
-     "kind": "issue",
-     "expect": "accept"
-    },
-    {
-     "id": "login",
-     "route": "/api/bolivia-login",
-     "kind": "present",
-     "expect": "accept"
     }
    ]
   },
@@ -268,11 +206,6 @@
      "note": "Present an Umbra-issued badge. This is the scenario the cast exists for; it is not reachable from the runner, drive it from the page."
     }
    ]
-  },
-  "ccm": {
-   "page": "/usecases/ccm",
-   "skip": "Published live but never deployed: neither ccm workflow has ever run, both services return no trust record, and the hosts serve the Kubernetes ingress default certificate. Every visitor gets an error on every wallet.",
-   "scenarios": []
   }
  }
 }

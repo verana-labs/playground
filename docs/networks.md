@@ -17,7 +17,6 @@ The playground runs on one Verana network: testnet (`vna-testnet-1`, Verana V4),
    | `veranalabs/playground:<tag>` | `publish.yml` |
    | `veranalabs/wwwallet-backend:<tag>` | `wwwallet.yml` |
    | `veranalabs/wwwallet-frontend:<tag>` (brand wwwallet) | `wwwallet.yml` |
-   | `veranalabs/wwwallet-frontend:intexus-<tag>` (brand intexus) | `wwwallet.yml` |
 
 3. In verana-deploy, set the new tags in `playground/versions.env` and run **Playground Setup** (target `site` or `wwwallet`).
 

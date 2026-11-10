@@ -13,7 +13,6 @@
       "verified": {
         "personal-wallets": "6/6",
         "bhi": "8/8 end to end",
-        "bolivia": "issuance ok",
         "verandia": "issuance ok",
         "cexa": "aurum ok, novara ERROR (Invalid credential)",
         "vesta": "0/3, whole cast rejected before consent"
@@ -31,7 +30,6 @@
       "verified": {
         "personal-wallets": "4/6, both accept cases skip consent entirely",
         "bhi": "presentations ok, issuance skips consent",
-        "bolivia": "2/2",
         "verandia": "2/2",
         "cexa": "4/4 including darkpool refusal",
         "vesta": "3/3 issuance",
@@ -46,10 +44,9 @@
       "unlock": "keypad6",
       "secret": "123456",
       "coldStart": false,
-      "notes": "EUDI codebase on a build that pins eudi-lib-android-wallet-core 0.28.1. Lists every credential matching a query with no way to choose and submits all of them, so a query matching two held credentials is rejected by the verifier. Separately, it renders no issuer-permission sentence on any issuance: on bolivia, verandia, cexa and vesta alike it shows the Q1 trust card and 'OFFERS YOU <credential>' with Add enabled, and never states whether the issuer is authorized, so Q2 is not gated on the issuance path at all. On cexa verifier requests it shows 'No ECS-Service credential presented' and 'The Verana resolver could not be reached'.",
+      "notes": "EUDI codebase on a build that pins eudi-lib-android-wallet-core 0.28.1. Lists every credential matching a query with no way to choose and submits all of them, so a query matching two held credentials is rejected by the verifier. Separately, it renders no issuer-permission sentence on any issuance: on verandia, cexa and vesta alike it shows the Q1 trust card and 'OFFERS YOU <credential>' with Add enabled, and never states whether the issuer is authorized, so Q2 is not gated on the issuance path at all. On cexa verifier requests it shows 'No ECS-Service credential presented' and 'The Verana resolver could not be reached'.",
       "verified": {
         "bhi": "7/8, fails meridian-qualification",
-        "bolivia": "2/2 trust, no Q2 sentence",
         "verandia": "2/2 trust, no Q2 sentence",
         "cexa": "issuance trust ok, both verifiers COULD NOT VERIFY",
         "vesta": "3/3 trust, no Q2 sentence"
@@ -66,7 +63,6 @@
       "notes": "Pins eudi-lib-android-wallet-core 0.29.0, which requires key_attestations_required in the advertised jwt proof type. Its accept header is identical to swiyu's, so the server cannot serve one without the other; this needs a wallet-side fix, not a server accommodation. Device-confirmed 8 September: every issuance on every cast dies on 'Oups! Something went wrong' after fetching the offer URI, so the wallet is unusable as an issuance target today. Presentations do render, with the Q1 trust card, the service and operated-by blocks and a TESTNET chip, but no Q2/Q3 permission sentence at all, so an unauthorized verifier looks exactly like an authorized one.",
       "verified": {
         "personal-wallets": "0/3 issuance (ERROR), 3 presentations render Q1 only",
-        "bolivia": "0/2, both ERROR",
         "cexa": "0/2 issuance ERROR; presentations render Q1 only"
       }
     },
@@ -78,11 +74,10 @@
       "unlock": "keypad6",
       "secret": "123456",
       "coldStart": false,
-      "notes": "Discards the verifier DID unless the request arrives as a DID identifier, then queries the resolver with an empty did and renders COULD NOT VERIFY while leaving Share enabled. Fetches a credential as soon as an offer resolves, before any verdict exists, so the issuer marks the session Completed even when the wallet refuses. On bolivia, verandia and cexa it is otherwise the second best wallet tested: full Q1 plus the Q2/Q3 sentence, and it gets the darkpool refusal right with 'DarkPool Exchange (demo) is not an authorized verifier of Cexa kyc'. A Share credential control is still drawn on that denial screen; whether it is inert was not tested, tapping it is the only way to tell.",
+      "notes": "Discards the verifier DID unless the request arrives as a DID identifier, then queries the resolver with an empty did and renders COULD NOT VERIFY while leaving Share enabled. Fetches a credential as soon as an offer resolves, before any verdict exists, so the issuer marks the session Completed even when the wallet refuses. On verandia and cexa it is otherwise the second best wallet tested: full Q1 plus the Q2/Q3 sentence, and it gets the darkpool refusal right with 'DarkPool Exchange (demo) is not an authorized verifier of Cexa kyc'. A Share credential control is still drawn on that denial screen; whether it is inert was not tested, tapping it is the only way to tell.",
       "verified": {
         "personal-wallets": "6/6",
         "bhi": "presentations fail",
-        "bolivia": "2/2",
         "verandia": "2/2",
         "cexa": "4/4 verdicts correct; Share still drawn on the denial, not tapped"
       }
@@ -99,7 +94,6 @@
       "verified": {
         "personal-wallets": "6/6",
         "bhi": "presentations fail",
-        "bolivia": "Q1 only",
         "verandia": "Q1 only",
         "cexa": "Q1 only"
       }
@@ -114,7 +108,6 @@
       "coldStart": true,
       "notes": "Only acts on the link at cold start; delivered while running it logs onAppLink and drops it. Rejects the dc+sd-jwt format the casts issue. Its PIN pad is a 1-9 then 0 layout that does not match the keypad6 tap coordinates, so the runner cannot unlock it and every delivery stops at 'Type your PIN code to open the wallet' with the offer never retrieved. Needs its own unlock branch before it can be driven at all.",
       "verified": {
-        "bolivia": "blocked at unlock",
         "cexa": "blocked at unlock"
       }
     },

@@ -35,10 +35,6 @@ export const CONFORMANCE_SCENARIOS = [
   "present-accredited",
   "present-unaccredited",
   "present-untrusted",
-  "boleto-asistente",
-  "boleto-patrocinador",
-  "entrada-costa-rica",
-  "entrada-otro-evento",
 ] as const;
 
 const scheme = z.string().regex(/^[a-z][a-z0-9.+-]*$/);

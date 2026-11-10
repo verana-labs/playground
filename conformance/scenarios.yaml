@@ -26,30 +26,6 @@ scenarios:
     expect: refuse
     service: { anoncreds: demo-untrusted, openid4vc-sdjwt: demo-verifier-untrusted }
     needs: issue-accredited
-  - id: boleto-asistente
-    kind: issue
-    expect: accept
-    service: taquilla
-    credential: eventos-asistente
-    params: { evento: costa-rica, nombre: Conformance }
-  - id: boleto-patrocinador
-    kind: issue
-    expect: accept
-    service: taquilla
-    credential: eventos-patrocinador
-    params: { evento: panama, organizacion: INTEXUS, lema: Beyond the content }
-  - id: entrada-costa-rica
-    kind: present
-    expect: accept
-    service: evento-costa-rica
-    login: { evento: costa-rica, rol: asistente }
-    needs: boleto-asistente
-  - id: entrada-otro-evento
-    kind: present
-    expect: refuse
-    service: evento-guatemala
-    login: { evento: guatemala, rol: asistente }
-    needs: boleto-asistente
   - id: bhi-northbank-issue-bhi-right-to-work
     kind: issue
     expect: accept
@@ -83,16 +59,6 @@ scenarios:
     service: halcyon
     credential: bhi-right-to-work
     needs: bhi-northbank-issue-bhi-right-to-work
-  - id: bolivia-segip-issue-bolivia-cedula
-    kind: issue
-    expect: accept
-    service: segip
-    credential: bolivia-cedula
-  - id: bolivia-seprec-issue-bolivia-legal-rep
-    kind: issue
-    expect: accept
-    service: seprec
-    credential: bolivia-legal-rep
   - id: cexa-aurum-issue-cexa-kyc
     kind: issue
     expect: accept

@@ -129,38 +129,6 @@ describe("wallet status", () => {
   });
 });
 
-describe("scoped wallets", () => {
-  it("stay out of the default list", () => {
-    expect(listPersonalWallets().some((w) => w.scope)).toBe(false);
-  });
-
-  it("lead their own scope, the general wallets unchanged behind them", () => {
-    const general = listPersonalWallets().map((w) => w.id);
-    const eventos = listPersonalWallets({ scope: "eventos" });
-    expect(eventos[0]?.id).toBe("intexus-wallet");
-    expect(eventos[0]?.scope).toBe("eventos");
-    expect(eventos[0]?.status).toBe("recommended");
-    expect(eventos.slice(1).map((w) => w.id)).toEqual(general);
-  });
-
-  it("an unknown scope lists the general wallets only", () => {
-    expect(listPersonalWallets({ scope: "nope" }).map((w) => w.id)).toEqual(
-      listPersonalWallets().map((w) => w.id),
-    );
-  });
-
-  it("are found by id and have their media directory", () => {
-    const w = getPersonalWallet("intexus-wallet");
-    expect(w?.browser).toBe(true);
-    expect(w?.hosted).toMatch(/^https:/);
-    // The resolved icon depends on scripts/sync-media.mjs having run (it does
-    // before dev/build, not before tests), so check the source file instead.
-    expect(
-      fs.statSync(path.join(process.cwd(), "wallets", "intexus-wallet", "logo.svg")).isFile(),
-    ).toBe(true);
-  });
-});
-
 describe("PLAYGROUND_WALLETS allowlist", () => {
   const load = async () => {
     vi.resetModules();

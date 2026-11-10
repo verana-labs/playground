@@ -238,7 +238,7 @@ describe("ServiceQr", () => {
     vi.stubGlobal("fetch", vi.fn(() => ok({ kind: "invitation", url: "https://x.example/s?id=1" })));
     vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Mozilla/5.0 (Linux; Android 14; LLY-NX1) Chrome/156.0");
 
-    render(<ServiceQr serviceId="segip" label="SEGIP" walletId="hologram" lang="es" />);
+    render(<ServiceQr serviceId="demo-issuer-accredited" label="A" walletId="hologram" lang="es" />);
 
     expect(await screen.findByRole("link", { name: /Abrir en Hologram/ })).toBeDefined();
   });

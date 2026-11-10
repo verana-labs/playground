@@ -61,11 +61,6 @@ const WalletSchema = z.object({
   // Our fork carrying the Verana integration, shown next to the download.
   fork: z.string().url().optional(),
   hidden: z.boolean().optional(),
-  // Restricts the wallet to one use case: a scoped wallet is left out of the default
-  // list (the main playground, /personal-wallets, every use-case chooser) and only
-  // shows up for callers that ask for its scope, e.g.
-  // `listPersonalWallets({ scope: "eventos" })`.
-  scope: z.string().regex(/^[a-z0-9-]+$/).optional(),
   // Extra query the demo mint needs for THIS wallet. OpenID4VP rails are mutually
   // exclusive per request: a wallet that never implemented DCQL needs `query=pe`, and one
   // that resolves no DIDs needs `signer=x5c` for an x509_hash client_id. Without this the
@@ -185,24 +180,14 @@ function loadPersonalWallets(): PersonalWallet[] {
   return cache;
 }
 
-export type ListPersonalWalletsOptions = {
-  // Also include the wallets scoped to this use case (they are never in the
-  // default list); they keep their place in the status order.
-  scope?: string;
-};
-
-export function listPersonalWallets({
-  scope,
-}: ListPersonalWalletsOptions = {}): PersonalWallet[] {
-  return loadPersonalWallets()
-    .filter((w) => !w.scope || w.scope === scope)
-    .sort(
-      (a, b) =>
-        WALLET_STATUSES.indexOf(a.status) - WALLET_STATUSES.indexOf(b.status),
-    );
+export function listPersonalWallets(): PersonalWallet[] {
+  return [...loadPersonalWallets()].sort(
+    (a, b) =>
+      WALLET_STATUSES.indexOf(a.status) - WALLET_STATUSES.indexOf(b.status),
+  );
 }
 
-// By id, whatever its scope.
+// By id.
 export function getPersonalWallet(id: string): PersonalWallet | undefined {
   return loadPersonalWallets().find((w) => w.id === id);
 }

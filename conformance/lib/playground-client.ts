@@ -5,7 +5,6 @@ import type { Network } from "./network";
 
 export type Rail = "anoncreds" | "openid4vc-sdjwt";
 export type Mint = { rail: "oid4vc" | "didcomm"; kind: string; url: string; id: string | null };
-export type Login = { evento: string; rol: string };
 
 const DemoMintSchema = z.looseObject({
   kind: z.string(),
@@ -17,11 +16,8 @@ const DemoMintSchema = z.looseObject({
   proofExchangeId: z.string().nullable().optional(),
 });
 
-const LoginMintSchema = z.looseObject({ rail: z.enum(["oid4vc", "didcomm"]), url: z.string(), id: z.string().nullable() });
-
 const IssuanceStateSchema = z.looseObject({ state: z.string().nullable(), done: z.boolean(), declined: z.boolean() });
 const ProofStateSchema = z.looseObject({ state: z.string().nullable().optional(), verified: z.boolean().optional(), claims: z.unknown().optional() });
-const LoginStateSchema = z.looseObject({ done: z.boolean(), state: z.string().nullable().optional(), verified: z.boolean().optional(), claims: z.unknown().optional(), decision: z.string().optional(), trustVerdict: z.string().nullable().optional() });
 
 function playground(network: Network): string {
   if (!network.playground) throw new Error(`${network.id} has no playground`);
@@ -57,13 +53,8 @@ export async function mintIssuance(
 export async function mintPresentation(
   network: Network,
   service: CastService,
-  opts: { format: Rail; demoParams: string; credential?: string; login?: Login },
+  opts: { format: Rail; demoParams: string; credential?: string },
 ): Promise<Mint> {
-  if (opts.login) {
-    const url = withParams(`${playground(network)}/api/eventos-login`, { evento: opts.login.evento, rol: opts.login.rol, format: opts.format }, opts.demoParams);
-    const mint = LoginMintSchema.parse(await fetchJson(url, { timeoutMs: 40_000 }));
-    return { rail: mint.rail, kind: "eventos-login", url: mint.url, id: mint.id };
-  }
   const url = withParams(`${playground(network)}/api/demo/${service.id}`, { format: opts.format, credential: opts.credential }, opts.demoParams);
   return fromDemo(await fetchJson(url, { timeoutMs: 40_000 }), opts.format);
 }
@@ -77,15 +68,8 @@ export async function presentationState(
   network: Network,
   service: CastService,
   mint: Mint,
-  login?: Login,
-): Promise<{ done: boolean; state: string | null; verified: boolean; claims?: unknown; decision?: string; trustVerdict?: string | null }> {
+): Promise<{ done: boolean; state: string | null; verified: boolean; claims?: unknown }> {
   if (!mint.id) throw new Error("a plain invitation has no exchange to poll");
-  if (login) {
-    const body = LoginStateSchema.parse(
-      await fetchJson(`${playground(network)}/api/eventos-login/${encodeURIComponent(mint.id)}?rail=${mint.rail}&evento=${login.evento}&rol=${login.rol}`),
-    );
-    return { done: body.done, state: body.state ?? null, verified: body.verified === true, claims: body.claims, decision: body.decision, trustVerdict: body.trustVerdict ?? null };
-  }
   const body = ProofStateSchema.parse(await fetchJson(`${playground(network)}/api/demo/${service.id}/proof/${encodeURIComponent(mint.id)}?rail=${mint.rail}`));
   return { done: body.state === "done", state: body.state ?? null, verified: body.verified === true, claims: body.claims };
 }

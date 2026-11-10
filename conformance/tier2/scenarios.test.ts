@@ -57,11 +57,6 @@ async function vtjscIdFor(vctUrl: string): Promise<string | null> {
   return parsed.success ? parsed.data.relatedJsonSchemaCredentialId : null;
 }
 
-const EVENTOS_DECISIONS: Record<string, string> = {
-  "entrada-costa-rica": "acceso",
-  "entrada-otro-evento": "otro-evento",
-};
-
 async function runIssue(network: Network, resolver: ResolverClient, t: Target, credentials: Map<string, StoredCredential | null>): Promise<Verdict> {
   const expectation = expectedTrust(t.scenario, t.service);
   const demoParams = effectiveDemoParams(t.profile, t.build, RAIL);
@@ -97,17 +92,15 @@ async function runPresent(network: Network, resolver: ResolverClient, t: Target,
 
   const expectation = expectedTrust(t.scenario, t.service);
   const demoParams = effectiveDemoParams(t.profile, t.build, RAIL);
-  const mint: Mint = await mintPresentation(network, t.service, { format: RAIL, demoParams, credential: t.scenario.credential, login: t.scenario.login });
+  const mint: Mint = await mintPresentation(network, t.service, { format: RAIL, demoParams, credential: t.scenario.credential });
   const presented = await presentCredential(mint.url, stored.credential, stored.key);
-  const state = await pollUntilDone(() => presentationState(network, t.service, mint, t.scenario.login));
+  const state = await pollUntilDone(() => presentationState(network, t.service, mint));
 
   const { did } = await serviceDid(t.service);
   const trust = await assertTrust(resolver, did, expectation, network);
   const problems = [...trust.problems];
   if (!state.done) problems.push(`presentation did not complete: state ${state.state ?? "unknown"}`);
   if (!state.verified) problems.push("service reports verified: false");
-  const wantedDecision = EVENTOS_DECISIONS[t.scenario.id];
-  if (wantedDecision && state.decision !== wantedDecision) problems.push(`decision ${state.decision ?? "none"} is not ${wantedDecision}`);
 
   let vtjscId: string | null = null;
   let authorized: boolean | undefined;

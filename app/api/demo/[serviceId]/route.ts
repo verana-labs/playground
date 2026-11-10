@@ -29,23 +29,6 @@ import {
   VERANDIA_LEGAL_REP_JSC,
   VERANDIA_LEGAL_REP_NAME,
 } from "@/app/lib/verandia-cast";
-import {
-  boliviaLegalRepDemoClaims,
-  boliviaLegalRepOid4vcClaims,
-  cedulaDemoClaims,
-  cedulaOid4vcClaims,
-} from "@/app/lib/demo-bolivia";
-import {
-  BOLIVIA_CEDULA_JSC,
-  BOLIVIA_CEDULA_NAME,
-  BOLIVIA_LEGAL_REP_JSC,
-  BOLIVIA_LEGAL_REP_NAME,
-} from "@/app/lib/bolivia-cast";
-import {
-  ccmLegalRepDemoClaims,
-  ccmLegalRepOid4vcClaims,
-} from "@/app/lib/demo-ccm";
-import { CCM_LEGAL_REP_JSC, CCM_LEGAL_REP_NAME } from "@/app/lib/ccm-cast";
 import { CEXA_CAST, CEXA_KYC_JSC } from "@/app/lib/cexa-cast";
 import {
   BHI_CAST,
@@ -67,19 +50,6 @@ import {
   type DemoApplicant,
 } from "@/app/lib/demo-bhi";
 import { cexaKycDemoClaims, cexaKycOid4vcClaims } from "@/app/lib/demo-cexa";
-import {
-  EVENTOS_ASISTENTE_JSC,
-  EVENTOS_ASISTENTE_NAME,
-  EVENTOS_PATROCINADOR_JSC,
-  EVENTOS_PATROCINADOR_NAME,
-} from "@/app/lib/eventos-cast";
-import {
-  asistenteDemoClaims,
-  asistenteOid4vcClaims,
-  eventosMintFromParams,
-  patrocinadorDemoClaims,
-  patrocinadorOid4vcClaims,
-} from "@/app/lib/demo-eventos";
 import { VESTA_CAST } from "@/app/lib/vesta-cast";
 
 // Live demo-action link for a Playground cast service (spec §4): what the
@@ -112,17 +82,10 @@ type CredentialKind = {
    *  credential. The VTJSC is then found at run time (app/lib/vtjsc.ts),
    *  because V4 names it after the numeric schema id. */
   v4Vtjsc?: { host: string; title: string };
-  /** The events kinds read their mint params (event, name, organization)
-   *  from the request query; every other kind ignores the third argument. */
-  claims: (
-    serviceId: string,
-    applicant: DemoApplicant,
-    search: URLSearchParams,
-  ) => Claim[];
+  claims: (serviceId: string, applicant: DemoApplicant) => Claim[];
   oid4vcClaims: (
     serviceId: string,
     applicant: DemoApplicant,
-    search: URLSearchParams,
   ) => Record<string, string>;
 };
 
@@ -187,26 +150,6 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     claims: () => legalRepDemoClaims(),
     oid4vcClaims: () => legalRepOid4vcClaims(),
   },
-  "bolivia-cedula": {
-    label: "Cédula Digital",
-    credDefName: BOLIVIA_CEDULA_NAME,
-    oid4vcConfig: process.env.DEMO_OID4VC_CEDULA_CONFIG ?? "cedula-digital",
-    oid4vcPolicy: process.env.DEMO_OID4VC_CEDULA_POLICY ?? "cedula-digital",
-    jscUrl: BOLIVIA_CEDULA_JSC,
-    claims: () => cedulaDemoClaims(),
-    oid4vcClaims: () => cedulaOid4vcClaims(),
-  },
-  "bolivia-legal-rep": {
-    label: "credencial de Representante Legal",
-    credDefName: BOLIVIA_LEGAL_REP_NAME,
-    oid4vcConfig:
-      process.env.DEMO_OID4VC_BO_LEGAL_REP_CONFIG ?? "bolivia-legal-rep",
-    oid4vcPolicy:
-      process.env.DEMO_OID4VC_BO_LEGAL_REP_POLICY ?? "bolivia-legal-rep",
-    jscUrl: BOLIVIA_LEGAL_REP_JSC,
-    claims: () => boliviaLegalRepDemoClaims(),
-    oid4vcClaims: () => boliviaLegalRepOid4vcClaims(),
-  },
   "bhi-qualification": {
     label: "Qualification credential",
     // One AnonCreds type name across BOTH issuers (Caledonian, Cirrus); the
@@ -240,44 +183,6 @@ const CREDENTIALS: Record<string, CredentialKind> = {
     // firstName/surname query params; Alex Chen otherwise).
     claims: (_serviceId, applicant) => rtwDemoClaims(applicant),
     oid4vcClaims: (_serviceId, applicant) => rtwOid4vcClaims(applicant),
-  },
-  "ccm-legal-rep": {
-    label: "credencial de Representación Legal",
-    credDefName: CCM_LEGAL_REP_NAME,
-    oid4vcConfig: process.env.DEMO_OID4VC_CCM_LEGAL_REP_CONFIG ?? "ccm-legal-rep",
-    oid4vcPolicy: process.env.DEMO_OID4VC_CCM_LEGAL_REP_POLICY ?? "ccm-legal-rep",
-    jscUrl: CCM_LEGAL_REP_JSC,
-    claims: () => ccmLegalRepDemoClaims(),
-    oid4vcClaims: () => ccmLegalRepOid4vcClaims(),
-  },
-  "eventos-asistente": {
-    label: "boleto de Asistente",
-    credDefName: EVENTOS_ASISTENTE_NAME,
-    oid4vcConfig:
-      process.env.DEMO_OID4VC_EVENTOS_ASISTENTE_CONFIG ?? "eventos-asistente",
-    oid4vcPolicy:
-      process.env.DEMO_OID4VC_EVENTOS_ASISTENTE_POLICY ?? "eventos-asistente",
-    jscUrl: EVENTOS_ASISTENTE_JSC,
-    // The broker form travels in the query: which event, the visitor's name.
-    claims: (_serviceId, _applicant, search) =>
-      asistenteDemoClaims(eventosMintFromParams(search)),
-    oid4vcClaims: (_serviceId, _applicant, search) =>
-      asistenteOid4vcClaims(eventosMintFromParams(search)),
-  },
-  "eventos-patrocinador": {
-    label: "credencial de Patrocinador",
-    credDefName: EVENTOS_PATROCINADOR_NAME,
-    oid4vcConfig:
-      process.env.DEMO_OID4VC_EVENTOS_PATROCINADOR_CONFIG ??
-      "eventos-patrocinador",
-    oid4vcPolicy:
-      process.env.DEMO_OID4VC_EVENTOS_PATROCINADOR_POLICY ??
-      "eventos-patrocinador",
-    jscUrl: EVENTOS_PATROCINADOR_JSC,
-    claims: (_serviceId, _applicant, search) =>
-      patrocinadorDemoClaims(eventosMintFromParams(search)),
-    oid4vcClaims: (_serviceId, _applicant, search) =>
-      patrocinadorOid4vcClaims(eventosMintFromParams(search)),
   },
 };
 
@@ -498,7 +403,7 @@ export async function GET(
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               jsonSchemaCredentialId: kind.jscUrl,
-              claims: kind.oid4vcClaims(serviceId, applicant, search),
+              claims: kind.oid4vcClaims(serviceId, applicant),
               ttlSeconds: 2_592_000,
             }),
           });
@@ -515,7 +420,7 @@ export async function GET(
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             jsonSchemaCredentialId: kind.jscUrl,
-            requestedClaims: Object.keys(kind.oid4vcClaims(serviceId, applicant, search)),
+            requestedClaims: Object.keys(kind.oid4vcClaims(serviceId, applicant)),
             ...(queryLanguage ? { queryLanguage } : {}),
             requestSigner: requestSigner ?? "did",
           }),
@@ -541,7 +446,7 @@ export async function GET(
           body: JSON.stringify({
             credentialDefinitionId,
             claims: await withEverySchemaAttribute(
-              kind.claims(serviceId, applicant, search),
+              kind.claims(serviceId, applicant),
               kind.jscUrl,
             ),
             // Without autoAccept the exchange stops at request-received.
@@ -590,7 +495,7 @@ export async function GET(
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             credentialConfigurationId: kind.oid4vcConfig,
-            claims: kind.oid4vcClaims(serviceId, applicant, search),
+            claims: kind.oid4vcClaims(serviceId, applicant),
           }),
         });
         const url =
@@ -634,7 +539,7 @@ export async function GET(
           { status: 503 },
         );
       const claims = await withEverySchemaAttribute(
-        kind.claims(serviceId, applicant, search),
+        kind.claims(serviceId, applicant),
         kind.jscUrl,
       );
       const offer = await adminJson(`${admin}/v1/invitation/credential-offer`, {

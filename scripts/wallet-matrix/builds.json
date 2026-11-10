@@ -162,13 +162,6 @@
         "skip": "Browser wallet, driven through Chrome rather than an APK."
       },
       "store": null
-    },
-    "intexus-wallet": {
-      "fork": {
-        "browser": "https://intexus-wallet.eventos.playground.testnet.verana.network",
-        "skip": "Browser wallet, driven through Chrome rather than an APK."
-      },
-      "store": null
     }
   }
 }

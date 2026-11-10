@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/verana-labs/playground/compare/verana-playground-v0.2.2...verana-playground-v0.3.0) (2026-11-10)
+
+
+### Features
+
+* remove the events demo, its branded wallet and two unlisted use cases ([#343](https://github.com/verana-labs/playground/issues/343)) ([937ce41](https://github.com/verana-labs/playground/commit/937ce418cd145834b6c647478e2e3495b4abf9a3))
+
 ## [0.2.2](https://github.com/verana-labs/playground/compare/verana-playground-v0.2.1...verana-playground-v0.2.2) (2026-11-05)
 
 

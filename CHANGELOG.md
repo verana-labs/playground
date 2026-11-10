@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/verana-labs/playground/compare/verana-playground-v0.3.0...verana-playground-v0.4.0) (2026-11-10)
+
+
+### Features
+
+* remove the MOSIP use case, whose demo is no longer deployed ([#345](https://github.com/verana-labs/playground/issues/345)) ([4a0eecc](https://github.com/verana-labs/playground/commit/4a0eeccf3a67271e3f5a9b0661c70d5d3fd60259))
+
 ## [0.3.0](https://github.com/verana-labs/playground/compare/verana-playground-v0.2.2...verana-playground-v0.3.0) (2026-11-10)
 
 

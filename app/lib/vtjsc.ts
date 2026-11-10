@@ -11,7 +11,7 @@ import { ENDPOINTS } from "./site";
 const TIMEOUT_MS = 15_000;
 const CACHE_MS = 10 * 60_000;
 
-const cache = new Map<string, { id: string; at: number }>();
+const cache = new Map<string, { value: SchemaVtjsc; at: number }>();
 
 async function getJson(url: string): Promise<unknown> {
   const res = await fetch(url, { signal: AbortSignal.timeout(TIMEOUT_MS), cache: "no-store" });
@@ -33,14 +33,17 @@ async function schemaTitle(credentialSchemaId: string): Promise<string | undefin
   }
 }
 
+type SchemaVtjsc = { schemaId: number; vtjscId: string };
+
 /**
- * The VTJSC id of the schema titled `title` in the Ecosystem that the agent at
- * `controllerHost` controls. Throws when the controller publishes no such VTJSC.
+ * The schema titled `title` in the Ecosystem that the agent at
+ * `controllerHost` controls: its numeric id on chain and the id of its VTJSC.
+ * Throws when the controller publishes no such VTJSC.
  */
-export async function vtjscIdFor(controllerHost: string, title: string): Promise<string> {
+async function schemaVtjscFor(controllerHost: string, title: string): Promise<SchemaVtjsc> {
   const key = `${controllerHost}|${title}`;
   const hit = cache.get(key);
-  if (hit && Date.now() - hit.at < CACHE_MS) return hit.id;
+  if (hit && Date.now() - hit.at < CACHE_MS) return hit.value;
 
   const doc = (await getJson(`https://${controllerHost}/.well-known/did.json`)) as {
     service?: { id?: string; type?: string; serviceEndpoint?: unknown }[];
@@ -56,8 +59,20 @@ export async function vtjscIdFor(controllerHost: string, title: string): Promise
     };
     const id = presentation.verifiableCredential?.[0]?.id;
     if (typeof id !== "string") break;
-    cache.set(key, { id, at: Date.now() });
-    return id;
+    const value = { schemaId: Number(match[1]), vtjscId: id };
+    cache.set(key, { value, at: Date.now() });
+    return value;
   }
   throw new Error(`${controllerHost} publishes no VTJSC for the schema '${title}'`);
+}
+
+/** The VTJSC id of the schema titled `title` in the Ecosystem that the agent
+ *  at `controllerHost` controls. */
+export async function vtjscIdFor(controllerHost: string, title: string): Promise<string> {
+  return (await schemaVtjscFor(controllerHost, title)).vtjscId;
+}
+
+/** The numeric id on chain of that same schema. */
+export async function schemaIdFor(controllerHost: string, title: string): Promise<number> {
+  return (await schemaVtjscFor(controllerHost, title)).schemaId;
 }

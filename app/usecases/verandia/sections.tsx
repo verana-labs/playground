@@ -12,7 +12,6 @@ import {
   Network,
   PhoneOff,
   Quote,
-  Search,
   ShieldCheck,
   Stamp,
   Users,
@@ -23,7 +22,8 @@ import { DidBadge } from "../../components/Did";
 import LiveTrustCard from "../../components/LiveTrustCard";
 import { listPersonalWallets } from "../../lib/wallets";
 import { isPendingDid, VERANDIA_CAST } from "../../lib/verandia-cast";
-import { LINKS } from "../../lib/site";
+import { ENDPOINTS, LINKS } from "../../lib/site";
+import DirectoryQuery from "../../components/DirectoryQuery";
 import { NETWORK } from "../../lib/network";
 import { WalletChooser } from "../vesta/DemoWalletFlow";
 import { SubHeading, SubStepBlock } from "../story-blocks";
@@ -836,22 +836,14 @@ export function Section4() {
             <p className="mt-3 max-w-3xl text-[1.02rem] leading-relaxed text-gray-600">
               {DEMOS.directory.intro}
             </p>
-            <div className="reveal-stagger mx-auto mt-6 grid max-w-3xl gap-4 sm:grid-cols-3">
+            <div className="reveal-stagger mx-auto mt-6 grid max-w-3xl gap-4">
               {DEMOS.directory.queries.map((q) => (
-                <div
-                  key={q}
-                  className="flex flex-col rounded-2xl border border-gray-200 bg-white p-5 shadow-sm"
-                >
-                  <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-50 text-violet-700">
-                    <Search className="h-5 w-5" aria-hidden />
-                  </span>
-                  <p className="mt-3 flex-1 text-sm leading-relaxed text-gray-600">
-                    {q}
-                  </p>
-                  <div className="mt-4 border-t border-gray-100 pt-3">
-                    <Chip tone="pending">demo coming</Chip>
-                  </div>
-                </div>
+                <DirectoryQuery
+                  key={q.id}
+                  queryId={q.id}
+                  text={q.text}
+                  emptyNote={q.emptyNote}
+                />
               ))}
             </div>
           </div>
@@ -866,13 +858,21 @@ export function Section4() {
               <h2 className="text-lg font-bold text-gray-900">
                 {CLOSING.title}
               </h2>
-              <span className="rounded-full bg-amber-50 px-2.5 py-1 text-xs font-semibold text-amber-700">
-                {CLOSING.pendingLabel}
+              <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-700">
+                {CLOSING.statusLabel}
               </span>
             </div>
             <p className="mt-3 max-w-3xl text-sm leading-relaxed text-gray-600">
               {CLOSING.body}
             </p>
+            <a
+              className="mt-4 inline-block text-sm font-semibold text-violet-600 underline hover:text-violet-700"
+              href={ENDPOINTS.search}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {CLOSING.cta}
+            </a>
           </div>
           <p className="mt-8 text-sm text-gray-500">
             Full story specification:{" "}

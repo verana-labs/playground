@@ -637,11 +637,26 @@ export const DEMOS = {
   directory: {
     title: "Search the Directory of Verandia",
     intro:
-      "Discovery by proof: query the public registry for the Republic's services by the credentials they present.",
+      "Discovery by proof: query the public registry for the Republic's services by the credentials they present. Each search runs live on the Verana trust graph, which lists only services whose trust the network resolved.",
+    // The ids name the live queries of app/lib/trust-graph.ts. Who legally
+    // represents a company is not one of them: that credential lives in the
+    // representative's wallet and is presented on request, never published.
     queries: [
-      "All verified Verandian businesses - every company holding a Business ID issued by the National Business Registry.",
-      "All services accepting the Verandia Citizen ID - the public register of authorized relying parties.",
-      "Who legally represents company X - the register's public function, as a query.",
+      {
+        id: "verandia-businesses",
+        text: "All verified Verandian organizations - every service operated by an organization holding a Business ID registered in Verandia.",
+        emptyNote: "No service is operated by an organization registered in Verandia today.",
+      },
+      {
+        id: "verandia-citizen-id-verifiers",
+        text: "All services accepting the Verandia Citizen ID - the public register of authorized relying parties.",
+        emptyNote: "No service is authorized to verify the Verandia Citizen ID today.",
+      },
+      {
+        id: "verandia-issuers",
+        text: "Who issues the Republic's credentials - the accredited issuers of the Citizen ID and of the Legal Representative credential.",
+        emptyNote: "No service is accredited to issue these credentials today.",
+      },
     ],
   },
 };
@@ -650,6 +665,7 @@ export const DEMOS = {
 
 export const CLOSING = {
   title: "Being found in Verandia",
-  pendingLabel: "coming later",
-  body: "Everything the Republic and its companies published - the Business IDs, the relying-party registrations, the service credentials - is public, resolvable, and indexable. The Trust Graph turns that into a national service directory nobody has to maintain by hand: citizens, search engines, and AI agents find Verandian services by what they prove, not what they claim. The full walkthrough ships when discovery is queryable.",
+  statusLabel: "live on the trust graph",
+  body: "Everything the Republic and its companies published - the Business IDs, the relying-party registrations, the service credentials - is public, resolvable, and indexable. The Trust Graph turns that into a national service directory nobody has to maintain by hand: citizens, search engines, and AI agents find Verandian services by what they prove, not what they claim. The directory searches above run on it.",
+  cta: "Search the whole trust graph",
 };

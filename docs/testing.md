@@ -64,7 +64,7 @@ Then one issuance and one presentation per use case, on each rail a wallet suppo
 | CEXA | `aurum`, `cexa-kyc` | `borealis`, `cexa-kyc`, `action=request` |
 | BHI | `northbank`, `bhi-right-to-work` | `meridian-tech`, `bhi-right-to-work`, `action=request` |
 
-The refusal cases of the use cases (`umbra`, `quickcash`, `darkpool`, `halcyon`) follow the S2 and S4 pattern.
+The refusal cases of the use cases (`quickcash`, `darkpool`, `halcyon`) follow the S4 pattern. `umbra` is not a wallet refusal on V4: it holds an issuer participant on the ECS badge schema, so the wallet shows it as an authorized issuer and accepts its badge, and the Vesta portal refuses that badge after the login, on the issuer's chain.
 
 ### Minting and checking an exchange
 

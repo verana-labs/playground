@@ -16,11 +16,7 @@ import { NETWORK } from "../lib/network";
 import { ServiceQr } from "../components/ServiceQr";
 import HostedWalletQr from "../components/HostedWalletQr";
 import LiveTrustCard from "../components/LiveTrustCard";
-import {
-  NoTrustScreenNote,
-  TestingNotice,
-  WalletBuildActions,
-} from "../components/WalletBuilds";
+import { WalletBuildActions } from "../components/WalletBuilds";
 import { WalletIcon, WalletPicker } from "./WalletPicker";
 import type { ComingSoonWallet } from "../lib/coming-soon";
 import type {
@@ -481,7 +477,7 @@ export default function PersonalWalletsPlayground({
           <SectionHeading
             eyebrow="Choose your wallet"
             title="Get the wallet"
-            subtitle="Start with a recommended wallet: each one carries the Verana trust screen and passes all six demos below."
+            subtitle="Pick one of the integrated wallets: each one carries the Verana trust screen and passes all six demos below."
           />
           <div className="space-y-4">
             <WalletPicker
@@ -531,9 +527,6 @@ export default function PersonalWalletsPlayground({
                   ))}
                 </span>
               </div>
-              {wallet.status === "testing" ? (
-                <TestingNotice name={wallet.name} />
-              ) : null}
               {wallet.verana_builtin ? (
                 <p className="text-sm leading-relaxed text-gray-600">
                   {wallet.name} supports Verana{" "}
@@ -556,8 +549,6 @@ export default function PersonalWalletsPlayground({
                   The public {wallet.name} instance does not include the
                   integration.
                 </p>
-              ) : !wallet.links.some((l) => l.trust_screen) ? (
-                <NoTrustScreenNote name={wallet.name} />
               ) : wallet.links.some(
                   (l) => l.kind === "download" && l.trust_screen,
                 ) ? (

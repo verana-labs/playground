@@ -126,8 +126,8 @@ function publicAsset(ref: string | undefined): string | undefined {
 
 let cache: PersonalWallet[] | null = null;
 
-// Every wallet of the file (minus `hidden` and the PLAYGROUND_WALLETS allowlist),
-// resolved once, in file order. The public listing filters and sorts this.
+// The recommended wallets of the file (minus `hidden` and the PLAYGROUND_WALLETS allowlist),
+// resolved once, in file order. Compatible and testing entries stay for the conformance harness only.
 function loadPersonalWallets(): PersonalWallet[] {
   if (cache) return cache;
   const file = path.join(process.cwd(), "personal-wallets.yaml");
@@ -158,7 +158,7 @@ function loadPersonalWallets(): PersonalWallet[] {
     }
   }
   cache = parsed.data.wallets
-    .filter((w) => !w.hidden)
+    .filter((w) => !w.hidden && w.status === "recommended")
     .filter((w) => allow.length === 0 || allow.includes(w.id))
     .map((w) => {
     const videoSrc = publicAsset(w.video?.src);
@@ -181,10 +181,7 @@ function loadPersonalWallets(): PersonalWallet[] {
 }
 
 export function listPersonalWallets(): PersonalWallet[] {
-  return [...loadPersonalWallets()].sort(
-    (a, b) =>
-      WALLET_STATUSES.indexOf(a.status) - WALLET_STATUSES.indexOf(b.status),
-  );
+  return [...loadPersonalWallets()];
 }
 
 // By id.

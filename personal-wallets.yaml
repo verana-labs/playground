@@ -41,16 +41,13 @@
 #   repo, license, contact, notes
 #   status          recommended | compatible | testing (testing when left out)
 #                   recommended: a build with the Verana trust screen passes
-#                   all six scenarios on device. /personal-wallets shows only
-#                   these until the visitor asks for all of them
+#                   all six scenarios on device. The site lists only these,
+#                   in file order (RI WG decision of 2026-11-11)
 #                   compatible: completes the demos, short of that (e.g. a
 #                   store build without the trust screen)
-#                   testing: listed, but compatibility is not confirmed yet;
-#                   the page says so and keeps the demos open
-#                   Every picker lists recommended, then compatible, then
-#                   testing, each in file order. A hidden wallet comes back
-#                   as testing by deleting its hidden line, or as compatible
-#                   by turning that line into status: compatible
+#                   testing: compatibility is not confirmed yet
+#                   compatible and testing entries stay off the site; they
+#                   are kept for the conformance harness and its profiles
 #   hidden          true          # keep the entry, icons and captures; drop it from the site until maintenance resumes
 #   captures        up to ONE screen capture per demo scenario (optional),
 #                   keyed by scenario id (issue-accredited,

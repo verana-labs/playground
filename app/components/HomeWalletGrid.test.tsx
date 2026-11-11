@@ -1,18 +1,14 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import type { PersonalWallet, WalletStatus } from "../lib/wallets";
+import type { PersonalWallet } from "../lib/wallets";
 import { HomeWalletGrid } from "./HomeWalletGrid";
 
-function wallet(
-  id: string,
-  status: WalletStatus,
-  fork?: string,
-): PersonalWallet {
+function wallet(id: string, fork?: string): PersonalWallet {
   return {
     id,
     name: `Wallet ${id}`,
     vendor: `Vendor ${id}`,
-    status,
+    status: "recommended",
     formats: ["openid4vc-sdjwt"],
     links: [
       {
@@ -27,10 +23,9 @@ function wallet(
 }
 
 const WALLETS = [
-  wallet("a", "recommended"),
-  wallet("b", "recommended", "https://github.com/x/b/releases/tag/v1"),
-  ...["c", "d", "e", "f"].map((id) => wallet(id, "compatible")),
-  wallet("g", "testing"),
+  wallet("a"),
+  wallet("b", "https://github.com/x/b/releases/tag/v1"),
+  ...["c", "d", "e"].map((id) => wallet(id)),
 ];
 
 function renderGrid(wallets = WALLETS) {
@@ -43,20 +38,11 @@ function renderGrid(wallets = WALLETS) {
 }
 
 describe("HomeWalletGrid", () => {
-  it("shows the first five wallets and an expander card, then every wallet and the add tile", () => {
+  it("shows every wallet and the add tile, with no expander", () => {
     renderGrid();
     expect(screen.getAllByRole("link", { name: /Wallet / })).toHaveLength(5);
-    expect(screen.queryByText("Add your wallet")).toBeNull();
-
-    fireEvent.click(screen.getByRole("button", { name: /Show all 7 wallets/ }));
-
-    expect(screen.getAllByRole("link", { name: /Wallet / })).toHaveLength(7);
     expect(screen.getByText("Add your wallet")).toBeTruthy();
-    expect(
-      screen
-        .getByRole("button", { name: /Show fewer/ })
-        .getAttribute("aria-expanded"),
-    ).toBe("true");
+    expect(screen.queryByRole("button")).toBeNull();
   });
 
   it("calls the official recommended build recommended and the fork integrated", () => {
@@ -67,15 +53,5 @@ describe("HomeWalletGrid", () => {
     expect(
       screen.getByRole("link", { name: /Wallet b/ }).textContent,
     ).toContain("Integrated");
-    expect(
-      screen.getByRole("link", { name: /Wallet c/ }).textContent,
-    ).toContain("Compatible");
-  });
-
-  it("shows every wallet and the add tile without an expander when there are six or fewer", () => {
-    renderGrid(WALLETS.slice(0, 6));
-    expect(screen.getAllByRole("link", { name: /Wallet / })).toHaveLength(6);
-    expect(screen.getByText("Add your wallet")).toBeTruthy();
-    expect(screen.queryByRole("button")).toBeNull();
   });
 });

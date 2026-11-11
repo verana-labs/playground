@@ -50,14 +50,9 @@ describe("buildsHint", () => {
     expect(buildsHint(walletLinks({ playstore: PLAY, appstore: IOS })).builds).toBe("Stores");
   });
 
-  it("says when no build has the trust screen", () => {
-    const links = walletLinks({ playstore: { url: PLAY, trust_screen: false }, appstore: { url: IOS, trust_screen: false } });
-    expect(buildsHint(links)).toEqual({ builds: "Stores", caveat: "No Verana trust screen" });
-    expect(buildsHint(links, "es")).toEqual({ builds: "Tiendas", caveat: "Sin pantalla de confianza Verana" });
-  });
-
   it("adds the store builds without the trust screen to a Verana build", () => {
     const links = walletLinks({ download: APK, playstore: { url: PLAY, trust_screen: false } });
     expect(buildsHint(links)).toEqual({ builds: "Verana APK", caveat: "Stores without trust screen" });
+    expect(buildsHint(links, "es")).toEqual({ builds: "APK de Verana", caveat: "Tiendas sin pantalla de confianza" });
   });
 });

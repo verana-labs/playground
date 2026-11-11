@@ -1,13 +1,10 @@
 "use client";
 
-import { useState, type ComponentProps } from "react";
-import { ChevronDown } from "lucide-react";
+import type { ComponentProps } from "react";
 import { ComingSoonPickerTile } from "../components/ComingSoonTile";
 import { BuildsHint, WalletStatusChip } from "../components/WalletBuilds";
 import type { ComingSoonWallet } from "../lib/coming-soon";
 import type { PersonalWallet } from "../lib/wallets";
-
-const COLLAPSED_WALLETS = 5;
 
 export function WalletIcon({ w, size = 40 }: { w: PersonalWallet; size?: number }) {
   if (w.icon) {
@@ -54,12 +51,6 @@ function PickerCard({
   );
 }
 
-function statusList(wallets: PersonalWallet[]): string {
-  const statuses = [...new Set(wallets.map((w) => w.status))];
-  if (statuses.length < 2) return statuses.join("");
-  return `${statuses.slice(0, -1).join(", ")} and ${statuses.at(-1)}`;
-}
-
 export function WalletPicker({
   wallets,
   comingSoon,
@@ -71,20 +62,12 @@ export function WalletPicker({
   selectedId: string;
   onSelect: (id: string) => void;
 }) {
-  const collapsible = wallets.length > COLLAPSED_WALLETS + 1;
-  const [expanded, setExpanded] = useState(
-    () => wallets.findIndex((w) => w.id === selectedId) >= COLLAPSED_WALLETS,
-  );
-  const showAll = expanded || !collapsible;
-  const shown = showAll ? wallets : wallets.slice(0, COLLAPSED_WALLETS);
-  const hidden = wallets.slice(COLLAPSED_WALLETS);
-
   return (
     <div
       id="wallet-picker"
       className="grid auto-rows-fr grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3"
     >
-      {shown.map((w) => (
+      {wallets.map((w) => (
         <PickerCard
           key={w.id}
           onClick={() => onSelect(w.id)}
@@ -100,7 +83,7 @@ export function WalletPicker({
               >
                 {w.name}
               </span>
-              <WalletStatusChip status={w.status} viaFork={Boolean(w.fork)} showRecommended compact />
+              <WalletStatusChip viaFork={Boolean(w.fork)} compact />
             </span>
             <span className="truncate text-xs text-gray-500" title={w.vendor}>
               {w.vendor}
@@ -109,35 +92,9 @@ export function WalletPicker({
           </span>
         </PickerCard>
       ))}
-      {showAll
-        ? comingSoon.map((w) => <ComingSoonPickerTile key={w.id} w={w} />)
-        : null}
-      {collapsible ? (
-        <PickerCard
-          onClick={() => setExpanded((e) => !e)}
-          aria-expanded={expanded}
-          aria-controls="wallet-picker"
-        >
-          <span
-            aria-hidden
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-violet-700"
-          >
-            <ChevronDown
-              className={`h-5 w-5 transition-transform ${expanded ? "rotate-180" : ""}`}
-            />
-          </span>
-          <span className="min-w-0">
-            <span className="block truncate font-semibold text-gray-900">
-              {expanded ? "Show fewer" : `Show all ${wallets.length} wallets`}
-            </span>
-            <span className="block truncate text-xs text-gray-500">
-              {expanded
-                ? `Back to the first ${COLLAPSED_WALLETS}`
-                : `${hidden.length} more: ${statusList(hidden)}`}
-            </span>
-          </span>
-        </PickerCard>
-      ) : null}
+      {comingSoon.map((w) => (
+        <ComingSoonPickerTile key={w.id} w={w} />
+      ))}
     </div>
   );
 }

@@ -1,23 +1,6 @@
 {
-  "$comment": "Which build of each wallet to drive. `fork` is our Verana build (the APK personal-wallets.yaml links to), `store` is what a client actually downloads. A wallet with no store entry has no published Android build. Package, unlock recipe and secret belong to the BUILD, not the wallet: the store and fork builds of the same wallet routinely differ (Paradym's fork is biometric-only, its store build takes a PIN).",
+  "$comment": "Which build of each wallet to drive. `fork` is our Verana build (the APK personal-wallets.yaml links to), `store` is what a client actually downloads. A wallet with no store entry has no published Android build. Package, unlock recipe and secret belong to the BUILD, not the wallet: the store and fork builds of the same wallet routinely differ.",
   "builds": {
-    "paradym": {
-      "fork": {
-        "package": "id.paradym.wallet.dev",
-        "activity": ".MainActivity",
-        "unlock": "biometric-only",
-        "secret": null,
-        "skip": "Biometric prompt with no PIN fallback."
-      },
-      "store": {
-        "package": "id.paradym.wallet",
-        "activity": ".MainActivity",
-        "unlock": "keypad6-1234",
-        "secret": "123456",
-        "source": "https://play.google.com/store/apps/details?id=id.paradym.wallet",
-        "version": "1.20.2"
-      }
-    },
     "hologram": {
       "fork": {
         "package": "io.twentysixty.mobileagent.st",
@@ -81,22 +64,6 @@
         "source": "https://play.google.com/store/apps/details?id=ch.admin.foitt.swiyu"
       }
     },
-    "bcwallet": {
-      "fork": {
-        "package": "ca.bc.gov.BCWallet",
-        "activity": ".MainActivity",
-        "unlock": "none",
-        "secret": "241536"
-      },
-      "store": {
-        "package": "ca.bc.gov.BCWallet",
-        "activity": ".MainActivity",
-        "unlock": "none",
-        "secret": "241536",
-        "source": "https://play.google.com/store/apps/details?id=ca.bc.gov.BCWallet",
-        "note": "Same package id as our fork; reinstall before switching build."
-      }
-    },
     "authbound": {
       "fork": {
         "package": "io.authbound.wallet.dev",
@@ -136,15 +103,6 @@
         "source": "https://github.com/eu-digital-identity-wallet/eudi-app-android-wallet-ui/releases",
         "incompatible": "Since release 2026.07.39 the published build requires signed issuer metadata (application/jwt with an x5c chain anchored in the EU trusted list) and rejects DID-based issuers. A demo issuer cannot satisfy it and there is no runtime toggle: upstream eudi-app-android-wallet-ui#659."
       }
-    },
-    "procivis": {
-      "fork": {
-        "package": "ch.procivis.one.wallet.dev",
-        "activity": ".MainActivity",
-        "unlock": "keypad6",
-        "secret": "123456"
-      },
-      "store": null
     },
     "nl-wallet": {
       "fork": {

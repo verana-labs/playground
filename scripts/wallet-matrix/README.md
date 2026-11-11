@@ -5,7 +5,7 @@ Drives a real Android wallet through the playground's demos on a connected phone
 ```bash
 ./run.sh swiyu bhi                 # one wallet, one suite
 ./run.sh swiyu bhi halcyon         # a single scenario
-./run.sh procivis personal-wallets
+./run.sh inji personal-wallets
 ```
 
 `./grade-consent.py` grades the screens already captured under `results/` against the [PW-POT] blocks and [PW-CFG-2] of the personal-wallet integration guideline, so a rendering gap shows up as a clause rather than a feeling. It cannot judge whether a denial actually blocks the accept action: every wallet here draws Compose buttons as non-clickable TextViews with `enabled="true"`, so that one has to be tapped on the device.
@@ -33,7 +33,7 @@ It mints, delivers, unlocks and reads the consent screen. It does not tap accept
 
 ## The one substitution
 
-The phone is not rooted, so the camera cannot be driven. The runner decodes the payload the QR encodes and hands the wallet that exact string as an Android VIEW intent. For Inji, EUDI, Sphereon, Procivis, swiyu, Altme and Paradym the scanner and link paths were confirmed in source to converge on the same handler.
+The phone is not rooted, so the camera cannot be driven. The runner decodes the payload the QR encodes and hands the wallet that exact string as an Android VIEW intent. For Inji, EUDI, Sphereon, swiyu and Altme the scanner and link paths were confirmed in source to converge on the same handler.
 
 NL Wallet is the exception and is marked `skip`: it passes an is-QR flag that becomes a cross-device session type, checked against the verifier's request, so a link delivery is rejected by design. It needs a real optical scan.
 
@@ -83,7 +83,7 @@ A `#` in the output is healthy. `./check-dids.sh` sweeps every cast service at o
 
 Recorded 8 September 2026, all device-verified on the Honor LLY-NX1. Per-wallet results live in `wallets.json` under `verified`.
 
-Six wallets can be driven: swiyu, inji, authbound, procivis, sphereon and, in principle, talao. Talao is currently blocked at its PIN pad because the keypad6 coordinates do not match its layout. The other six entries in `wallets.json` carry a `skip` and the reason.
+Five wallets can be driven: swiyu, inji, authbound, sphereon and, in principle, talao. Talao is currently blocked at its PIN pad because the keypad6 coordinates do not match its layout. The entries in `wallets.json` that cannot be driven carry a `skip` and the reason.
 
 On the three casts rolled to `.39` on 7 September, inji and procivis are the strongest: both render the Q2 issuer sentence and the Q3 verifier sentence, and both get the cexa darkpool refusal right. Neither actually disables the affirmative button on a denial, so the refusal is text only. authbound shows the trust card but never states whether an issuer is authorized, and sphereon shows Q1 alone. Inji's own gate is the real problem: for an issuer host it has already trusted it downloads the credential with no consent screen at all.
 

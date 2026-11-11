@@ -52,20 +52,15 @@ describe("personal wallets configuration", () => {
     ]);
   });
 
-  it("keeps the compatible and testing wallets in the file for the harness, off the site", () => {
+  it("keeps no compatible or testing wallet in the file", () => {
     const raw = WalletsFileSchema.parse(
       yaml.load(
         fs.readFileSync(path.join(process.cwd(), "personal-wallets.yaml"), "utf8"),
       ),
     );
-    const offSite = raw.wallets
-      .filter((w) => !w.hidden && w.status !== "recommended")
-      .map((w) => w.id)
-      .sort();
-    expect(offSite).toEqual(
-      ["bcwallet", "credenco", "lissi", "namirial", "paradym", "procivis", "sprucekit", "talao-wallet"].sort(),
-    );
-    for (const id of offSite) expect(getPersonalWallet(id), id).toBeUndefined();
+    expect(
+      raw.wallets.filter((w) => !w.hidden && w.status !== "recommended").map((w) => w.id),
+    ).toEqual([]);
   });
 
   it("folds hologram's download into its store build, which keeps the trust screen", () => {

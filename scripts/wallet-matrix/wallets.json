@@ -66,22 +66,6 @@
         "cexa": "0/2 issuance ERROR; presentations render Q1 only"
       }
     },
-    "procivis": {
-      "package": "ch.procivis.one.wallet.dev",
-      "activity": "com.wallet.MainActivity",
-      "format": "openid4vc-sdjwt",
-      "demoParams": "",
-      "unlock": "keypad6",
-      "secret": "123456",
-      "coldStart": false,
-      "notes": "Discards the verifier DID unless the request arrives as a DID identifier, then queries the resolver with an empty did and renders COULD NOT VERIFY while leaving Share enabled. Fetches a credential as soon as an offer resolves, before any verdict exists, so the issuer marks the session Completed even when the wallet refuses. On verandia and cexa it is otherwise the second best wallet tested: full Q1 plus the Q2/Q3 sentence, and it gets the darkpool refusal right with 'DarkPool Exchange (demo) is not an authorized verifier of Cexa kyc'. A Share credential control is still drawn on that denial screen; whether it is inert was not tested, tapping it is the only way to tell.",
-      "verified": {
-        "personal-wallets": "6/6",
-        "bhi": "presentations fail",
-        "verandia": "2/2",
-        "cexa": "4/4 verdicts correct; Share still drawn on the denial, not tapped"
-      }
-    },
     "sphereon": {
       "package": "com.sphereon.ssi.wallet",
       "activity": ".MainActivity",
@@ -109,30 +93,6 @@
       "notes": "Only acts on the link at cold start; delivered while running it logs onAppLink and drops it. Rejects the dc+sd-jwt format the casts issue. Its PIN pad is a 1-9 then 0 layout that does not match the keypad6 tap coordinates, so the runner cannot unlock it and every delivery stops at 'Type your PIN code to open the wallet' with the offer never retrieved. Needs its own unlock branch before it can be driven at all.",
       "verified": {
         "cexa": "blocked at unlock"
-      }
-    },
-    "paradym": {
-      "package": "id.paradym.wallet.dev",
-      "activity": ".MainActivity",
-      "format": "openid4vc-sdjwt",
-      "demoParams": "",
-      "unlock": "biometric-only",
-      "secret": null,
-      "coldStart": false,
-      "skip": "Unlocks only through a biometric prompt with no PIN fallback, even when biometrics is deferred during onboarding. Needs a finger on the sensor."
-    },
-    "bcwallet": {
-      "package": "ca.bc.gov.BCWallet",
-      "activity": ".MainActivity",
-      "format": "anoncreds",
-      "demoParams": "",
-      "unlock": "none",
-      "secret": "241536",
-      "coldStart": false,
-      "notes": "AnonCreds and DIDComm only; declares no OpenID4VC schemes. Accepts the OOB link and increments its notification badge, but the offer row never renders in the list. Device-confirmed 8 September: the anoncreds rail returns no session id, so the runner has no server state to compare against and every row reads '?'. Not drivable by this harness.",
-      "skip": "AnonCreds/DIDComm only and the anoncreds rail returns no session id, so neither the wallet screen nor the server state can be read. Needs a DIDComm-aware runner.",
-      "verified": {
-        "personal-wallets": "not drivable, no server state on the anoncreds rail"
       }
     },
     "nl-wallet": {

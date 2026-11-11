@@ -127,7 +127,7 @@ function publicAsset(ref: string | undefined): string | undefined {
 let cache: PersonalWallet[] | null = null;
 
 // The recommended wallets of the file (minus `hidden` and the PLAYGROUND_WALLETS allowlist),
-// resolved once, in file order. Compatible and testing entries stay for the conformance harness only.
+// resolved once, in file order.
 function loadPersonalWallets(): PersonalWallet[] {
   if (cache) return cache;
   const file = path.join(process.cwd(), "personal-wallets.yaml");

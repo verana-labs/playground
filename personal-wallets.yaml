@@ -80,11 +80,11 @@ wallets:
       issue-unaccredited:
         src: ./hologram/screenshots/2.webp
         clip: ./hologram/clips/2-issuer-unaccredited.mp4
-        caption: Identified but not accredited to issue this credential, so accept is withdrawn
+        caption: "Trusted but not accredited for this credential: Accept turns red and asks to accept anyway (unsafe)"
       issue-untrusted:
         src: ./hologram/screenshots/3.webp
         clip: ./hologram/clips/3-issuer-untrusted.mp4
-        caption: "Untrusted issuer: the refusal happens at connect on the AnonCreds rail"
+        caption: "Untrusted issuer: claims not verified, on no Verana network, Accept asks to accept anyway (unsafe)"
       present-accredited:
         src: ./hologram/screenshots/4.webp
         clip: ./hologram/clips/4-verifier-accredited.mp4
@@ -92,11 +92,11 @@ wallets:
       present-unaccredited:
         src: ./hologram/screenshots/5.webp
         clip: ./hologram/clips/5-verifier-unaccredited.mp4
-        caption: Identified but not authorized to ask for this credential, so sharing is refused
+        caption: "Trusted but not authorized to request this credential: Share becomes Share anyway (unsafe)"
       present-untrusted:
         src: ./hologram/screenshots/6.webp
         clip: ./hologram/clips/6-verifier-untrusted.mp4
-        caption: "Untrusted verifier: self-issued claims withheld, sharing refused"
+        caption: "Untrusted verifier: claims not verified, Share becomes Share anyway (unsafe)"
     video:
       src: ./hologram/demo.mp4
       note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end, human-paced, silent, otherwise unedited. Scenario 1 stores the credential and scenario 4 presents that same credential back to the accredited verifier.

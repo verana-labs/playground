@@ -363,8 +363,8 @@ export async function GET(
   // outside the badge demo and the OID4VC minting pair above, the untrusted
   // services) gets its plain connection invitation - on AnonCreds the Q1
   // refusal happens at connect, so the invitation IS the demo. For the badge
-  // demo the untrusted impostor DOES mint offers: the wallet flags them red,
-  // and the portal refuses the badge at login.
+  // demo the untrusted impostor DOES mint offers, and the portal refuses the
+  // badge at login.
   const isCast = service.host.endsWith(CAST_DOMAIN);
   // On V4 (vs-agent v2) there is no connection invitation endpoint, so the
   // untrusted minting pair mints on both rails (vs-agent

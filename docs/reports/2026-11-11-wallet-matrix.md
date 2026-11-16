@@ -1,6 +1,6 @@
 # Wallet matrix on testnet, 2026-11-11
 
-Re-test of the five integrated wallets against every playground demo after the redeployment (testnet only, deployed from verana-deploy under the Verana Foundation corporation, services on the latest VS Agent dev). Asked by Fabrice at the Reference Implementation WG of 2026-11-11 ([00:28:05]), tracked in #350.
+Re-test of the five integrated wallets after the redeployment, on the device pass of `docs/testing.md`: the six personal-wallet demos, then issue, present and the refusal case of Vesta, Verandia, CEXA and BHI (testnet only, deployed from verana-deploy under the Verana Foundation corporation, services on the latest VS Agent dev). The other stories (`zenith`, `novara`, `caledonian`, `cirrus`, `business-registry` and BHI employment) are not in this matrix. Asked by Fabrice at the Reference Implementation WG of 2026-11-11 ([00:28:05]), tracked in #350.
 
 ## Setup
 
@@ -12,13 +12,13 @@ Re-test of the five integrated wallets against every playground demo after the r
   - wwWallet: the hosted `https://wwwallet.playground.testnet.verana.network`.
 - Rails: Hologram on AnonCreds/DIDComm, the others on OpenID4VC SD-JWT with `signer=x5c`, as in their profiles. Offers and requests minted from `/api/demo/<service>` right before delivery.
 - Delivery: implicit VIEW intent restricted to the package (`am start -a VIEW -d <url> -p <pkg>`), so intent filters apply. Hologram gets `didcomm://invite?oob=<invitation>`, wwWallet the hosted URL with the openid query string.
-- Outcome read back from the service, `/api/demo/<service>/{credential,proof}/<id>`, never from the wallet screen alone.
+- Outcome read back from the service, `/api/demo/<service>/{credential,proof}/<id>`, never from the wallet screen alone. A `blocked` cell has a service state only when the wallet got that far; "not read back" means it did not.
 
-A cell passes when the wallet shows the right trust verdict, gates Accept/Share on it, and the service sees the expected end state: `done`/`verified: true` for accredited parties, no credential stored and no proof for the others.
+A cell passes when the wallet shows the right trust verdict, gates Accept/Share on it, and the service sees the expected end state: `done`/`verified: true` for accredited parties, no proof for the others, and no credential kept by the wallet. The issuer only sees a refused offer when the wallet declines before fetching the credential. A wallet that fetches first leaves it `Completed` whatever the user answers, so for those the refusal is checked on the wallet side and the cell is `pass*` (vs-agent#834).
 
 ## Matrix
 
-`pass*` is a pass with a note below, `blocked` means the step could not be reached (upstream failure or no device). Every cell links the screen that carries the verdict; raw cells are in [`2026-11-11-wallet-matrix/results.jsonl`](2026-11-11-wallet-matrix/results.jsonl).
+`pass*` is a pass with a note below, `blocked` means the step could not be reached (upstream failure or no device). Every cell links the screen that carries the verdict; raw cells are in [`2026-11-11-wallet-matrix/results.jsonl`](2026-11-11-wallet-matrix/results.jsonl). The swiyu presentation rows other than S3 and S6 link the S3 capture: swiyu stops on the same "No matching credential available" screen and those rows were not read back. They get their own capture and `/proof/<id>` in the rerun after vs-agent#833.
 
 | Demo | Service | Hologram | Inji | EUDI | wwWallet | swiyu |
 |---|---|---|---|---|---|---|
@@ -36,7 +36,7 @@ A cell passes when the wallet shows the right trust verdict, gates Accept/Share 
 | Verandia, QuickCash (refuse) | `quickcash` | [pass](2026-11-11-wallet-matrix/hologram/verandia-quickcash-present-request.webp) | [blocked](2026-11-11-wallet-matrix/inji/launch.webp) | [blocked](2026-11-11-wallet-matrix/eudi/verandia-quickcash-present-consent.webp) | [pass](2026-11-11-wallet-matrix/wwwallet/verandia-quickcash-present-consent.webp) | [blocked](2026-11-11-wallet-matrix/swiyu/S3-consent.webp) |
 | CEXA, issue KYC | `aurum` | [pass](2026-11-11-wallet-matrix/hologram/cexa-issue-offer.webp) | [blocked](2026-11-11-wallet-matrix/inji/launch.webp) | [**FAIL**](2026-11-11-wallet-matrix/eudi/cexa-issue-consent.webp) | [pass](2026-11-11-wallet-matrix/wwwallet/cexa-issue-consent.webp) | [**FAIL**](2026-11-11-wallet-matrix/swiyu/cexa-issue-consent.webp) |
 | CEXA, Borealis | `borealis` | [pass](2026-11-11-wallet-matrix/hologram/cexa-present-request.webp) | [blocked](2026-11-11-wallet-matrix/inji/launch.webp) | [blocked](2026-11-11-wallet-matrix/eudi/cexa-present-consent.webp) | [pass](2026-11-11-wallet-matrix/wwwallet/cexa-present-consent.webp) | [blocked](2026-11-11-wallet-matrix/swiyu/S3-consent.webp) |
-| CEXA, Darkpool (refuse) | `darkpool` | [pass](2026-11-11-wallet-matrix/hologram/cexa-darkpool-present-request.webp) | [blocked](2026-11-11-wallet-matrix/inji/launch.webp) | [blocked](2026-11-11-wallet-matrix/eudi/cexa-darkpool-present-consent.webp) | [pass](2026-11-11-wallet-matrix/wwwallet/cexa-darkpool-present-consent.webp) | [blocked](2026-11-11-wallet-matrix/swiyu/S3-consent.webp) |
+| CEXA, Darkpool (refuse) | `darkpool` | [pass*](2026-11-11-wallet-matrix/hologram/cexa-darkpool-present-request.webp) | [blocked](2026-11-11-wallet-matrix/inji/launch.webp) | [blocked](2026-11-11-wallet-matrix/eudi/cexa-darkpool-present-consent.webp) | [pass](2026-11-11-wallet-matrix/wwwallet/cexa-darkpool-present-consent.webp) | [blocked](2026-11-11-wallet-matrix/swiyu/S3-consent.webp) |
 | BHI, issue right to work | `northbank` | [pass](2026-11-11-wallet-matrix/hologram/bhi-issue-offer.webp) | [blocked](2026-11-11-wallet-matrix/inji/launch.webp) | [**FAIL**](2026-11-11-wallet-matrix/eudi/bhi-issue-consent.webp) | [pass](2026-11-11-wallet-matrix/wwwallet/bhi-issue-consent.webp) | [**FAIL**](2026-11-11-wallet-matrix/swiyu/bhi-issue-consent.webp) |
 | BHI, Meridian Tech | `meridian-tech` | [pass](2026-11-11-wallet-matrix/hologram/bhi-present-request.webp) | [blocked](2026-11-11-wallet-matrix/inji/launch.webp) | [blocked](2026-11-11-wallet-matrix/eudi/bhi-present-consent.webp) | [pass](2026-11-11-wallet-matrix/wwwallet/bhi-present-consent.webp) | [blocked](2026-11-11-wallet-matrix/swiyu/S3-consent.webp) |
 | BHI, Halcyon (refuse) | `halcyon` | [pass](2026-11-11-wallet-matrix/hologram/bhi-halcyon-present-request.webp) | [blocked](2026-11-11-wallet-matrix/inji/launch.webp) | [blocked](2026-11-11-wallet-matrix/eudi/bhi-halcyon-present-consent.webp) | [pass](2026-11-11-wallet-matrix/wwwallet/bhi-halcyon-present-consent.webp) | [blocked](2026-11-11-wallet-matrix/swiyu/S3-consent.webp) |
@@ -45,16 +45,17 @@ A cell passes when the wallet shows the right trust verdict, gates Accept/Share 
 
 - **EUDI and swiyu cannot get any credential.** Every testnet issuer publishes `credential_response_encryption` without `credential_request_encryption`. openid4vci-kt (EUDI) and swiyu's own validator both refuse that metadata before showing a trust card: "Oups! Something went wrong" and "Invalid credential", 8 offers out of 8 each, sessions left at `OfferUriRetrieved`. Filed as verana-labs/vs-agent#833.
 - Their presentation rows are blocked by the same thing. EUDI shows the right TRUSTED or UNTRUSTED verdict on all 10 requests, but it reads `vct` from matching wallet credentials, so with an empty wallet it cannot compute the authorization line and has nothing to share. swiyu stops at "No matching credential available" before any card.
-- **Inji was not testable.** The fork stays on a blank screen on the emulator (`SecureStorage: Device Supports Hardware false`, the hardware keystore blocker from the #293 spike) and the phone is offline.
+- **Inji was not testable.** The fork stays on a blank screen on the emulator (`SecureStorage: Device Supports Hardware false`, the hardware keystore blocker from the #293 spike) and the phone is offline. The run on the Honor 200 Lite follows as soon as it is back.
 - **The nightly conformance run checks nothing on testnet**: 10 cells, all `not-testable`, because `testnet-v4` is `testable: false` in `conformance/networks.yaml`. Filed as #353.
 
 Not re-filed: the Hologram welcome agent migration key bug, verana-labs/vs-agent#830 (Ariel's fix in progress). The welcome agent is not a playground demo and was not part of this run.
 
 ## Notes on the pass* cells
 
-- **Umbra (Vesta).** Hologram and wwWallet both show Umbra as trusted and authorized to issue the badge, and that matches the chain: Umbra holds ACTIVE ISSUER participant #352 on the ECS `BadgeCredential` schema (id 40) since 2026-11-04, like Vesta and Zenith. On V4 any authorized badge issuer passes the wallet check and the Vesta portal decides after the login (`app/api/portal-login/route.ts`). `docs/testing.md` listed Umbra as an S2-style refusal and the demo route comment said the wallet flags it red, both corrected in this PR.
-- **wwWallet S2 and S5.** The consent screen is right and Continue stays disabled, but the service reports `Completed`: wwWallet runs OpenID4VCI to the end before asking, so the issuer cannot tell a refusal from a stored credential. Confirmed by hand below, filed as verana-labs/vs-agent#834.
+- **Umbra (Vesta).** Hologram and wwWallet both show Umbra as trusted and authorized to issue the badge, and that matches the chain: Umbra holds ACTIVE ISSUER participant #352 on the ECS `BadgeCredential` schema (id 40) since 2026-11-04, like Vesta and Zenith. On V4 any authorized badge issuer passes the wallet check and the Vesta portal decides after the login (`app/api/portal-login/route.ts`). `docs/testing.md` listed Umbra as an S2-style refusal and the demo route comment said the wallet flags it red, both corrected in this PR (980418d).
+- **wwWallet S2 and S5.** The consent screen is right, Continue stays disabled and the wallet keeps nothing, but the service reports `Completed`: wwWallet runs OpenID4VCI to the end before asking, so the issuer cannot tell a refusal from a stored credential. Confirmed by hand below, filed as verana-labs/vs-agent#834.
 - **Hologram `bhi-issue` and `cexa-present`** passed on retry. The first attempt showed "There was an error processing invitation" and nothing arrived, while the app logged `Unable to start message pickup on resume` (TimeoutError) on the dev mediator `ca.dev.2060.io`. A restart fixed it. Seen once, not filed.
+- **Hologram `darkpool`.** The capture was taken before the Service and Operated by lines resolved ("Checking…"), with a "There was an error processing invitation" toast on top. The authorization line ("not an authorized verifier of CEXAKycCredential") and the refusal on the service (`abandoned`, `verified: false`) are right. The recapture follows in the rerun.
 
 ## wwWallet recheck by hand
 
@@ -83,36 +84,36 @@ Second pass the same evening, in desktop Chrome on the hosted wwWallet, a fresh 
 | vesta-present | Trusted; Vesta Portal (demo) is an authorized verifier of BadgeCredential; Vesta Portal (demo) is requesting you: Badge number, Biometric pattern, Biometric pattern scheme, Birth date, Department, Name, Photo, Title | `{"state":"done","verified":true,"claims":[{"name":"name","value":"Umbra Repairs Employee"},{"name":"department","value":` | button=Present credential, matching credentials=3 |
 | verandia-issue | Trusted; This issuer is accredited for issuing credentials of VerandiaCitizenIDCredential schema | `{"state":"credential-issued","done":true,"declined":false,"error":null}` | Accept not gated |
 | verandia-present | Trusted; Tax Buro (demo) is an authorized verifier of VerandiaCitizenIDCredential; Tax Buro (demo) is requesting you: Birth date, Family name, Given name, Issuing authority, Nationality, Personal identifier, Portrait | `{"state":"done","verified":true,"claims":[{"name":"nationality","value":"VD"},{"name":"familyName","value":"Solano"},{"n` | button=Present credential, matching credentials=1 |
-| verandia-quickcash-present | QuickCash Loans (demo) is not an authorized verifier of VerandiaCitizenIDCredential; QuickCash Loans (demo) is requesting you: Birth date, Family name, Given name, Issuing authority, Nationality, Personal identifier, Por | `{"state":"abandoned","verified":false,"claims":[]}` | button=Share anyway (unsafe), matching credentials=1 |
+| verandia-quickcash-present | QuickCash Loans (demo) is not an authorized verifier of VerandiaCitizenIDCredential; QuickCash Loans (demo) is requesting you: Birth date, Family name, Given name, Issuing authority, Nationality, Personal identifier, Portrait; Share anyway (unsafe) | `{"state":"abandoned","verified":false,"claims":[]}` | button=Share anyway (unsafe), matching credentials=1 |
 | cexa-issue | Trusted; CEXA member exchange (demo), accredited to issue and verify the CEXAKycCredential - one full check, reused everywhere; This issuer is accredited for issuing credentials of CEXAKycCredential schema | `{"state":"credential-issued","done":true,"declined":false,"error":null}` | Accept not gated |
-| cexa-present | Trusted; CEXA member exchange (demo), accredited to verify the CEXAKycCredential - open an account by presenting it; Borealis Markets (demo) is an authorized verifier of CEXAKycCredential; Borealis Markets (demo) is requ | `{"state":"done","verified":true,"claims":[{"name":"kycLevel","value":"standard"},{"name":"birthDate","value":"19970823"}` | Passed on retry. First attempt hit the same stalled mediator pickup as bhi-issue (server request-sent, nothing in the app). |
-| cexa-darkpool-present | is requesting you: Birth date, Document number hash, Evidence digest, Full name, Kyc level, Nationality, Provider, Screening date; DarkPool Exchange (demo) is not an authorized verifier of CEXAKycCredential; DarkPool Exc | `{"state":"abandoned","verified":false,"claims":[]}` | button=Share anyway (unsafe), matching credentials=1 |
-| bhi-issue | Trusted; This issuer is accredited for issuing credentials of RightToWorkCredential schema | `{"state":"done","done":true,"declined":false,"error":null}` | Passed on retry. First attempt: toast 'There was an error processing invitation' and the offer never arrived (server offer-sent) while the app logged 'Unable to start message pickup on resume' (TimeoutError) against the  |
-| bhi-present | Trusted; Meridian Technologies (demo) is an authorized verifier of RightToWorkCredential; Meridian Technologies (demo) is requesting you: Birth date, First name, Nationality, Portrait, Rtw established date, Rtw expiry da | `{"state":"done","verified":true,"claims":[{"name":"nationality","value":"GB"},{"name":"portrait","value":"-"},{"name":"r` | button=Present credential, matching credentials=1 |
-| bhi-halcyon-present | Trusted; Halcyon Talent (demo) is not an authorized verifier of RightToWorkCredential; Halcyon Talent (demo) is requesting you: Birth date, First name, Nationality, Portrait, Rtw established date, Rtw expiry date, Surnam | `{"state":"abandoned","verified":false,"claims":[]}` | button=Share anyway (unsafe), matching credentials=1 |
+| cexa-present | Trusted; CEXA member exchange (demo), accredited to verify the CEXAKycCredential - open an account by presenting it; Borealis Markets (demo) is an authorized verifier of CEXAKycCredential; Borealis Markets (demo) is requesting you: Birth date, Document number hash, Evidence digest, Full name, Kyc level, Nationality, Provider, Screening date | `{"state":"done","verified":true,"claims":[{"name":"kycLevel","value":"standard"},{"name":"birthDate","value":"19970823"}` | Passed on retry. First attempt hit the same stalled mediator pickup as bhi-issue (server request-sent, nothing in the app). |
+| cexa-darkpool-present | is requesting you: Birth date, Document number hash, Evidence digest, Full name, Kyc level, Nationality, Provider, Screening date; DarkPool Exchange (demo) is not an authorized verifier of CEXAKycCredential; DarkPool Exchange (demo) is requesting you: Birth date, Document number hash, Evidence digest, Full name, Kyc level, Nationality, Provider, Screening date | `{"state":"abandoned","verified":false,"claims":[]}` | button=Share anyway (unsafe), matching credentials=1 Captured before the Service and Operated by lines resolved, with an 'There was an error processing invitation' toast on top. The authorization line and the refusal are right; recapture in the rerun. |
+| bhi-issue | Trusted; This issuer is accredited for issuing credentials of RightToWorkCredential schema | `{"state":"done","done":true,"declined":false,"error":null}` | Passed on retry. First attempt: toast 'There was an error processing invitation' and the offer never arrived (server offer-sent) while the app logged 'Unable to start message pickup on resume' (TimeoutError) against the dev mediator ca.dev.2060.io; a restart fixed it. |
+| bhi-present | Trusted; Meridian Technologies (demo) is an authorized verifier of RightToWorkCredential; Meridian Technologies (demo) is requesting you: Birth date, First name, Nationality, Portrait, Rtw established date, Rtw expiry date, Surname | `{"state":"done","verified":true,"claims":[{"name":"nationality","value":"GB"},{"name":"portrait","value":"-"},{"name":"r` | button=Present credential, matching credentials=1 |
+| bhi-halcyon-present | Trusted; Halcyon Talent (demo) is not an authorized verifier of RightToWorkCredential; Halcyon Talent (demo) is requesting you: Birth date, First name, Nationality, Portrait, Rtw established date, Rtw expiry date, Surname; Share anyway (unsafe) | `{"state":"abandoned","verified":false,"claims":[]}` | button=Share anyway (unsafe), matching credentials=1 |
 
 ### Inji
 
 | Case | Trust screen | Server state | Note |
 |---|---|---|---|
-| S1 |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| S2 |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| S5 |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| S3 |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| S4 |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| S6 |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| vesta-issue |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| vesta-umbra-issue |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| vesta-present |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| verandia-issue |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| verandia-present |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| verandia-quickcash-present |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| cexa-issue |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| cexa-present |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| cexa-darkpool-present |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| bhi-issue |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| bhi-present |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
-| bhi-halcyon-present |  | `` | blank screen on the emulator (no hardware keystore), phone offline |
+| S1 |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| S2 |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| S5 |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| S3 |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| S4 |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| S6 |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| vesta-issue |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| vesta-umbra-issue |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| vesta-present |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| verandia-issue |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| verandia-present |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| verandia-quickcash-present |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| cexa-issue |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| cexa-present |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| cexa-darkpool-present |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| bhi-issue |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| bhi-present |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
+| bhi-halcyon-present |  | not reached | blank screen on the emulator (no hardware keystore), phone offline |
 
 ### EUDI
 
@@ -148,7 +149,7 @@ Second pass the same evening, in desktop Chrome on the hosted wwWallet, a fresh 
 | S4 | TRUSTED, not authorized verifier of DemoCredential, Next disabled | `200 {"state":"RequestUriRetrieved","verified":false,"claims":[]}` |  |
 | S6 | UNTRUSTED, not authorized verifier of DemoCredential, Next disabled | `200 {"state":"RequestUriRetrieved","verified":false,"claims":[]}` |  |
 | vesta-issue | TRUSTED, authorized issuer of BadgeCredential, Continue enabled | `200 {"state":"Completed","done":true,"declined":false,"error":null}` |  |
-| vesta-umbra-issue | TRUSTED, authorized issuer of BadgeCredential, Continue enabled | `200 {"state":"Completed","done":true,"declined":false,"error":null}` | Verdict matches the chain: Umbra holds ACTIVE ISSUER participant #352 on the ECS BadgeCredential schema 40 (testnet, since 2026-11-04), like Vesta and Zenith. On V4 any authorized badge issuer passes the wallet check and |
+| vesta-umbra-issue | TRUSTED, authorized issuer of BadgeCredential, Continue enabled | `200 {"state":"Completed","done":true,"declined":false,"error":null}` | Verdict matches the chain: Umbra holds ACTIVE ISSUER participant #352 on the ECS BadgeCredential schema 40 (testnet, since 2026-11-04), like Vesta and Zenith. On V4 any authorized badge issuer passes the wallet check and the Vesta portal decides after login, so docs/testing.md listing Umbra as an S2-style refusal was stale, corrected in this PR. |
 | vesta-present | TRUSTED, authorized verifier of BadgeCredential, Next enabled | `200 {"state":"done","verified":true,"claims":[{"name":"photo","value":"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGA` |  |
 | verandia-issue | TRUSTED, authorized issuer of VerandiaCitizenIDCredential, Continue enabled | `200 {"state":"Completed","done":true,"declined":false,"error":null}` |  |
 | verandia-present | TRUSTED, authorized verifier of VerandiaCitizenIDCredential, Next enabled | `200 {"state":"done","verified":true,"claims":[{"name":"givenName","value":"Aria"},{"name":"personalIdentifier","value":"` |  |
@@ -168,17 +169,17 @@ Second pass the same evening, in desktop Chrome on the hosted wwWallet, a fresh 
 | S2 | Invalid credential | `{"state":"OfferUriRetrieved","done":false,"declined":false,"error":null}` | metadata refused (Invalid credential), vs-agent#833 |
 | S5 | Invalid credential | `{"state":"OfferUriRetrieved","done":false,"declined":false,"error":null}` | metadata refused (Invalid credential), vs-agent#833 |
 | S3 |  | `{"state":"RequestUriRetrieved","verified":false,"claims":[]}` | stops at No matching credential available, no card (vs-agent#833) |
-| S4 |  | `` | stops at No matching credential available, no card (vs-agent#833) |
+| S4 |  | not read back | stops at No matching credential available, no card (vs-agent#833) |
 | S6 |  | `{"state":"RequestUriRetrieved","verified":false,"claims":[]}` | stops at No matching credential available, no card (vs-agent#833) |
 | vesta-issue | Invalid credential | `{"state":"OfferUriRetrieved","done":false,"declined":false,"error":null}` | metadata refused (Invalid credential), vs-agent#833 |
 | vesta-umbra-issue | Invalid credential | `{"state":"OfferUriRetrieved","done":false,"declined":false,"error":null}` | metadata refused (Invalid credential), vs-agent#833 |
-| vesta-present |  | `` | stops at No matching credential available, no card (vs-agent#833) |
+| vesta-present |  | not read back | stops at No matching credential available, no card (vs-agent#833) |
 | verandia-issue | Invalid credential | `{"state":"OfferUriRetrieved","done":false,"declined":false,"error":null}` | metadata refused (Invalid credential), vs-agent#833 |
-| verandia-present |  | `` | stops at No matching credential available, no card (vs-agent#833) |
-| verandia-quickcash-present |  | `` | stops at No matching credential available, no card (vs-agent#833) |
+| verandia-present |  | not read back | stops at No matching credential available, no card (vs-agent#833) |
+| verandia-quickcash-present |  | not read back | stops at No matching credential available, no card (vs-agent#833) |
 | cexa-issue | Invalid credential | `{"state":"OfferUriRetrieved","done":false,"declined":false,"error":null}` | metadata refused (Invalid credential), vs-agent#833 |
-| cexa-present |  | `` | stops at No matching credential available, no card (vs-agent#833) |
-| cexa-darkpool-present |  | `` | stops at No matching credential available, no card (vs-agent#833) |
+| cexa-present |  | not read back | stops at No matching credential available, no card (vs-agent#833) |
+| cexa-darkpool-present |  | not read back | stops at No matching credential available, no card (vs-agent#833) |
 | bhi-issue | Invalid credential | `{"state":"OfferUriRetrieved","done":false,"declined":false,"error":null}` | metadata refused (Invalid credential), vs-agent#833 |
-| bhi-present |  | `` | stops at No matching credential available, no card (vs-agent#833) |
-| bhi-halcyon-present |  | `` | stops at No matching credential available, no card (vs-agent#833) |
+| bhi-present |  | not read back | stops at No matching credential available, no card (vs-agent#833) |
+| bhi-halcyon-present |  | not read back | stops at No matching credential available, no card (vs-agent#833) |

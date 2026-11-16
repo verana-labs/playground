@@ -126,8 +126,8 @@ function publicAsset(ref: string | undefined): string | undefined {
 
 let cache: PersonalWallet[] | null = null;
 
-// The recommended wallets of the file (minus `hidden` and the PLAYGROUND_WALLETS allowlist),
-// resolved once, in file order.
+// Every wallet of the file (minus `hidden` and the PLAYGROUND_WALLETS allowlist), resolved once, in file order.
+// The file holds only recommended entries, so the status check is a guard, not what hides a wallet.
 function loadPersonalWallets(): PersonalWallet[] {
   if (cache) return cache;
   const file = path.join(process.cwd(), "personal-wallets.yaml");

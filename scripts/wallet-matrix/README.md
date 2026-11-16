@@ -85,7 +85,7 @@ Recorded 8 September 2026, all device-verified on the Honor LLY-NX1. Per-wallet 
 
 Five wallets can be driven: swiyu, inji, authbound, sphereon and, in principle, talao. Talao is currently blocked at its PIN pad because the keypad6 coordinates do not match its layout. The entries in `wallets.json` that cannot be driven carry a `skip` and the reason.
 
-On the three casts rolled to `.39` on 7 September, inji and procivis are the strongest: both render the Q2 issuer sentence and the Q3 verifier sentence, and both get the cexa darkpool refusal right. Neither actually disables the affirmative button on a denial, so the refusal is text only. authbound shows the trust card but never states whether an issuer is authorized, and sphereon shows Q1 alone. Inji's own gate is the real problem: for an issuer host it has already trusted it downloads the credential with no consent screen at all.
+On the three casts rolled to `.39` on 7 September, inji is the strongest: it renders the Q2 issuer sentence and the Q3 verifier sentence, and gets the cexa darkpool refusal right. It does not actually disable the affirmative button on a denial, so the refusal is text only. authbound shows the trust card but never states whether an issuer is authorized, and sphereon shows Q1 alone. Inji's own gate is the real problem: for an issuer host it has already trusted it downloads the credential with no consent screen at all.
 
 Two cast-side failures are open. swiyu rejects the entire vesta cast on the did:webvh history above, and it rejects `novara.cexa` on `invalid DID document: publicKeyMultibase must not be used` while `aurum` on the same cast, same image and a structurally identical log passes; that one is reproducible but unexplained.
 

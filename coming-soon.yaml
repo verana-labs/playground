@@ -13,9 +13,10 @@
 # 2026-08-03; entries whose repo could not be verified carry no repo link
 # rather than a guess.
 #
-# Already integrated, so deliberately absent: Sphereon Edge Wallet, Hologram
-# Messaging, Procivis One Wallet, Altme, EUDI Wallet Reference Implementation,
-# Paradym Wallet and SWIYU Wallet.
+# Already integrated, so deliberately absent: Hologram Messaging, EUDI Wallet
+# Reference Implementation and SWIYU Wallet, plus Sphereon Edge Wallet and
+# Altme, which are hidden for now. Procivis One Wallet and Paradym Wallet are
+# absent too: the RI WG of 2026-11-11 dropped them from the playground.
 
 personal:
   - id: eausweise

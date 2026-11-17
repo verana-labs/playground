@@ -110,12 +110,6 @@ unlock() {
           adb shell input keyevent 66 </dev/null; sleep 6
         }
         return 0 ;;
-      keypad6-1234)
-        # Paradym's store build draws its own keypad: digits 1-6 in two rows, and it
-        # takes no injected text, only taps.
-        grep -qiE "PIN" <<<"$screen" || return 0
-        for c in "150 1610" "542 1610" "945 1610" "150 1824" "542 1824" "945 1824"; do
-          adb shell input tap $c </dev/null; sleep 0.4; done; sleep 10; return 0 ;;
       keypad6)
         grep -qiE "passcode|PIN code|PIN" <<<"$screen" || return 0
         for c in "266 1218" "540 1218" "814 1218" "266 1492" "540 1492" "814 1492"; do

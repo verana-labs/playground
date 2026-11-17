@@ -1,25 +1,21 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
-import type { PersonalWallet, WalletStatus } from "../lib/wallets";
+import type { PersonalWallet } from "../lib/wallets";
 import { WalletPicker } from "./WalletPicker";
 
-function wallet(id: string, status: WalletStatus): PersonalWallet {
+function wallet(id: string): PersonalWallet {
   return {
     id,
     name: `Wallet ${id}`,
     vendor: `Vendor ${id}`,
-    status,
+    status: "recommended",
     formats: ["openid4vc-sdjwt"],
     links: [{ kind: "download", url: `https://example.org/${id}.apk`, trust_screen: true }],
     captures: {},
   };
 }
 
-const THIRTEEN = [
-  ...["a", "b", "c", "d"].map((id) => wallet(id, "recommended")),
-  ...["e", "f", "g", "h", "i", "j", "k"].map((id) => wallet(id, "compatible")),
-  ...["l", "m"].map((id) => wallet(id, "testing")),
-];
+const FIVE = ["a", "b", "c", "d", "e"].map(wallet);
 
 function cells() {
   return Array.from(document.getElementById("wallet-picker")!.children).map(
@@ -34,70 +30,42 @@ function renderPicker(wallets: PersonalWallet[], selectedId = wallets[0]!.id) {
 }
 
 describe("WalletPicker", () => {
-  it("shows the first five wallets and the expander as the sixth card", () => {
-    renderPicker(THIRTEEN);
-    const shown = cells();
-    expect(shown).toHaveLength(6);
-    expect(shown.slice(0, 5).map((t) => t.match(/Wallet (\w)/)![1])).toEqual(["a", "b", "c", "d", "e"]);
-    expect(shown[5]).toContain("Show all 13 wallets");
-    expect(shown[5]).toContain("8 more: compatible and testing");
-    const expander = screen.getByRole("button", { name: /Show all 13 wallets/ });
-    expect(expander.getAttribute("aria-expanded")).toBe("false");
-  });
-
-  it("expands to every wallet and turns the last card into show fewer", () => {
-    renderPicker(THIRTEEN);
-    fireEvent.click(screen.getByRole("button", { name: /Show all 13 wallets/ }));
-    const shown = cells();
-    expect(shown).toHaveLength(14);
-    expect(shown[13]).toContain("Show fewer");
-    expect(screen.getByRole("button", { name: /Show fewer/ }).getAttribute("aria-expanded")).toBe("true");
-    fireEvent.click(screen.getByRole("button", { name: /Show fewer/ }));
-    expect(cells()).toHaveLength(6);
-  });
-
-  it("shows six wallets or fewer without an expander", () => {
-    renderPicker(THIRTEEN.slice(0, 6));
-    expect(cells()).toHaveLength(6);
-    expect(screen.queryByRole("button", { name: /Show all/ })).toBeNull();
-  });
-
-  it("starts expanded when the selected wallet is past the first five", () => {
-    renderPicker(THIRTEEN, "l");
-    expect(cells()).toHaveLength(14);
-    expect(screen.getByRole("button", { name: /Wallet l/ }).getAttribute("aria-pressed")).toBe("true");
-  });
-
-  it("badges the integrated, compatible and testing cards and flags the builds without the trust screen", () => {
-    const storeOnly: PersonalWallet = {
-      ...wallet("s", "compatible"),
-      links: [{ kind: "playstore", url: "https://play.google.com/store/apps/details?id=s", trust_screen: false }],
-    };
-    renderPicker([wallet("a", "recommended"), storeOnly, wallet("t", "testing")]);
-    const [recommended, compatible, testing] = cells();
-    expect(recommended).toContain("Recommended");
-    expect(recommended).not.toContain("No Verana trust screen");
-    expect(compatible).toContain("Compatible");
-    expect(compatible).toContain("No Verana trust screen");
-    expect(testing).toContain("In testing");
-  });
-
-  it("keeps the status badge on the title row of every card", () => {
-    renderPicker([wallet("a", "recommended"), wallet("c", "compatible"), wallet("t", "testing")]);
-    expect(screen.getByTitle("Wallet a").parentElement!.textContent).toBe("Wallet aRecommended");
-    expect(screen.getByTitle("Wallet c").parentElement!.textContent).toBe("Wallet cCompatible");
-    expect(screen.getByTitle("Wallet t").parentElement!.textContent).toBe("Wallet tIn testing");
+  it("shows every wallet, with no expander", () => {
+    renderPicker(FIVE);
+    expect(cells().map((t) => t.match(/Wallet (\w)/)![1])).toEqual(["a", "b", "c", "d", "e"]);
+    expect(screen.queryByRole("button", { name: /Show all|Show fewer/ })).toBeNull();
+    expect(screen.getAllByRole("button").every((b) => !b.hasAttribute("aria-expanded"))).toBe(true);
   });
 
   it("calls a recommended official build recommended, and one that ships through a fork integrated", () => {
-    renderPicker([wallet("h", "recommended"), { ...wallet("f", "recommended"), fork: "https://github.com/x/f/releases/tag/v1" }]);
+    renderPicker([wallet("h"), { ...wallet("f"), fork: "https://github.com/x/f/releases/tag/v1" }]);
     const [builtin, fork] = cells();
     expect(builtin).toContain("Recommended");
     expect(fork).toContain("Integrated");
   });
 
+  it("keeps the badge on the title row of every card", () => {
+    renderPicker([wallet("a"), { ...wallet("f"), fork: "https://github.com/x/f/releases/tag/v1" }]);
+    expect(screen.getByTitle("Wallet a").parentElement!.textContent).toBe("Wallet aRecommended");
+    expect(screen.getByTitle("Wallet f").parentElement!.textContent).toBe("Wallet fIntegrated");
+  });
+
+  it("flags the extra store builds that lack the trust screen", () => {
+    const withPlainStore: PersonalWallet = {
+      ...wallet("s"),
+      links: [
+        ...wallet("s").links,
+        { kind: "playstore", url: "https://play.google.com/store/apps/details?id=s", trust_screen: false },
+      ],
+    };
+    renderPicker([wallet("a"), withPlainStore]);
+    const [plain, extra] = cells();
+    expect(plain).not.toContain("without trust screen");
+    expect(extra).toContain("Stores without trust screen");
+  });
+
   it("selects a wallet from its card", () => {
-    const onSelect = renderPicker(THIRTEEN);
+    const onSelect = renderPicker(FIVE);
     fireEvent.click(screen.getByRole("button", { name: /Wallet c/ }));
     expect(onSelect).toHaveBeenCalledWith("c");
   });

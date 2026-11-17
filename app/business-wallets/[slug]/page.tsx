@@ -50,9 +50,7 @@ export default async function CloudWalletPlayground({
   const { slug } = await params;
   const w = getIntegration(slug);
   if (!w || w.kind !== "business-wallet") notFound();
-  const pickers = listPersonalWallets().filter((p) =>
-    p.links.some((l) => l.trust_screen),
-  );
+  const pickers = listPersonalWallets();
   // The standing service this business wallet hosts, named by its descriptor
   // (spec §5.3). Unknown ids fall through to the Placeholder branch.
   const demoService = w.demo_service ? getDemoService(w.demo_service) : undefined;

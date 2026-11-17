@@ -227,7 +227,7 @@ describe("ServiceQr", () => {
 
     vi.spyOn(navigator, "userAgent", "get").mockReturnValue("Mozilla/5.0 (Linux; Android 14; LLY-NX1) Chrome/156.0");
 
-    render(<ServiceQr serviceId="demo-issuer-accredited" label="A" walletId="bcwallet" />);
+    render(<ServiceQr serviceId="demo-issuer-accredited" label="A" walletId="inji" />);
     render(<ServiceQr serviceId="demo-issuer-accredited" label="B" format="openid4vc-sdjwt" walletId="hologram" />);
 
     expect(await screen.findAllByRole("img")).toHaveLength(2);

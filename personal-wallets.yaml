@@ -41,16 +41,12 @@
 #   repo, license, contact, notes
 #   status          recommended | compatible | testing (testing when left out)
 #                   recommended: a build with the Verana trust screen passes
-#                   all six scenarios on device. /personal-wallets shows only
-#                   these until the visitor asks for all of them
+#                   all six scenarios on device. The site lists only these,
+#                   in file order (RI WG decision of 2026-11-11)
 #                   compatible: completes the demos, short of that (e.g. a
 #                   store build without the trust screen)
-#                   testing: listed, but compatibility is not confirmed yet;
-#                   the page says so and keeps the demos open
-#                   Every picker lists recommended, then compatible, then
-#                   testing, each in file order. A hidden wallet comes back
-#                   as testing by deleting its hidden line, or as compatible
-#                   by turning that line into status: compatible
+#                   testing: compatibility is not confirmed yet
+#                   compatible and testing entries stay off the site
 #   hidden          true          # keep the entry, icons and captures; drop it from the site until maintenance resumes
 #   captures        up to ONE screen capture per demo scenario (optional),
 #                   keyed by scenario id (issue-accredited,
@@ -83,11 +79,11 @@ wallets:
       issue-unaccredited:
         src: ./hologram/screenshots/2.webp
         clip: ./hologram/clips/2-issuer-unaccredited.mp4
-        caption: Identified but not accredited to issue this credential, so accept is withdrawn
+        caption: "Trusted but not accredited for this credential: Accept turns red and asks to accept anyway (unsafe)"
       issue-untrusted:
         src: ./hologram/screenshots/3.webp
         clip: ./hologram/clips/3-issuer-untrusted.mp4
-        caption: "Untrusted issuer: the refusal happens at connect on the AnonCreds rail"
+        caption: "Untrusted issuer: claims not verified, on no Verana network, Accept asks to accept anyway (unsafe)"
       present-accredited:
         src: ./hologram/screenshots/4.webp
         clip: ./hologram/clips/4-verifier-accredited.mp4
@@ -95,11 +91,11 @@ wallets:
       present-unaccredited:
         src: ./hologram/screenshots/5.webp
         clip: ./hologram/clips/5-verifier-unaccredited.mp4
-        caption: Identified but not authorized to ask for this credential, so sharing is refused
+        caption: "Trusted but not authorized to request this credential: Share becomes Share anyway (unsafe)"
       present-untrusted:
         src: ./hologram/screenshots/6.webp
         clip: ./hologram/clips/6-verifier-untrusted.mp4
-        caption: "Untrusted verifier: self-issued claims withheld, sharing refused"
+        caption: "Untrusted verifier: claims not verified, Share becomes Share anyway (unsafe)"
     video:
       src: ./hologram/demo.mp4
       note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end, human-paced, silent, otherwise unedited. Scenario 1 stores the credential and scenario 4 presents that same credential back to the accredited verifier.
@@ -228,129 +224,6 @@ wallets:
     video:
       src: ./authbound/demo.mp4
       note: Real device, live against the demo cast, offers and requests minted from this page's API. The six scenarios joined end to end at 3x speed, silent, otherwise unedited.
-  - id: paradym
-    name: Paradym Wallet
-    vendor: Animo Solutions
-    status: compatible
-    icon: ./paradym/logo.webp
-    formats: [openid4vc-sdjwt]
-    demoParams: signer=x5c
-    playstore: { url: "https://play.google.com/store/apps/details?id=id.paradym.wallet", trust_screen: false }
-    appstore: { url: "https://apps.apple.com/app/paradym-wallet/id6449846111", trust_screen: false }
-    website: https://animo.id
-    repo: https://github.com/animo/paradym-wallet
-    license: Apache-2.0
-    notes: "Animo's Credo-TS wallet as published in the stores. Store version 1.20.2 takes the DemoCredential from the accredited issuer and presents it to the accredited verifier on the default DCQL request, device-tested on the devnet on 2026-10-02. It labels the services \"Unknown Organization\" and runs no Verana check."
-  - id: lissi
-    name: Lissi ID-Wallet
-    vendor: Lissi GmbH
-    status: compatible
-    icon: ./lissi/logo.webp
-    formats: [openid4vc-sdjwt]
-    demoParams: signer=x5c
-    playstore: { url: "https://play.google.com/store/apps/details?id=io.lissi.mobile.android", trust_screen: false }
-    appstore: { url: "https://apps.apple.com/app/lissi-id-wallet/id6475958390", trust_screen: false }
-    website: https://www.lissi.id
-    notes: "Lissi's ID wallet as published in the stores. Store version 3.2.0 takes the DemoCredential from the accredited issuer and presents it to the accredited verifier on the default DCQL request, device-tested on the devnet on 2026-10-02. Its only warning is its own \"Contact is not verified\"; it runs no Verana check."
-
-  - id: procivis
-    name: Procivis One Wallet
-    vendor: Procivis
-    status: compatible
-    icon: ./procivis/logo.webp
-    formats: [openid4vc-sdjwt]
-    demoParams: signer=x5c
-    playstore: { url: "https://play.google.com/store/apps/details?id=ch.procivis.one.wallet.trial", trust_screen: false }
-    appstore: { url: "https://apps.apple.com/app/procivis-one-wallet/id6480111491", trust_screen: false }
-    website: https://www.procivis.ch
-    repo: https://github.com/procivis/one-wallet
-    license: Apache-2.0
-    notes: "Procivis's wallet on its open-source Rust core, as published in the stores. Store version 1.87.1 takes the DemoCredential from the accredited issuer and presents it to the accredited verifier on the default DCQL request, device-tested on the devnet on 2026-10-02. It labels the demo services \"Untrusted relying party\" and runs no Verana check."
-  - id: sprucekit
-    name: SpruceKit Showcase
-    vendor: SpruceID
-    status: compatible
-    icon: ./sprucekit/logo.webp
-    formats: [openid4vc-sdjwt]
-    demoParams: signer=x5c
-    playstore: { url: "https://play.google.com/store/apps/details?id=com.spruceid.mobilesdkexample", trust_screen: false }
-    appstore: { url: "https://apps.apple.com/app/sprucekit-showcase/id6599845610", trust_screen: false }
-    website: https://spruceid.com
-    repo: https://github.com/spruceid/sprucekit-mobile
-    license: Apache-2.0 OR MIT
-    notes: "SpruceID's showcase wallet on its open-source SpruceKit Mobile SDK, as published in the stores. Store version 1.19.0 completes all six demos, issuance and a DCQL presentation to an x509_hash verifier with an encrypted response, device-tested on Android on the devnet on 2026-10-06. It shows nothing about who the services are and runs no Verana check."
-  - id: credenco
-    name: Credenco Wallet
-    vendor: Credenco
-    status: compatible
-    icon: ./credenco/logo.webp
-    formats: [openid4vc-sdjwt]
-    demoParams: signer=x5c
-    playstore: { url: "https://play.google.com/store/apps/details?id=com.credenco.wallet", trust_screen: false }
-    appstore: { url: "https://apps.apple.com/app/credenco-wallet/id6753174105", trust_screen: false }
-    website: https://www.credenco.com
-    notes: "Credenco's wallet as published in the stores. Store version 1.0.226 completes all six demos, issuance and a DCQL presentation to an x509_hash verifier with an encrypted response, device-tested on Android on the devnet on 2026-10-06. It asks its own \"Do you trust this issuer?\", the same for every service, and runs no Verana check."
-  - id: namirial
-    name: Namirial Wallet
-    vendor: Namirial
-    status: compatible
-    icon: ./namirial/logo.webp
-    formats: [openid4vc-sdjwt]
-    demoParams: signer=x5c
-    playstore: { url: "https://play.google.com/store/apps/details?id=com.namirial.wallet", trust_screen: false }
-    appstore: { url: "https://apps.apple.com/app/namirial-wallet/id6739498969", trust_screen: false }
-    website: https://www.namirial.com
-    notes: "Namirial's wallet as published in the stores. Store version 1.13.9 completes all six demos, issuance and a DCQL presentation to an x509_hash verifier with an encrypted response, device-tested on Android on the devnet on 2026-10-06. It labels every service with its own \"Issuer not verified\" or \"Relying Party not verified\" and runs no Verana check."
-  - id: talao-wallet
-    name: Talao Wallet
-    vendor: Talao
-    status: compatible
-    icon: ./talao-wallet/logo.webp
-    formats: [openid4vc-sdjwt]
-    demoParams: signer=x5c
-    playstore: { url: "https://play.google.com/store/apps/details?id=co.talao.wallet", trust_screen: false }
-    appstore: { url: "https://apps.apple.com/app/talao-wallet/id1582183266", trust_screen: false }
-    website: https://talao.io
-    repo: https://github.com/TalaoDAO/AltMe/tree/TALAO
-    license: Apache-2.0
-    notes: "Talao's wallet on its open-source AltMe code, as published in the stores. Store version 3.7.0 completes all six demos, issuance and a DCQL presentation to an x509_hash verifier with an encrypted response, device-tested on Android on the devnet on 2026-10-06. It names the verifier by its certificate hash, warns \"not verified\" for every service and runs no Verana check."
-  - id: bcwallet
-    name: BC Wallet
-    vendor: Government of British Columbia
-    status: testing
-    icon: ./bcwallet/logo.webp
-    formats: [anoncreds]
-    download: https://github.com/AirKyzzZ/bc-wallet-mobile/releases/download/verana-2026-08-07.1/BCWallet-Verana-verana-2026-08-07.1.apk
-    website: https://digital.gov.bc.ca/digital-trust/
-    repo: https://github.com/bcgov/bc-wallet-mobile
-    fork: https://github.com/verana-labs/bc-wallet-mobile
-    license: Apache-2.0
-    notes: British Columbia's production wallet, on the Bifold and Credo stack. The Verana trust card sits on the credential-offer and proof-request consent screens, and on the contact view for a counterparty that offers nothing, with accept and share both gated on Q1 + Q2/Q3 against the live registry.
-    captures:
-      issue-accredited:
-        src: ./bcwallet/screenshots/1.webp
-        clip: ./bcwallet/clips/1-issuer-accredited.mp4
-        caption: "Accredited issuer: both identity credentials verified, authorized for this credential, accept enabled"
-      issue-unaccredited:
-        src: ./bcwallet/screenshots/2.webp
-        clip: ./bcwallet/clips/2-issuer-unaccredited.mp4
-        caption: Identity verified but not accredited to issue this credential, so accept is blocked
-      issue-untrusted:
-        src: ./bcwallet/screenshots/3.webp
-        clip: ./bcwallet/clips/3-issuer-untrusted.mp4
-        caption: "Untrusted issuer: it vouches for itself, so its claims are withheld and nothing is offered"
-      present-accredited:
-        src: ./bcwallet/screenshots/4.webp
-        clip: ./bcwallet/clips/4-verifier-accredited.mp4
-        caption: "Accredited verifier: authorized to request this credential, the presentation completes"
-      present-unaccredited:
-        src: ./bcwallet/screenshots/5.webp
-        clip: ./bcwallet/clips/5-verifier-unaccredited.mp4
-        caption: Identity verified but not accredited to request this credential, so share is blocked
-      present-untrusted:
-        src: ./bcwallet/screenshots/6.webp
-        clip: ./bcwallet/clips/6-verifier-untrusted.mp4
-        caption: "Untrusted verifier: it vouches for itself, so its claims are withheld and nothing is requested"
   - id: wwwallet
     name: wwWallet
     vendor: wwWallet

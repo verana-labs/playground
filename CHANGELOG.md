@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/verana-labs/playground/compare/verana-playground-v0.5.0...verana-playground-v0.5.1) (2026-11-17)
+
+
+### Bug Fixes
+
+* [Wallets] keep only the five integrated wallets ([#352](https://github.com/verana-labs/playground/issues/352)) ([adac8ac](https://github.com/verana-labs/playground/commit/adac8ac5d4cb281ce91dfce5c8676ef223d5680a))
+
 ## [0.5.0](https://github.com/verana-labs/playground/compare/verana-playground-v0.4.0...verana-playground-v0.5.0) (2026-11-10)
 
 

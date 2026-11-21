@@ -96,6 +96,29 @@ describe("ServiceQr", () => {
     expect(screen.queryByAltText("Accredited Verifier (demo) QR")).toBeNull();
   });
 
+  it("says no credential was shared when the presentation is abandoned", async () => {
+    const onSettled = vi.fn();
+    vi.stubGlobal(
+      "fetch",
+      vi.fn((input: RequestInfo | URL) =>
+        String(input).includes("/proof/")
+          ? ok({ state: "abandoned", declined: true, reason: "request declined", verified: false, claims: [] })
+          : ok({
+              kind: "presentation-request",
+              url: "https://demo-verifier-accredited.playground.testnet.verana.network/s?id=wxyz7890",
+              proofExchangeId: "proof-1",
+            }),
+      ),
+    );
+
+    render(<ServiceQr serviceId="demo-verifier-accredited" label="Accredited Verifier (demo)" onSettled={onSettled} />);
+
+    expect(await screen.findByText("No credential was shared.")).toBeDefined();
+    expect(screen.getByText(/Reason given: request declined/)).toBeDefined();
+    expect(screen.queryByAltText("Accredited Verifier (demo) QR")).toBeNull();
+    expect(onSettled).toHaveBeenCalledWith({ kind: "declined" });
+  });
+
   it("renders the unavailable card with retry when the fetch fails", async () => {
     vi.stubGlobal("fetch", vi.fn(() => Promise.reject(new Error("network down"))));
 

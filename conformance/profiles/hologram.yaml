@@ -36,11 +36,3 @@ builds:
       ref: v2.15.0-dev.5
     platforms: [android]
     promises: "Issuer and verifier authorization checked against the Verana v4 indexer (hologram-app#519), the proof of trust card and the first contact gate (hologram-app#520), DIDComm v2 on by default"
-quirks:
-  actsOnLinkOnlyAtColdStart: false
-  locksOnBackground: false
-  viewTree: ocr
-  notes: "React Native new architecture: uiautomator returns an empty tree, so screens are read by OCR. Cold start sits behind the system biometric prompt (tap Use PIN, then the phone PIN over adb), so deliver links while it is already open and never force-stop it. Play 2.14.0 speaks DIDComm v2 only once developer mode is on and v2 is ticked under Settings > Developer > Supported DIDComm versions; the official app has v2 on by default from v2.15.0-dev.2"
-capabilities:
-  didcomm:
-    versions: { v1: yes, v2: yes }

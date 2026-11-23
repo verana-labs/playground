@@ -1,5 +1,0 @@
-exceptions:
-  - wallet: wwwallet
-    value: https://github.com/verana-labs/wallet-frontend
-    reason: "wwwallet.yml redeploys the hosted instance from the master branch of wallet-frontend; pin frontend_ref to a commit and record it as identity.ref"
-    expires: "2026-11-16"

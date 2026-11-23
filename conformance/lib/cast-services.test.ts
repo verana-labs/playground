@@ -2,7 +2,7 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { inScope, issuerMetadataUrls, listCastServices, scopedCasts } from "./cast-services";
+import { inScope, listCastServices, scopedCasts } from "./cast-services";
 import { listNetworks } from "./network";
 
 const testnet = listNetworks().find((n) => n.id === "testnet-v4")!;
@@ -61,14 +61,6 @@ describe("listCastServices", () => {
 
   it("ignores directories without orgs", () => {
     expect(listCastServices(testnet, dir).every((s) => s.cast === "demo")).toBe(true);
-  });
-
-  it("builds the metadata urls, bare alias first", () => {
-    const [a] = listCastServices(testnet, dir);
-    expect(issuerMetadataUrls(a!)).toEqual([
-      "https://a.playground.testnet.verana.network/.well-known/openid-credential-issuer",
-      "https://a.playground.testnet.verana.network/oid4vci/demo-did/.well-known/openid-credential-issuer",
-    ]);
   });
 
   it("scopes casts from the environment", () => {

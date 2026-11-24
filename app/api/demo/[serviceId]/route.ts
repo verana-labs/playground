@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getDemoService } from "@/app/lib/demo-services";
+import { type DemoService, getDemoService } from "@/app/lib/demo-services";
 import {
   adminBase,
   adminJson,
@@ -315,6 +315,16 @@ function str(body: unknown, key: string): string | null {
 
 const oobUrl = (body: unknown) => str(body, "shortUrl") ?? str(body, "url");
 
+async function castInvitation(serviceId: string, service: DemoService): Promise<string | null> {
+  if (PROTOCOL !== "v4" || !service.appUrl) return service.appUrl ?? null;
+  const invitation = await adminJson(`${adminBase(serviceId)}/v2/didcomm/invitations`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ didcommVersion: DIDCOMM_INVITATION_VERSION }),
+  });
+  return oobUrl(invitation);
+}
+
 export async function GET(
   req: Request,
   { params }: { params: Promise<{ serviceId: string }> },
@@ -366,19 +376,24 @@ export async function GET(
   // demo the untrusted impostor DOES mint offers: the wallet flags them red,
   // and the portal refuses the badge at login.
   const isCast = service.host.endsWith(CAST_DOMAIN);
-  // On V4 (vs-agent v2) there is no connection invitation endpoint, so the
+  // On V4 (vs-agent v2) there is no public connection invitation, so the
   // untrusted minting pair mints on both rails (vs-agent
   // AGENT_UNSAFE_SKIP_OWN_AUTHORIZATION, demo only).
   const untrustedMints = Boolean(mintRole) && (wantsOid4vc || PROTOCOL === "v4");
+  if (!isCast)
+    return NextResponse.json({ kind: "invitation", url: service.appUrl ?? null });
   if (
-    !isCast ||
     service.role === "anchor" ||
     (service.role === "untrusted" && !isBadge && !untrustedMints)
   ) {
-    return NextResponse.json({
-      kind: "invitation",
-      url: service.appUrl ?? null,
-    });
+    try {
+      return NextResponse.json({
+        kind: "invitation",
+        url: await castInvitation(serviceId, service),
+      });
+    } catch {
+      return NextResponse.json({ kind: "invitation", url: null, fallback: true });
+    }
   }
 
   const admin = adminBase(serviceId);

@@ -116,9 +116,3 @@ export function scopedCasts(): string[] {
 }
 
 export const inScope = (service: CastService): boolean => scopedCasts().includes(service.cast);
-
-export function issuerMetadataUrls(service: CastService): string[] {
-  const urls = [`https://${service.host}/.well-known/openid-credential-issuer`];
-  if (service.issuerId) urls.push(`https://${service.host}/oid4vci/${service.issuerId}/.well-known/openid-credential-issuer`);
-  return urls;
-}

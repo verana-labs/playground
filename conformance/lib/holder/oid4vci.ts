@@ -1,8 +1,13 @@
 import { Openid4vciClient } from "@openid4vc/openid4vci";
 import type { CredentialResponse } from "@openid4vc/openid4vci";
 import type { Jwk } from "@openid4vc/oauth2";
-import { vctDocumentUrl } from "../issuer-metadata";
+import { z } from "zod";
 import { callbacks, type HolderKey } from "./keys";
+
+function vctDocumentUrl(raw: unknown, configurationId: string): string | null {
+  const parsed = z.looseObject({ credential_configurations_supported: z.record(z.string(), z.looseObject({ vct: z.string().optional() })) }).safeParse(raw);
+  return parsed.success ? (parsed.data.credential_configurations_supported[configurationId]?.vct ?? null) : null;
+}
 
 function extractCredential(response: CredentialResponse): string {
   const entries = response.credentials;

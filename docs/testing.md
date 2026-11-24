@@ -1,40 +1,29 @@
 # Testing the playground
 
-How we know that the listed wallets work against the deployed playground, and what to run before telling anyone
-they do. There are three layers. The first two run in GitHub Actions, the third one is a person with a phone.
+How we know that the playground services answer the Verana trust questions correctly, and that the listed wallets
+show those answers. There are three layers. The first two are automated, the third one is a person with a phone.
 
 | Layer | When | What it proves | Where |
 |---|---|---|---|
-| CI | every pull request and push | the site builds, the listing is valid and pinned, the wallet profiles agree with what the services offer, the contract checks pass | `.github/workflows/ci.yml` |
-| Nightly conformance | 03:17 UTC every day, or by hand | the same contract checks plus live OpenID4VCI and OpenID4VP flows with a headless holder per listed wallet build | `.github/workflows/conformance.yml` |
+| CI | every pull request and push | the site builds, the listing and the wallet profiles are valid, the helper unit tests pass | `.github/workflows/ci.yml` |
+| Trust checks | nightly and after each Playground Setup, in verana-deploy | the service DIDs are signed, the resolver answers, and each scenario gets the Q1, Q2 and Q3 answers it expects from a headless holder | **Playground Conformance** in verana-deploy |
 | Device pass (Tier 3) | after a new wallet build, a new vs-agent image on the casts, or a chain reset | the real wallet shows the trust card, gates Add and Share on it, and the service sees the exchange complete | this document |
 
-The automated layers are described in detail in [`conformance/README.md`](../conformance/README.md), and the
-reasoning behind them in the [wallet conformance testing guideline](https://github.com/verana-labs/verana-spec/pull/92).
+The automated layers are described in [`conformance/README.md`](../conformance/README.md). Wallet protocol
+conformance is out of scope: we support the five listed wallets and leave OpenID4VC conformance to the libraries.
 
 ## CI on every change
 
-`ci.yml` runs two jobs.
+`ci.yml` runs lint, typecheck, `validate:registry`, the site unit tests and `next build`, then in `conformance/` its
+typecheck and `test:lib`, the unit tests of the trust check helpers. A red CI is always ours to fix.
 
-- `ci`: lint, typecheck, `validate:registry`, the site unit tests and `next build`, then in `conformance/` its
-  typecheck and `test:lib`. `test:lib` validates every wallet profile, compares each listed wallet's
-  `capabilities` with `conformance/devnet-services.yaml` (a recommended or compatible wallet that will not work
-  fails the build), and refuses mutable or wrong links in the listing (`listing-exceptions.yaml` holds the few
-  allowed ones, each with an expiry date).
-- `conformance-t1`: the Tier 1 contract checks against the live network without creating sessions. The verdict
-  table lands in the job summary and `results.json` is uploaded as an artifact.
+## Trust checks
 
-A red `ci` job is always ours to fix. A red `conformance-t1` cell names the check, the service and the wallet; when
-the cause is on the service side, record it as a gap in `devnet-services.yaml` with a reference and a re-check
-date instead of weakening the check.
-
-## Nightly conformance
-
-`conformance.yml` runs Tier 1 and Tier 2 with `CONFORMANCE_MINTS=1`, so it creates real sessions on the casts, and
-reads the image tag actually serving from the cluster. Tier 2 completes every flow headless and asserts the
-resolver inputs a wallet decides on (trust status, issuer and verifier authorization) plus the service's own
-exchange state. It does not prove a wallet's UI, and it does not cover the DIDComm/AnonCreds rail yet. Both are
-the device pass.
+The **Playground Conformance** workflow in verana-deploy runs Tier 1 and Tier 2 with `CONFORMANCE_MINTS=1`, so it
+creates real sessions on the casts, and reads the image tag actually serving from the cluster. Tier 2 runs each
+scenario once as a headless holder and checks the resolver answers a wallet decides on (trust status, issuer and
+verifier authorization) plus the service's own exchange state. It does not prove a wallet's UI, and it does not
+cover the DIDComm/AnonCreds rail yet. Both are the device pass.
 
 Dispatch it by hand after a cast rollout. Casts share one concurrency group, so roll them one at a time and run
 conformance once they are all up.
@@ -101,5 +90,4 @@ step is enough: scenario, wallet build, rail, exchange id, outcome (`pass`, `fai
 said, the service state, and a note for anything unexpected. A failure is only reported with the line from the
 wallet log or the service state that explains it.
 
-When a device result contradicts a profile, update the profile's `capabilities` or the gap in
-`devnet-services.yaml` in the same pull request, so CI carries what the phone showed.
+When a device result contradicts a profile, update the profile's `promises` in the same pull request.
